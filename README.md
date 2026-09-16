@@ -83,7 +83,7 @@ pnpm typecheck
 pnpm test
 ```
 
-[Verification history](VERIFICATION.md) records component and native-session
+[Verification history](docs/verification-history.md) records component and native-session
 checks and their limits. Full ticket-to-PR acceptance testing remains separate.
 
 The first source-publishing integration is reviewable in
