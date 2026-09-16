@@ -1,9 +1,9 @@
 name: dcouple
-version: 0.1.0
+version: 0.1.1
 cli_major: 0
 source:
   repository: https://github.com/dcouple/skills
-  commit: 45bd0246023caea9d043f91aa31cf26edc8c788c
+  commit: 6451f1211df54fa8e8c4f36fdf8fb7350ae513c3
 checksums:
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/astra-planner.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
