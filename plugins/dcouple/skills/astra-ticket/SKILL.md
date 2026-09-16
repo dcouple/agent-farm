@@ -60,5 +60,5 @@ Input: a GitHub issue URL or `owner/repo#number`.
    After QA (or a skip), reviews, and final-head CI, extend the same brief from the published PR with before/after behavior and verified results. Retain intent, sources, and decisions; verify content and reciprocal links, then open Grain last.
 
 Preserve required tracker publication, local paths, and evidence contracts alongside Grain.
-Find `review` in `~/.claude/skills/review/` or dcouple/skills's `parsa/.claude/skills/review/`.
+Use the bundled sibling `../review/SKILL.md` and its `CRITERIA.md`, resolving paths from this skill's directory.
 Read referenced criteria; report missing skills. These workflow overrides take precedence.
