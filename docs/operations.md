@@ -39,12 +39,12 @@ See the verification history for the native behaviors that have been exercised.
 
 ## Plugin rollout
 
-The bundled plugin on main is currently `dcouple` 0.1.0. The source migration is in
-[skills PR #114](https://github.com/dcouple/skills/pull/114), and the generated 0.1.3
-update, including the SEO profile, is in
+The bundled plugin is `dcouple` 0.1.3, including the SEO profile. The source
+migration merged in [skills PR #114](https://github.com/dcouple/skills/pull/114),
+and the generated package merged in
 [Agent Farm PR #3](https://github.com/dcouple/agent-farm/pull/3).
-Until merged and installed, profiles from that update require a source launch with
-`--config-root`. CLI v0.1.1 and plugin versions are independent.
+Run `agent-farm plugin install` after updating the CLI checkout to apply the
+bundled configuration. CLI v0.1.1 and plugin versions are independent.
 
 ## Verification boundaries
 
