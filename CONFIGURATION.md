@@ -21,7 +21,7 @@ skills/
       intent-handoff.md        Supporting guidance
       socrates.md              Shared premise-review rubric
 workspaces/
-  keycard.yaml                 Workspace MCP connections
+  my-project.yaml                 Workspace MCP connections
 instructions/                  Optional shared instruction includes
 backups/                       Local migration backups, not active definitions
 ```
@@ -96,6 +96,20 @@ Workspace YAML supplies named MCP connections. Repository `AGENTS.md`,
 `CLAUDE.md`, and repository references remain repository-owned; the central
 agent definitions do not replace them. Secrets and native OAuth credentials
 remain outside these authoring files.
+
+For example, `workspaces/my-project.yaml` can declare a remote MCP server:
+
+```yaml
+connections:
+  project-tools:
+    type: mcp
+    url: https://YOUR-MCP-SERVER.example/mcp
+    auth: native
+```
+
+Replace the placeholder with your provider's endpoint, then use
+`agent-farm run astra-planner --workspace my-project`. Provider-specific setup
+belongs with the configuration package that uses it.
 
 ## Inspection and compatibility names
 
