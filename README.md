@@ -1,31 +1,49 @@
 # Agent Farm
 
-**Define your agents once. Launch them in any repository, using the native Claude Code or Codex terminal.**
+**Load the skills and sub-agents you need for each job. Keep the Claude Code or Codex TUI you already use.**
 
-Agent Farm is a lightweight CLI for reusable coding-agent configurations. Give an
-agent a model, reasoning level, skills, sub-agents, and instructions. Pair it with
-a workspace's MCP connections, choose a working directory, and start a conversation.
+We built Agent Farm to switch between agent setups without installing every skill
+and sub-agent into every conversation. A planner needs a different toolkit from
+an implementer. An experimental workflow should be easy to try without removing
+the one you already use.
+
+Agent Farm lets you choose a named profile at launch. Each profile selects an
+agent with a specific harness, model, reasoning level, skills, and sub-agents.
+It generates that setup and opens the native Claude Code or Codex terminal in
+your chosen repository.
+
+- **Load by task.** Give each agent the skill and sub-agent set its workflow needs.
+- **Experiment alongside existing setups.** Create another profile to test new
+  skills while keeping your established profile available.
+- **Pin model settings.** Define the model and reasoning level in the agent a
+  profile selects, including separate settings for its declared children.
+- **Keep the native experience.** Use Claude Code or Codex's own TUI, conversation
+  controls, and authentication.
 
 ```sh
-agent-farm run astra-planner --workspace my-project --directory ~/repos/my-app
+# Choose a skill set, sub-agent configuration, and model together.
+agent-farm run astra-planner --directory ~/repos/my-app
+agent-farm run implementer --directory ~/repos/my-app
 ```
 
-Agent Farm generates the configuration and opens Codex in `my-app` with the
-planner's skills and workspace tools. A Claude-based profile opens Claude Code.
-You keep the native terminal interface, conversation controls, and authentication.
+Agent Farm adds the selected bundle for each launch. Skills already installed in
+native global or project directories can still be visible; Agent Farm does not
+hide or remove them. Keep profile-specific skills in Agent Farm's library to
+avoid making them globally available.
 
-## Where it fits
+## Why Agent Farm?
 
-| Approach | What it provides | When to choose it |
+| Approach | Skill and agent setup | Terminal experience |
 | --- | --- | --- |
-| Native Claude Code or Codex | The coding conversation and native harness configuration | You want to configure and run each harness directly. |
-| **Agent Farm** | Named agent profiles, shared skills, workspace MCPs, and generated native configurations | You want repeatable agent setups across repositories while using the native terminal interfaces. |
-| [Omnigent](https://omnigent.ai/docs/interact/terminal) | A shared terminal interface for its coding-agent integrations | You want to interact with different agents through Omnigent's UI. |
-| [LangGraph](https://docs.langchain.com/oss/python/langgraph/overview) | A runtime for stateful workflows with persistence and durable execution | You are building an application that owns the agent workflow and its execution. |
+| Native Claude Code / Codex configuration | Manage skills and sub-agents directly in each harness's configuration. | Native Claude Code or Codex TUI. |
+| **Agent Farm** | Select a reusable profile with its skills, sub-agents, and pinned model settings for each launch. Keep multiple setups available. | **Native Claude Code or Codex TUI.** |
+| [Omnigent](https://omnigent.ai/docs/interact/terminal) | Configure agents through Omnigent's integration layer. | Omnigent's own shared TUI. |
 
-Agent Farm's job is configuration and launch. Claude Code and Codex still execute
-the agent turns and provide their native tools. The comparison above describes
-where each approach fits, rather than feature parity between them.
+Choose Agent Farm when you want to switch agent configurations while keeping your
+native harness interface. Omnigent provides a shared interface across coding-agent
+integrations; Agent Farm concentrates on generating configuration and launching
+the selected harness. That keeps its scope small: the harness still runs the
+conversation and agent turns.
 
 ## How it works
 
