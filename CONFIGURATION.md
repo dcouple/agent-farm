@@ -30,7 +30,7 @@ backups/                       Local migration backups, not active definitions
 
 Each YAML file contains only `agent: <name>`. Profiles are launchable entry
 points; they do not override model settings, tools, instructions, or children.
-`agent-farm run NAME` launches the complete identity. `agent-farm load NAME` loads
+`agent-farm run NAME` launches the complete identity. `agent-farm set global NAME` loads
 only its selected top-level skills into the native user skill directory.
 
 ## Agents
@@ -207,11 +207,11 @@ secrets in descriptions.
 ## Global workspace installation
 
 ```sh
-agent-farm workspace load my-project --harness codex
-agent-farm workspace load my-project --harness claude
-agent-farm workspace loaded
-agent-farm workspace unload my-project --harness codex
-agent-farm workspace unload my-project --harness claude
+agent-farm set global --workspace my-project --harness codex
+agent-farm set global --workspace my-project --harness claude
+agent-farm status global
+agent-farm unset global --workspace my-project --harness codex
+agent-farm unset global --workspace my-project --harness claude
 ```
 
 Load reads `workspaces/my-project.yaml` from the configured library. It installs

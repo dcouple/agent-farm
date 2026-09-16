@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {validatePlugin,packPlugin,installPlugin} from './plugins.js';
@@ -9,15 +10,48 @@ import {run,execute} from './runtime.js';
 import {loginCommand} from './mcp-auth.js';
 import {loadWorkspace,unloadWorkspace,loadedWorkspaces} from './user-workspaces.js';
 import {inspectProfile,listProfiles} from './inspect.js';
-import {loadProfile,unloadProfile,loadedProfiles} from './user-skills.js';
+import {loadProfile,unloadProfile,loadedProfiles,globalSkills,globalSkillWarning,saveGlobalSkills} from './user-skills.js';
 try {
   const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{
     'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},
-    harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},
+    save:{type:'string'},model:{type:'string'},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},
     build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},help:{type:'boolean',short:'h'}
   }});
+  const globalCommand=['set','unset','status'].includes(positionals[0] ?? '') && positionals[1]==='global';
+  if ((values.save!==undefined || values.model!==undefined) && !globalCommand) throw new Error('--save and --model are only supported by unset global');
   if (values.help) {
-    console.log('Usage: agent-farm run NAME [--workspace NAME] [--directory PATH] [--config-root PATH]\n                       [--message TEXT] [--build | --explain | --exec]\nInspect: agent-farm profiles list [--config-root PATH]\n         agent-farm inspect NAME [--workspace NAME] [--config-root PATH]\nPlugins: agent-farm plugin install [SOURCE]\n         agent-farm plugin validate SOURCE\n         agent-farm plugin pack SOURCE OUTPUT\nMCP login: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex\nGlobal MCPs: agent-farm workspace load|unload NAME --harness claude|codex\n             agent-farm workspace loaded\nUser skills: agent-farm load NAME [--harness claude|codex] [--config-root PATH]\n             agent-farm unload NAME [--harness claude|codex]\n             agent-farm loaded\nOpens the native Claude Code or Codex TUI. Requires Node 22.15+ on macOS/Linux.');
+    console.log('Usage: agent-farm run NAME [--workspace NAME] [--directory PATH] [--config-root PATH]\n                       [--message TEXT] [--build | --explain | --exec]\nInspect: agent-farm profiles list [--config-root PATH]\n         agent-farm inspect NAME [--workspace NAME] [--config-root PATH]\nPlugins: agent-farm plugin install [SOURCE]\n         agent-farm plugin validate SOURCE\n         agent-farm plugin pack SOURCE OUTPUT\nMCP login: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex\nGlobal skills: agent-farm set|unset global PROFILE [--harness claude|codex]\nGlobal MCPs: agent-farm set|unset global --workspace NAME --harness claude|codex\nInspect globals: agent-farm status global [--harness claude|codex]\nSave existing skills: agent-farm unset global --save NAME --harness claude|codex --model MODEL\nLegacy aliases: load/unload/loaded and workspace load/unload/loaded\nOpens the native Claude Code or Codex TUI. Requires Node 22.15+ on macOS/Linux.');
+  } else if (globalCommand) {
+    const operation=positionals[0],profile=positionals[2];
+    if (values.message!==undefined || values.build || values.exec || values.explain || process.argv.includes('--directory') || process.argv.some(a=>a.startsWith('--directory='))) throw new Error('Global commands do not accept launch options');
+    if (positionals.length>3) throw new Error('Use set global PROFILE, unset global PROFILE, or status global');
+    if(values.harness && !['claude','codex'].includes(values.harness))throw new Error('harness must be claude or codex');
+    if(operation==='status') {
+      if(profile || values.workspace || values.save || values.model)throw new Error('Use status global [--harness claude|codex]');
+      for(const harness of values.harness?[values.harness]:['claude','codex']) {
+        const entries=globalSkills({harness});
+        console.log(`${harness}: ${entries.length} global skill(s)`);
+        for(const e of entries)console.log(`  ${e.name}: ${e.status}${e.profiles.length?' ('+e.profiles.join(', ')+')':''} — ${e.destination}`);
+      }
+      for(const w of loadedWorkspaces().filter(w=>!values.harness||w.harness===values.harness))console.log(`Workspace: ${w.workspace} (${w.harness})`);
+    } else if(values.save!==undefined) {
+      if(operation!=='unset'||profile||values.workspace)throw new Error('Use unset global --save NAME --harness HARNESS --model MODEL');
+      const saved=saveGlobalSkills(path.resolve(values['config-root']!),values.save,values.model ?? '',{harness:values.harness});
+      console.log(`Saved and unmounted ${saved.skills} pre-existing skills as ${saved.profile}. Original files: ${saved.backup}. Remount: agent-farm set global ${saved.profile} --harness ${values.harness} --config-root ${JSON.stringify(path.resolve(values['config-root']!))}`);
+    } else if(values.workspace) {
+      if(profile || values.model)throw new Error('Set/unset a global workspace separately from a profile');
+      const item=operation==='set'?loadWorkspace(path.resolve(values['config-root']!),values.workspace,{harness:values.harness}):unloadWorkspace(values.workspace,{harness:values.harness});
+      console.log(`${operation==='set'?'Mounted':'Unmounted'} workspace ${item.workspace} (${item.harness}). Start a fresh session.`);
+    } else {
+      if(!profile || values.model)throw new Error('Use set global PROFILE or unset global PROFILE; pre-existing skills require unset global --save NAME --harness HARNESS --model MODEL');
+      if(operation==='set') {
+        const item=loadProfile(path.resolve(values['config-root']!),profile,{harness:values.harness});
+        console.log(`Mounted ${item.profile}: ${item.skills.length} skills for ${item.harness}. Skills only; start a fresh session.`);
+      } else {
+        const items=unloadProfile(profile,{harness:values.harness});
+        console.log(`Unmounted ${items.map(p=>p.profile+' ('+p.harness+')').join(', ')}. Shared skills remain mounted. Start a fresh session.`);
+      }
+    }
   } else if (positionals[0]==='workspace') {
     const operation=positionals[1];
     if (!['load','unload','loaded'].includes(operation ?? '') || positionals.length!==(operation==='loaded'?2:3)) throw new Error('Use: agent-farm workspace load|unload NAME --harness claude|codex, or workspace loaded');
@@ -71,6 +105,13 @@ try {
     if (positionals.length!==2 || !['run','agent'].includes(positionals[0]!)) throw new Error('Use: agent-farm run NAME (see --help)');
     if ([values.build,values.explain,values.exec].filter(Boolean).length>1) throw new Error('Choose only one of --build, --explain or --exec');
     const bundle=build(path.resolve(values['config-root']!),positionals[1]!,path.resolve(values.directory!),values.workspace);
+    if (!values.build && !values.explain) {
+      const manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
+      try {
+        const warning=globalSkillWarning({harness:manifest.nodes.main.harness});
+        if(warning)console.error(warning);
+      } catch(error) { console.error('Warning: unable to inspect global skills:',error instanceof Error?error.message:error); }
+    }
     if (values.build) console.log(bundle);
     else {
       const args: string[]=[];
