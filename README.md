@@ -1,3 +1,5 @@
+![Agent Farm — distinct skill gardens connected to native terminals](docs/assets/agent-farm-banner.png)
+
 # Agent Farm
 
 **Load the skills and sub-agents you need for each job. Keep the Claude Code or Codex TUI you already use.**
