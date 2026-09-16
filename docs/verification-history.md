@@ -184,3 +184,22 @@ consent was exercised through the underlying native login commands.
 - Claude's own `mcp add-json --scope user` confirmed the `.claude.json` location
   under a custom `CLAUDE_CONFIG_DIR`. No real user-level tools or skills were loaded
   by these checks. Live remote-service connectivity was tested separately above.
+
+## Global skill ownership and migration — 2026-09-16
+
+Global commands now use `set global`, `unset global`, and `status global` for
+profiles and workspaces. Profile launches warn about personal global skills
+without blocking or automatically removing them. Ownership requires both the
+receipt and an unchanged installed symlink.
+
+Isolated tests cover saving and remounting complete skill folders for Claude and
+Codex, executable supporting files, shared user directories, external symlink
+target preservation, changed managed links, collisions, rollback after an unmount
+failure, CLI syntax, and warnings before a fake native executable is launched.
+These tests do not load, remove, or migrate real user skills.
+
+Discovery scope follows the documented personal locations for
+[Codex](https://learn.chatgpt.com/docs/build-skills) and
+[Claude Code](https://code.claude.com/docs/en/skills), plus the existing Codex
+native-home skill directory used by Agent Farm. Account-synced, plugin, system,
+and legacy command installations are not migrated.
