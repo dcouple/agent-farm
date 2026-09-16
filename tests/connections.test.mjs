@@ -80,3 +80,43 @@ test('native login uses launch-identical identities and restores the original Co
  assert.throws(()=>loginCommand(f.root,'test','service','codex',{home,env}),/local servers use their own login/);
  assert.throws(()=>loginCommand(f.root,'test','missing','claude',{home,env}),/Unknown/);
 });
+
+test('connection descriptions follow resolved connections into parent, native, and process instructions',t=>{
+ const f=setup(t);
+ f.put('workspaces/test.yaml',`instructions: Global workspace guidance.\nconnections:\n  remote:\n    type: mcp\n    url: https://example.com/mcp\n    auth: native\n    description: Read the workspace project.\n`);
+ f.put('agents/child.yaml',`harness: codex\nmodel: test\nconnections:\n  child_only:\n    type: mcp\n    command: example-server\n    description: Child-specific tool guidance.\n`);
+ const b=f.build(),nodes=resolve(f.root,'parent','test');
+ assert.match(nodes.main.instructions,/Global workspace guidance/);
+ assert.match(nodes.main.instructions,/remote \(orchestra_remote\)\nRead the workspace project/);
+ assert.doesNotMatch(nodes.main.instructions,/Child-specific/);
+ const child=nodes['main/children/child'];
+ assert.match(child.instructions,/Child-specific tool guidance/);
+ assert.equal(child.instructions.split('Read the workspace project').length-1,1);
+ const native=fs.readFileSync(path.join(b,'main/native-agents/child.toml'),'utf8');
+ assert.match(native,/Child-specific tool guidance/);
+ const launch=command(b,'main',{prepare:false});
+ assert.ok(launch.argv.some(v=>v.startsWith('developer_instructions=') && v.includes('Read the workspace project')));
+ const transport=launch.argv.find(v=>v.startsWith('mcp_servers.orchestra_remote='));
+ assert.ok(!transport.includes('description'));
+ f.put('agents/parent.yaml','harness: claude\nmodel: test\nsubagents:\n  child:\n    agent: child\n    mode: process\n');
+ const c=f.build();
+ assert.match(fs.readFileSync(path.join(c,'main/children/child/instructions.md'),'utf8'),/Child-specific tool guidance/);
+ const mcp=JSON.parse(fs.readFileSync(path.join(c,'main/mcp.json')));
+ assert.equal(mcp.mcpServers.orchestra_remote.description,undefined);
+ assert.ok(command(c,'main',{prepare:false}).argv.some(v=>v.includes('# Workspace tools')));
+});
+test('Claude native children receive connection descriptions and invalid descriptions fail',t=>{
+ const f=setup(t);
+ f.put('agents/parent.yaml','harness: claude\nmodel: test\nsubagents:\n  child:\n    agent: child\n    mode: native\n');
+ f.put('agents/child.yaml','harness: claude\nmodel: test\n');
+ f.put('workspaces/test.yaml','connections:\n  local:\n    type: mcp\n    command: test-server\n    description: Use this project.\n');
+ const b=f.build();
+ const child=JSON.parse(fs.readFileSync(path.join(b,'main/native-agents/child.json')));
+ assert.match(child.prompt,/Use this project/);
+ for(const value of ['42','[bad]','{bad: value}']){
+  f.put('workspaces/test.yaml',`connections:\n  local:\n    type: mcp\n    command: test-server\n    description: ${value}\n`);
+  assert.throws(()=>f.build(),/description must be text/);
+ }
+ f.put('workspaces/test.yaml','connections:\n  local:\n    type: mcp\n    command: test-server\n    description: "   "\n');
+ assert.doesNotMatch(resolve(f.root,'parent','test').main.instructions,/# Workspace tools/);
+});

@@ -175,3 +175,31 @@ Claude login uses a small private configuration under
 Codex login targets the original native Codex home, even when invoked from inside
 an Agent Farm session. No tokens are copied into launch bundles. Local MCP servers
 use their own service's authentication; use that service's login command.
+
+## Connection descriptions
+
+Remote and local connections may include an optional `description`:
+
+```yaml
+connections:
+  analytics:
+    type: mcp
+    url: https://YOUR-MCP-SERVER.example/mcp
+    auth: native
+    description: |
+      Query product analytics for this workspace's project.
+      Select the project before running queries.
+```
+
+Agent Farm renders nonempty descriptions from each agent's resolved connections
+into a **Workspace tools** section in its generated instructions. The section
+includes the connection name and native MCP registration name, and reaches both
+native and process children. A connection added only to a child contributes
+instructions only to that child. Descriptions also work on agent-defined
+connections. Existing connection conflict rules still apply.
+
+Use descriptions for a service's purpose, project selection, and usage guidance.
+Keep workspace-wide guidance in the optional top-level `instructions` field.
+Descriptions are prompt context, not native MCP transport settings, authentication,
+access restrictions, or replacements for the server's tool schemas. Do not include
+secrets in descriptions.

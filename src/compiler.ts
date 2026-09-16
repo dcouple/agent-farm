@@ -61,15 +61,17 @@ function connections(value: unknown): Record<string,Connection> {
   const result: Record<string,Connection>=Object.create(null);
   for (const [key,input] of Object.entries(mapping(value))) {
     name(key); const item=mapping(input);
+    if (item.description!==undefined && typeof item.description!=='string') throw new Error('Connection description must be text');
+    const description=typeof item.description==='string' ? item.description.trim() : undefined;
     if (item.type!=='mcp') throw new Error('Connection type must be mcp');
     if (item.url!==undefined) {
-      fields(item,['type','url','auth']);
+      fields(item,['type','url','auth','description']);
       if (typeof item.url!=='string' || !['native','none'].includes(String(item.auth))) throw new Error('Only HTTPS MCP with auth=native or none is supported');
       const url=new URL(item.url);
       if (url.protocol!=='https:' || !url.hostname || url.username || url.password || url.search || url.hash || /\s/.test(item.url)) throw new Error('Use an HTTPS endpoint without credentials or query parameters');
-      result[key]={type:'mcp',url:item.url,auth:item.auth as 'native'|'none'};
+      result[key]={type:'mcp',description,url:item.url,auth:item.auth as 'native'|'none'};
     } else {
-      fields(item,['type','command','args','env','env_vars']);
+      fields(item,['type','command','args','env','env_vars','description']);
       if (typeof item.command!=='string' || !item.command.trim() || /[\r\n\0]/.test(item.command)) throw new Error('Local MCP requires a command executable');
       const args=item.args ?? [], env=mapping(item.env ?? {}), envVars=item.env_vars ?? [];
       if (!Array.isArray(args) || args.some(v=>typeof v!=='string' || v.includes('\0'))) throw new Error('MCP args must be a list of strings');
@@ -77,7 +79,7 @@ function connections(value: unknown): Record<string,Connection> {
       if (Object.entries(env).some(([k,v])=>!envName(k) || typeof v!=='string' || v.includes('\0'))) throw new Error('MCP env must map environment names to strings');
       if (!Array.isArray(envVars) || envVars.some(v=>!envName(v)) || new Set(envVars).size!==envVars.length) throw new Error('MCP env_vars must be unique environment names');
       if (envVars.some(v=>Object.hasOwn(env,v))) throw new Error('MCP env and env_vars cannot overlap');
-      result[key]={type:'mcp',command:item.command,args,env:env as Record<string,string>,env_vars:envVars};
+      result[key]={type:'mcp',description,command:item.command,args,env:env as Record<string,string>,env_vars:envVars};
     }
   }
   return result;
@@ -118,7 +120,9 @@ export function resolve(root: string, agent: string, workspace?: string): Record
       if (merged[key] && canonical(merged[key])!==canonical(value)) throw new Error(`Conflicting connection ${key}`);
       merged[key]=value;
     }
-    const node: Agent={source_file:agentPath,name:agentName,mode,description:data.description as string|undefined,harness:data.harness,model:model.name,speed:model.speed as Agent['speed'],instructions:[workspaceInstructions,data.instructions].filter(Boolean).join('\n\n'),reasoning_effort:model.reasoning as string|undefined,skills,connections:merged,children:Object.create(null)};
+    const descriptions=Object.entries(merged).filter(([,v])=>v.description).map(([key,v])=>`### ${key} (${connectionName(key)})\n${v.description}`);
+    const toolInstructions=descriptions.length ? '# Workspace tools\n\n'+descriptions.join('\n\n') : '';
+    const node: Agent={source_file:agentPath,name:agentName,mode,description:data.description as string|undefined,harness:data.harness,model:model.name,speed:model.speed as Agent['speed'],instructions:[workspaceInstructions,toolInstructions,data.instructions].filter(Boolean).join('\n\n'),reasoning_effort:model.reasoning as string|undefined,skills,connections:merged,children:Object.create(null)};
     nodes[route]=node;
     for (const [alias,child] of Object.entries(mapping(data.subagents ?? {}))) {
       name(alias);

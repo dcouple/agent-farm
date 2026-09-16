@@ -5,8 +5,8 @@ import { createHash } from 'node:crypto';
 import { parseArgs } from 'node:util';
 
 export type Connection =
-  | { type: 'mcp'; url: string; auth: 'native' | 'none' }
-  | { type: 'mcp'; command: string; args: string[]; env: Record<string,string>; env_vars: string[] };
+  | { type: 'mcp'; description?: string; url: string; auth: 'native' | 'none' }
+  | { type: 'mcp'; description?: string; command: string; args: string[]; env: Record<string,string>; env_vars: string[] };
 // Keep registration names stable across repositories and generated runtime homes.
 export const connectionName = (name: string): string => 'orchestra_'+name;
 export function claudeConnection(value: Connection) {
