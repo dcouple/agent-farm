@@ -1,0 +1,34 @@
+{
+  "name": "@dcouple/agent-farm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.8.0",
+  "engines": {
+    "node": ">=22.15.0",
+    "pnpm": ">=11 <12"
+  },
+  "bin": {
+    "agent-farm": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/cli.js",
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm build && node --test tests/*.test.mjs",
+    "prepack": "pnpm build",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.11",
+    "typescript": "5.9.3"
+  },
+  "files": [
+    "dist",
+    "plugins",
+    "README.md",
+    "CONFIGURATION.md"
+  ]
+}
