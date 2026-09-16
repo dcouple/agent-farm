@@ -133,3 +133,37 @@ Live TypeScript CLI smoke check: native Claude and Codex TUIs opened in the scra
   configuration and generated bundles were retained for existing sessions.
 - The orchestra command symlink was removed. Existing MCP registration names
   were retained for native OAuth continuity. No credentials were committed.
+
+## Direct workspace MCPs — 2026-09-16
+
+The direct-connection implementation adds stdio MCP commands, argument arrays,
+non-secret environment settings, forwarded environment-variable names, workspace
+instructions, and `agent-farm mcp login` delegation to the native clients.
+
+Validation:
+
+- Typecheck and all 42 tests pass. Tests cover mixed-transport rejection, invalid
+  argument/environment settings, native child configuration, literal arguments,
+  unexpanded secret references, stable connection identities, existing native
+  credential-file links, and native-login command generation.
+- Real Claude Fable 5.1 High and Codex Astra High sessions each ran in two distinct
+  directories with separately generated bundles. All four runs successfully called
+  PostHog, Sentry, Google Cloud, and Grain through MCP.
+- Evidence came from native tool-call/tool-result logs, not only model summaries.
+  Calls were read-only: PostHog project discovery/read, a scoped Sentry issue query,
+  Google Cloud project description, and Grain organization workspace listing.
+- Initial OAuth was completed separately for PostHog/Sentry in each harness.
+  Subsequent generated sessions, including the second directory, needed no login.
+- gcloud reused its local credentials with per-process account/project settings;
+  the machine's active gcloud configuration remained unchanged. Grain reused the
+  installed app's login after its CLI wrapper was repaired.
+- GitHub uses the existing authenticated `gh` CLI; no GitHub MCP was installed
+  into the workspace. Image generation was left unchanged.
+
+Limits: this proves read access and credential reuse on this Mac with its current
+native clients and credential stores. It does not test provider-side token expiry,
+revocation, refresh under concurrency, other operating systems, or write access.
+PostHog reported that some write-scoped operations were unavailable; the read tests
+passed. Raw logs and machine-specific workspace definitions remain local rather
+than being committed. New native-login CLI routing is covered by tests; browser
+consent was exercised through the underlying native login commands.

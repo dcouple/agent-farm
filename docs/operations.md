@@ -13,13 +13,22 @@ bundle with the updated defaults.
 
 ## Authentication and MCP connections
 
-Workspace connections use native Claude/Codex authentication. Agent Farm does not
+Remote workspace connections use native Claude/Codex authentication. Local stdio
+servers use their service CLI or application login. Agent Farm does not
 provide its own OAuth credential store. Native credentials stay outside plugin
 sources and generated content packages.
 
 Existing installations retain `orchestra_<connection>` MCP registration names
 to reuse native OAuth credentials. This is a
 registration identifier, not an installed command alias.
+
+Use `agent-farm mcp login CONNECTION --workspace WORKSPACE --harness claude|codex`
+for an initial remote OAuth sign-in. The native login owns storage and refresh;
+Agent Farm owns only the stable connection definition. On macOS, native Keychain
+credentials can be reused across generated runtime homes. Existing Codex file-based
+MCP credentials are linked from the original home. Other platforms or new file-store
+fallbacks require separate verification; do not assume a successful macOS test proves
+every credential backend.
 
 `agent-farm inspect` reports configured connections, not whether they are currently
 authenticated or reachable. Use the native harness's MCP view to check connectivity.

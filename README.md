@@ -129,12 +129,22 @@ With a workspace named `my-project` configured:
 # Inspect the resolved agent graph and connection configuration.
 agent-farm inspect astra-planner --workspace my-project
 
-# Launch either identity with the same workspace connections.
+# After first-time native OAuth sign-in, launch either identity with the same connections.
 agent-farm run astra-planner --workspace my-project
 agent-farm run implementer --workspace my-project
 ```
 
-Authentication uses the native harness; credentials stay in its credential stores. `inspect` shows configuration,
+For a remote OAuth connection named `remote-service`, sign in once per harness:
+
+```sh
+agent-farm mcp login remote-service --workspace my-project --harness codex
+agent-farm mcp login remote-service --workspace my-project --harness claude
+```
+
+Use the actual connection name from your workspace. Workspaces also support local
+MCP commands with arguments and environment settings; see the
+[connection reference](CONFIGURATION.md#local-mcp-servers-and-native-sign-in).
+Authentication uses the native harness or the local service's own credential store. `inspect` shows configuration,
 not live connectivity. Omitting `--workspace` adds no workspace connections, but
 agent-defined connections and native global tools can still be available.
 
