@@ -85,3 +85,9 @@ pnpm test
 
 [Verification history](VERIFICATION.md) records component and native-session
 checks and their limits. Full ticket-to-PR acceptance testing remains separate.
+
+The first source-publishing integration is reviewable in
+[skills PR #114](https://github.com/dcouple/skills/pull/114), and the publish
+command's generated update is [Agent Farm PR #1](https://github.com/dcouple/agent-farm/pull/1).
+The bundled plugin remains version 0.1.0 until that update is merged; CLI v0.1.1
+and plugin versions are independent.

@@ -112,3 +112,24 @@ Live TypeScript CLI smoke check: native Claude and Codex TUIs opened in the scra
   with no permission denials. No saved permission or OAuth settings changed.
 - Tests made no repository edits or external writes. Raw test logs and private
   native transcripts remain local; no account response data is published here.
+
+## Standalone Agent Farm extraction
+
+- Agent Farm v0.1.1 builds, typechecks, and passes 36 tests. This includes the
+  existing native launcher, skill load/unload, inspection, and metadata-layout
+  checks plus plugin integrity and local-edit protection tests.
+- The private GitHub CLI dependency installs in dcouple/skills with a pinned
+  build allowlist. `pnpm validate` and publish dry run passed.
+- The actual publishing command created dcouple/agent-farm PR #1 from committed
+  dcouple/skills source; source changes are in dcouple/skills PR #114. Neither
+  PR was automatically merged.
+- Global `agent-farm` launched Claude planner and Codex Astra planner from a
+  newly initialized temporary repository outside the source checkouts. Both
+  completed a tool-free READY turn with exit 0. This is a noninteractive runtime
+  smoke test; prior native TUI/child/MCP verification is recorded above.
+- Local configuration was copied to ~/.config/agent-farm. Existing plugin files
+  matched the bundled snapshot, so installation changed no authored content.
+  There were no global loaded-profile ownership records to migrate. Old
+  configuration and generated bundles were retained for existing sessions.
+- The orchestra command symlink was removed. Existing MCP registration names
+  were retained for native OAuth continuity. No credentials were committed.
