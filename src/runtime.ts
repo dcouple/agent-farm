@@ -47,7 +47,7 @@ function link(source: string, destination: string): void {
   } else fs.symlinkSync(source,destination);
 }
 export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv, home = os.homedir()): string {
-  const original = fs.realpathSync(env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex'));
+  const original = fs.realpathSync(env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.ORCHESTRA_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex'));
   const runtime = path.join(home,'.cache/agent-farm/native-proof',hash(bundle+route).slice(0,24));
   fs.mkdirSync(runtime,{recursive:true,mode:0o700});
   for (const item of ['config.toml','auth.json','.credentials.json','AGENTS.md','AGENTS.override.md','rules','plugins','mcp-oauth-locks']) link(path.join(original,item),path.join(runtime,item));

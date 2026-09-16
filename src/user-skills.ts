@@ -46,7 +46,7 @@ export function loadProfile(root: string, profile: string, options: UserSkillOpt
   const agent=resolve(root,profile).main!;
   const selected=harness(options.harness ?? agent.harness);
   const home=options.home ?? os.homedir(),env=options.env ?? process.env;
-  const nativeHome=selected==='codex' ? env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex') : env.CLAUDE_CONFIG_DIR ?? path.join(home,'.claude');
+  const nativeHome=selected==='codex' ? env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.ORCHESTRA_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex') : env.CLAUDE_CONFIG_DIR ?? path.join(home,'.claude');
   const directory=path.resolve(nativeHome,'skills');
   return withState(options,(state,save)=>{
     fs.mkdirSync(directory,{recursive:true});
