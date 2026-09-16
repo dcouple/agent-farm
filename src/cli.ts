@@ -7,6 +7,7 @@ import {parseArgs} from 'node:util';
 import {build} from './compiler.js';
 import {run,execute} from './runtime.js';
 import {loginCommand} from './mcp-auth.js';
+import {loadWorkspace,unloadWorkspace,loadedWorkspaces} from './user-workspaces.js';
 import {inspectProfile,listProfiles} from './inspect.js';
 import {loadProfile,unloadProfile,loadedProfiles} from './user-skills.js';
 try {
@@ -16,7 +17,19 @@ try {
     build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},help:{type:'boolean',short:'h'}
   }});
   if (values.help) {
-    console.log('Usage: agent-farm run NAME [--workspace NAME] [--directory PATH] [--config-root PATH]\n                       [--message TEXT] [--build | --explain | --exec]\nInspect: agent-farm profiles list [--config-root PATH]\n         agent-farm inspect NAME [--workspace NAME] [--config-root PATH]\nPlugins: agent-farm plugin install [SOURCE]\n         agent-farm plugin validate SOURCE\n         agent-farm plugin pack SOURCE OUTPUT\nMCP login: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex\nUser skills: agent-farm load NAME [--harness claude|codex] [--config-root PATH]\n             agent-farm unload NAME [--harness claude|codex]\n             agent-farm loaded\nOpens the native Claude Code or Codex TUI. Requires Node 22.15+ on macOS/Linux.');
+    console.log('Usage: agent-farm run NAME [--workspace NAME] [--directory PATH] [--config-root PATH]\n                       [--message TEXT] [--build | --explain | --exec]\nInspect: agent-farm profiles list [--config-root PATH]\n         agent-farm inspect NAME [--workspace NAME] [--config-root PATH]\nPlugins: agent-farm plugin install [SOURCE]\n         agent-farm plugin validate SOURCE\n         agent-farm plugin pack SOURCE OUTPUT\nMCP login: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex\nGlobal MCPs: agent-farm workspace load|unload NAME --harness claude|codex\n             agent-farm workspace loaded\nUser skills: agent-farm load NAME [--harness claude|codex] [--config-root PATH]\n             agent-farm unload NAME [--harness claude|codex]\n             agent-farm loaded\nOpens the native Claude Code or Codex TUI. Requires Node 22.15+ on macOS/Linux.');
+  } else if (positionals[0]==='workspace') {
+    const operation=positionals[1];
+    if (!['load','unload','loaded'].includes(operation ?? '') || positionals.length!==(operation==='loaded'?2:3)) throw new Error('Use: agent-farm workspace load|unload NAME --harness claude|codex, or workspace loaded');
+    if (values.workspace || values.message!==undefined || values.build || values.exec || values.explain || process.argv.includes('--directory') || process.argv.some(a=>a.startsWith('--directory='))) throw new Error('Global workspace commands do not accept launch options');
+    if (operation==='loaded') {
+      if (values.harness) throw new Error('workspace loaded lists both harnesses; omit --harness');
+      const entries=loadedWorkspaces();
+      console.log(entries.length ? entries.map(e=>`${e.workspace} (${e.harness}): ${Object.keys(e.servers).join(', ')}`).join('\n') : 'No global workspaces loaded.');
+    } else {
+      const entry=operation==='load' ? loadWorkspace(path.resolve(values['config-root']!),positionals[2]!,{harness:values.harness}) : unloadWorkspace(positionals[2]!,{harness:values.harness});
+      console.log(`${operation==='load'?'Loaded':'Unloaded'} workspace ${entry.workspace} (${entry.harness}). Start a fresh native session.`);
+    }
   } else if (positionals[0]==='mcp') {
     if (positionals.length!==3 || positionals[1]!=='login' || !values.workspace || !['claude','codex'].includes(values.harness ?? '')) throw new Error('Use: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex');
     if (values.message!==undefined || values.build || values.exec || values.explain) throw new Error('MCP login does not accept launch options');

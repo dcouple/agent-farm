@@ -203,3 +203,51 @@ Keep workspace-wide guidance in the optional top-level `instructions` field.
 Descriptions are prompt context, not native MCP transport settings, authentication,
 access restrictions, or replacements for the server's tool schemas. Do not include
 secrets in descriptions.
+
+## Global workspace installation
+
+```sh
+agent-farm workspace load my-project --harness codex
+agent-farm workspace load my-project --harness claude
+agent-farm workspace loaded
+agent-farm workspace unload my-project --harness codex
+agent-farm workspace unload my-project --harness claude
+```
+
+Load reads `workspaces/my-project.yaml` from the configured library. It installs
+all of that workspace's connections, global `instructions`, and connection
+`description` fields. Agent-specific connections are not included. No profile or
+model settings are changed. There is one global workspace slot per harness.
+
+| Harness | MCP configuration | Workspace guidance |
+| --- | --- | --- |
+| Claude Code | `~/.claude.json`, user `mcpServers` | `~/.claude/CLAUDE.md` |
+| Codex | `~/.codex/config.toml`, `mcp_servers` | `~/.codex/AGENTS.md`, or existing `AGENTS.override.md` |
+
+`CLAUDE_CONFIG_DIR` moves both Claude files into that directory (`.claude.json`
+and `CLAUDE.md`). Codex uses `AGENT_FARM_NATIVE_CODEX_HOME`, the legacy native-home
+variable, or `CODEX_HOME` before its default directory. This targets the original
+native home when the command runs inside an Agent Farm session.
+
+Agent Farm records ownership under
+`~/.local/state/agent-farm/user-workspaces/state.json`. It refuses existing server
+names, unmanaged workspace markers, and symlink configuration/context files.
+Loading the same unchanged workspace again is idempotent. Unload verifies owned
+entries and removes its marked guidance; it preserves unrelated entries and
+instructions. Codex's surrounding TOML formatting is preserved; Claude JSON is
+reformatted. Changes to managed entries or guidance must be reconciled before
+unloading. Keep the ownership registry until unloading is complete; the original
+workspace source is not needed for unload.
+
+Writes use atomic file replacement, concurrent-change checks, an Agent Farm
+operation lock, and rollback on write errors. Avoid editing native configuration
+while loading or unloading. An interrupted process can leave a lock directory;
+remove it only after confirming no workspace operation is still running.
+
+Authentication remains native. Environment-variable references remain references;
+Agent Farm does not resolve secret values into configuration. Remote login still
+uses `agent-farm mcp login CONNECTION --workspace my-project --harness HARNESS`.
+Unload removes configuration, not credentials. Start fresh native sessions to
+observe changes. Project-level native settings can override global configuration.
+Claude Agent Farm `run` uses `--strict-mcp-config`; explicitly select `--workspace`
+on scoped launches instead of relying on the global installation.

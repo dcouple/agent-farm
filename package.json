@@ -19,6 +19,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
+    "smol-toml": "1.8.0",
     "yaml": "2.9.1"
   },
   "devDependencies": {

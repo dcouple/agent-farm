@@ -158,17 +158,59 @@ agent-farm run astra-planner --config-root /path/to/skills \
   --directory ~/repos/my-app
 ```
 
-You can also load a profile's skills into the native user-level skill directories:
+### Load and unload global skills and tools
+
+Use this when you want to open `codex` or `claude` directly, with selected skills
+available in every repository. Skill loading and workspace loading are independent:
 
 ```sh
-agent-farm load astra-planner
+# Add the planner's skills to your Codex user configuration.
+agent-farm load astra-planner --harness codex
+
+# Optionally make a configured workspace's MCPs and guidance global too.
+agent-farm workspace load my-project --harness codex
+codex
+
+# The same operations for Claude Code.
+agent-farm load planner --harness claude
+agent-farm workspace load my-project --harness claude
+claude
+
+# Inspect what Agent Farm has installed globally.
 agent-farm loaded
-agent-farm unload astra-planner
+agent-farm workspace loaded
+
+# Remove either layer independently when you are finished.
+agent-farm unload astra-planner --harness codex
+agent-farm workspace unload my-project --harness codex
+agent-farm unload planner --harness claude
+agent-farm workspace unload my-project --harness claude
 ```
 
-`load` installs only the entry agent's skills. `run` launches its complete
-configuration, including model, children, and connections. Unloading removes
-managed skill links; existing conversations can retain already-loaded context.
+Replace `my-project` with a workspace you have configured. Both loaders accept
+`--config-root /path/to/skills` to select another local configuration library.
+Complete any initial authentication with `agent-farm mcp login` as described above;
+unloading a workspace leaves native credentials intact.
+
+`load` installs **only the entry agent's skills**, not its model, reasoning level,
+identity instructions, or sub-agents. Use `run` for the complete agent identity.
+Multiple profiles can share global skills; unloading removes only managed links
+that no other loaded profile needs.
+
+`workspace load` installs MCP connections and the workspace's instructions and
+connection descriptions into the native user configuration. Both Claude and Codex
+support user-level MCPs. One global workspace can be loaded per harness; unload it
+before switching workspaces or applying changed definitions. These tools and
+instructions apply across repositories, subject to native configuration precedence.
+Existing connections are never adopted or overwritten, and edited managed entries
+cause unload to stop and preserve them.
+
+Start a fresh native session after loading or unloading. Existing conversations
+can retain context they already read. For Agent Farm launches, keep passing
+`run PROFILE --workspace my-project`: Claude launches use strict bundle MCP
+configuration, so globally loaded MCPs do not automatically join those launches.
+See [global workspace configuration](CONFIGURATION.md#global-workspace-installation)
+for file locations and ownership details.
 
 ## Configuration layout
 
@@ -261,5 +303,5 @@ pnpm test
 - [Skill and profile sources](https://github.com/dcouple/skills): authoring and publishing the `dcouple` plugin.
 
 The current release supports native Claude/Codex launch, configuration bundles,
-workspace MCPs, declared children, and managed user-level skills. Subscription
+workspace MCPs, declared children, and managed user-level skills and workspaces. Subscription
 rotation, integrated tracing, and daemon orchestration remain future work.
