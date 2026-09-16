@@ -20,7 +20,6 @@ When using this skill for pull request diagrams in Codex or Claude:
 - PR visual overviews must include explicit `Before` and `After` diagrams so reviewers can see both the old behavior and the new behavior without inferring the diff from prose.
 - Keep each PR diagram focused on the change boundary: before, after, and why the new flow is safer.
 - After generating diagrams, update the PR description with a dedicated `## Visual Overview` section.
-- Keep the active `parsa/.claude/skills/` and `parsa/.codex/skills/` copies materially equivalent unless there is an agent-specific reason to diverge. Treat `tyler/` as the frozen ancestor documented by this repository; make Orchestra changes in its canonical repository instead.
 
 ### PR Asset Publishing
 
@@ -613,10 +612,10 @@ You cannot judge a diagram from JSON alone. After generating or editing the Exca
 ### How to Render
 
 ```bash
-cd .claude/skills/excalidraw-pr-diagrams/references && uv run python render_excalidraw.py <path-to-file.excalidraw>
+cd <skill-directory>/references && uv run python render_excalidraw.py <path-to-file.excalidraw>
 ```
 
-For Codex installs, use the matching `.codex/skills/excalidraw-pr-diagrams/references` directory.
+Replace `<skill-directory>` with the directory containing this loaded SKILL.md, as provided by Agent Farm.
 
 This outputs a PNG next to the `.excalidraw` file. Then use the available image viewer on the PNG to actually inspect it, such as the Read tool, `view_image`, or a browser screenshot.
 
@@ -677,12 +676,12 @@ The loop is done when:
 ### First-Time Setup
 If the render script hasn't been set up yet:
 ```bash
-cd .claude/skills/excalidraw-pr-diagrams/references
+cd <skill-directory>/references
 uv sync
 uv run playwright install chromium
 ```
 
-For Codex installs, use `.codex/skills/excalidraw-pr-diagrams/references`.
+Use the same loaded skill directory for both native harnesses.
 
 ---
 

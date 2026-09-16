@@ -2,7 +2,7 @@
 
 A coding agent skill that generates beautiful and practical Excalidraw diagrams from natural language descriptions. Not just boxes-and-arrows - diagrams that **argue visually**. It also supports PR visual overviews that teach before/after changes to reviewers.
 
-Compatible with any coding agent that supports skills. Use `.claude/skills/` for Claude Code and `.codex/skills/` for Codex.
+Run this skill through Agent Farm with a profile that selects `excalidraw-pr-diagrams`.
 
 ## What Makes This Different
 
@@ -14,12 +14,14 @@ Compatible with any coding agent that supports skills. Use `.claude/skills/` for
 
 ## Installation
 
-Clone or download this repo, then copy the skill into the right agent directory:
+The implementer profile includes this skill:
 
-```bash
-cp -r parsa/.claude/skills/excalidraw-pr-diagrams ~/.claude/skills/excalidraw-pr-diagrams
-cp -r parsa/.codex/skills/excalidraw-pr-diagrams ~/.codex/skills/excalidraw-pr-diagrams
+```sh
+agent-farm run implementer --directory /path/to/project
 ```
+
+Agent Farm packages the skill and its supporting files for the selected harness.
+For local development, use `--config-root /path/to/skills-repository`.
 
 ## Setup
 
@@ -32,12 +34,12 @@ Just tell your agent: *"Set up the Excalidraw diagram skill renderer by followin
 **Option B: Manual**
 
 ```bash
-cd .claude/skills/excalidraw-pr-diagrams/references
+cd <skill-directory>/references
 uv sync
 uv run playwright install chromium
 ```
 
-For Codex installs, use `.codex/skills/excalidraw-pr-diagrams/references`.
+Replace `<skill-directory>` with the loaded skill directory reported by Agent Farm.
 
 ## Usage
 
