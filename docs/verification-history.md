@@ -167,3 +167,20 @@ PostHog reported that some write-scoped operations were unavailable; the read te
 passed. Raw logs and machine-specific workspace definitions remain local rather
 than being committed. New native-login CLI routing is covered by tests; browser
 consent was exercised through the underlying native login commands.
+
+## Global workspaces and connection context — 2026-09-16
+
+- Per-connection descriptions are rendered into each resolved agent's instructions,
+  including native and process children, without modifying MCP transport settings.
+- Typecheck and 54 tests pass. Global workspace tests cover both harnesses,
+  idempotent loading, collision refusal, ownership checks, preservation of unrelated
+  edits, environment references, source-independent unload, write-failure rollback,
+  native-home overrides, symlink refusal, and CLI routing.
+- In isolated temporary user homes, each installed native CLI's `mcp get` command
+  discovered an Agent Farm-loaded stdio entry and no longer found it after unload.
+  Claude identified its scope as user configuration, available across projects.
+  This checks native configuration discovery, not MCP protocol connectivity: the
+  probe used `echo` as a placeholder command, so Claude reported connection closed.
+- Claude's own `mcp add-json --scope user` confirmed the `.claude.json` location
+  under a custom `CLAUDE_CONFIG_DIR`. No real user-level tools or skills were loaded
+  by these checks. Live remote-service connectivity was tested separately above.

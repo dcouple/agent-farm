@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      smol-toml:
+        specifier: 1.8.0
+        version: 1.8.0
       yaml:
         specifier: 2.9.1
         version: 2.9.1
@@ -23,6 +26,10 @@ packages:
 
   '@types/node@22.19.11':
     resolution: {integrity: sha512-BH7YwL6rA93ReqeQS1c4bsPpcfOmJasG+Fkr6Y59q83f9M1WcBRHR2vM+P9eOisYRcN3ujQoiZY8uk5W+1WL8w==}
+
+  smol-toml@1.8.0:
+    resolution: {integrity: sha512-kCZr2V3ch9i00x8zXRhjUNVcjG9ijES5dDudkXvUVCT5QlJNQWElSJdZqyPemffHoLNUYwOcou0Fy+ojN0uHSQ==}
+    engines: {node: '>= 18'}
 
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
@@ -42,6 +49,8 @@ snapshots:
   '@types/node@22.19.11':
     dependencies:
       undici-types: 6.21.0
+
+  smol-toml@1.8.0: {}
 
   typescript@5.9.3: {}
 
