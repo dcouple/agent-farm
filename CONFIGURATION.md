@@ -121,3 +121,85 @@ configured MCP endpoints, not credentials or a live connection status.
 `codex-issue-creator` aliases `astra-planner`. `codex-implementer` aliases the
 explicit `astra-implementer-high` entry point. The `implementer` entry point
 selects Medium Fast. Compatibility names preserve existing commands.
+
+## Local MCP servers and native sign-in
+
+A workspace can combine HTTPS servers with local stdio processes:
+
+```yaml
+instructions: |
+  Use the project associated with this workspace. Keep operations within
+  the repository and scope requested by the user.
+connections:
+  remote-service:
+    type: mcp
+    url: https://YOUR-MCP-SERVER.example/mcp
+    auth: native
+  local-service:
+    type: mcp
+    command: example-mcp-server
+    args: [serve]
+    env:
+      PROJECT_ID: example-project
+    env_vars: [EXAMPLE_API_TOKEN]
+```
+
+Choose either `url` with `auth`, or `command` with optional `args`, `env`, and
+`env_vars`. Arguments are passed as an array, without shell evaluation. Commands
+must be available on PATH or use an absolute path; servers run in the chosen
+repository. `env` contains literal **non-secret** settings. `env_vars` names
+variables inherited at launch, without resolving their values into the bundle.
+Do not put tokens in URLs, arguments, or literal environment values.
+
+Claude receives an HTTP/stdio MCP JSON configuration; Codex receives equivalent
+native configuration, including native child-agent files. Claude native children
+inherit their parent's connections. Process children receive their own generated
+configuration. Workspace `instructions` are prepended to each agent's instructions;
+project/account guidance is context, not an enforced access boundary.
+
+To sign in to a remote OAuth server, use the same workspace and connection name:
+
+```sh
+agent-farm mcp login remote-service --workspace my-project --harness codex
+agent-farm mcp login remote-service --workspace my-project --harness claude
+```
+
+The command runs the native client's login flow. Complete the browser consent in
+an interactive terminal. Claude and Codex keep separate native credentials; a
+first login can be required for each. Stable server names and URLs reuse credentials
+across repositories. Changing an endpoint or connection name can require another
+login. Refresh failures, revoked access, and provider policy can also require login.
+
+Claude login uses a small private configuration under
+`~/.cache/agent-farm/mcp-login/`; it does not register workspace tools globally.
+Codex login targets the original native Codex home, even when invoked from inside
+an Agent Farm session. No tokens are copied into launch bundles. Local MCP servers
+use their own service's authentication; use that service's login command.
+
+## Connection descriptions
+
+Remote and local connections may include an optional `description`:
+
+```yaml
+connections:
+  analytics:
+    type: mcp
+    url: https://YOUR-MCP-SERVER.example/mcp
+    auth: native
+    description: |
+      Query product analytics for this workspace's project.
+      Select the project before running queries.
+```
+
+Agent Farm renders nonempty descriptions from each agent's resolved connections
+into a **Workspace tools** section in its generated instructions. The section
+includes the connection name and native MCP registration name, and reaches both
+native and process children. A connection added only to a child contributes
+instructions only to that child. Descriptions also work on agent-defined
+connections. Existing connection conflict rules still apply.
+
+Use descriptions for a service's purpose, project selection, and usage guidance.
+Keep workspace-wide guidance in the optional top-level `instructions` field.
+Descriptions are prompt context, not native MCP transport settings, authentication,
+access restrictions, or replacements for the server's tool schemas. Do not include
+secrets in descriptions.

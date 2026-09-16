@@ -4,7 +4,25 @@ import os from 'node:os';
 import { createHash } from 'node:crypto';
 import { parseArgs } from 'node:util';
 
-export interface Connection { type: 'mcp'; url: string; auth: 'native' | 'none' }
+export type Connection =
+  | { type: 'mcp'; description?: string; url: string; auth: 'native' | 'none' }
+  | { type: 'mcp'; description?: string; command: string; args: string[]; env: Record<string,string>; env_vars: string[] };
+// Keep registration names stable across repositories and generated runtime homes.
+export const connectionName = (name: string): string => 'orchestra_'+name;
+export function claudeConnection(value: Connection) {
+  if ('url' in value) return {type:'http',url:value.url};
+  return {type:'stdio',command:value.command,args:value.args,
+    env:{...Object.fromEntries(value.env_vars.map(key=>[key,'${'+key+'}'])),...value.env}};
+}
+export function codexConnection(value: Connection): Record<string,unknown> {
+  return 'url' in value ? {url:value.url} : {command:value.command,args:value.args,env:value.env,env_vars:value.env_vars};
+}
+// TOML values, including quoted environment-map keys; never expand secrets here.
+export function toml(value: unknown): string {
+  if (Array.isArray(value)) return '['+value.map(toml).join(', ')+']';
+  if (value && typeof value==='object') return '{ '+Object.entries(value).map(([k,v])=>JSON.stringify(k)+' = '+toml(v)).join(', ')+' }';
+  return JSON.stringify(value);
+}
 export interface Agent {
   source_file?: string; name: string; description?: string; mode?: 'native' | 'process'; harness: 'claude' | 'codex'; model: string;
   speed?: 'fast' | 'standard'; reasoning_effort?: string; instructions?: string; skills: string[];
@@ -87,7 +105,7 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
       argv.push('-c',`agents.${alias}.description=${JSON.stringify(manifest.nodes[childRoute]!.description ?? alias)}`,'-c',`agents.${alias}.config_file=${JSON.stringify(path.join(directory,'native-agents',alias+'.toml'))}`);
     }
     if (agent.speed) argv.push('-c','service_tier='+JSON.stringify(agent.speed==='fast' ? 'fast' : 'default'));
-    for (const [key,value] of Object.entries(agent.connections)) argv.push('-c',`mcp_servers.orchestra_${key}.url=${JSON.stringify(value.url)}`);
+    for (const [key,value] of Object.entries(agent.connections)) argv.push('-c',`mcp_servers.${connectionName(key)}=${toml(codexConnection(value))}`);
   }
   if (options.message!==undefined) argv.push('--',options.message);
   return {argv,env,cwd:manifest.directory};
