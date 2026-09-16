@@ -72,7 +72,7 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
   }
   let argv: string[];
   if (agent.harness==='claude') {
-    argv=['claude','--model',agent.model,'--plugin-dir',directory,'--mcp-config',path.join(directory,'mcp.json'),'--strict-mcp-config'];
+    argv=['claude','--dangerously-skip-permissions','--model',agent.model,'--plugin-dir',directory,'--mcp-config',path.join(directory,'mcp.json'),'--strict-mcp-config'];
     const native=Object.fromEntries(Object.entries(agent.children).filter(([,r])=>manifest.nodes[r]!.mode==='native').map(([alias])=>[alias,JSON.parse(fs.readFileSync(path.join(directory,'native-agents',alias+'.json'),'utf8'))]));
     if (Object.keys(native).length) argv.push('--agents',JSON.stringify(native));
     if (agent.reasoning_effort) argv.push('--effort',agent.reasoning_effort);
@@ -80,7 +80,7 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
     if (options.headless) argv.push('--print','--output-format','json');
   } else {
     if (options.prepare!==false) codexHome(bundle,route,env,options.home);
-    argv=['codex',...(options.headless ? ['exec','--skip-git-repo-check','--json'] : []),'--cd',manifest.directory,'--model',agent.model];
+    argv=['codex',...(options.headless ? ['exec','--skip-git-repo-check','--json'] : []),'--yolo','--cd',manifest.directory,'--model',agent.model];
     if (instructions) argv.push('-c','developer_instructions='+JSON.stringify(instructions));
     if (agent.reasoning_effort) argv.push('-c','model_reasoning_effort='+JSON.stringify(agent.reasoning_effort));
     for (const [alias,childRoute] of Object.entries(agent.children)) if (manifest.nodes[childRoute]!.mode==='native') {

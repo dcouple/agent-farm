@@ -1,5 +1,16 @@
 # Operational notes
 
+## Launch permissions
+
+New launches use Codex `--yolo` and Claude `--dangerously-skip-permissions` by
+default, including headless runs and generated process children. Codex bypasses
+approval prompts and sandboxing; Claude bypasses permission checks. Agent Farm
+does not modify native global permission settings.
+
+Existing sessions and previously generated standalone child launchers retain
+their original configuration. Launch again through Agent Farm to generate a
+bundle with the updated defaults.
+
 ## Authentication and MCP connections
 
 Workspace connections use native Claude/Codex authentication. Agent Farm does not

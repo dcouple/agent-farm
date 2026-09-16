@@ -114,6 +114,9 @@ agent-farm run implementer --directory ~/repos/another-app \
 
 The profile's agent controls the harness, model, reasoning level, and speed.
 Without `--message`, the native terminal opens for interactive input.
+Agent Farm launches Codex with `--yolo` (no approval prompts or sandbox) and
+Claude with `--dangerously-skip-permissions`. These defaults also apply to
+headless runs and generated process-child launchers.
 
 ### Add workspace tools
 

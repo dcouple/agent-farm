@@ -58,6 +58,18 @@ test('Claude command preserves cwd and literal starter',t=>{
  assert.equal(r.cwd,f.target);assert.deepEqual(r.argv.slice(-2),['--','$(not-a-command)']);assert.ok(r.argv.includes('--plugin-dir'));
  assert.ok(r.argv.some(s=>s.includes(path.join(b,'main/dispatch/worker'))));
 });
+test('interactive and headless launches bypass permissions for both harnesses',t=>{
+ const f=fixture(t);
+ for(const harness of ['claude','codex']) {
+  f.put('agents/planner.yaml',`harness: ${harness}\nmodel: test\nskills: [proof]\n`);
+  const b=f.build();
+  for(const headless of [false,true]) {
+   const {argv}=command(b,'main',{headless,prepare:false});
+   const flag=harness==='claude' ? '--dangerously-skip-permissions' : '--yolo';
+   assert.ok(argv.includes(flag),`${harness} headless=${headless}`);
+  }
+ }
+});
 test('Codex references native auth without copying payloads',t=>{
  const f=fixture(t),b=f.build(),home=path.join(f.base,'home'),original=path.join(home,'.codex');fs.mkdirSync(original,{recursive:true});
  fs.writeFileSync(path.join(original,'auth.json'),'SECRET-FIXTURE');fs.writeFileSync(path.join(original,'config.toml'),'');
@@ -82,9 +94,9 @@ test('native exec preserves args, cwd, environment and exit status; dispatch run
  const env={...process.env,HOME:home,CODEX_HOME:path.join(home,'.codex'),AGENT_FARM_NATIVE_CODEX_HOME:path.join(home,'.codex'),PATH:bin+path.delimiter+process.env.PATH,RECORD:out};
  const message='$(touch NEVER) `echo no`\nquoted "text"';
  const run=spawnSync(process.execPath,[cli,'agent','planner','--config-root',f.root,'--directory',f.target,'--message',message],{env,encoding:'utf8'});
- assert.equal(run.status,7,run.stderr);let result=JSON.parse(fs.readFileSync(out));assert.equal(result.cwd,f.target);assert.deepEqual(result.args.slice(-2),['--',message]);
+ assert.equal(run.status,7,run.stderr);let result=JSON.parse(fs.readFileSync(out));assert.ok(result.args.includes('--dangerously-skip-permissions'));assert.equal(result.cwd,f.target);assert.deepEqual(result.args.slice(-2),['--',message]);
  const b=f.build();const child=spawnSync(path.join(b,'main/dispatch/worker'),['--message',message],{env,encoding:'utf8'});
- assert.equal(child.status,7,child.stderr);result=JSON.parse(fs.readFileSync(out));assert.equal(result.cwd,f.target);assert.equal(result.args[0],'exec');assert.deepEqual(result.args.slice(-2),['--',message]);
+ assert.equal(child.status,7,child.stderr);result=JSON.parse(fs.readFileSync(out));assert.equal(result.cwd,f.target);assert.equal(result.args[0],'exec');assert.ok(result.args.includes('--yolo'));assert.deepEqual(result.args.slice(-2),['--',message]);
  assert.ok(result.home.includes('.cache/agent-farm/native-proof'));assert.equal(fs.existsSync(path.join(f.target,'NEVER')),false);verify(b);
 });
 test('profile model settings reach both native harnesses and override legacy entrypoints',t=>{
