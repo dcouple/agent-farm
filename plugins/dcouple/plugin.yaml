@@ -14,8 +14,8 @@ checksums:
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
-  agents/claude-pr-reviewer.md: cc081e8b14ff7d0ad488751f5f5467ae305d129d33216078cab21758f9788095
-  agents/codex-pr-reviewer.md: 8bf4829866e61d1cb49a6c2edcca77b27fba6211a380f3481fe406e5735d401c
+  agents/claude-pr-reviewer.md: cbcaebd49c03aa746a2b9b6631ffb61f1840f60e70a9cf03e9a5d7707d3caa8a
+  agents/codex-pr-reviewer.md: 38cd0598f3604d963a04f0217433b0ae96af3ac97136d27086861edb2e3b1d6b
   agents/astra-implementer-high.md: b36d74b25971c9716715d40f7c01f7b2f3ac284b7d0e2ffa6c41e268b38d9c7d
   agents/astra-planner.md: 363a35142e6584aff5495dc379e87b1eb64d32c8eb1eea634bde9afcccb96b6c
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
