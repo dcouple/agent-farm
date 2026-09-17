@@ -51,6 +51,8 @@ them like this:
 ◆  What would you like to do?
 │  ● claude-pr-reviewer     claude · claude-opus-4-6 · high
 │  ○ codex-pr-reviewer      codex · gpt-5.5 · medium
+│  ○ claude-quick-worker     claude · claude-opus-4-6[1m] · high
+│  ○ codex-quick-worker      codex · gpt-5.6-luna · max
 │  ○ claude-worker           claude · claude-fable-5-1 · high
 │  ○ codex-worker            codex · gpt-6-astra · medium
 │  ─────────────────────
@@ -63,6 +65,11 @@ them like this:
 parallel sub-agents to review a PR across independent principles (reuse,
 scope, security, spec fidelity, and more). Each sub-agent discovers the
 project's conventions first. Can optionally plan and apply fixes.
+
+**Quick workers** — `claude-quick-worker` (Opus 4.6, 1M context) and
+`codex-quick-worker` (Luna Max) do everything in a single session with no
+sub-agents. Discussion → simple plan → implement → PR in one pass. Best
+for focused work like landing pages, small features, and quick fixes.
 
 **Workers** — `claude-worker` (Fable 5.1) and `codex-worker` (Astra) take
 a ticket from discussion through planning and implementation to a prepared
