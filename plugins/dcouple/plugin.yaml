@@ -18,8 +18,8 @@ checksums:
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
-  agents/claude-pr-reviewer.md: 26b373a1766f6b6bff14b03b6380da400023e70e82ea2ba29b6f7e377b571abc
-  agents/codex-pr-reviewer.md: 38cd0598f3604d963a04f0217433b0ae96af3ac97136d27086861edb2e3b1d6b
+  agents/claude-pr-reviewer.md: 0a9c713c11de041a2b142a1cc32fa7a33e94e31bd23deb00be7f5b921f001f0a
+  agents/codex-pr-reviewer.md: f3fcfed15b8079805f7db22d4a67108629925c32115b994cbbad0e5dfdaff4c4
   agents/claude-worker.md: aa3b84372bdea348ec6337649cecb2b8f75736f2bcbf917561e4d56c882333a8
   agents/codex-worker.md: 052166d4cf0784d2616645b0cc626ab2de716fc2fb582edc71a4b2bf1323325e
   agents/claude-quick-worker.md: b387a5faeb877cf3e8a8ca33f04be69ae0eac97007563bbcc389f2db168ae9af
@@ -85,5 +85,5 @@ checksums:
   skills/seo-foundations/SKILL.md: 9d18b861e8e3eeeb9afa2c8aaedf9084ff59c58ae3ccfa40aaffa423791b0f0f
   skills/seo-readability-pass/SKILL.md: 8adff8103f26229422ecadfe26dbf51214e8a3308b1806dc7a57901248d181d8
   skills/seo-writing-framework/SKILL.md: 0b74579154295a3021ffdf96300787c7290d41998dff97a3100bf03f52344ed0
-  skills/principled-review/SKILL.md: 9f7f9366d13fdc7dcd3d5867422e9203e18011b544b29ca9e826fadf297fb066
+  skills/principled-review/SKILL.md: a3cbd9addaa762e9b7b35c036b98b107e06e4c0121e46374d8714533ee756639
   skills/simple-plan/SKILL.md: f44e315d73df99f49dcda35335216181e4829733e4c6103cb4f6a875bfece6d3
