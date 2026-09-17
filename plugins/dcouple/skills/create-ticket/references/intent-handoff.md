@@ -55,3 +55,10 @@ For “capture this discussion in Grain,” save the brief there. For “give su
 Lead with the real-world problem and the desired result. A before/after example, simple flow, or decision timeline can help when it explains a meaningful relationship. Let the subject determine the format.
 
 Keep each artifact usable on its own. When GitHub and Grain are both used, keep the same intent, scope, acceptance criteria, and material decision changes available in both for readers with different access.
+
+### Include the approved mockup
+
+- Offer `ui-mockup` for UI changes; a direct request accepts the offer. Continue ticket work if declined or unavailable, noting any relevant visual gap.
+- In Grain, place a **Design reference** beside the proposed experience, before detailed acceptance criteria. Save the image in the same workspace with its caption, version/approval status, final prompt, and source references.
+- In GitHub or another tracker, place **Design reference** after Scope and before Acceptance Criteria. Embed a verified, durable attachment matching the audience, or link the existing authorized artifact. Use private Grain URLs as brief links; retain local files until upload succeeds.
+- Describe the approved behavior in text, align it with the image, and treat incidental generated details as illustrations. Identify the selected version and earlier drafts. Follow these placement principles in other destinations.
