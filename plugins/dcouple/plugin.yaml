@@ -5,13 +5,17 @@ source:
   repository: https://github.com/dcouple/skills
   commit: 1d758ea6881020bf38f5631241e7bb34583c592b
 checksums:
+  profiles/claude-pr-reviewer.yaml: ad2ba72865b4907e6cd9ffe8b273fbbecd0ad8ce8948531b87fb104d51361801
+  profiles/codex-pr-reviewer.yaml: 58fc85071a8605f4cb8d2e85eeeb3d22a6f0055295684d093778859b3329bccd
+  profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
+  profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/astra-planner.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
-  profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
-  profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
+  agents/claude-pr-reviewer.md: cc081e8b14ff7d0ad488751f5f5467ae305d129d33216078cab21758f9788095
+  agents/codex-pr-reviewer.md: 8bf4829866e61d1cb49a6c2edcca77b27fba6211a380f3481fe406e5735d401c
   agents/astra-implementer-high.md: b36d74b25971c9716715d40f7c01f7b2f3ac284b7d0e2ffa6c41e268b38d9c7d
   agents/astra-planner.md: 363a35142e6584aff5495dc379e87b1eb64d32c8eb1eea634bde9afcccb96b6c
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
@@ -73,4 +77,5 @@ checksums:
   skills/seo-foundations/SKILL.md: 9d18b861e8e3eeeb9afa2c8aaedf9084ff59c58ae3ccfa40aaffa423791b0f0f
   skills/seo-readability-pass/SKILL.md: 8adff8103f26229422ecadfe26dbf51214e8a3308b1806dc7a57901248d181d8
   skills/seo-writing-framework/SKILL.md: 0b74579154295a3021ffdf96300787c7290d41998dff97a3100bf03f52344ed0
+  skills/principled-review/SKILL.md: 9f7f9366d13fdc7dcd3d5867422e9203e18011b544b29ca9e826fadf297fb066
   skills/simple-plan/SKILL.md: f44e315d73df99f49dcda35335216181e4829733e4c6103cb4f6a875bfece6d3
