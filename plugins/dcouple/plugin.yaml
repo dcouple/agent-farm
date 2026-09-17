@@ -20,10 +20,10 @@ checksums:
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   agents/claude-pr-reviewer.md: 0a9c713c11de041a2b142a1cc32fa7a33e94e31bd23deb00be7f5b921f001f0a
   agents/codex-pr-reviewer.md: f3fcfed15b8079805f7db22d4a67108629925c32115b994cbbad0e5dfdaff4c4
-  agents/claude-worker.md: aa3b84372bdea348ec6337649cecb2b8f75736f2bcbf917561e4d56c882333a8
+  agents/claude-worker.md: ae951cf8f61b9931e21cd8b7da181b06a2fe1330ee01c6c5d180ae8958ee022c
   agents/codex-worker.md: 052166d4cf0784d2616645b0cc626ab2de716fc2fb582edc71a4b2bf1323325e
-  agents/claude-quick-worker.md: b387a5faeb877cf3e8a8ca33f04be69ae0eac97007563bbcc389f2db168ae9af
-  agents/codex-quick-worker.md: 9aa75de55121f919afe863f10338926b9cad3fb1b7fd0d8106d4b6d52e3206fb
+  agents/claude-quick-worker.md: 0ee20a8ede3f30cf2531397c5b197a0b346fae02d72d9de08868299259a8de70
+  agents/codex-quick-worker.md: 32060e630a494cda9f0908c9ac36de2dcc008e109cb69066d1a1e734a84d5c76
   agents/astra-implementer-high.md: b36d74b25971c9716715d40f7c01f7b2f3ac284b7d0e2ffa6c41e268b38d9c7d
   agents/astra-planner.md: 363a35142e6584aff5495dc379e87b1eb64d32c8eb1eea634bde9afcccb96b6c
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835

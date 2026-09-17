@@ -13,6 +13,10 @@ skills:
   - codebase-explorer
   - investigate
   - research-web
+  - plan-reviewer
+  - implementation-reviewer
+  - excalidraw-pr-diagrams
+  - cold-read
 description: Take a ticket from discussion through implementation to a prepared PR using Claude.
 subagents:
   codebase-explorer:

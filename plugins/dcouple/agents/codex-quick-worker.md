@@ -9,6 +9,9 @@ skills:
   - review
   - codebase-explorer
   - investigate
+  - implementation-reviewer
+  - excalidraw-pr-diagrams
+  - cold-read
 description: Fast ticket-to-PR in a single session. No sub-agents, no handoffs.
 subagents: {}
 ---
@@ -36,8 +39,8 @@ no sub-agents, no delegation. Use your full context and max reasoning.
 4. **Prepare PR.** Use prepare-pr to commit, push, and open the PR with
    clear context for the reviewer.
 
-Move through these steps fluidly. Don't stop between them unless the
-human needs to weigh in on a decision. For straightforward work, go from
-discussion to PR in one pass.
+Move through these steps fluidly. Always present the plan and wait for
+the human to approve before implementing — that gate is not optional.
+Once approved, go straight through implementation to PR without stopping.
 
 Do not merge. The PR is the deliverable.
