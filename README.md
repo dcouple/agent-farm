@@ -12,6 +12,12 @@ for every conversation.
 Pick a setup, point it at a repo, and Agent Farm opens your native Claude Code
 or Codex terminal with that configuration loaded.
 
+Think of each setup as a desk prepared for a job. For SEO, you might lay out site
+references, search tools, and a skill that walks through researching and improving
+a page. For presentations, you bring brand guidelines, slide tools, and a workflow
+for turning an outline into a story. Each setup keeps the relevant material close
+to the work.
+
 ## Install
 
 Requires **Node 22.15+**, macOS or Linux, and the Claude Code and/or Codex CLI
@@ -52,7 +58,7 @@ commands. `agent-farm doctor` tells you what's working and what's not.
 ### For power users
 
 ```sh
-agent-farm run planner --directory ~/repos/my-app
+agent-farm run planner
 agent-farm run implementer --workspace my-project --message "Fix the failing tests"
 ```
 
