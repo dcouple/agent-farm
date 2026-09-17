@@ -4,10 +4,13 @@
 
 **Load the right skills for each job. Keep your native terminal.**
 
-Agent Farm lets you switch between agent setups — different skills, models, and
-sub-agents — without installing everything into every conversation. Pick a
-profile, point it at a repo, and Agent Farm opens your native Claude Code or
-Codex terminal with that configuration loaded.
+Agent Farm is a harness configurator. A harness is the full working setup around
+an AI model — instructions, tools, permissions, and checks. Agent Farm lets you
+save different setups and switch between them without reinstalling everything
+for every conversation.
+
+Pick a setup, point it at a repo, and Agent Farm opens your native Claude Code
+or Codex terminal with that configuration loaded.
 
 ## Install
 
@@ -22,19 +25,27 @@ mkdir -p ~/.local/bin
 ln -s "$PWD/dist/cli.js" ~/.local/bin/agent-farm
 ```
 
-Add `~/.local/bin` to your shell's `PATH`, then run `agent-farm init`.
-
-## Three entry points
+Add `~/.local/bin` to your shell's `PATH`, then:
 
 ```sh
+agent-farm init
+```
+
+It checks your prerequisites, installs the default profiles and skills, explains
+how everything fits together, and offers to launch your first session.
+
+## Four entry points
+
+```sh
+agent-farm init         # First-time setup — the starting point
 agent-farm              # Interactive — pick a profile, create one, launch
 agent-farm help         # Reference — every command, for humans and agents
 agent-farm doctor       # Diagnostic — check prerequisites, config, profiles
 ```
 
-That's it. `agent-farm` walks you through everything interactively.
-`agent-farm help` is the single discovery point for all commands.
-`agent-farm doctor` tells you what's working and what's not.
+`agent-farm init` is where you start. After that, `agent-farm` is your
+everyday launcher. `agent-farm help` is the single discovery point for all
+commands. `agent-farm doctor` tells you what's working and what's not.
 
 ### For power users
 
@@ -59,10 +70,10 @@ flowchart LR
     T --> R["Work in the chosen repository"]
 ```
 
-- **Profile** — a named entry point that selects an agent.
-- **Agent** — model, skills, sub-agents, and instructions.
-- **Skill** — a reusable Markdown workflow with supporting files.
-- **Workspace** — MCP connections for a project or environment.
+- **Profile** — a saved setup. "When I say *planner*, I mean: use this AI, with these skills, at this thinking level." Like choosing which worker to send.
+- **Agent** — the worker definition. Which AI brain, what it knows, what instructions it follows, who it can delegate to.
+- **Skill** — a playbook. Step-by-step instructions for a kind of task: how to create a ticket, review code, or investigate a bug.
+- **Workspace** — the toolbox for a project. Which external tools (Linear, Sentry, databases) an agent can reach when working on that project.
 
 ## Configuration
 
