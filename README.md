@@ -37,8 +37,36 @@ Add `~/.local/bin` to your shell's `PATH`, then:
 agent-farm init
 ```
 
+After pulling updates, run `agent-farm plugin install` to sync new profiles.
+
 It checks your prerequisites, installs the default profiles and skills, explains
 how everything fits together, and offers to launch your first session.
+
+## Profiles
+
+Agent Farm ships with profiles ready to use. The interactive launcher shows
+them like this:
+
+```
+◆  What would you like to do?
+│  ● claude-pr-reviewer     claude · claude-opus-4-6 · high
+│  ○ codex-pr-reviewer      codex · gpt-5.5 · medium
+│  ○ implementer             codex · gpt-6-astra · medium
+│  ○ planner                 claude · claude-fable-5-1 · high
+│  ─────────────────────
+│  + Create new profile
+│  ✎ Edit a profile
+│  ⊕ Inspect a profile
+```
+
+**claude-pr-reviewer** and **codex-pr-reviewer** spawn 13 parallel sub-agents
+to review a PR across independent principles — reuse, scope, security, spec
+fidelity, and more. Each sub-agent discovers the project's conventions first.
+
+**implementer** takes a ticket through implementation, review, and QA.
+**planner** discusses intent and creates tickets and briefs.
+
+Run `agent-farm profiles list` to see all installed profiles.
 
 ## Four entry points
 
