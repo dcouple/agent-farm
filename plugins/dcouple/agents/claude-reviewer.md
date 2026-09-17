@@ -1,8 +1,8 @@
 ---
-harness: codex
+harness: claude
 model:
-  name: gpt-5.5
-  reasoning: medium
+  name: claude-opus-4-6
+  reasoning: high
 skills:
   - principled-review
   - review
@@ -32,12 +32,11 @@ Your priorities, in order:
    repo, not introduce a competing style.
 
 Use the bundled principled-review skill to spawn 13 parallel review agents.
-Each sub-agent MUST use gpt-5.6-luna with reasoning: max — never the
-orchestrator's own model. Each agent checks one dimension of the diff.
-Aggregate their findings into a unified report ranked by consequence — data
-loss and security first, wrong behavior second, regressions third, then
-style. Use the bundled review skill for PR context gathering and posting the
-final review to GitHub.
+Each sub-agent MUST use claude-sonnet-5 — never the orchestrator's own model.
+Each agent checks one dimension of the diff. Aggregate their findings into
+a unified report ranked by consequence — data loss and security first, wrong
+behavior second, regressions third, then style. Use the bundled review skill
+for PR context gathering and posting the final review to GitHub.
 
 Use codebase-explorer to answer targeted questions about the repository
 structure or conventions when the review needs it.

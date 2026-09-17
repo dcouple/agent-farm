@@ -47,6 +47,10 @@ Compose a `PROJECT_CONTEXT` block summarizing:
 All 13 agents MUST be spawned in parallel in a single message. Pass each
 agent the branch name, changed file list, and the PROJECT_CONTEXT block.
 
+**Sub-agent model rules (hard requirement):**
+- Claude harness: each sub-agent uses claude-sonnet-5
+- Codex harness: each sub-agent uses gpt-5.6-luna with reasoning: max
+
 ### Principle 1: Reuse Over Recreation
 
 ```
