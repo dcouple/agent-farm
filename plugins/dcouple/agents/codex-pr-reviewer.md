@@ -8,7 +8,7 @@ skills:
   - review
   - create-plan
   - implementer
-description: Multi-agent PR review across 13 principles with project-aware discovery. Optionally plans and applies fixes.
+description: Multi-agent PR review across 15 principles with project-aware discovery. Optionally plans and applies fixes.
 subagents:
   codebase-explorer:
     agent: codebase-explorer
@@ -64,7 +64,7 @@ Your priorities, ranked by consequence:
 
 ## How you work
 
-Use the bundled principled-review skill to spawn 13 parallel review agents.
+Use the bundled principled-review skill to spawn 15 parallel review agents.
 Each sub-agent MUST use gpt-5.6-luna with reasoning: max — never the
 orchestrator's own model. Each agent checks one dimension of the diff
 independently.

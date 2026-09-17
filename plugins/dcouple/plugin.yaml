@@ -5,6 +5,10 @@ source:
   repository: https://github.com/dcouple/skills
   commit: 1d758ea6881020bf38f5631241e7bb34583c592b
 checksums:
+  profiles/claude-quick-worker.yaml: da8c2d031dcc833e6265709c57d807c29a0145f13268edf0a66a701989c2fedb
+  profiles/codex-quick-worker.yaml: 72a14c17147157005be336db96fc35742e485a9770b9b26d564177f53a376e26
+  profiles/claude-worker.yaml: 9db71a8a9b18bf21b51eaaee58db259a40dc17b632673f974e12423c7a92b868
+  profiles/codex-worker.yaml: a4b338fd79410568606803e0e6dcb9b78c2828bcec9f692c606b469f543c0cf0
   profiles/claude-pr-reviewer.yaml: ad2ba72865b4907e6cd9ffe8b273fbbecd0ad8ce8948531b87fb104d51361801
   profiles/codex-pr-reviewer.yaml: 58fc85071a8605f4cb8d2e85eeeb3d22a6f0055295684d093778859b3329bccd
   profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
@@ -14,8 +18,12 @@ checksums:
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
-  agents/claude-pr-reviewer.md: cbcaebd49c03aa746a2b9b6631ffb61f1840f60e70a9cf03e9a5d7707d3caa8a
-  agents/codex-pr-reviewer.md: 38cd0598f3604d963a04f0217433b0ae96af3ac97136d27086861edb2e3b1d6b
+  agents/claude-pr-reviewer.md: 5a610a3d1db2bc8615fcfb9bd87c40ae513d04ab82d5e7133fe887ce811a872d
+  agents/codex-pr-reviewer.md: 879074becb581806c23f6c76f740552cb62eee9c48429e3163af6c26cfb0ad45
+  agents/claude-worker.md: ae951cf8f61b9931e21cd8b7da181b06a2fe1330ee01c6c5d180ae8958ee022c
+  agents/codex-worker.md: 052166d4cf0784d2616645b0cc626ab2de716fc2fb582edc71a4b2bf1323325e
+  agents/claude-quick-worker.md: 0ee20a8ede3f30cf2531397c5b197a0b346fae02d72d9de08868299259a8de70
+  agents/codex-quick-worker.md: 32060e630a494cda9f0908c9ac36de2dcc008e109cb69066d1a1e734a84d5c76
   agents/astra-implementer-high.md: b36d74b25971c9716715d40f7c01f7b2f3ac284b7d0e2ffa6c41e268b38d9c7d
   agents/astra-planner.md: 363a35142e6584aff5495dc379e87b1eb64d32c8eb1eea634bde9afcccb96b6c
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
@@ -77,5 +85,5 @@ checksums:
   skills/seo-foundations/SKILL.md: 9d18b861e8e3eeeb9afa2c8aaedf9084ff59c58ae3ccfa40aaffa423791b0f0f
   skills/seo-readability-pass/SKILL.md: 8adff8103f26229422ecadfe26dbf51214e8a3308b1806dc7a57901248d181d8
   skills/seo-writing-framework/SKILL.md: 0b74579154295a3021ffdf96300787c7290d41998dff97a3100bf03f52344ed0
-  skills/principled-review/SKILL.md: 9f7f9366d13fdc7dcd3d5867422e9203e18011b544b29ca9e826fadf297fb066
+  skills/principled-review/SKILL.md: a3cbd9addaa762e9b7b35c036b98b107e06e4c0121e46374d8714533ee756639
   skills/simple-plan/SKILL.md: f44e315d73df99f49dcda35335216181e4829733e4c6103cb4f6a875bfece6d3

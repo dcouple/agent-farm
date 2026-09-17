@@ -1,13 +1,13 @@
 ---
 name: principled-review
-description: Spawn 13 parallel review agents, each checking one code-quality principle with project-aware discovery.
+description: Spawn 15 parallel review agents, each checking one code-quality principle with project-aware discovery.
 argument-hint: "[branch name or PR number]"
 disable-model-invocation: true
 ---
 
 # Principled Review
 
-Review a branch or PR across 13 code-quality principles in parallel. Each
+Review a branch or PR across 15 code-quality principles in parallel. Each
 principle is checked by a dedicated sub-agent that first discovers the
 project's own conventions, then evaluates the diff against them.
 
@@ -59,9 +59,9 @@ Compose a `PROJECT_CONTEXT` block summarizing:
 - Testing patterns
 - Any project-specific review criteria
 
-## Step 3: Spawn 13 Review Agents in Parallel
+## Step 3: Spawn 15 Review Agents in Parallel
 
-All 13 agents MUST be spawned in parallel in a single message. Pass each
+All 15 agents MUST be spawned in parallel in a single message. Pass each
 agent the branch name, changed file list, and the PROJECT_CONTEXT block.
 
 **Sub-agent model rules (hard requirement):**
@@ -517,9 +517,122 @@ missing controls with file:line, auth gaps, secret exposures,
 dangerous defaults, recommendations.
 ```
 
+### Principle 14: Test Integrity
+
+```
+Review the diff for TEST INTEGRITY — does each test actually prove
+something about real behavior?
+
+PROJECT_CONTEXT: {project_context}
+Changed files: {file_list}
+
+THE PRINCIPLE: A test exists to catch a real regression. A test that
+passes whether the code works or not is worse than no test — it gives
+false confidence and costs maintenance. Every test should answer: "if
+production broke in this way, would this test fail?"
+
+WHAT TO CHECK:
+1. Get the full diff: git diff {diff_range}
+2. Read every new or modified test file completely
+3. For each test, check:
+
+   MOCK THEATER: Is the test mocking so aggressively that it only
+   proves the mock works? Signs:
+   - Mocking the thing being tested (testing that a stub returns what
+     you told it to return)
+   - Mocking every dependency so the test exercises zero real code paths
+   - Assertions that check the mock was called, not that the behavior
+     is correct
+   - A test that would still pass if you deleted the implementation
+
+   MEANINGLESS ASSERTIONS: Does the assertion prove anything?
+   - Checking truthiness instead of specific values
+   - "expect(result).toBeDefined()" on something that can never be
+     undefined
+   - Snapshot tests on volatile output (timestamps, IDs, random values)
+   - Assertions that restate the setup ("set X to 5, assert X is 5")
+
+   DEAD ON ARRIVAL: Would this test catch a regression?
+   - Flip the logic in the code under test — does the test fail? If
+     you can't tell from reading it, flag it
+   - Tests with no assertions or only try/catch with no rethrow
+   - Tests that catch errors and assert nothing about them
+   - Commented-out assertions or skipped tests committed as passing
+
+   COPY-PASTE TESTS: Tests that are slight variations of each other
+   with only one value changed, when a parameterized/table-driven test
+   would be clearer and more maintainable
+
+If the diff contains no test changes, report N/A.
+
+OUTPUT: PASS/WARN/FAIL/N/A status, theater tests with file:line and
+what they actually prove (nothing), meaningless assertions, tests that
+would pass with broken code, recommendations for what each test should
+assert instead.
+```
+
+### Principle 15: Test Strategy
+
+```
+Review the diff for TEST STRATEGY — are we testing the right things,
+at the right level, without waste?
+
+PROJECT_CONTEXT: {project_context}
+Changed files: {file_list}
+
+THE PRINCIPLE: Good test strategy means testing what matters at the
+cheapest level that still proves it. The critical user-facing path
+needs coverage. Internal implementation details don't. Redundant tests
+that duplicate what the type system or another test already covers are
+wasted lines of code.
+
+WHAT TO CHECK:
+1. Get the full diff: git diff {diff_range}
+2. Identify what the PR changes functionally — the actual behaviors
+   that could break in production
+3. Check test coverage strategy:
+
+   MISSING CRITICAL COVERAGE: What user-facing behavior changed but
+   has no test?
+   - New API endpoints with no integration test
+   - New UI flows with no end-to-end or component test
+   - Error paths that could affect users (payment failures, auth
+     errors, data loss scenarios) with no test
+   - Edge cases explicitly handled in the code but not tested
+
+   WRONG LEVEL: Is the test at the right altitude?
+   - Unit-testing a database query by mocking the database (should be
+     an integration test against a real DB or in-memory equivalent)
+   - End-to-end test for pure logic that could be a unit test
+   - Testing framework internals instead of application behavior
+
+   REDUNDANT COVERAGE: Is this test proving something already proven?
+   - A test that checks the same thing a TypeScript type already
+     enforces
+   - Multiple tests for the same behavior at different levels with no
+     additional confidence gained
+   - Tests for trivial getters/setters or pass-through functions
+   - Tests that duplicate what the project's lint rules already catch
+
+   PRODUCTION FIDELITY: Does the test environment reflect reality?
+   - Test data that's nothing like production data (single-character
+     strings, sequential IDs starting at 1, empty optional fields)
+   - Missing concurrency — testing a concurrent system sequentially
+   - Environment differences that would hide real bugs (different DB
+     engine, disabled auth, relaxed validation)
+
+If the diff contains no test changes AND no testable behavior changes,
+report N/A. If behavior changed but no tests were added, that's a
+finding.
+
+OUTPUT: PASS/WARN/FAIL/N/A status, missing critical coverage (what
+should be tested and isn't), wrong-level tests, redundant tests that
+should be deleted, production fidelity gaps, recommendations.
+```
+
 ## Step 4: Aggregate Results
 
-After all 13 agents complete, aggregate into a final report:
+After all 15 agents complete, aggregate into a final report:
 
 ```markdown
 # Principled Review: {branch}
@@ -541,6 +654,8 @@ After all 13 agents complete, aggregate into a final report:
 | 11 | Data Layer Consistency | {status} | {count} |
 | 12 | Spec Fidelity | {status} | {count} |
 | 13 | Security Boundaries | {status} | {count} |
+| 14 | Test Integrity | {status} | {count} |
+| 15 | Test Strategy | {status} | {count} |
 
 ## Critical Issues (Must Fix)
 {Aggregate critical issues from all agents}
@@ -562,3 +677,7 @@ After all 13 agents complete, aggregate into a final report:
 - Principle 12 reports SKIPPED when no spec/issue is found
 - Mismatched data-layer patterns (Principle 11) are CRITICAL severity
 - Security boundary gaps (Principle 13) with no control are CRITICAL severity
+- Principles 14, 15 report N/A when the diff contains no test changes and
+  no testable behavior changes
+- Test theater (Principle 14) — tests that pass with broken code — is a
+  CRITICAL finding
