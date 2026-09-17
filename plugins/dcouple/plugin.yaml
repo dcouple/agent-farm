@@ -18,8 +18,8 @@ checksums:
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
-  agents/claude-pr-reviewer.md: 0a9c713c11de041a2b142a1cc32fa7a33e94e31bd23deb00be7f5b921f001f0a
-  agents/codex-pr-reviewer.md: f3fcfed15b8079805f7db22d4a67108629925c32115b994cbbad0e5dfdaff4c4
+  agents/claude-pr-reviewer.md: 5a610a3d1db2bc8615fcfb9bd87c40ae513d04ab82d5e7133fe887ce811a872d
+  agents/codex-pr-reviewer.md: 879074becb581806c23f6c76f740552cb62eee9c48429e3163af6c26cfb0ad45
   agents/claude-worker.md: ae951cf8f61b9931e21cd8b7da181b06a2fe1330ee01c6c5d180ae8958ee022c
   agents/codex-worker.md: 052166d4cf0784d2616645b0cc626ab2de716fc2fb582edc71a4b2bf1323325e
   agents/claude-quick-worker.md: 0ee20a8ede3f30cf2531397c5b197a0b346fae02d72d9de08868299259a8de70
