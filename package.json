@@ -19,6 +19,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
+    "@clack/prompts": "^1.8.1",
     "smol-toml": "1.8.0",
     "yaml": "2.9.1"
   },
