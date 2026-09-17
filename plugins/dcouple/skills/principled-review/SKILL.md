@@ -1,13 +1,13 @@
 ---
 name: principled-review
-description: Spawn 11 parallel review agents, each checking one code-quality principle with project-aware discovery.
+description: Spawn 13 parallel review agents, each checking one code-quality principle with project-aware discovery.
 argument-hint: "[branch name or PR number]"
 disable-model-invocation: true
 ---
 
 # Principled Review
 
-Review a branch or PR across 11 code-quality principles in parallel. Each
+Review a branch or PR across 13 code-quality principles in parallel. Each
 principle is checked by a dedicated sub-agent that first discovers the
 project's own conventions, then evaluates the diff against them.
 
@@ -42,9 +42,9 @@ Compose a `PROJECT_CONTEXT` block summarizing:
 - Testing patterns
 - Any project-specific review criteria
 
-## Step 3: Spawn 11 Review Agents in Parallel
+## Step 3: Spawn 13 Review Agents in Parallel
 
-All 11 agents MUST be spawned in parallel in a single message. Pass each
+All 13 agents MUST be spawned in parallel in a single message. Pass each
 agent the branch name, changed file list, and the PROJECT_CONTEXT block.
 
 ### Principle 1: Reuse Over Recreation
@@ -146,8 +146,38 @@ WHAT TO CHECK:
 6. Check for inconsistent async/callback patterns vs what the codebase uses
 7. Verify file structure conventions are followed
 
+SMELL BASELINE (always applies, even when the repo documents nothing —
+from Fowler's Refactoring ch.3; repo standards override these):
+- Mysterious Name: a function/variable/type whose name doesn't reveal
+  what it does. Rename it.
+- Duplicated Code: the same logic shape in more than one hunk or file.
+  Extract and share.
+- Feature Envy: a method reaching into another object's data more than
+  its own. Move it.
+- Data Clumps: the same few fields/params travelling together (a type
+  wanting to be born). Bundle into one type.
+- Primitive Obsession: a primitive standing in for a domain concept.
+  Give the concept its own type.
+- Repeated Switches: the same switch/if-cascade on the same type in
+  multiple places. Replace with polymorphism or a shared map.
+- Shotgun Surgery: one logical change forces scattered edits across
+  many files. Gather what changes together.
+- Divergent Change: one file edited for several unrelated reasons.
+  Split by reason.
+- Speculative Generality: abstraction or hooks for needs the spec
+  doesn't have. Delete until a real need shows.
+- Message Chains: long a.b().c().d() navigation. Hide behind one method.
+- Middle Man: a class that mostly delegates. Cut it.
+- Refused Bequest: a subclass that ignores most of what it inherits.
+  Use composition.
+
+Each smell is a labelled heuristic, not a hard violation. Skip anything
+linting or formatting already enforces. A documented repo standard
+always wins over the baseline.
+
 OUTPUT: PASS/WARN/FAIL status, anti-patterns found with file:line
-references, convention violations, recommendations.
+references, convention violations, smell findings (labelled as judgement
+calls), recommendations.
 ```
 
 ### Principle 5: Single Way to Do Things (MOST IMPORTANT)
@@ -381,9 +411,94 @@ references, exemplar files used as reference, divergent patterns found,
 recommendations.
 ```
 
+### Principle 12: Spec Fidelity
+
+```
+Review the diff for SPEC FIDELITY — does this change actually implement
+what was asked for?
+
+PROJECT_CONTEXT: {project_context}
+Changed files: {file_list}
+
+THE PRINCIPLE: A change can be beautifully written and still wrong if it
+doesn't match the spec. This axis is deliberately separate from code
+quality so a clean code pass cannot hide a wrong feature.
+
+WHAT TO CHECK:
+1. Get the full diff: git diff main...HEAD
+2. Find the spec source — look for:
+   a. Issue references in commit messages (#123, Closes #45, etc.)
+      and fetch them via gh issue view
+   b. PR description and linked issues
+   c. Spec files under docs/, specs/, .scratch/ matching the branch
+3. Write one line: "this change claims to X"
+4. Check every requirement in the spec against the diff:
+   a. Requirements the spec asked for that are missing or partial
+   b. Behavior in the diff that wasn't asked for (scope creep)
+   c. Requirements that look implemented but where the implementation
+      looks wrong
+5. Quote the spec line for each finding
+
+If no spec/issue can be found, report "no spec available" and skip —
+do not invent requirements.
+
+OUTPUT: PASS/WARN/FAIL/SKIPPED status, the one-line claim, missing
+requirements with spec quotes, scope creep findings, wrong
+implementations with spec quotes, recommendations.
+```
+
+### Principle 13: Security Boundaries
+
+```
+Review the diff for SECURITY BOUNDARY violations.
+
+PROJECT_CONTEXT: {project_context}
+Changed files: {file_list}
+
+THE PRINCIPLE: Every value that originates outside the process — user
+input, client data, LLM output, webhook, file, external API — crosses
+a trust boundary. Each boundary needs a control at the sink. Map
+boundaries first, then check controls.
+
+WHAT TO CHECK:
+1. Get the full diff: git diff main...HEAD
+2. List every value in the diff that originates outside the process as
+   source → sink (e.g. "query param id → SQL WHERE", "form field →
+   HTML render", "webhook body → business logic")
+3. For each boundary, verify a control exists:
+   - SQL/queries: parameterized, never string-concatenated
+   - Shell/subprocess: array-arg APIs, no string-built commands
+   - File paths: join + canonicalize + prefix check (traversal defense)
+   - HTML rendering: escaped by default; any raw-HTML sink needs
+     justification
+   - URLs the server fetches: scheme + host validated (SSRF defense)
+   - Deserialization: try/catch + shape validation
+4. For each mutating endpoint, verify:
+   - Authentication: WHO is calling (check is in code, not assumed)
+   - Authorization: MAY they touch THIS object (ownership/membership
+     check on the specific row, not just "is logged in")
+   - Client-supplied identity/scope fields are never trusted
+5. Check for secrets:
+   - No hardcoded tokens, keys, or credentials
+   - No secrets in client bundles or logs
+   - No raw provider errors exposed to users
+6. Flag dangerous defaults:
+   - Token comparison with == instead of constant-time compare
+   - Missing rate limiting on expensive endpoints
+   - CORS * on authenticated routes
+   - Cookies without httpOnly/secure/sameSite
+
+A boundary with no control is a finding. A finding needs the source,
+sink, and what control is missing.
+
+OUTPUT: PASS/WARN/FAIL status, boundary map (source → sink → control),
+missing controls with file:line, auth gaps, secret exposures,
+dangerous defaults, recommendations.
+```
+
 ## Step 4: Aggregate Results
 
-After all 11 agents complete, aggregate into a final report:
+After all 13 agents complete, aggregate into a final report:
 
 ```markdown
 # Principled Review: {branch}
@@ -403,6 +518,8 @@ After all 11 agents complete, aggregate into a final report:
 | 9 | Circular Dependencies | {status} | {count} |
 | 10 | Self-Contained Components | {status} | {count} |
 | 11 | Data Layer Consistency | {status} | {count} |
+| 12 | Spec Fidelity | {status} | {count} |
+| 13 | Security Boundaries | {status} | {count} |
 
 ## Critical Issues (Must Fix)
 {Aggregate critical issues from all agents}
@@ -421,4 +538,6 @@ After all 11 agents complete, aggregate into a final report:
 - Principle 5 (Single Way) violations are weighted most heavily
 - Principles 6, 7, 11 report N/A when their domain has no changes — N/A
   does not affect the overall score
+- Principle 12 reports SKIPPED when no spec/issue is found
 - Mismatched data-layer patterns (Principle 11) are CRITICAL severity
+- Security boundary gaps (Principle 13) with no control are CRITICAL severity

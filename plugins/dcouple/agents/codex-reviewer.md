@@ -1,8 +1,8 @@
 ---
-harness: claude
+harness: codex
 model:
-  name: claude-opus-4-6
-  reasoning: high
+  name: gpt-5.5
+  reasoning: medium
 skills:
   - principled-review
   - review
