@@ -1,64 +1,73 @@
 ---
 name: astra-ticket
-description: Take a GitHub ticket through Astra planning, Luna implementation, PR creation, optional Sol QA, Luna/Astra reviews, and bounded QA revalidation.
+description: Take a GitHub ticket through Astra planning, Luna implementation, concurrent checks and focused reviews, optional Sol QA, and a final current-head PR review.
 ---
 
 # Astra Ticket
 
 Input: a GitHub issue URL or `owner/repo#number`.
 
-- Before task work, verify the active orchestrator is GPT-6 Astra
-  (`gpt-6-astra`) using authoritative runtime/session metadata.
-- Stop if different or unverified; defaults and user assertions are not proof.
-- Except QA, use `gpt-5.6-luna` at `max` for every subagent.
-  Verify model/effort support before spawning; stop if unavailable.
-  Never substitute another model.
-- Set model and effort explicitly on every spawn; use fresh context when
-  required. Pass applicable workflow overrides, ticket, workspace, and artifacts.
-- Reuse passing checks at the same commit; after changes, rerun affected checks unless a concrete finding requires broader validation.
-- Before each review and final handoff, inspect human/bot feedback and CI; address actionable findings, report unfinished checks after five minutes, and claim ready only with actionable threads resolved and required checks passing on the final SHA.
-- For low-risk changes whose correctness is quickly verifiable with deterministic checks—such as copy, translations, docs, formatting, metadata, or simple config—mark internal Luna/Astra reviews (steps 6–8) skipped and default step 5 QA to skipped unless requested; retain applicable checks, affected-flow retests, final-head CI, and available GitHub feedback handling.
+## Execution contract
 
-1. Read the issue/comments and relevant artifacts in repo `TMP/` or `tmp/`,
-   `$TMPDIR`, and `/tmp`; check stale context against the ticket and code.
-   If Grain is connected, reuse the linked workspace. New work defaults to `Development Artifacts/<org>/<repo>`; explicit destinations win. Clarify ambiguous names.
-   Verify organization, folder, and audience; return the location with the link. Rename the workspace for the PR, retaining its ID and shared folder. Without Grain, continue locally.
-   When Grain is connected, keep all development artifacts in one canonical task workspace in that folder, retain local copies, and pass its workspace ID to every subagent.
-2. As Astra, read `simple-plan` and use its planning steps to investigate and
-   produce a concise plan. Preserve the ticket's intent, constraints, and scope.
-   Use `create-ticket`'s intent guidance; update the linked brief with the approach and tradeoffs before coding.
-   Reuse Socrates' verdict while its premise and evidence hold. Otherwise dispatch fresh Luna Max [Socrates](../create-ticket/references/socrates.md) with the ticket, plan, and repository evidence. Resolve material findings with the user; if existing behavior meets the outcome, finish with evidence and guidance.
-   Autonomously derive detailed specs: files, changes, dependencies, edge cases,
-   acceptance criteria, and checks. Save the plan/specs under task-specific `tmp/`.
-   This workflow authorizes proceeding without `simple-plan`'s routine approval pause once premise findings are resolved.
-3. Spawn Luna Max implementers with the ticket, plan, specs, and artifacts;
-   sequence dependent tasks, wait for completion, and inspect work/check results.
-4. Spawn a Luna Max agent to use `prepare-pr` and open or update the PR.
-   Pass explicit code/branch-preparation and draft-PR overrides to `prepare-pr`; after QA (or an explicit skip) and internal reviews finish, mark ready, then check any triggered automated reviews and final-head CI and address actionable feedback before handoff.
-5. Before reviews, ask asynchronously whether to run end-to-end PR QA; state
-   it will run after 60 seconds without a reply. Yes starts QA; no skips it.
-   Use a timed, interruptible wait; do not treat a pending question as silence
-   before 60 seconds elapse. If timed input is unavailable, wait for an answer.
-   For QA, spawn GPT-5.6 Sol (`gpt-5.6-sol`) at reasoning effort `medium`
-   using `pr-test-automation`; verify model support without substitutions.
-   Delegate QA bug fixes and pushes to Luna Max, then have Sol rerun affected
-   flows before reviews. Report blocked QA honestly; never call it a pass.
-   Capture QA screenshots; when Grain is connected, save and verify media/reports there instead of release assets; otherwise follow `pr-test-automation`'s durable-publication behavior.
-   Carry the QA handoff into the final brief, separating future improvements from current blockers.
-   Return the same verified evidence link in the final handoff; explicitly report unavailable capture or publication rather than claiming upload.
-6. Run up to three fresh Luna Max reviews sequentially; stop after a clean review. Use
-   the `review` skill on the current PR. After each review, delegate actionable
-   fixes, checks, and pushes to Luna Max before starting the next review.
-   For all reviews, use `COMMENT` when authenticated as the PR author.
-7. Review the resulting PR yourself as Astra, using the same `review` skill.
-   Delegate any fixes to Luna Max, then verify those fixes yourself.
-8. If review fixes invalidate completed QA, Sol retests affected flows, then
-   one fresh Luna Max agent reviews the fixes covered by that rerun.
-   Report remaining findings; do not restart the review loops.
-9. Return the PR URL, QA/check results with tested commits, and open findings. Do not merge.
-   After confirming an authorized or existing merge, mark the Grain task complete; move its workspace to the configured completed-work destination when supported. Preserve IDs, shares, and the shared folder; verify location/links and report move failures.
-   After QA (or a skip), reviews, and final-head CI, extend the same brief from the published PR with before/after behavior and verified results. Retain intent, sources, and decisions; verify content and reciprocal links, then open Grain last.
+- Verify the parent is `gpt-6-astra` using authoritative runtime/session metadata. Defaults and user assertions are not proof; stop if different or unverified.
+- Use `gpt-5.6-luna` at `max` for every child except QA, which uses `gpt-5.6-sol` at `medium`. Verify support and set model/effort explicitly. Never substitute models.
+- Give every child its role, ticket/plan, exact base and head SHA, workspace, skill paths, overrides, evidence destination, and output contract. Instruct every child never to archive any thread and never to merge. Only the parent may archive completed children.
+- Keep one code writer and one serialized fix queue. Reviewers and evidence collectors do not edit code, commit, push, rebase, or change PR readiness. Finish branch preparation before freezing the validation SHA.
+- Run independent work concurrently, using waves when slots are limited. Preserve separate reviewer contexts and assignments; do not collapse them into a single omnibus review or promise a fixed completion time.
+- Keep a check/evidence ledger with command or review identity, SHA, result, and link/path. Reuse passing checks on the same SHA. On later SHAs, rerun affected checks and record why unaffected evidence remains applicable; never label an old result as a new run.
+- Isolate checks and QA that mutate dependencies, generated output, native modules, app data, or ports. Separate worktrees alone do not prove isolation when caches or dependencies are shared. Use independent environments, or serialize conflicting operations; avoid Node/Electron ABI and build-output collisions.
+- Read bundled sibling skills and criteria relative to this skill. These workflow overrides take precedence; report missing requirements.
 
-Preserve required tracker publication, local paths, and evidence contracts alongside Grain.
-Use the bundled sibling `../review/SKILL.md` and its `CRITERIA.md`, resolving paths from this skill's directory.
-Read referenced criteria; report missing skills. These workflow overrides take precedence.
+## 1. Establish intent and prepare the branch
+
+Read the issue/comments, current code, and relevant task artifacts in repo `TMP/` or `tmp/`, `$TMPDIR`, and `/tmp`. Check stale context against current evidence.
+
+As Astra, follow `simple-plan`'s planning steps and `create-ticket`'s intent guidance. Offer `ui-mockup` for UI work and carry approved designs into the plan. Preserve the user's mockup/design decisions before implementation. Update the linked brief with intent, approach, tradeoffs, acceptance criteria, and checks; save detailed specs under task-specific `tmp/`.
+
+Reuse Socrates' verdict while its premise and evidence hold. Otherwise dispatch fresh Luna Max [Socrates](../create-ticket/references/socrates.md). Resolve material questions with the user before coding; if existing behavior meets the outcome, finish with evidence and guidance. This workflow waives `simple-plan`'s routine approval pause once premise findings are resolved; it does not waive unresolved intent or design decisions.
+
+Delegate implementation and fixes to Luna Max workers. Sequence dependent work. Use `prepare-pr` with explicit code/branch-preparation and draft-PR overrides; finish commits/rebase, push, and open/update the draft PR. Freeze the resulting head SHA and base for the batch. The PR may begin with an honest provisional description; its final prose and evidence are prepared below.
+
+For deterministic low-risk copy, translations, docs, formatting, metadata, or simple config, explicitly skip the three focused internal reviews and default QA to skipped unless requested. Retain applicable checks, affected-flow tests, feedback handling, final-head CI, and the final review gate below. Assess actual risk, not file extension alone.
+
+## 2. Start independent validation lanes
+
+For other work, ask asynchronously whether to run end-to-end QA and state it starts after 60 seconds without a reply. Yes starts QA; no skips it. Use a timed, interruptible wait while independent lanes work; a pending question is not silence until the deadline. If timed input is unavailable, await the answer before dispatching QA, without holding up independent work.
+
+Launch these independent assignments against the frozen SHA. The parent may monitor CI and collect automated feedback directly rather than spending child slots on polling. With limited slots, start latency-heavy checks/QA early, then fill freed slots with the remaining lanes:
+
+- **Checks and CI — Luna Max:** run applicable repository checks and monitor required CI. Own the shared check ledger; reviewers consume its evidence instead of each repeating lint/build/test. Reviewers may request a specific missing check.
+- **QA — Sol Medium, if authorized/defaulted:** use `pr-test-automation` to exercise relevant flows in an isolated environment and capture screenshots and reports. Return tested SHA, failures, blockers, and verified evidence links. QA does not fix code; route fixes to the parent queue. Override the delegated skill’s PR-description, comment, and shared-workspace publication steps: return draft QA Markdown plus captured media/report paths to the parent without publishing. The serialized publication owner saves the artifacts, verifies their links, refreshes the current PR body/comments, and applies the QA handoff with the final prose, preserving unrelated human edits.
+- **PR prose and evidence — Luna Max:** use `prepare-pr`'s writing guidance to draft the final description, visuals, and evidence index from the ticket, diff, and available results. Override its branch/build/readiness actions for this lane. Reuse QA screenshots; do not run duplicate UI QA or capture a second screenshot set for prose. Mark pending results honestly and finalize when evidence arrives. Keep draft edits local for one serialized publication owner.
+- **Correctness and data — fresh Luna Max reviewer:** inspect changed algorithms, state transitions, lifecycle/concurrency, persistence, migrations, and data loss/corruption risks. Return concrete defects and missing evidence within this scope.
+- **Integration and security — fresh Luna Max reviewer:** inspect cross-module/API/IPC contracts, caller wiring, compatibility, platform/runtime behavior, permissions/trust boundaries, and security implications of changed paths.
+- **Intent and test coverage — fresh Luna Max reviewer:** compare issue, approved plan/design, and acceptance criteria with actual behavior; inspect missing integration, user-visible regressions, edge cases, and whether tests prove the outcome. Consume QA evidence as it arrives without rerunning QA.
+- **Automated feedback collection — Luna Max:** inspect all human/bot reviews, inline threads, check results, and expected automated-review runs; correlate each with its SHA. Distinguish completed zero-findings review from missing, pending, failed, or stale review. Return findings and review status, not a speculative pass.
+
+Use configured roles and the bundled `review/SKILL.md` and `CRITERIA.md` for focused reviewers. Override broad duplicate checks and out-of-scope review duties with the assignments above. Each reviewer receives raw evidence and returns its own assessment before seeing peer conclusions. Report reviewed SHA, scope, findings with file/line and impact, and unresolved uncertainty. Focused reviewers return findings to the parent by default. If authorized to post a scoped review, always use `COMMENT`, regardless of account identity; never post `APPROVE` or `REQUEST_CHANGES` from a focused lane. Whole-PR judgments belong to the final holistic gate, and the PR author must still use `COMMENT` there.
+
+## 3. Reconcile and fix once
+
+Astra reconciles the batch: deduplicate findings, resolve conflicts against evidence, distinguish blockers from suggestions, and create one ordered fix queue. This replaces the mandatory extra serial Astra code review; the parent still owns judgment and readiness.
+
+Delegate fixes to one Luna Max writer at a time. After each coherent fix set, push and record the new SHA. Rerun affected checks, have Sol retest affected flows when QA evidence is invalidated, and return material fixes to the relevant reviewer scope. A tiny local fix does not restart all three reviews; broaden only for changed contracts, scope, or concrete unresolved risk. New failures return to the same queue. Keep at most three remediation passes for the agreed scope. If findings persist or work expands, report the remaining blocker/decision instead of restarting an unbounded loop.
+
+Refresh the final PR prose from verified results and reuse the same evidence links. Preserve the requested prose cold-read from `prepare-pr` as a bounded writing check, not another code review. Serialize publication and verify saved content.
+
+## 4. Require a final holistic result on the final head
+
+Once internal fixes, affected validation, and QA or its explicit skip are complete, mark the PR ready when appropriate. This transition may trigger automated review: inspect the resulting run and wait for its terminal result before handoff.
+
+Require the expected automatic PR reviewer to assess the complete final diff at the current head SHA. Record reviewer/run identity, SHA, terminal status, and result. A verified completed review with zero findings is a result; no comment, an old review, a pending run, or a failed run is not. If the completed result predates fixes, request/wait for the current-head result through the supported mechanism.
+
+If expected automation is absent or unavailable, explicitly use one fresh independent Luna Max holistic reviewer on the final diff, ticket/plan, and validation evidence; label this fallback and its reason. If neither a verified automatic result nor this fallback can be obtained, report the final gate blocked. Do not silently waive it. This final fallback also applies to the low-risk path when automatic review is unavailable.
+
+Route actionable final-review or human/bot findings through the same fix queue. After further code changes, refresh affected validation and obtain a final holistic result for the new head. Do not repeat the whole focused batch unless the changed scope warrants it.
+
+Before handoff, read the current head, required CI, and all feedback again. Claim ready only when required checks pass on that head, actionable feedback is resolved, and the final holistic gate has a verified result. If checks/review remain pending after five minutes, report their exact state and continue waiting where feasible; elapsed time never counts as success. Do not merge.
+
+## Artifacts and handoff
+
+When Grain is connected, reuse one canonical task workspace in `Development Artifacts/<org>/<repo>` unless the user chose another destination. Verify organization, folder, audience, and links; preserve workspace ID and shared folder, retain local copies, and pass storage rules to every child. Rename for the PR without replacing identity. Save QA media/reports there instead of release assets and verify publication. Without Grain, continue with the called skills' local/tracker and durable-publication contracts. Report failed or unavailable capture/publication honestly.
+
+Extend the same intent brief with final before/after behavior, decisions, verified results, and reciprocal PR/evidence links. Return PR URL, tested/reviewed SHAs, QA/check/final-review status, the same verified evidence links, and open findings; separate future improvements from blockers. Open Grain last when connected. Only after confirming an authorized or existing merge, mark the Grain task complete and move it to the configured completed destination when supported; preserve identity/shares and report failures.

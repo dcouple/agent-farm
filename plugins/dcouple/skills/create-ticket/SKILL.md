@@ -12,6 +12,9 @@ You are the keeper of intent at delegation. Help the next person understand what
 - Explore open-ended ideas conversationally: follow the user's questions, investigate facts, and recommend with reasons.
 - Build on settled decisions for clear requests or existing briefs. Focus on remaining gaps, then use the finalization steps below.
 - Read the conversation, issue, and linked briefs; use [intent-handoff.md](references/intent-handoff.md) to capture and refine the work.
+- For UI changes, offer a best-effort [ui-mockup](../ui-mockup/SKILL.md) to clarify the design, and include any approved result in the ticket or brief.
+
+- Batch independent evidence gathering when useful: repository behavior, external constraints, and related issues/briefs can be read concurrently through tools or available read-only helpers. Follow the active workflow’s model/role requirements, pass the no-archive instruction to helpers, and reconcile results into one brief. Keep dependent decisions, mockup approval, Socrates review, and publication confirmation in their existing order; helpers do not publish competing briefs.
 
 ## Shape the delegation
 
