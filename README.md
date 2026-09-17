@@ -22,19 +22,27 @@ mkdir -p ~/.local/bin
 ln -s "$PWD/dist/cli.js" ~/.local/bin/agent-farm
 ```
 
-Add `~/.local/bin` to your shell's `PATH`, then run `agent-farm init`.
-
-## Three entry points
+Add `~/.local/bin` to your shell's `PATH`, then:
 
 ```sh
+agent-farm init
+```
+
+It checks your prerequisites, installs the default profiles and skills, explains
+how everything fits together, and offers to launch your first session.
+
+## Four entry points
+
+```sh
+agent-farm init         # First-time setup — the starting point
 agent-farm              # Interactive — pick a profile, create one, launch
 agent-farm help         # Reference — every command, for humans and agents
 agent-farm doctor       # Diagnostic — check prerequisites, config, profiles
 ```
 
-That's it. `agent-farm` walks you through everything interactively.
-`agent-farm help` is the single discovery point for all commands.
-`agent-farm doctor` tells you what's working and what's not.
+`agent-farm init` is where you start. After that, `agent-farm` is your
+everyday launcher. `agent-farm help` is the single discovery point for all
+commands. `agent-farm doctor` tells you what's working and what's not.
 
 ### For power users
 
