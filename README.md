@@ -60,17 +60,12 @@ Run `agent-farm help run` for all flags.
 
 ## How it works
 
-```mermaid
-flowchart LR
-    P["Profile<br/>Choose an agent"] --> A["Agent definition<br/>Harness · model · instructions"]
-    S["Shared skills<br/>References and assets"] --> B["Agent Farm<br/>Generate a launch bundle"]
-    A --> B
-    C["Child agent definitions"] --> B
-    W["Optional workspace<br/>MCP connections"] --> B
-    B --> G["Target repository<br/>.agent-farm/generated/"]
-    G --> T["Native Claude Code or Codex TUI"]
-    T --> R["Work in the chosen repository"]
-```
+![Pixel-art workflow: choose a profile, assemble a launch bundle with shared skills, child agents, and optional workspace connections, write it to the repository, and open the native terminal](docs/assets/how-it-works-pixel-farm.png)
+
+Choose a profile to select an agent's harness, model, and instructions. Agent Farm
+combines that definition with shared skills, child agent definitions, and optional
+workspace MCP connections into a launch bundle in `.agent-farm/generated/` in the
+target repository, then opens Claude Code or Codex to work there.
 
 - **Profile** — a saved setup. "When I say *planner*, I mean: use this AI, with these skills, at this thinking level." Like choosing which worker to send.
 - **Agent** — the worker definition. Which AI brain, what it knows, what instructions it follows, who it can delegate to.
