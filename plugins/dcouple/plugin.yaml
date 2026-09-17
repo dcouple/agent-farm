@@ -5,12 +5,12 @@ source:
   repository: https://github.com/dcouple/skills
   commit: 1d758ea6881020bf38f5631241e7bb34583c592b
 checksums:
-  profiles/claude-pr-reviewer.yaml: ad2ba72865b4907e6cd9ffe8b273fbbecd0ad8ce8948531b87fb104d51361801
-  profiles/codex-pr-reviewer.yaml: 58fc85071a8605f4cb8d2e85eeeb3d22a6f0055295684d093778859b3329bccd
-  profiles/claude-worker.yaml: 9db71a8a9b18bf21b51eaaee58db259a40dc17b632673f974e12423c7a92b868
-  profiles/codex-worker.yaml: a4b338fd79410568606803e0e6dcb9b78c2828bcec9f692c606b469f543c0cf0
   profiles/claude-quick-worker.yaml: da8c2d031dcc833e6265709c57d807c29a0145f13268edf0a66a701989c2fedb
   profiles/codex-quick-worker.yaml: 72a14c17147157005be336db96fc35742e485a9770b9b26d564177f53a376e26
+  profiles/claude-worker.yaml: 9db71a8a9b18bf21b51eaaee58db259a40dc17b632673f974e12423c7a92b868
+  profiles/codex-worker.yaml: a4b338fd79410568606803e0e6dcb9b78c2828bcec9f692c606b469f543c0cf0
+  profiles/claude-pr-reviewer.yaml: ad2ba72865b4907e6cd9ffe8b273fbbecd0ad8ce8948531b87fb104d51361801
+  profiles/codex-pr-reviewer.yaml: 58fc85071a8605f4cb8d2e85eeeb3d22a6f0055295684d093778859b3329bccd
   profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
