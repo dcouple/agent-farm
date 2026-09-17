@@ -707,7 +707,11 @@ export function helpCommand(query?: string) {
     if (cmd.examples?.length) {
       console.log('');
       console.log(`  ${bold('Examples:')}`);
-      for (const e of cmd.examples) console.log(`    ${dim('$')} ${e}`);
+      for (const e of cmd.examples) {
+        if (!e) { console.log(''); continue; }
+        if (e.startsWith('#')) { console.log(`    ${dim(e)}`); continue; }
+        console.log(`    ${dim('$')} ${e}`);
+      }
     }
     console.log('');
     return;

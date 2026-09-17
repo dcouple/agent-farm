@@ -123,9 +123,15 @@ export const commands: Command[] = [
     name: 'mcp login',
     usage: 'agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex',
     group: 'configure',
-    description: "Sign in to a remote MCP connection using the native harness's OAuth flow. Run once per connection per harness.",
+    description: "Sign in to a remote MCP connection using the native harness's OAuth flow. Run once per connection per harness. After login, launch with --workspace to use the connection.",
     examples: [
-      'agent-farm mcp login linear --workspace my-project --harness codex',
+      '# Authenticate each MCP connection once per harness:',
+      'agent-farm mcp login linear --workspace bloomtext --harness codex',
+      'agent-farm mcp login sentry --workspace bloomtext --harness codex',
+      'agent-farm mcp login posthog --workspace bloomtext --harness claude',
+      '',
+      '# Then launch with the workspace:',
+      'agent-farm run astra-planner --workspace bloomtext',
     ],
   },
   {
