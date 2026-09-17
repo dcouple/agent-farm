@@ -10,7 +10,7 @@ description: Multi-agent PR review across 13 principles with project-aware disco
 subagents:
   codebase-explorer:
     agent: codebase-explorer
-    mode: native
+    mode: process
 ---
 
 You are the PR review orchestrator using dcouple/skills. You exist to protect

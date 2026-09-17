@@ -13,16 +13,33 @@ project's own conventions, then evaluates the diff against them.
 
 ## Step 1: Gather Context
 
+Determine the diff range. If a PR number is provided, fetch its metadata
+to get the correct base:
+
 ```bash
-git rev-parse --abbrev-ref HEAD
-git diff main...HEAD --name-only
-git diff main...HEAD --stat
+# PR provided — use its base and head
+gh pr view "$pr_number" --json baseRefName,headRefName,headRefOid
+# Then diff against the PR's actual base
+git diff "$base_ref"..."$head_ref" --name-only
+git diff "$base_ref"..."$head_ref" --stat
 ```
 
-If a PR number is provided, also fetch the PR metadata and linked issue
-context using the bundled review skill's Step 1.
+If no PR is provided, detect the base branch from the repo (check for
+`main` or `master` or the default branch) and diff against it:
 
-Store the branch name and changed files list.
+```bash
+git rev-parse --abbrev-ref HEAD
+BASE=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}' || echo main)
+git diff "$BASE"...HEAD --name-only
+git diff "$BASE"...HEAD --stat
+```
+
+Store the resolved diff range as `DIFF_RANGE` (e.g. `main...HEAD` or
+`origin/develop...feature-branch`). Every sub-agent uses this exact range
+instead of hard-coding `main...HEAD`.
+
+Also fetch PR metadata and linked issue context using the bundled review
+skill's Step 1 when a PR number is available.
 
 ## Step 2: Project Discovery
 
@@ -64,7 +81,7 @@ duplicating functionality. More code = larger maintenance surface area.
 Key question: "Did we implement with the least amount of lines?"
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. For each new function/hook/component/class, search the codebase for
    similar existing implementations
 3. Check shared/common/utils directories for utilities that could have
@@ -89,7 +106,7 @@ A single 200-line function with nested if-statements = bad code. Look for
 "hot spots" (ugly-feeling code) that need rethinking.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. Read each changed file fully
 3. Flag functions over 50 lines (warning) or 100 lines (critical)
 4. Flag nested conditionals > 3 levels deep
@@ -114,7 +131,7 @@ Multiple unrelated changes = harder to review, confusing intent.
 One objective = clearer, more reviewable.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. Categorize each changed file by the type of change
 3. List all distinct features/fixes/refactors in this diff
 4. Check if changes are cohesive (all related to one goal)
@@ -140,7 +157,7 @@ codebase evolves; discover them from project configuration rather than
 assuming a fixed list.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. Read CLAUDE.md/AGENTS.md for explicitly forbidden patterns
 3. Check that import style matches the project's convention (aliases,
    relative paths, barrel exports — whatever the project uses)
@@ -201,7 +218,7 @@ exists in multiple places, the LLM reuses it. Critical for scaling a
 codebase and reducing proliferation of similar code.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. For EACH new pattern introduced (hook, component, utility, class,
    API endpoint, helper):
    a. Search the entire codebase for similar functionality
@@ -297,8 +314,8 @@ documentation. This helps both humans and LLMs understand the code.
 Match the project's existing documentation style.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
-2. Get new files: git diff main...HEAD --name-status | grep "^A"
+1. Get the full diff: git diff {diff_range}
+2. Get new files: git diff {diff_range} --name-status | grep "^A"
 3. Check the project's existing documentation style (JSDoc, docstrings,
    inline comments, README files) and match it
 4. For each NEW file: verify documentation exists matching project style
@@ -324,7 +341,7 @@ THE PRINCIPLE: Imports should appear at the top of files. Late imports
 dependency injection, or architectural smells.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. Read each changed file completely
 3. Scan for imports appearing well after the file's import block:
    - ES6: import ... from '...'
@@ -362,7 +379,7 @@ Problems with non-self-contained components:
 - Creates hidden dependencies between files
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. Identify temporary/optional elements (banners, promos, feature flags,
    announcements, experimental features)
 3. For each: check if adding it required changes to other files (layout
@@ -395,7 +412,7 @@ project uses, new code must follow its established patterns consistently.
 Inconsistency here causes LLMs to proliferate competing approaches.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. Identify the project's data layer (e.g., TanStack Query, SWR, Redux,
    Apollo, tRPC, Zustand, REST clients, ORM patterns — whatever is used)
 3. Find the project's exemplar files for data access patterns
@@ -429,7 +446,7 @@ doesn't match the spec. This axis is deliberately separate from code
 quality so a clean code pass cannot hide a wrong feature.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. Find the spec source — look for:
    a. Issue references in commit messages (#123, Closes #45, etc.)
       and fetch them via gh issue view
@@ -465,7 +482,7 @@ a trust boundary. Each boundary needs a control at the sink. Map
 boundaries first, then check controls.
 
 WHAT TO CHECK:
-1. Get the full diff: git diff main...HEAD
+1. Get the full diff: git diff {diff_range}
 2. List every value in the diff that originates outside the process as
    source → sink (e.g. "query param id → SQL WHERE", "form field →
    HTML render", "webhook body → business logic")
