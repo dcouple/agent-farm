@@ -1,4 +1,4 @@
-![Agent Farm — distinct skill gardens connected to native terminals](docs/assets/agent-farm-banner.png)
+![Agent Farm — a pixel-art robot tending skill crops beside native terminal huts](docs/assets/agent-farm-banner.png)
 
 # Agent Farm
 
