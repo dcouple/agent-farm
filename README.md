@@ -36,6 +36,8 @@ how everything fits together, and offers to launch your first session.
 
 ## Four entry points
 
+![A pixel-art farm crossroads with signs for init, interactive, help, and doctor](docs/assets/entry-points-pixel-farm.png)
+
 ```sh
 agent-farm init         # First-time setup — the starting point
 agent-farm              # Interactive — pick a profile, create one, launch
@@ -76,6 +78,8 @@ flowchart LR
 - **Workspace** — the toolbox for a project. Which external tools (Linear, Sentry, databases) an agent can reach when working on that project.
 
 ## Configuration
+
+![A pixel-art farm shed organizing profiles, agents, skills, and workspaces into four labeled compartments](docs/assets/configuration-pixel-farm.png)
 
 All config lives in `~/.config/agent-farm/`. The interactive CLI creates
 profiles and workspaces for you. To edit by hand:
