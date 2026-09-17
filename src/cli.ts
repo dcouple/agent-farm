@@ -11,17 +11,39 @@ import {loginCommand} from './mcp-auth.js';
 import {loadWorkspace,unloadWorkspace,loadedWorkspaces} from './user-workspaces.js';
 import {inspectProfile,listProfiles} from './inspect.js';
 import {loadProfile,unloadProfile,loadedProfiles,globalSkills,globalSkillWarning,saveGlobalSkills} from './user-skills.js';
+
+// Interactive mode: bare command, `init [--full]`, or `help [COMMAND]`
+const rawArgs = process.argv.slice(2);
+const isInit = rawArgs[0] === 'init';
+const isInitFull = isInit && rawArgs.includes('--full');
+const isHelp = rawArgs[0] === 'help';
+if (rawArgs.length === 0 || (isInit && rawArgs.filter(a => a !== '--full').length === 1)) {
+  const configRoot = path.join(os.homedir(), '.config/agent-farm');
+  const {bareCommand, initCommand} = await import('./interactive.js');
+  if (isInit) await initCommand(configRoot, process.cwd(), isInitFull);
+  else await bareCommand(configRoot, process.cwd());
+  process.exit(0);
+}
+if (isHelp || rawArgs.includes('--help') || rawArgs.includes('-h')) {
+  const {helpCommand} = await import('./interactive.js');
+  helpCommand(isHelp ? rawArgs[1] : undefined);
+  process.exit(0);
+}
+if (rawArgs[0] === 'doctor' && rawArgs.length === 1) {
+  const {doctorCommand} = await import('./interactive.js');
+  doctorCommand(path.join(os.homedir(), '.config/agent-farm'));
+  process.exit(0);
+}
+
 try {
   const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{
     'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},
     save:{type:'string'},model:{type:'string'},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},
-    build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},help:{type:'boolean',short:'h'}
+    build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'}
   }});
   const globalCommand=['set','unset','status'].includes(positionals[0] ?? '') && positionals[1]==='global';
   if ((values.save!==undefined || values.model!==undefined) && !globalCommand) throw new Error('--save and --model are only supported by unset global');
-  if (values.help) {
-    console.log('Usage: agent-farm run NAME [--workspace NAME] [--directory PATH] [--config-root PATH]\n                       [--message TEXT] [--build | --explain | --exec]\nInspect: agent-farm profiles list [--config-root PATH]\n         agent-farm inspect NAME [--workspace NAME] [--config-root PATH]\nPlugins: agent-farm plugin install [SOURCE]\n         agent-farm plugin validate SOURCE\n         agent-farm plugin pack SOURCE OUTPUT\nMCP login: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex\nGlobal skills: agent-farm set|unset global PROFILE [--harness claude|codex]\nGlobal MCPs: agent-farm set|unset global --workspace NAME --harness claude|codex\nInspect globals: agent-farm status global [--harness claude|codex]\nSave existing skills: agent-farm unset global --save NAME --harness claude|codex --model MODEL\nLegacy aliases: load/unload/loaded and workspace load/unload/loaded\nOpens the native Claude Code or Codex TUI. Requires Node 22.15+ on macOS/Linux.');
-  } else if (globalCommand) {
+  if (globalCommand) {
     const operation=positionals[0],profile=positionals[2];
     if (values.message!==undefined || values.build || values.exec || values.explain || process.argv.includes('--directory') || process.argv.some(a=>a.startsWith('--directory='))) throw new Error('Global commands do not accept launch options');
     if (positionals.length>3) throw new Error('Use set global PROFILE, unset global PROFILE, or status global');
@@ -102,7 +124,7 @@ try {
     }
   } else {
     if (values.harness) throw new Error('--harness is only supported by load/unload; run uses the profile harness');
-    if (positionals.length!==2 || !['run','agent'].includes(positionals[0]!)) throw new Error('Use: agent-farm run NAME (see --help)');
+    if (positionals.length!==2 || !['run','agent'].includes(positionals[0]!)) throw new Error('Unknown command. Run agent-farm help for usage.');
     if ([values.build,values.explain,values.exec].filter(Boolean).length>1) throw new Error('Choose only one of --build, --explain or --exec');
     const bundle=build(path.resolve(values['config-root']!),positionals[1]!,path.resolve(values.directory!),values.workspace);
     if (!values.build && !values.explain) {
