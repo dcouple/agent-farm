@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: claude-opus-4-6
+  name: claude-opus-4-6[1m]
   reasoning: high
 skills:
   - principled-review

@@ -18,7 +18,7 @@ checksums:
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
-  agents/claude-pr-reviewer.md: cbcaebd49c03aa746a2b9b6631ffb61f1840f60e70a9cf03e9a5d7707d3caa8a
+  agents/claude-pr-reviewer.md: 26b373a1766f6b6bff14b03b6380da400023e70e82ea2ba29b6f7e377b571abc
   agents/codex-pr-reviewer.md: 38cd0598f3604d963a04f0217433b0ae96af3ac97136d27086861edb2e3b1d6b
   agents/claude-worker.md: aa3b84372bdea348ec6337649cecb2b8f75736f2bcbf917561e4d56c882333a8
   agents/codex-worker.md: 052166d4cf0784d2616645b0cc626ab2de716fc2fb582edc71a4b2bf1323325e
