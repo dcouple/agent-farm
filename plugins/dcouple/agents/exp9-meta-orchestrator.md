@@ -117,28 +117,65 @@ npm install -g @dcouple/runpane
 
 USING RUNPANE FOR PARALLEL MULTI-HARNESS WORK:
 
-When you need to run multiple children in parallel (independent packets, different harnesses):
-```bash
-# Create panels for each child profile
-runpane panels create --name "deepseek-impl" --command "agent-farm run exp2-deepseek-flash --exec --message '<contract1>'"
-runpane panels create --name "luna-review" --command "agent-farm run exp1-luna-xhigh --exec --message '<contract2>'"
+When you need to run multiple children in parallel (independent packets, different harnesses), use `runpane` with worktree isolation so children don't collide on the same files:
 
-# Watch for completion
+```bash
+# 1. Create isolated worktrees for each child
+git worktree add /tmp/af-child-1 HEAD
+git worktree add /tmp/af-child-2 HEAD
+git worktree add /tmp/af-child-3 HEAD
+
+# 2. Create panels — each runs in its own worktree
+runpane panels create --name "deepseek-impl" --command "cd /tmp/af-child-1 && agent-farm run exp2-deepseek-flash --exec --message '<contract>'"
+runpane panels create --name "luna-impl" --command "cd /tmp/af-child-2 && agent-farm run exp1-luna-xhigh --exec --message '<contract>'"
+runpane panels create --name "glm-impl" --command "cd /tmp/af-child-3 && agent-farm run exp3-glm-flash --exec --message '<contract>'"
+
+# 3. Watch for completion
 runpane watch --follow --kinds agent.ready,agent.blocked
 
-# Read results
+# 4. Read results from each panel
 runpane panels output --name "deepseek-impl"
-runpane panels output --name "luna-review"
+runpane panels output --name "luna-impl"
+runpane panels output --name "glm-impl"
 
-# Check costs
+# 5. Check costs
 runpane panes cost
+
+# 6. Clean up worktrees when done
+git worktree remove /tmp/af-child-1
+git worktree remove /tmp/af-child-2
+git worktree remove /tmp/af-child-3
 ```
 
-This is better than sequential `agent-farm run --exec` because:
-- Children run in parallel across harnesses (Codex + Claude Code simultaneously)
-- Pane tracks costs per panel automatically
-- You can watch lifecycle events instead of polling
-- Panel outputs are captured and retrievable
+WORKTREE ISOLATION IS REQUIRED for parallel children. Without it, multiple children editing the same files will produce merge conflicts and corrupt each other's work. Always create a separate worktree per child when running in parallel. Sequential children can share the same working directory.
+
+PROFILE COMPARISON / BENCHMARKING:
+
+When asked to compare profiles on the same task, follow this workflow:
+
+1. Write ONE contract for the task (TASK/FILES/ACCEPT/VERIFY/STOP).
+2. Create a worktree per profile being tested.
+3. Launch all profiles in parallel via runpane panels with the identical contract.
+4. Wait for all to complete. Collect each child's JSON output.
+5. Parse these fields from each child's result JSON:
+   - `result`: what the child produced
+   - `total_cost_usd`: how much it cost
+   - `duration_ms`: wall clock time
+   - `num_turns`: how many turns it used
+   - `is_error`: whether it failed
+6. Build a comparison table:
+
+```
+| Profile          | Time    | Cost    | Turns | Result |
+|------------------|---------|---------|-------|--------|
+| exp1-luna-xhigh  | 14.3s   | $0.89   | 3     | PASS   |
+| exp2-deepseek    | 8.2s    | $0.43   | 2     | PASS   |
+| exp3-glm-flash   | 9.5s    | $0.15   | 4     | PASS   |
+```
+
+7. Report: which profile won on cost, which won on speed, which won on quality (fewest turns, no errors), and your overall recommendation.
+
+This is how you benchmark profiles. The user should be able to say "compare these 3 profiles on this task" and get back a structured result.
 
 IMPORTANT:
 - The `agent-farm` CLI must be on PATH.
@@ -146,3 +183,4 @@ IMPORTANT:
 - Children that use OpenRouter models (exp2, exp3, exp8) need the provider settings.json to be configured.
 - Each child is a separate process. If one hangs, you can proceed with other children.
 - Do not launch more than 3 children in parallel — each is a full agent session.
+- Always clean up worktrees after benchmarking.
