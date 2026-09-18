@@ -13,6 +13,15 @@ checksums:
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764
   agents/correctness-reviewer.md: f945974b435e8d841f35dd2b7d2b4f1c44e83c9f5504967a90e8bd267c747584
+  agents/exp-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
+  agents/exp-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
+  agents/exp-baseline-raw.md: 8781c53d5e05b4d28e18d74e48e7db082b143d3aaa7532935c8d0ef76a2fca9d
+  agents/exp-fast-implementer.md: e3dd01061e7a9a3bd377c2397c7751cf039c08aa688033cdb74463600517236d
+  agents/exp-flash-implementer.md: f1e33d271633ff641c022676b4f53eed7098550456a66a8692ff4d0423799975
+  agents/exp-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
+  agents/exp-luna-implementer.md: ad8f229ae55a8ac2abbe59193df1a5c67eddc43758457469bc402f9cda71abb1
+  agents/exp-luna-orchestra.md: d53d8a3589fe7f493613e64c887901a02db30d3f9e8963f8786b1fe6287cc233
+  agents/exp-opus46-loop.md: 65b6f43c5b6cdd25c807cfcc6782eed60aed825ddd1856bb0ed9cd4c8bef99e1
   agents/exp1-luna-xhigh-reviewer.md: 4822cd74d11510e5f94ff9e28a85e3ef1f142c353d4fee7f0b9f6796a595d55b
   agents/exp1-luna-xhigh-worker.md: 78de8c0a9c416275d0468234bd9c13eed00ef66cf7e0bb914d5e8ae302615901
   agents/exp1-luna-xhigh.md: 003a4ebb213341e4d6ebcbc53c801869b834cf3d9d2e62a3c8353cac1547af35
@@ -55,6 +64,13 @@ checksums:
   profiles/astra-researcher.yaml: d38b61c0aed05a3f5449c607fa2996cf1b0071dffb1605708d69e6f04cecc5a8
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
+  profiles/exp-baseline-raw.yaml: bc0b139eab7c4eac3dd156295675b75206b6d10330f16280a17daf8a1fc4c94b
+  profiles/exp-fast-implementer.yaml: 37418cc36e291d6acae1b2382f769da3d3296bdc2a1e8079809b7622f6981d50
+  profiles/exp-flash-implementer.yaml: 3c9fdd692ebb2940363e22af902c361a853e95aa9f2f6805420dd79606814d1c
+  profiles/exp-frontier-planner.yaml: 411c3d61726ec30f7d470d52ed54c6c0ab4484e49f0c166311b981d8b5a25333
+  profiles/exp-luna-implementer.yaml: 1f34c62b29a22bdede30dbea8b19a6ec3a63dbc270895ad68e4e0a95f6cda99d
+  profiles/exp-luna-orchestra.yaml: fad45154d9cb245b3109ed4d7e21ac7a1166ba322e2deb5e2f48d948d2522fad
+  profiles/exp-opus46-loop.yaml: e039d6cbe3fbc0b6067e201e22b90a72c991a79a152faffe3487430ea5a4ef23
   profiles/exp1-luna-xhigh.yaml: aa55db7f0d1d9076d58e75965ebbb3d91c1505d1af8f2c683780f3e5ae3d8e27
   profiles/exp10-luna-meta-orchestrator.yaml: 0460525a17aa4f3f70f166a7faefd1673fd428096f120c87b3bcfa0e722dcc6b
   profiles/exp2-deepseek-flash.yaml: 5860951bd344161f104a5325db05bc5a79479d01e69fe49cad1d61da74104a2a
