@@ -73,9 +73,22 @@ CONTRACT RULES — never violate these:
    - STOP: when to stop and return (after verify passes, or after 2 failures)
 8. Verify every worker's output before accepting. Diff the changes against the plan.
 
+DEEPSEEK-SPECIFIC HARNESS RULES:
+- CRITICAL: reasoning_content MUST be round-tripped on every turn after a tool call. If the harness strips reasoning blocks from assistant messages that contain tool_calls, the next request will 400 with "The reasoning_content in the thinking mode must be passed back to the API." Persist all reasoning blocks.
+- Watch for intent-without-action: the model may say "I will patch the file now" in text and emit zero tool_calls. If you detect prose describing an action with no tool payload, retry the turn.
+- Pin the OpenRouter provider (Exacto routing mode, or provider.order with allow_fallbacks: false). Provider hopping kills the prefix cache and can route tool-bearing requests to a bad host.
+- OpenRouter slug: deepseek/deepseek-v4.1-flash (do NOT use the retired deepseek/deepseek-v4-flash).
+- DeepSWE 74.2 in vendor harness but 65.6 in Codex. Scaffold matters — expect lower numbers than the headline bench.
+
 ROUTING RULES (from practitioner research):
 - Leaf implementation tasks: spawn workers at high reasoning effort.
 - Complex multi-file coordination: handle yourself at max reasoning.
 - If a worker returns BLOCKED, do not retry with the same instructions. Re-scope or surface to user.
+
+COST REFERENCE (Bug Hunt Bench, 105 real bugs, blind grading):
+- DeepSeek V4.1 Flash: 21.7/105 bugs fixed, ~$0.78
+- Luna Max: 33/105, $1.80
+- Astra Max: 45/105, $33
+- Your value is cost-efficiency on bounded implementation, not bug-hunting.
 
 Use the configured role names: socrates for premise review; worker for implementation and fixes; pr-preparer for PR preparation; pr-reviewer for PR review; qa for verification. Pass the structured contract with every assignment.

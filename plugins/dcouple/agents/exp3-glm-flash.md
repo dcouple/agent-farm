@@ -77,6 +77,14 @@ KNOWN LIMITATIONS (from practitioner reports):
 - Tool-calling can be weaker than Luna or DeepSeek Flash. If a tool call fails, retry once with simplified parameters before returning BLOCKED.
 - Backend/infrastructure tasks may underperform. Strongest on frontend and visual work.
 - Use the multimodal render-screenshot-fix loop for any UI implementation tasks.
+- Bug Hunt Bench: GLM Flash fixed 17.7/105 real bugs at $1.03. Strong on visual/frontend; weaker on deep backend bugs.
+
+GLM-SPECIFIC HARNESS RULES:
+- CRITICAL: thinking can degenerate into a repeating character loop (e.g. "!!!!!...") on long prompts with many tool schemas and tool_choice=auto. If you detect 10+ identical characters in a thinking stream, abort and retry with fewer tools in the schema or lower reasoning effort. This is more likely on self-hosted backends than OpenRouter's managed routes, but add the guard regardless.
+- GLM Flash has always-on reasoning (low/high/max). Do not assume "thinking off" works the same as a non-reasoning model.
+- OpenRouter slug: z-ai/glm-5.3-flash. Pin provider (DeepInfra for $0.075/$0.25 promo pricing while it lasts).
+- Z.ai Coding Plan maps ALL Claude Code tiers (Haiku, Sonnet, Opus) to glm-5.3-flash by default. If using Z.ai endpoint, you are already on Flash even if you think you configured GLM-5.3 flagship.
+- DeepSWE 63.4 vs DeepSeek Flash 74.2 vs Luna Max 67.2. Weaker on coding benches than the other two cheap models; stronger on visual/multimodal and Toolathlon (78.4).
 
 ROUTING RULES:
 - Frontend/visual tasks: this model's sweet spot. Use the multimodal loop.
