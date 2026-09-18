@@ -79,32 +79,6 @@ test cross-harness workflows, and explore autonomous loop patterns like
 Gauntlet and Manager Loop. These change frequently — run
 `agent-farm profiles list` to see what's available.
 
-## Using third-party models via OpenRouter
-
-```sh
-# One-time setup
-export OPENROUTER_API_KEY="sk-or-..."
-echo 'export OPENROUTER_API_KEY="sk-or-..."' >> ~/.zshrc
-agent-farm provider set openrouter --base-url https://openrouter.ai/api --api-key-env OPENROUTER_API_KEY
-```
-
-Then add `"match": "slash-models"` to `~/.config/agent-farm/settings.json`:
-
-```json
-{
-  "provider": {
-    "name": "openrouter",
-    "base_url": "https://openrouter.ai/api",
-    "api_key_env": "OPENROUTER_API_KEY",
-    "match": "slash-models"
-  }
-}
-```
-
-Models with `/` in the slug route through OpenRouter. Native models use
-their harness directly. No switching between runs — see the
-[configuration reference](CONFIGURATION.md) for details.
-
 ## Four entry points
 
 ![A pixel-art farm crossroads with signs for init, interactive, help, and doctor](docs/assets/entry-points-pixel-farm.png)
@@ -160,6 +134,32 @@ profiles and workspaces for you. To edit by hand:
 
 See the [configuration reference](CONFIGURATION.md) for file formats, child
 agents, skill metadata, and workspace connections.
+
+### Using third-party models via OpenRouter
+
+```sh
+# One-time setup
+export OPENROUTER_API_KEY="sk-or-..."
+echo 'export OPENROUTER_API_KEY="sk-or-..."' >> ~/.zshrc
+agent-farm provider set openrouter --base-url https://openrouter.ai/api --api-key-env OPENROUTER_API_KEY
+```
+
+Then add `"match": "slash-models"` to `~/.config/agent-farm/settings.json`:
+
+```json
+{
+  "provider": {
+    "name": "openrouter",
+    "base_url": "https://openrouter.ai/api",
+    "api_key_env": "OPENROUTER_API_KEY",
+    "match": "slash-models"
+  }
+}
+```
+
+Models with `/` in the slug route through OpenRouter. Native models use
+their harness directly. No switching between runs — see the
+[configuration reference](CONFIGURATION.md) for details.
 
 ## Releases
 
