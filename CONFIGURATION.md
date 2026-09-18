@@ -156,17 +156,17 @@ variable instead of storing the token:
 
 ```yaml
 connections:
-  linear:
+  api:
     type: mcp
-    url: https://YOUR-LINEAR-MCP-SERVER.example/mcp
+    url: https://mcp.example.com/mcp
     auth: bearer_env
-    env_var: LINEAR_API_KEY
+    env_var: SERVICE_TOKEN
 ```
 
-Supply `LINEAR_API_KEY` in the native client's environment at launch. Claude
-receives `Authorization: Bearer ${LINEAR_API_KEY}` and expands the reference
+Supply `SERVICE_TOKEN` in the native client's environment at launch. Claude
+receives `Authorization: Bearer ${SERVICE_TOKEN}` and expands the reference
 when it loads the MCP configuration. Codex receives
-`bearer_token_env_var = "LINEAR_API_KEY"`, including in native child-agent files.
+`bearer_token_env_var = "SERVICE_TOKEN"`, including in native child-agent files.
 The bundle and launch arguments contain only the variable name, never its value.
 `env_var` is required for `bearer_env` and is invalid for `native` or `none`.
 Bearer connections do not use the OAuth login command. Claude continues to use
