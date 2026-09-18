@@ -14,10 +14,10 @@ skills:
 description: "Experiment: Luna Max single writer with Astra advisor on call and Astra final review. The default bet."
 subagents:
   advisor:
-    agent: exp-astra-advisor
+    agent: sw-astra-advisor
     mode: native
   final-reviewer:
-    agent: exp-astra-final-reviewer
+    agent: sw-astra-final-reviewer
     mode: native
 ---
 

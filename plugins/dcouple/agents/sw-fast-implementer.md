@@ -16,7 +16,7 @@ skills:
 description: "Experiment: Astra medium fast, single writer, one Astra final review. For blocking work and prototyping."
 subagents:
   final-reviewer:
-    agent: exp-astra-final-reviewer
+    agent: sw-astra-final-reviewer
     mode: native
 ---
 
