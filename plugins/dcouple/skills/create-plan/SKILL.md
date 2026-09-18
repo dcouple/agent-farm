@@ -213,7 +213,7 @@ fresh review.
 
 Do not treat the plan as ready if factual blockers remain unresolved.
 
-## Step 6: Return the Plan — Do Not Implement
+## Step 6: Return the Plan: Do Not Implement
 
 Once the user confirms the plan is ready, tell them:
 

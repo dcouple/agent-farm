@@ -1,11 +1,18 @@
 ---
 name: astra-ticket
-description: Take a GitHub ticket through Astra planning, Luna implementation, concurrent checks and focused reviews, optional Sol QA, and a final current-head PR review.
+description: Take a work item through Astra planning, Luna implementation, concurrent checks and focused reviews, optional Sol QA, and a final current-head PR review.
 ---
 
 # Astra Ticket
 
-Input: a GitHub issue URL or `owner/repo#number`.
+Input: one work-item reference from any source; for example, a GitHub issue
+URL or `owner/repo#number`, a Linear issue URL or key (`ENG-123`), or a Grain
+brief link. Read and update the item with the tools its source provides
+(for example, GitHub tools or `gh`, Linear MCP tools, or Grain tools); the
+workflow below is the same for every source. A source with no tooling is
+still valid: read it however you can and report back to the user.
+When a tracker item links a Grain brief, read both, and send status, comments,
+and PR links to the source that owns the item.
 
 ## Execution contract
 
@@ -20,7 +27,7 @@ Input: a GitHub issue URL or `owner/repo#number`.
 
 ## 1. Establish intent and prepare the branch
 
-Read the issue/comments, current code, and relevant task artifacts in repo `TMP/` or `tmp/`, `$TMPDIR`, and `/tmp`. Check stale context against current evidence.
+Read the item and its comments from its source, current code, and relevant task artifacts in repo `TMP/` or `tmp/`, `$TMPDIR`, and `/tmp`. Check stale context against current evidence.
 
 As Astra, follow `simple-plan`'s planning steps and `create-ticket`'s intent guidance. Offer `ui-mockup` for UI work and carry approved designs into the plan. Preserve the user's mockup/design decisions before implementation. Update the linked brief with intent, approach, tradeoffs, acceptance criteria, and checks; save detailed specs under task-specific `tmp/`.
 
@@ -36,13 +43,13 @@ For other work, ask asynchronously whether to run end-to-end QA and state it sta
 
 Launch these independent assignments against the frozen SHA. The parent may monitor CI and collect automated feedback directly rather than spending child slots on polling. With limited slots, start latency-heavy checks/QA early, then fill freed slots with the remaining lanes:
 
-- **Checks and CI — Luna Max:** run applicable repository checks and monitor required CI. Own the shared check ledger; reviewers consume its evidence instead of each repeating lint/build/test. Reviewers may request a specific missing check.
-- **QA — Sol Medium, if authorized/defaulted:** use `pr-test-automation` to exercise relevant flows in an isolated environment and capture screenshots and reports. Return tested SHA, failures, blockers, and verified evidence links. QA does not fix code; route fixes to the parent queue. Override the delegated skill’s PR-description, comment, and shared-workspace publication steps: return draft QA Markdown plus captured media/report paths to the parent without publishing. The serialized publication owner saves the artifacts, verifies their links, refreshes the current PR body/comments, and applies the QA handoff with the final prose, preserving unrelated human edits.
-- **PR prose and evidence — Luna Max:** use `prepare-pr`'s writing guidance to draft the final description, visuals, and evidence index from the ticket, diff, and available results. Override its branch/build/readiness actions for this lane. Reuse QA screenshots; do not run duplicate UI QA or capture a second screenshot set for prose. Mark pending results honestly and finalize when evidence arrives. Keep draft edits local for one serialized publication owner.
-- **Correctness and data — fresh Luna Max reviewer:** inspect changed algorithms, state transitions, lifecycle/concurrency, persistence, migrations, and data loss/corruption risks. Return concrete defects and missing evidence within this scope.
-- **Integration and security — fresh Luna Max reviewer:** inspect cross-module/API/IPC contracts, caller wiring, compatibility, platform/runtime behavior, permissions/trust boundaries, and security implications of changed paths.
-- **Intent and test coverage — fresh Luna Max reviewer:** compare issue, approved plan/design, and acceptance criteria with actual behavior; inspect missing integration, user-visible regressions, edge cases, and whether tests prove the outcome. Consume QA evidence as it arrives without rerunning QA.
-- **Automated feedback collection — Luna Max:** inspect all human/bot reviews, inline threads, check results, and expected automated-review runs; correlate each with its SHA. Distinguish completed zero-findings review from missing, pending, failed, or stale review. Return findings and review status, not a speculative pass.
+- **Checks and CI, Luna Max:** run applicable repository checks and monitor required CI. Own the shared check ledger; reviewers consume its evidence instead of each repeating lint/build/test. Reviewers may request a specific missing check.
+- **QA, Sol Medium, if authorized/defaulted:** use `pr-test-automation` to exercise relevant flows in an isolated environment and capture screenshots and reports. Return tested SHA, failures, blockers, and verified evidence links. QA does not fix code; route fixes to the parent queue. Override the delegated skill’s PR-description, comment, and shared-workspace publication steps: return draft QA Markdown plus captured media/report paths to the parent without publishing. The serialized publication owner saves the artifacts, verifies their links, refreshes the current PR body/comments, and applies the QA handoff with the final prose, preserving unrelated human edits.
+- **PR prose and evidence, Luna Max:** use `prepare-pr`'s writing guidance to draft the final description, visuals, and evidence index from the ticket, diff, and available results. Override its branch/build/readiness actions for this lane. Reuse QA screenshots; do not run duplicate UI QA or capture a second screenshot set for prose. Mark pending results honestly and finalize when evidence arrives. Keep draft edits local for one serialized publication owner.
+- **Correctness and data, fresh Luna Max reviewer:** inspect changed algorithms, state transitions, lifecycle/concurrency, persistence, migrations, and data loss/corruption risks. Return concrete defects and missing evidence within this scope.
+- **Integration and security, fresh Luna Max reviewer:** inspect cross-module/API/IPC contracts, caller wiring, compatibility, platform/runtime behavior, permissions/trust boundaries, and security implications of changed paths.
+- **Intent and test coverage, fresh Luna Max reviewer:** compare issue, approved plan/design, and acceptance criteria with actual behavior; inspect missing integration, user-visible regressions, edge cases, and whether tests prove the outcome. Consume QA evidence as it arrives without rerunning QA.
+- **Automated feedback collection, Luna Max:** inspect all human/bot reviews, inline threads, check results, and expected automated-review runs; correlate each with its SHA. Distinguish completed zero-findings review from missing, pending, failed, or stale review. Return findings and review status, not a speculative pass.
 
 Use configured roles and the bundled `review/SKILL.md` and `CRITERIA.md` for focused reviewers. Override broad duplicate checks and out-of-scope review duties with the assignments above. Each reviewer receives raw evidence and returns its own assessment before seeing peer conclusions. Report reviewed SHA, scope, findings with file/line and impact, and unresolved uncertainty. Focused reviewers return findings to the parent by default. If authorized to post a scoped review, always use `COMMENT`, regardless of account identity; never post `APPROVE` or `REQUEST_CHANGES` from a focused lane. Whole-PR judgments belong to the final holistic gate, and the PR author must still use `COMMENT` there.
 

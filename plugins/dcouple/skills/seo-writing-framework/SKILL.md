@@ -216,7 +216,7 @@ readers moving because the brain wants to close them.
 
 Rules: persuasive copy only, two per page maximum, and every one gets closed on
 the same page. An open loop you don't close is a bait line. Never phrase one as
-a faux-insight setup ("here's what nobody tells you") — that's slop in any
+a faux-insight setup ("here's what nobody tells you"). That's slop in any
 register.
 
 In explanatory copy, zero. The reader already has a question; withholding the
