@@ -38,6 +38,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm build
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Install npm for Trusted Publishing
+        run: |
+          npm install --global npm@11.5.1
+          npm --version
+      # Trusted Publishing automatically generates provenance.
+      - run: npm publish --access public
