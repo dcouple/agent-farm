@@ -6,7 +6,8 @@ import os from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {build} from '../dist/compiler.js';
-import {command,fileMap,verify} from '../dist/runtime.js';
+import {command,codexHome,loadProvider,fileMap,verify} from '../dist/runtime.js';
+import {parse as parseToml} from 'smol-toml';
 
 const cli=fileURLToPath(new URL('../dist/cli.js',import.meta.url));
 const stdout='{"type":"rate_limit_event","status":429}\n{"type":"turn.failed"}\n';
@@ -141,6 +142,131 @@ test('print-launch and standalone bundle runtime reject hand-edited bundles',t=>
  const standalone=spawnSync(process.execPath,['--input-type=module','--eval',script],{env:f.env,encoding:'utf8'});
  assert.equal(standalone.status,1);assert.match(standalone.stderr,/refusing modified bundle/);
  assert.equal(standalone.stdout,'');assert.equal(fs.existsSync(f.record),false);
+});
+
+const provider={name:'cliproxy',base_url:'http://127.0.0.1:8317',api_key_env:'CLIPROXY_API_KEY'};
+function configureProvider(f,value=provider) {
+ fs.writeFileSync(path.join(f.root,'settings.json'),JSON.stringify({provider:value}));
+ assert.deepEqual(loadProvider(f.root),value);
+}
+function assertNoSecrets(launch,printed,extra=[]) {
+ for(const secret of ['AUTH-SECRET-FIXTURE','LINEAR-SECRET-FIXTURE','PROXY-SECRET-FIXTURE','GITHUB-SECRET-FIXTURE',...extra]) {
+  assert.equal(printed.includes(secret),false);
+  for(const relative of Object.keys(fileMap(launch.bundle)))assert.equal(fs.readFileSync(path.join(launch.bundle,relative),'utf8').includes(secret),false);
+ }
+ verify(launch.bundle);
+}
+
+test('host provider settings parse and validate without leaking invalid input',t=>{
+ const f=fixture(t),file=path.join(f.root,'settings.json');
+ assert.equal(loadProvider(f.root),undefined);
+ fs.writeFileSync(file,'{}');assert.equal(loadProvider(f.root),undefined);
+ configureProvider(f);
+ const invalid=[null,[],{provider:null},{provider:[]},{other:'SECRET-INVALID'},
+  ...[{name:'../escape'},{name:'openai'},{name:'x.y'},{base_url:'ftp://example.com'},
+   {base_url:'https://SECRET-INVALID@example.com'},{base_url:'https://example.com/?key=SECRET-INVALID'},
+   {base_url:'https://example.com/#SECRET-INVALID'},{base_url:'http://example.com/ bad'},
+   {base_url:'https://example.com/?'},{base_url:'https://example.com/#'},{base_url:'http:\\example.com'},
+   {base_url:'SECRET-INVALID'},{api_key_env:'SECRET-INVALID'},{api_key_env:'ANTHROPIC_AUTH_TOKEN'},
+   {api_key_env:null},{api_key:'SECRET-INVALID'}].map(value=>({provider:{...provider,...value}})),
+  {provider:{name:'cliproxy'}},'{SECRET-INVALID'];
+ for(const value of invalid) {
+  fs.writeFileSync(file,typeof value==='string'?value:JSON.stringify(value));
+  assert.throws(()=>loadProvider(f.root),error=>!error.message.includes('SECRET-INVALID'));
+  const result=f.invoke(['--print-launch']);
+  assert.equal(result.status,1);assert.equal(result.stdout,'');assert.equal(result.stderr.includes('SECRET-INVALID'),false);
+ }
+});
+
+test('Codex provider configuration routes the profile without copying native config or secrets',t=>{
+ const f=fixture(t);configureProvider(f);
+ const native=path.join(f.home,'.codex/config.toml'),nativeText='model_provider = "openai"\n# NATIVE-CONFIG-SECRET\n';
+ fs.writeFileSync(native,nativeText);
+ const result=f.invoke(['--print-launch'],'implementer');assert.equal(result.status,0,result.stderr);
+ const launch=JSON.parse(result.stdout),config=path.join(launch.env.CODEX_HOME,'config.toml');
+ assert.equal(fs.lstatSync(config).isSymbolicLink(),false);
+ const text=fs.readFileSync(config,'utf8'),data=parseToml(text);
+ assert.deepEqual(data,{model_provider:'cliproxy',model_providers:{cliproxy:{name:'cliproxy',base_url:provider.base_url+'/v1',wire_api:'responses',env_key:'CLIPROXY_API_KEY'}}});
+ assert.equal(text.includes('PROXY-SECRET-FIXTURE'),false);assert.equal(text.includes('NATIVE-CONFIG-SECRET'),false);
+ assert.equal(fs.readFileSync(native,'utf8'),nativeText);
+ assert.equal(fs.realpathSync(path.join(launch.env.CODEX_HOME,'auth.json')),path.join(f.home,'.codex/auth.json'));
+ assert.equal(launch.argv[launch.argv.indexOf('--model')+1],'test');assert.equal(launch.env.AGENT_FARM_CONFIG_ROOT,f.root);
+ assertNoSecrets(launch,result.stdout,['NATIVE-CONFIG-SECRET']);
+ // Host updates affect the same bundle; switching providers never writes through native links.
+ configureProvider(f,{...provider,name:'second',base_url:'https://gateway.example/api/v1/'});
+ const next=f.invoke(['--print-launch'],'implementer');assert.equal(next.status,0,next.stderr);
+ assert.equal(JSON.parse(next.stdout).bundle,launch.bundle);
+ assert.equal(parseToml(fs.readFileSync(config,'utf8')).model_provider,'second');
+ assert.equal(parseToml(fs.readFileSync(config,'utf8')).model_providers.second.base_url,'https://gateway.example/api/v1');
+ fs.unlinkSync(path.join(f.root,'settings.json'));assert.equal(loadProvider(f.root),undefined);
+ const restored=f.invoke(['--print-launch'],'implementer');assert.equal(restored.status,0,restored.stderr);
+ assert.equal(fs.realpathSync(config),native);assert.equal(fs.readFileSync(config,'utf8'),nativeText);
+ assert.deepEqual(Object.keys(JSON.parse(restored.stdout).env).sort(),['AGENT_FARM_NATIVE_CODEX_HOME','CODEX_HOME']);
+ configureProvider(f);
+ const again=f.invoke(['--print-launch'],'implementer');assert.equal(again.status,0,again.stderr);
+ assert.equal(fs.lstatSync(config).isSymbolicLink(),false);assert.equal(fs.readFileSync(native,'utf8'),nativeText);
+});
+
+test('Codex provider launch has no native home or login dependency and does not require the key to prepare',t=>{
+ const f=fixture(t);configureProvider(f);
+ fs.rmSync(path.join(f.home,'.codex'),{recursive:true});assert.equal(fs.existsSync(path.join(f.home,'.codex')),false);
+ delete f.env.CLIPROXY_API_KEY;
+ const result=f.invoke(['--print-launch'],'implementer');assert.equal(result.status,0,result.stderr);
+ const launch=JSON.parse(result.stdout);
+ assert.equal(parseToml(fs.readFileSync(path.join(launch.env.CODEX_HOME,'config.toml'),'utf8')).model_provider,'cliproxy');
+ assert.equal(fs.existsSync(path.join(launch.env.CODEX_HOME,'auth.json')),false);
+ assert.equal(fs.existsSync(path.join(f.home,'.codex')),false);assert.equal(fs.existsSync(f.record),false);
+ assertNoSecrets(launch,result.stdout);
+});
+
+test('Claude provider print exports references and aliases; verbatim argv resolves the child key and preserves streams',t=>{
+ const f=fixture(t,'claude');configureProvider(f);
+ const script=`#!${process.execPath}\nconst fs=require('node:fs');fs.writeFileSync(process.env.RECORD,JSON.stringify({pid:process.pid,args:process.argv.slice(2),token:process.env.ANTHROPIC_AUTH_TOKEN,base:process.env.ANTHROPIC_BASE_URL,aliases:['HAIKU','SONNET','OPUS','FABLE'].map(a=>process.env['ANTHROPIC_DEFAULT_'+a+'_MODEL'])}));process.stdout.write(${JSON.stringify(stdout)});process.stderr.write(${JSON.stringify(stderr)});process.exit(7);\n`;
+ fs.writeFileSync(path.join(f.bin,'claude'),script,{mode:0o755});
+ const native=['-p','--output-format','stream-json','--resume','session with spaces'],message='$(literal) `text`\n"quoted"';
+ delete f.env.CLIPROXY_API_KEY;
+ const result=f.invoke(['--print-launch','--message',message,'--',...native]);assert.equal(result.status,0,result.stderr);
+ const launch=JSON.parse(result.stdout);assert.equal(fs.existsSync(f.record),false);
+ assert.equal(launch.env.ANTHROPIC_BASE_URL,provider.base_url);assert.equal(launch.env.ANTHROPIC_AUTH_TOKEN,'${CLIPROXY_API_KEY}');
+ for(const alias of ['HAIKU','SONNET','OPUS','FABLE'])assert.equal(launch.env['ANTHROPIC_DEFAULT_'+alias+'_MODEL'],'test');
+ assert.ok(launch.argv.includes('--strict-mcp-config'));assert.deepEqual(launch.argv.slice(-native.length-2),[...native,'--',message]);
+ assert.equal(launch.argv[0],process.execPath);assertNoSecrets(launch,result.stdout);
+ const missing=spawnSync(launch.argv[0],launch.argv.slice(1),{cwd:launch.cwd,env:{...f.env,...launch.env},encoding:'utf8'});
+ assert.equal(missing.status,1);assert.match(missing.stderr,/Provider environment variable is unavailable/);assert.equal(fs.existsSync(f.record),false);
+ const childEnv={...f.env,...launch.env,CLIPROXY_API_KEY:'CHILD-ONLY-SECRET $(literal) `token`'};
+ const unavailableArgv=[...launch.argv];unavailableArgv[3]='process.execve=undefined; '+unavailableArgv[3];
+ const unavailable=spawnSync(unavailableArgv[0],unavailableArgv.slice(1),{cwd:launch.cwd,env:childEnv,encoding:'utf8'});
+ assert.equal(unavailable.status,1);assert.match(unavailable.stderr,/Native launch requires Node 22.15\+ on macOS or Linux/);
+ assert.equal(fs.existsSync(f.record),false);assert.equal(unavailable.stdout,'');
+ const execution=spawnSync(launch.argv[0],launch.argv.slice(1),{cwd:launch.cwd,env:childEnv,encoding:'utf8'});
+ assert.equal(execution.status,7,execution.stderr);assert.equal(execution.stdout,stdout);assert.equal(execution.stderr,stderr);
+ const record=JSON.parse(fs.readFileSync(f.record));assert.equal(record.pid,execution.pid);
+ assert.equal(record.token,childEnv.CLIPROXY_API_KEY);assert.equal(record.base,provider.base_url);
+ assert.deepEqual(record.aliases,['test','test','test','test']);assert.deepEqual(record.args,launch.argv.slice(launch.argv.indexOf('claude')+1));
+ f.env.CLIPROXY_API_KEY='EXEC-ONLY-SECRET';
+ const direct=f.invoke(['--exec','--message',message,'--',...native]);assert.equal(direct.status,7,direct.stderr);
+ assert.equal(direct.stdout,stdout);assert.ok(direct.stderr.endsWith(stderr));assert.equal(JSON.parse(fs.readFileSync(f.record)).token,'EXEC-ONLY-SECRET');
+ assertNoSecrets(launch,result.stdout,[childEnv.CLIPROXY_API_KEY,'EXEC-ONLY-SECRET']);
+});
+
+test('process dispatch inherits custom host provider root and rereads host changes outside the bundle',t=>{
+ const f=fixture(t,'claude');configureProvider(f);
+ fs.appendFileSync(path.join(f.root,'agents/planner.yaml'),'subagents: {worker: {agent: implementer, mode: process}}\n');
+ const result=f.invoke(['--print-launch']);assert.equal(result.status,0,result.stderr);
+ const launch=JSON.parse(result.stdout),dispatch=path.join(launch.bundle,'main/dispatch/worker');
+ configureProvider(f,{...provider,name:'updated'});
+ const child=spawnSync(dispatch,['--print-launch'],{env:{...f.env,...launch.env},encoding:'utf8'});assert.equal(child.status,0,child.stderr);
+ const prepared=JSON.parse(child.stdout);
+ assert.equal(parseToml(fs.readFileSync(path.join(prepared.env.CODEX_HOME,'config.toml'),'utf8')).model_provider,'updated');
+ assert.equal(prepared.env.AGENT_FARM_CONFIG_ROOT,f.root);assertNoSecrets(prepared,child.stdout);
+});
+
+test('provider config refuses unmanaged runtime files without modifying them',t=>{
+ const f=fixture(t),bundle=build(f.root,'implementer',f.target),env={...f.env};
+ const runtime=codexHome(bundle,'main',env,f.home);
+ const config=path.join(runtime,'config.toml');fs.unlinkSync(config);fs.writeFileSync(config,'# unmanaged\n');
+ assert.throws(()=>codexHome(bundle,'main',{...f.env},f.home,provider),/Conflicting runtime path/);
+ assert.equal(fs.readFileSync(config,'utf8'),'# unmanaged\n');assert.equal(fs.readFileSync(path.join(f.home,'.codex/config.toml'),'utf8'),'');
 });
 
 test('explain keeps runtime home unprepared',t=>{

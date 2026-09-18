@@ -149,7 +149,7 @@ try {
       if (values['print-launch']) args.push('--print-launch');
       if (values.message!==undefined) args.push('--message='+values.message);
       if (nativeArgs.length) args.push('--',...nativeArgs);
-      run(bundle,'main',args);
+      run(bundle,'main',args,undefined,path.resolve(values['config-root']!));
     }
   }
 } catch (error) { console.error('error:',error instanceof Error ? error.message : error); process.exitCode=1; }

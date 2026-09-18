@@ -29,7 +29,7 @@ export const commands: Command[] = [
       {name: 'exec', description: 'Headless execution (no interactive terminal)', type: 'boolean'},
       {name: 'print-launch', description: 'Prepare a headless launch and print argv, cwd, bundle and env overrides as JSON. Consumers spawn the printed argv verbatim and must never assume argv[0] is the harness binary; it may be a wrapper with prefix arguments before the harness flags.', type: 'boolean'},
       {name: 'native-arg', description: 'Repeatable native argument, before the message; use --native-arg=--flag for flags', type: 'string'},
-      {name: 'config-root', description: 'Configuration directory', type: 'string', default: '~/.config/agent-farm'},
+      {name: 'config-root', description: 'Configuration directory, including host provider targeting in settings.json', type: 'string', default: '~/.config/agent-farm'},
     ],
     examples: [
       'agent-farm run planner',
