@@ -8,6 +8,7 @@ skills:
   - deep-dive
   - deep-dive-refresh
   - tech-deep-dive
+  - product-compare
   - researcher
   - research-web
   - explain-visually
