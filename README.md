@@ -153,10 +153,15 @@ agents, skill metadata, and workspace connections.
 
 ## Releasing
 
-Set `NPM_TOKEN` as a repository secret with permission to publish
-`@greenfieldco/agent-farm` in the `greenfieldco` npm organization. Bump the
-version in `package.json`, commit it, and push the commit. Then tag that commit
-and push the tag:
+Before the first release, open the package's Settings on npmjs.com, find
+Trusted Publisher, and select GitHub Actions. Set the organization to `dcouple`,
+repository to `agent-farm`, and workflow filename to `publish.yml`. Leave the
+environment name empty and allow direct publishing with `npm publish`.
+No npm token or repository secret is required. See the
+[npm Trusted Publishing documentation](https://docs.npmjs.com/trusted-publishers/).
+
+Bump the version in `package.json`, commit it, and push the commit. Then tag
+that commit and push the tag:
 
 ```sh
 git tag vX.Y.Z
@@ -164,7 +169,8 @@ git push origin vX.Y.Z
 ```
 
 The release workflow checks that the tag matches the package version, runs the
-tests, builds, and publishes the public package to npm with provenance.
+tests, builds, and publishes the public package using Trusted Publishing (OIDC).
+The workflow pins npm to `11.5.1`; npm automatically generates provenance.
 
 ## Documentation
 
