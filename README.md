@@ -55,35 +55,55 @@ them like this:
 
 ```
 ◆  What would you like to do?
-│  ● claude-quick-worker     claude · claude-opus-4-6[1m] · high
-│  ○ codex-quick-worker      codex · gpt-5.6-luna · max
-│  ○ claude-worker           claude · claude-fable-5-1 · high
-│  ○ codex-worker            codex · gpt-6-astra · medium
-│  ○ claude-pr-reviewer     claude · claude-opus-4-6 · high
-│  ○ codex-pr-reviewer      codex · gpt-5.5 · medium
+│  ● astra-discuss        codex · gpt-6-astra · high
+│  ○ astra-researcher     codex · gpt-6-astra · high
+│  ○ implementer          codex · gpt-6-astra · medium
 │  ─────────────────────
 │  + Create new profile
 │  ✎ Edit a profile
 │  ⊕ Inspect a profile
 ```
 
-**Quick workers** — `claude-quick-worker` (Opus 4.6, 1M context) and
-`codex-quick-worker` (Luna Max) do everything in a single session with no
-sub-agents. Discussion → simple plan → implement → PR in one pass. Best
-for focused work like landing pages, small features, and quick fixes.
+**Discussion** — `astra-discuss` clarifies intent and creates tickets.
+The default starting point.
 
-**Workers** — `claude-worker` (Fable 5.1) and `codex-worker` (Astra) take
-a ticket from discussion through planning and implementation to a prepared
-PR. Each leans into its harness's strengths — Codex uses native sub-agents
-for implementation and QA, Claude uses a streamlined discussion → plan →
-implement → PR pipeline.
+**Research** — `astra-researcher` runs deep dives, product comparisons,
+and visual field guides. Outputs to Grain, artifacts, or local files.
 
-**Reviewers** — `claude-pr-reviewer` and `codex-pr-reviewer` spawn 13
-parallel sub-agents to review a PR across independent principles (reuse,
-scope, security, spec fidelity, and more). Each sub-agent discovers the
-project's conventions first. Can optionally plan and apply fixes.
+**Implementation** — `implementer` takes a ticket through planning,
+implementation, review, and PR with sub-agents.
 
-Run `agent-farm profiles list` to see all installed profiles.
+**Experimental** — Agent Farm also ships experimental profiles that
+benchmark cheaper models (Luna, DeepSeek, GLM) against frontier models,
+test cross-harness workflows, and explore autonomous loop patterns like
+Gauntlet and Manager Loop. These change frequently — run
+`agent-farm profiles list` to see what's available.
+
+## Using third-party models via OpenRouter
+
+```sh
+# One-time setup
+export OPENROUTER_API_KEY="sk-or-..."
+echo 'export OPENROUTER_API_KEY="sk-or-..."' >> ~/.zshrc
+agent-farm provider set openrouter --base-url https://openrouter.ai/api --api-key-env OPENROUTER_API_KEY
+```
+
+Then add `"match": "slash-models"` to `~/.config/agent-farm/settings.json`:
+
+```json
+{
+  "provider": {
+    "name": "openrouter",
+    "base_url": "https://openrouter.ai/api",
+    "api_key_env": "OPENROUTER_API_KEY",
+    "match": "slash-models"
+  }
+}
+```
+
+Models with `/` in the slug route through OpenRouter. Native models use
+their harness directly. No switching between runs — see the
+[configuration reference](CONFIGURATION.md) for details.
 
 ## Four entry points
 
