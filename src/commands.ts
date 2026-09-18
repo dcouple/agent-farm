@@ -32,7 +32,7 @@ export const commands: Command[] = [
     examples: [
       'agent-farm run planner',
       'agent-farm run implementer --directory ~/repos/my-app',
-      'agent-farm run astra-planner --workspace my-project --message "Plan issue #42"',
+      'agent-farm run astra-discuss --workspace my-project --message "Plan issue #42"',
     ],
   },
   {
@@ -71,7 +71,7 @@ export const commands: Command[] = [
     ],
     examples: [
       'agent-farm inspect planner',
-      'agent-farm inspect astra-planner --workspace my-project',
+      'agent-farm inspect astra-discuss --workspace my-project',
     ],
   },
   {
@@ -131,7 +131,7 @@ export const commands: Command[] = [
       'agent-farm mcp login posthog --workspace bloomtext --harness claude',
       '',
       '# Then launch with the workspace:',
-      'agent-farm run astra-planner --workspace bloomtext',
+      'agent-farm run astra-discuss --workspace bloomtext',
     ],
   },
   {
