@@ -83,11 +83,15 @@ export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv,
   for (const name of names) link(path.join(selected,name),path.join(skills,name));
   env.CODEX_HOME=runtime; env.AGENT_FARM_NATIVE_CODEX_HOME=original; return runtime;
 }
-export interface LaunchOptions { headless?: boolean; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string }
+export interface LaunchOptions { headless?: boolean; nativeArgs?: string[]; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string }
 export function command(bundle: string, route: string, options: LaunchOptions = {}) {
   const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
   const agent=manifest.nodes[route]; if (!agent) throw new Error('Unknown bundled child');
   const directory=path.join(bundle,route); const env={...(options.env ?? process.env)};
+  const envOverrides: Record<string,string>={};
+  const nativeArgs=options.nativeArgs ?? [];
+  // Explicit native arguments own the mode and output format, including resume.
+  const defaultHeadless=options.headless && nativeArgs.length===0;
   let instructions=agent.instructions ?? '';
   if (Object.keys(agent.children).length) {
     instructions+='\nBundled children (use native delegation for native roles; process launchers accept --message; do not regenerate config):\n';
@@ -100,10 +104,14 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
     if (Object.keys(native).length) argv.push('--agents',JSON.stringify(native));
     if (agent.reasoning_effort) argv.push('--effort',agent.reasoning_effort);
     if (instructions) argv.push('--append-system-prompt',instructions);
-    if (options.headless) argv.push('--print','--output-format','json');
+    if (defaultHeadless) argv.push('--print','--output-format','json');
   } else {
-    if (options.prepare!==false) codexHome(bundle,route,env,options.home);
-    argv=['codex',...(options.headless ? ['exec','--skip-git-repo-check','--json'] : []),'--yolo','--cd',manifest.directory,'--model',agent.model];
+    if (options.prepare!==false) {
+      codexHome(bundle,route,env,options.home);
+      envOverrides.CODEX_HOME=env.CODEX_HOME!;
+      envOverrides.AGENT_FARM_NATIVE_CODEX_HOME=env.AGENT_FARM_NATIVE_CODEX_HOME!;
+    }
+    argv=['codex',...(defaultHeadless ? ['exec','--skip-git-repo-check','--json'] : []),'--yolo','--cd',manifest.directory,'--model',agent.model];
     if (instructions) argv.push('-c','developer_instructions='+JSON.stringify(instructions));
     if (agent.reasoning_effort) argv.push('-c','model_reasoning_effort='+JSON.stringify(agent.reasoning_effort));
     for (const [alias,childRoute] of Object.entries(agent.children)) if (manifest.nodes[childRoute]!.mode==='native') {
@@ -112,8 +120,9 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
     if (agent.speed) argv.push('-c','service_tier='+JSON.stringify(agent.speed==='fast' ? 'fast' : 'default'));
     for (const [key,value] of Object.entries(agent.connections)) argv.push('-c',`mcp_servers.${connectionName(key)}=${toml(codexConnection(value))}`);
   }
+  argv.push(...nativeArgs);
   if (options.message!==undefined) argv.push('--',options.message);
-  return {argv,env,cwd:manifest.directory};
+  return {argv,env,envOverrides,cwd:manifest.directory};
 }
 export function execute(argv: string[], cwd: string, environment: NodeJS.ProcessEnv): never {
   if (process.platform==='win32' || !process.execve) throw new Error('Native launch requires Node 22.15+ on macOS or Linux');
@@ -128,10 +137,14 @@ export function execute(argv: string[], cwd: string, environment: NodeJS.Process
   process.execve(executable,argv,env);
   throw new Error('Native exec unexpectedly returned');
 }
-export function run(bundle: string, route: string, args: string[]): void {
-  const {values}=parseArgs({args,options:{exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'}},strict:true});
+export function run(bundle: string, route: string, args: string[], launchCommand: typeof command = command): void {
+  const {values,tokens}=parseArgs({args,options:{exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true}},strict:true,allowPositionals:true,tokens:true});
+  const separator=tokens.find(t=>t.kind==='option-terminator')?.index ?? args.length;
+  if (tokens.some(t=>t.kind==='positional' && t.index<separator)) throw new Error('Native arguments must follow -- or use --native-arg');
+  if (values.explain && values['print-launch']) throw new Error('Choose only one of --explain or --print-launch');
   verify(bundle);
-  const launch=command(bundle,route,{headless:values.exec,message:values.message,prepare:!values.explain});
+  const launch=launchCommand(bundle,route,{headless:values.exec || values['print-launch'],nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain});
   if (values.explain) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle},null,2));
+  else if (values['print-launch']) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides},null,2));
   else execute(launch.argv,launch.cwd,launch.env);
 }

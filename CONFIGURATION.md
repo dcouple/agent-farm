@@ -66,6 +66,19 @@ These settings describe how Codex presents and invokes the skill. They do not
 declare child agents. The launcher preserves their bytes when translating the
 filename; it does not reinterpret policy or infer a Claude equivalent.
 
+## Prepared launches and native arguments
+
+`--print-launch` prints JSON containing `argv` (including `argv[0]`), `cwd`,
+`bundle`, and `env`; `env` contains only Agent Farm's own overrides, never
+inherited values. Native arguments go after `--` or through repeatable
+`--native-arg` options, precede the message, and replace the default headless
+flags when supplied. Consumers spawn the printed `argv` verbatim and must not
+assume `argv[0]` is the harness binary.
+
+```bash
+agent-farm run my-profile --print-launch --message 'Summarize this project' -- -p --output-format json
+```
+
 ## Source files versus native output
 
 | Authoring file | Generated Codex skill | Generated Claude skill |
