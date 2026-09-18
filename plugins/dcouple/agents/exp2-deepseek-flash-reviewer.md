@@ -1,5 +1,5 @@
 ---
-harness: claude
+harness: codex
 model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: high

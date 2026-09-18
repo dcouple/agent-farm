@@ -1,5 +1,5 @@
 ---
-harness: claude
+harness: codex
 model:
   name: z-ai/glm-5.3-flash
   reasoning: high
