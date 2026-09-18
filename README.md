@@ -55,13 +55,9 @@ them like this:
 
 ```
 ◆  What would you like to do?
-│  ● astra-discuss              codex · gpt-6-astra · high
-│  ○ astra-researcher           codex · gpt-6-astra · high
-│  ○ implementer                codex · gpt-6-astra · medium
-│  ○ exp1-luna-xhigh            codex · gpt-5.6-luna · xhigh
-│  ○ exp2-deepseek-flash        codex · deepseek/deepseek-v4.1-flash · max
-│  ○ exp3-glm-flash             codex · z-ai/glm-5.3-flash · max
-│  ○ exp9-meta-orchestrator     codex · gpt-6-astra · high
+│  ● astra-discuss        codex · gpt-6-astra · high
+│  ○ astra-researcher     codex · gpt-6-astra · high
+│  ○ implementer          codex · gpt-6-astra · medium
 │  ─────────────────────
 │  + Create new profile
 │  ✎ Edit a profile
@@ -77,20 +73,11 @@ and visual field guides. Outputs to Grain, artifacts, or local files.
 **Implementation** — `implementer` takes a ticket through planning,
 implementation, review, and PR with sub-agents.
 
-**Experimental** — cheap-model profiles for benchmarking cost vs quality:
-
-| Profile | Model | Cost/session | Pattern |
-|---|---|---|---|
-| `exp1-luna-xhigh` | Luna XHigh | ~$0.50–2 | Proven daily-driver |
-| `exp2-deepseek-flash` | DeepSeek V4.1 Flash | ~$0.09–0.50 | Highest bench scores |
-| `exp3-glm-flash` | GLM 5.3 Flash | ~$0.03–0.15 | Cheapest, multimodal |
-| `exp6-fable-gauntlet` | Fable 5.1 | ~$10–50 | Fan-out, harsh critic |
-| `exp7-astra-manager-loop` | Astra | ~$5–20 | Phased checklist |
-| `exp8-glm-deepseek-loop` | GLM + DeepSeek | ~$0.10–0.15 | Two cheap models |
-| `exp9-meta-orchestrator` | Astra | varies | Launches other profiles |
-| `exp10-luna-meta-orchestrator` | Luna XHigh | varies | Same, cheaper orchestration |
-
-Run `agent-farm profiles list` to see all installed profiles.
+**Experimental** — Agent Farm also ships experimental profiles that
+benchmark cheaper models (Luna, DeepSeek, GLM) against frontier models,
+test cross-harness workflows, and explore autonomous loop patterns like
+Gauntlet and Manager Loop. These change frequently — run
+`agent-farm profiles list` to see what's available.
 
 ## Using third-party models via OpenRouter
 
