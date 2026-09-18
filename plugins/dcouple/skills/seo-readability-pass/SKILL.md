@@ -61,7 +61,7 @@ Produce a severity-ranked list: NEEDS WORK > MINOR ISSUES > FINE.
 
 ### 3. Rewrite flagged pages
 
-**Page tier system — mandatory before any rewrite:**
+**Page tier system (mandatory before any rewrite):**
 
 Before rewriting, classify each flagged page using `.seo/data/` (run `seo-data-pull` first if no data exists or if `.seo/data/manifest.md` is older than its freshness window (default 24 hours)):
 

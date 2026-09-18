@@ -124,10 +124,10 @@ Ensure all dates display as "Month Day, Year" format everywhere (never ISO forma
 ### 6. SEO metadata pass
 
 Establish a brand title pattern and apply it everywhere:
-- Homepage: `[Brand] — [Tagline] | [Differentiators]`
-- Blog posts: `[Title] — [Brand]`
-- Landing pages: `[Title] — [Brand] | [Category descriptor]`
-- Explainer pages: `[Title] — [Brand]`
+- Homepage: `[Brand]: [Tagline] | [Differentiators]`
+- Blog posts: `[Title]: [Brand]`
+- Landing pages: `[Title]: [Brand] | [Category descriptor]`
+- Explainer pages: `[Title]: [Brand]`
 
 Update all meta descriptions to include key differentiator keywords and platform support (e.g., "Windows, Windows with WSL, macOS, Linux").
 

@@ -5,6 +5,7 @@ model:
   reasoning: high
 skills:
   - create-ticket
+  - ui-mockup
   - explain-visually
 description: Discuss intent and create actionable tickets and briefs.
 subagents:
