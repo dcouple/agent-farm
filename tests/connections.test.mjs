@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {build,resolve} from '../dist/compiler.js';
-import {command,codexHome,fileMap} from '../dist/runtime.js';
+import {command,codexHome,fileMap,files,verify} from '../dist/runtime.js';
 function setup(t) {
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'agent-farm-mcp-'));
  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
@@ -37,6 +37,63 @@ test('Claude gets stdio env references and identical remote identities in differ
  assert.equal(service.type,'stdio');assert.deepEqual(service.args,['a path with spaces','$(literal)']);
  assert.equal(service.env.MCP_TEST_SECRET,'${MCP_TEST_SECRET}');
  assert.equal(service.env.CLOUDSDK_CORE_PROJECT,'example-project');
+});
+test('bearer-by-env Linear joins profile connections in a strict Claude launch without persisting secrets',t=>{
+ const f=setup(t),secret='BEARER_SECRET_MUST_STAY_IN_CHILD_ENV';
+ const previous=process.env.LINEAR_API_KEY;
+ t.after(()=>{if(previous===undefined)delete process.env.LINEAR_API_KEY;else process.env.LINEAR_API_KEY=previous;});
+ process.env.LINEAR_API_KEY=secret;
+ f.put('workspaces/test.yaml',`connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    auth: bearer_env\n    env_var: LINEAR_API_KEY\n`);
+ f.put('agents/parent.yaml',`harness: claude\nmodel: test\nconnections:\n  profile_service:\n    type: mcp\n    command: node\nsubagents:\n  child:\n    agent: child\n    mode: native\n`);
+ f.put('agents/child.yaml','harness: claude\nmodel: test\n');
+ const b=f.build(),r=command(b,'main',{env:{LINEAR_API_KEY:secret},headless:true});
+ assert.ok(r.argv.includes('--strict-mcp-config'));
+ const configPath=r.argv[r.argv.indexOf('--mcp-config')+1];
+ assert.equal(configPath,path.join(b,'main/mcp.json'));
+ const config=JSON.parse(fs.readFileSync(configPath,'utf8'));
+ assert.deepEqual(Object.keys(config.mcpServers),['orchestra_linear','orchestra_profile_service']);
+ assert.deepEqual(config.mcpServers.orchestra_linear,{type:'http',url:'https://linear.example/mcp',headers:{Authorization:'Bearer ${LINEAR_API_KEY}'}});
+ assert.equal(config.mcpServers.orchestra_profile_service.command,'node');
+ assert.equal(r.env.LINEAR_API_KEY,secret);
+ assert.ok(!JSON.stringify(r.argv).includes(secret));
+ assert.equal(JSON.parse(fs.readFileSync(path.join(b,'manifest.json'),'utf8')).nodes.main.connections.linear.env_var,'LINEAR_API_KEY');
+ for(const file of files(b)) assert.ok(!fs.readFileSync(file,'utf8').includes(secret),file);
+ process.env.LINEAR_API_KEY='ROTATED_SECRET_STAYS_IN_CHILD_ENV';
+ assert.equal(f.build(),b);
+ assert.equal(command(b,'main').env.LINEAR_API_KEY,process.env.LINEAR_API_KEY);
+ verify(b);
+});
+test('bearer-by-env reaches Codex launch overrides and native child files as a variable name',t=>{
+ const f=setup(t),secret='CODEX_BEARER_MUST_NOT_BE_PERSISTED';
+ f.put('workspaces/test.yaml',`connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    auth: bearer_env\n    env_var: LINEAR_API_KEY\n`);
+ const b=f.build(),r=command(b,'main',{prepare:false,env:{LINEAR_API_KEY:secret}});
+ const setting=r.argv.find(a=>a.startsWith('mcp_servers.orchestra_linear='));
+ assert.match(setting,/"bearer_token_env_var" = "LINEAR_API_KEY"/);
+ assert.equal(r.env.LINEAR_API_KEY,secret);
+ assert.ok(!JSON.stringify(r.argv).includes(secret));
+ const child=fs.readFileSync(path.join(b,'main/native-agents/child.toml'),'utf8');
+ assert.match(child,/\[mcp_servers.orchestra_linear\]\nurl = "https:\/\/linear.example\/mcp"\nbearer_token_env_var = "LINEAR_API_KEY"/);
+ for(const file of files(b)) assert.ok(!fs.readFileSync(file,'utf8').includes(secret),file);
+ const parsed=spawnSync('codex',['-c',setting,'mcp','get','orchestra_linear','--json'],{encoding:'utf8',env:{...process.env,LINEAR_API_KEY:secret}});
+ if(!parsed.error){assert.equal(parsed.status,0,parsed.stderr);assert.equal(JSON.parse(parsed.stdout).transport.bearer_token_env_var,'LINEAR_API_KEY');}
+});
+test('bearer-by-env rejects missing or invalid variable names and mixed authentication before writing bundles',t=>{
+ const f=setup(t);
+ for(const auth of [
+  'auth: bearer_env',
+  'auth: bearer_env\n    env_var: ""',
+  'auth: bearer_env\n    env_var: 42',
+  'auth: bearer_env\n    env_var: [LINEAR_API_KEY]',
+  'auth: bearer_env\n    env_var: BAD-NAME',
+  'auth: bearer_env\n    env_var: 1TOKEN',
+  'auth: bearer_env\n    env_var: "${LINEAR_API_KEY}"',
+  'auth: native\n    env_var: LINEAR_API_KEY',
+  'auth: none\n    env_var: LINEAR_API_KEY',
+ ]){
+  f.put('workspaces/test.yaml','connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    '+auth+'\n');
+  assert.throws(()=>f.build(),/env_var/);
+ }
+ assert.equal(fs.existsSync(path.join(f.root,'one/.agent-farm')),false);
 });
 test('malformed or mixed MCP transports fail before bundles are written',t=>{
  const f=setup(t);
