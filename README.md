@@ -135,6 +135,16 @@ profiles and workspaces for you. To edit by hand:
 See the [configuration reference](CONFIGURATION.md) for file formats, child
 agents, skill metadata, and workspace connections.
 
+## Releases
+
+### 0.1.2
+
+- Interactive setup, diagnostics, and managed global skills and MCP connections.
+- Printable native launches with argument passthrough and stable Codex resume homes.
+- Environment-variable bearer authentication for HTTP MCP connections and provider targeting.
+- Bundled dcouple plugin 0.1.7 with updated profiles and skills.
+- Tag-validated npm publishing with package integrity checks and provenance.
+
 ## Releasing
 
 Set `NPM_TOKEN` as a repository secret with permission to publish

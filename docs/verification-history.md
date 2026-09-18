@@ -115,7 +115,7 @@ Live TypeScript CLI smoke check: native Claude and Codex TUIs opened in the scra
 
 ## Standalone Agent Farm extraction
 
-- Agent Farm v0.1.1 builds, typechecks, and passes 36 tests. This includes the
+- At extraction, Agent Farm built, typechecked, and passed 36 tests. This included the
   existing native launcher, skill load/unload, inspection, and metadata-layout
   checks plus plugin integrity and local-edit protection tests.
 - The private GitHub CLI dependency installs in dcouple/skills with a pinned
