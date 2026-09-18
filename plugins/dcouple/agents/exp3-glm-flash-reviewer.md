@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: glm-5.3-flash
+  name: z-ai/glm-5.3-flash
   reasoning: high
 description: "Review artifacts, plans, premises, and PRs. GLM Flash for review tasks."
 skills:

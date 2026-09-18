@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: glm-5.3-flash
+  name: z-ai/glm-5.3-flash
   reasoning: high
 description: "Implement assigned work within contract bounds. GLM Flash High for leaf tasks."
 skills:

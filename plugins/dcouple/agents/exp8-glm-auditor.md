@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: glm-5.3-flash
+  name: z-ai/glm-5.3-flash
   reasoning: high
 description: "Dalmia loop auditor. GLM Flash High for cold review, plan validation, and premise challenge."
 skills:

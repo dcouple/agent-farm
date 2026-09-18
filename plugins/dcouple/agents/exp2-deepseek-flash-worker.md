@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: deepseek-v4.1-flash
+  name: deepseek/deepseek-v4.1-flash
   reasoning: high
 description: "Implement assigned work within contract bounds. DeepSeek Flash High for leaf tasks."
 skills:

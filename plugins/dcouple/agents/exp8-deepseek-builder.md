@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: deepseek-v4.1-flash
+  name: deepseek/deepseek-v4.1-flash
   reasoning: high
 description: "Dalmia loop builder. DeepSeek V4.1 Flash High for raw implementation — the coding muscle."
 skills:

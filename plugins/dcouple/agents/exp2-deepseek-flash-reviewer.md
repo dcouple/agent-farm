@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: deepseek-v4.1-flash
+  name: deepseek/deepseek-v4.1-flash
   reasoning: high
 description: "Review artifacts, plans, premises, and PRs. DeepSeek Flash for review tasks."
 skills:
