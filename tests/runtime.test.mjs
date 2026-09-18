@@ -178,6 +178,72 @@ test('host provider settings parse and validate without leaking invalid input',t
  }
 });
 
+test('provider match rejects unsupported values at load and print without leaking them',t=>{
+ const f=fixture(t);
+ for(const match of ['SECRET-INVALID','',null,true,0,[],{}]) {
+  fs.writeFileSync(path.join(f.root,'settings.json'),JSON.stringify({provider:{...provider,match}}));
+  assert.throws(()=>loadProvider(f.root),/^Error: Provider match must be "all" or "slash-models"$/);
+  const result=f.invoke(['--print-launch']);
+  assert.equal(result.status,1);assert.equal(result.stdout,'');
+  assert.match(result.stderr,/Provider match must be "all" or "slash-models"/);
+  assert.equal(result.stderr.includes('SECRET-INVALID'),false);
+ }
+ assert.equal(fs.existsSync(f.record),false);
+});
+
+for(const harness of ['codex','claude'])for(const match of [undefined,'all','slash-models'])for(const slash of [false,true]) {
+ test(`${harness} provider match ${match ?? '(absent)'} ${slash ? 'routes slash model' : 'selects native model routing'}`,t=>{
+  const f=fixture(t,harness),model=slash ? 'deepseek/deepseek-v4.1-flash' : harness==='codex' ? 'gpt-6-astra' : 'claude-fable-5-1';
+  configureProvider(f,{...provider,...(match===undefined ? {} : {match})});
+  fs.writeFileSync(path.join(f.root,'agents/planner.yaml'),`harness: ${harness}\nmodel: ${model}\nskills: [proof]\n`);
+  const result=f.invoke(['--print-launch']);assert.equal(result.status,0,result.stderr);
+  const launch=JSON.parse(result.stdout),applied=match!=='slash-models' || slash;
+  const direct=command(launch.bundle,'main',{headless:true,home:f.home,env:f.env,configRoot:f.root});
+  assert.deepEqual(launch.argv,direct.argv);assert.deepEqual(launch.env,direct.envOverrides);
+  assert.equal(launch.argv[launch.argv.indexOf('--model')+1],model);
+  if(harness==='codex') {
+   const config=path.join(launch.env.CODEX_HOME,'config.toml');
+   assert.equal(fs.lstatSync(config).isSymbolicLink(),!applied);
+   if(applied)assert.equal(parseToml(fs.readFileSync(config,'utf8')).model_provider,provider.name);
+   else assert.equal(fs.realpathSync(config),path.join(f.home,'.codex/config.toml'));
+  } else {
+   assert.equal(launch.argv[0],applied ? process.execPath : 'claude');
+   assert.equal(launch.env.ANTHROPIC_BASE_URL,applied ? provider.base_url : undefined);
+   assert.equal(launch.env.ANTHROPIC_AUTH_TOKEN,applied ? '${CLIPROXY_API_KEY}' : undefined);
+   for(const alias of ['HAIKU','SONNET','OPUS','FABLE'])assert.equal(launch.env['ANTHROPIC_DEFAULT_'+alias+'_MODEL'],applied ? model : undefined);
+  }
+  assert.equal(fs.readFileSync(path.join(f.home,'.codex/config.toml'),'utf8'),'');
+  assert.equal(fs.existsSync(f.record),false);assertNoSecrets(launch,result.stdout);
+ });
+}
+
+for(const parentSlash of [false,true])for(const childSlash of [false,true]) {
+ test(`slash-models process child uses host settings with ${parentSlash ? 'slash' : 'native'} parent and ${childSlash ? 'slash' : 'native'} child`,t=>{
+  const f=fixture(t);configureProvider(f,{...provider,match:'slash-models'});
+  const model=slash=>slash ? 'deepseek/deepseek-v4.1-flash' : 'gpt-6-astra';
+  fs.writeFileSync(path.join(f.root,'agents/planner.yaml'),`harness: codex\nmodel: ${model(parentSlash)}\nskills: [proof]\nsubagents: {worker: {agent: implementer, mode: process}}\n`);
+  fs.writeFileSync(path.join(f.root,'agents/implementer.yaml'),`harness: codex\nmodel: ${model(childSlash)}\nskills: [proof]\n`);
+  const result=f.invoke(['--print-launch']);assert.equal(result.status,0,result.stderr);
+  const parent=JSON.parse(result.stdout);
+  assert.equal(parent.env.AGENT_FARM_CONFIG_ROOT,f.root);
+  const child=spawnSync(path.join(parent.bundle,'main/dispatch/worker'),['--print-launch'],{env:{...f.env,...parent.env},encoding:'utf8'});
+  assert.equal(child.status,0,child.stderr);const launch=JSON.parse(child.stdout);
+  const direct=command(parent.bundle,'main/children/worker',{headless:true,home:f.home,env:{...f.env,...parent.env}});
+  assert.deepEqual(launch.argv,direct.argv);assert.deepEqual(launch.env,direct.envOverrides);
+  const config=path.join(launch.env.CODEX_HOME,'config.toml');
+  assert.equal(fs.lstatSync(config).isSymbolicLink(),!childSlash);
+  if(childSlash)assert.equal(parseToml(fs.readFileSync(config,'utf8')).model_provider,provider.name);
+  else assert.equal(fs.realpathSync(config),path.join(f.home,'.codex/config.toml'));
+  assert.equal(fs.existsSync(f.record),false);assertNoSecrets(launch,child.stdout);
+  configureProvider(f);
+  const updated=spawnSync(path.join(parent.bundle,'main/dispatch/worker'),['--print-launch'],{env:{...f.env,...parent.env},encoding:'utf8'});
+  assert.equal(updated.status,0,updated.stderr);const routed=JSON.parse(updated.stdout);
+  assert.equal(routed.bundle,parent.bundle);
+  assert.equal(parseToml(fs.readFileSync(path.join(routed.env.CODEX_HOME,'config.toml'),'utf8')).model_provider,provider.name);
+  assertNoSecrets(routed,updated.stdout);
+ });
+}
+
 test('Codex provider configuration routes the profile without copying native config or secrets',t=>{
  const f=fixture(t);configureProvider(f);
  const native=path.join(f.home,'.codex/config.toml'),nativeText='model_provider = "openai"\n# NATIVE-CONFIG-SECRET\n';

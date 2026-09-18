@@ -198,7 +198,7 @@ test('shipped Astra profiles package all declared workflow roles and their own s
  }
  assert.deepEqual(m.nodes['main/children/qa'].skills,['pr-test-automation']);
  assert.deepEqual(m.nodes['main/children/cold-reader'].skills,['cold-read']);
- const p=build(f.root,'astra-planner',f.target),pm=JSON.parse(fs.readFileSync(path.join(p,'manifest.json')));
+ const p=build(f.root,'astra-discuss',f.target),pm=JSON.parse(fs.readFileSync(path.join(p,'manifest.json')));
  assert.deepEqual(Object.keys(pm.nodes.main.children),['socrates']);
 });
 

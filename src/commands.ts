@@ -142,7 +142,7 @@ export const commands: Command[] = [
     name: 'provider set',
     usage: 'agent-farm provider set NAME --base-url URL --api-key-env VAR',
     group: 'configure',
-    description: 'Configure a model provider (e.g. OpenRouter) for profiles that use provider-routed models (slugs with /). Native models skip the provider automatically.',
+    description: 'Configure a model provider for all launches by default. Set provider.match to "slash-models" in settings.json to route only model slugs containing /.',
     flags: [
       {name: 'base-url', description: 'Provider API base URL', type: 'string'},
       {name: 'api-key-env', description: 'Environment variable holding the API key', type: 'string'},
