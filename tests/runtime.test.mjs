@@ -90,6 +90,34 @@ test('repeatable native arguments precede terminator arguments and native help b
  assert.equal(repeated.status,0,repeated.stderr);assert.deepEqual(JSON.parse(repeated.stdout).argv.slice(-2),['exec','--help']);
 });
 
+test('print-launch preserves a wrapper executable and prefix for verbatim spawning before native flags and message',t=>{
+ for(const harness of ['claude','codex']) {
+  const f=fixture(t,harness),bundle=build(f.root,'planner',f.target);
+  const wrapper=path.join(f.bin,'launch-wrapper'),wrapperRecord=path.join(f.base,'wrapper.json');
+  const prefix=['--wrapper-label','label with spaces','--'];
+  // Replace the wrapper with the harness so neither it nor Agent Farm reads stdio.
+  fs.writeFileSync(wrapper,`#!${process.execPath}\nconst fs=require('node:fs'),path=require('node:path');const input=process.argv.slice(2);fs.writeFileSync(${JSON.stringify(wrapperRecord)},JSON.stringify(input));const [flag,label,separator,bin,...args]=input;require('node:assert/strict').deepEqual([flag,label,separator],${JSON.stringify(prefix)});process.execve(path.join(__dirname,bin),[bin,...args],process.env);\n`,{mode:0o755});
+  const message='Continue ENG-123\n$(literal)',native=harness==='codex' ? ['exec','resume','thread with spaces','--json'] : ['-p','--output-format','stream-json','--verbose','--resume','session id'];
+  const runtime=new URL('../dist/runtime.js',import.meta.url).href;
+  // Compose a future wrapper-style command through the normal run/print path.
+  const script=`import {command,run} from ${JSON.stringify(runtime)};run(${JSON.stringify(bundle)},'main',process.argv.slice(1),(...args)=>{const launch=command(...args);return {...launch,argv:[${JSON.stringify(wrapper)},...${JSON.stringify(prefix)},...launch.argv]};});`;
+  const result=spawnSync(process.execPath,['--input-type=module','--eval',script,'--','--print-launch','--message',message,'--',...native],{env:f.env,encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr);assert.equal(result.stderr,'');const launch=JSON.parse(result.stdout);
+  assert.deepEqual(launch.argv.slice(0,5),[wrapper,...prefix,harness]);
+  assert.equal(['claude','codex'].includes(launch.argv[0]),false);
+  assert.deepEqual(launch.argv.slice(-native.length-2),[...native,'--',message]);
+  assert.equal(fs.existsSync(wrapperRecord),false);assert.equal(fs.existsSync(f.record),false);
+  const [bin,...args]=launch.argv;
+  const execution=spawnSync(bin,args,{cwd:launch.cwd,env:{...f.env,...launch.env},encoding:'utf8'});
+  assert.equal(execution.status,7,execution.stderr);assert.equal(execution.stdout,stdout);assert.equal(execution.stderr,stderr);
+  assert.deepEqual(JSON.parse(fs.readFileSync(wrapperRecord)),launch.argv.slice(1));
+  const record=JSON.parse(fs.readFileSync(f.record));
+  assert.deepEqual(record.args,launch.argv.slice(5));assert.equal(record.cwd,launch.cwd);
+  if(harness==='codex')assert.equal(record.home,launch.env.CODEX_HOME);
+  verify(bundle);
+ }
+});
+
 test('standalone bundled dispatch supports prepared prints and both passthrough forms',t=>{
  const f=fixture(t,'claude');
  fs.appendFileSync(path.join(f.root,'agents/planner.yaml'),'subagents: {worker: {agent: implementer, mode: process}}\n');

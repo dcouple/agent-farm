@@ -27,7 +27,7 @@ export const commands: Command[] = [
       {name: 'build', description: 'Generate the bundle and print its path (no launch)', type: 'boolean'},
       {name: 'explain', description: 'Print the resolved launch command as JSON (no launch)', type: 'boolean'},
       {name: 'exec', description: 'Headless execution (no interactive terminal)', type: 'boolean'},
-      {name: 'print-launch', description: 'Prepare a headless launch and print argv, cwd, bundle and env overrides as JSON', type: 'boolean'},
+      {name: 'print-launch', description: 'Prepare a headless launch and print argv, cwd, bundle and env overrides as JSON. Consumers spawn the printed argv verbatim and must never assume argv[0] is the harness binary; it may be a wrapper with prefix arguments before the harness flags.', type: 'boolean'},
       {name: 'native-arg', description: 'Repeatable native argument, before the message; use --native-arg=--flag for flags', type: 'string'},
       {name: 'config-root', description: 'Configuration directory', type: 'string', default: '~/.config/agent-farm'},
     ],

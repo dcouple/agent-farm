@@ -132,13 +132,13 @@ export function execute(argv: string[], cwd: string, environment: NodeJS.Process
   process.execve(executable,argv,env);
   throw new Error('Native exec unexpectedly returned');
 }
-export function run(bundle: string, route: string, args: string[]): void {
+export function run(bundle: string, route: string, args: string[], launchCommand: typeof command = command): void {
   const {values,tokens}=parseArgs({args,options:{exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true}},strict:true,allowPositionals:true,tokens:true});
   const separator=tokens.find(t=>t.kind==='option-terminator')?.index ?? args.length;
   if (tokens.some(t=>t.kind==='positional' && t.index<separator)) throw new Error('Native arguments must follow -- or use --native-arg');
   if (values.explain && values['print-launch']) throw new Error('Choose only one of --explain or --print-launch');
   verify(bundle);
-  const launch=command(bundle,route,{headless:values.exec || values['print-launch'],nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain});
+  const launch=launchCommand(bundle,route,{headless:values.exec || values['print-launch'],nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain});
   if (values.explain) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle},null,2));
   else if (values['print-launch']) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides},null,2));
   else execute(launch.argv,launch.cwd,launch.env);

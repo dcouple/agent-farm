@@ -76,6 +76,9 @@ without starting a harness. `env` contains only Agent Farm's resolved overrides:
 Claude. Merge these into the child environment, including any credentials supplied
 by the caller. Inherited environment variables and secret values are not printed.
 The caller owns spawning, stdio, process groups, and cancellation.
+Consumers spawn the printed `argv` verbatim and must never assume `argv[0]` is
+the harness binary. It may be a wrapper with prefix arguments before the harness
+flags, allowing launch indirection without Agent Farm sitting in the stdio path.
 
 Supply native arguments after `--`, or with repeatable `--native-arg` options.
 Use `--native-arg=--flag` for values starting with a dash. Repeated options come
