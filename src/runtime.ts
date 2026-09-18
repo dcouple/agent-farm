@@ -6,16 +6,21 @@ import { parseArgs } from 'node:util';
 
 export type Connection =
   | { type: 'mcp'; description?: string; url: string; auth: 'native' | 'none' }
+  | { type: 'mcp'; description?: string; url: string; auth: 'bearer_env'; env_var: string }
   | { type: 'mcp'; description?: string; command: string; args: string[]; env: Record<string,string>; env_vars: string[] };
 // Keep registration names stable across repositories and generated runtime homes.
 export const connectionName = (name: string): string => 'orchestra_'+name;
 export function claudeConnection(value: Connection) {
-  if ('url' in value) return {type:'http',url:value.url};
+  // Claude expands header references from its child environment at launch.
+  if ('url' in value) return {type:'http',url:value.url,
+    ...(value.auth==='bearer_env' ? {headers:{Authorization:'Bearer ${'+value.env_var+'}'}} : {})};
   return {type:'stdio',command:value.command,args:value.args,
     env:{...Object.fromEntries(value.env_vars.map(key=>[key,'${'+key+'}'])),...value.env}};
 }
 export function codexConnection(value: Connection): Record<string,unknown> {
-  return 'url' in value ? {url:value.url} : {command:value.command,args:value.args,env:value.env,env_vars:value.env_vars};
+  return 'url' in value ? {url:value.url,
+    ...(value.auth==='bearer_env' ? {bearer_token_env_var:value.env_var} : {})}
+    : {command:value.command,args:value.args,env:value.env,env_vars:value.env_vars};
 }
 // TOML values, including quoted environment-map keys; never expand secrets here.
 export function toml(value: unknown): string {

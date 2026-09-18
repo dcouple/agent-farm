@@ -151,6 +151,27 @@ repository. `env` contains literal **non-secret** settings. `env_vars` names
 variables inherited at launch, without resolving their values into the bundle.
 Do not put tokens in URLs, arguments, or literal environment values.
 
+For an HTTPS server that accepts an API-key bearer, name the child environment
+variable instead of storing the token:
+
+```yaml
+connections:
+  linear:
+    type: mcp
+    url: https://YOUR-LINEAR-MCP-SERVER.example/mcp
+    auth: bearer_env
+    env_var: LINEAR_API_KEY
+```
+
+Supply `LINEAR_API_KEY` in the native client's environment at launch. Claude
+receives `Authorization: Bearer ${LINEAR_API_KEY}` and expands the reference
+when it loads the MCP configuration. Codex receives
+`bearer_token_env_var = "LINEAR_API_KEY"`, including in native child-agent files.
+The bundle and launch arguments contain only the variable name, never its value.
+`env_var` is required for `bearer_env` and is invalid for `native` or `none`.
+Bearer connections do not use the OAuth login command. Claude continues to use
+strict MCP mode with workspace and agent connections in the same configuration.
+
 Claude receives an HTTP/stdio MCP JSON configuration; Codex receives equivalent
 native configuration, including native child-agent files. Claude native children
 inherit their parent's connections. Process children receive their own generated
