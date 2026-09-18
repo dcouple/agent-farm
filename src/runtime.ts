@@ -70,7 +70,7 @@ function link(source: string, destination: string): void {
     if (!current.isSymbolicLink() || fs.realpathSync(destination) !== fs.realpathSync(source)) throw new Error(`Conflicting runtime path: ${destination}`);
   } else fs.symlinkSync(source,destination);
 }
-export interface Provider { name: string; base_url: string; api_key_env: string }
+export interface Provider { name: string; base_url: string; api_key_env: string; match?: 'all' | 'slash-models' }
 export function loadProvider(root: string): Provider | undefined {
   const file=path.join(root,'settings.json');
   let text: string;
@@ -84,7 +84,8 @@ export function loadProvider(root: string): Provider | undefined {
   if (!mapping(settings) || Object.keys(settings).some(k=>k!=='provider')) throw new Error('Host settings support only provider');
   if (settings.provider===undefined) return;
   const value=settings.provider;
-  if (!mapping(value) || Object.keys(value).some(k=>!['name','base_url','api_key_env'].includes(k))) throw new Error('Provider supports only name, base_url, and api_key_env');
+  if (!mapping(value) || Object.keys(value).some(k=>!['name','base_url','api_key_env','match'].includes(k))) throw new Error('Provider supports only name, base_url, api_key_env, and match');
+  if (value.match!==undefined && value.match!=='all' && value.match!=='slash-models') throw new Error('Provider match must be "all" or "slash-models"');
   if (typeof value.name!=='string' || !/^[a-z][a-z0-9_-]{0,63}$/.test(value.name) || value.name==='openai') throw new Error('Provider name must be a lowercase configuration name other than openai');
   if (typeof value.api_key_env!=='string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(value.api_key_env)) throw new Error('Provider api_key_env must name an environment variable');
   if (['CODEX_HOME','AGENT_FARM_NATIVE_CODEX_HOME','AGENT_FARM_CONFIG_ROOT','ANTHROPIC_BASE_URL','ANTHROPIC_AUTH_TOKEN',...['HAIKU','SONNET','OPUS','FABLE'].map(alias=>`ANTHROPIC_DEFAULT_${alias}_MODEL`)].includes(value.api_key_env)) throw new Error('Provider api_key_env must not name a launch override');
@@ -92,7 +93,7 @@ export function loadProvider(root: string): Provider | undefined {
   let url: URL;
   try { url=new URL(value.base_url); } catch { throw new Error('Provider base_url must be an HTTP(S) endpoint'); }
   if (!['http:','https:'].includes(url.protocol) || !url.hostname || url.username || url.password || url.search || url.hash) throw new Error('Provider base_url must be an HTTP(S) endpoint without credentials or query parameters');
-  return {name:value.name,base_url:value.base_url,api_key_env:value.api_key_env};
+  return {name:value.name,base_url:value.base_url,api_key_env:value.api_key_env,...(value.match===undefined ? {} : {match:value.match})};
 }
 const providerConfigMarker='# Agent Farm generated provider configuration\n';
 function codexConfig(original: string, runtime: string, provider?: Provider): void {
@@ -156,10 +157,10 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
   const envOverrides: Record<string,string>={};
   const configRoot=path.resolve(options.configRoot ?? env.AGENT_FARM_CONFIG_ROOT ?? path.join(options.home ?? os.homedir(),'.config/agent-farm'));
   const providerConfig=loadProvider(configRoot);
-  // Only apply the provider when the model slug contains '/' (e.g. deepseek/deepseek-v4.1-flash).
-  // Native models (gpt-6-astra, claude-fable-5-1) skip the provider and use their harness directly.
-  const provider=providerConfig && agent.model.includes('/') ? providerConfig : undefined;
-  if (provider) envOverrides.AGENT_FARM_CONFIG_ROOT=configRoot;
+  // Hosts can opt into slash-only routing (e.g. deepseek/deepseek-v4.1-flash).
+  const provider=providerConfig && (providerConfig.match!=='slash-models' || agent.model.includes('/')) ? providerConfig : undefined;
+  // Process children must read the same host settings even when this model skips routing.
+  if (providerConfig) envOverrides.AGENT_FARM_CONFIG_ROOT=configRoot;
   const nativeArgs=options.nativeArgs ?? [];
   // Explicit native arguments own the mode and output format, including resume.
   const defaultHeadless=options.headless && nativeArgs.length===0;

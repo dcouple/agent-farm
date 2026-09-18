@@ -108,8 +108,8 @@ try {
       console.log(`  name: ${positionals[2]}`);
       console.log(`  base_url: ${baseUrl}`);
       console.log(`  api_key_env: ${apiKeyEnv}`);
-      console.log(`\nProfiles with vendor-prefixed model slugs (e.g. deepseek/deepseek-v4.1-flash) will route through this provider.`);
-      console.log(`Native models (e.g. gpt-6-astra, claude-fable-5-1) will use their harness directly.`);
+      console.log('\nAll launches will route through this provider by default.');
+      console.log('Set provider.match to "slash-models" in settings.json to route only model slugs containing /.');
       if (!process.env[apiKeyEnv]) console.log(`\nWarning: ${apiKeyEnv} is not set in your environment. Export it before launching a profile.`);
     } else if (operation==='show') {
       if (fs.existsSync(settingsPath)) {

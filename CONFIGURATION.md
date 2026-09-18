@@ -96,13 +96,16 @@ To route launches through an API gateway, create `settings.json` in
   "provider": {
     "name": "gateway",
     "base_url": "http://127.0.0.1:8317",
-    "api_key_env": "GATEWAY_API_KEY"
+    "api_key_env": "GATEWAY_API_KEY",
+    "match": "all"
   }
 }
 ```
 
 Supply the named variable in the child's environment. This host setting is read
 at launch, stays outside plugins and bundles, and applies to both harnesses.
+`match: "all"` routes every launch through the provider and is the default when the field is absent.
+`match: "slash-models"` routes only model slugs containing `/` through the provider; other models use their native harness and login.
 The name must start with a lowercase letter, use letters, digits, underscores or hyphens, and
 must differ from the built-in `openai` provider. The URL may use HTTP or HTTPS
 and must contain no credentials, query, or fragment. `api_key_env` must name an
