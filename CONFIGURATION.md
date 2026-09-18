@@ -94,18 +94,32 @@ To route launches through an API gateway, create `settings.json` in
 ```json
 {
   "provider": {
-    "name": "gateway",
-    "base_url": "http://127.0.0.1:8317",
-    "api_key_env": "GATEWAY_API_KEY",
-    "match": "all"
+    "name": "openrouter",
+    "base_url": "https://openrouter.ai/api",
+    "api_key_env": "OPENROUTER_API_KEY",
+
+    // "slash-models" — route only vendor-prefixed slugs (e.g. deepseek/deepseek-v4.1-flash)
+    //   through the provider. Native models (gpt-6-astra, claude-fable-5-1) use their
+    //   harness directly. Use this when you have native subscriptions (Codex, Claude Code)
+    //   AND want to use third-party models via OpenRouter without paying the gateway fee
+    //   on models you already have access to.
+    //
+    // "all" — route every launch through the provider, including native models.
+    //   Use this for a corporate proxy, a single billing gateway, or when you don't
+    //   have native subscriptions and want everything on one API key.
+    "match": "slash-models"
   }
 }
 ```
 
+> **Which `match` should I use?**
+> - You have a Codex/Claude Code subscription AND use OpenRouter for third-party models → `"slash-models"`
+> - Everything goes through one gateway (corporate proxy, single API key) → `"all"`
+
 Supply the named variable in the child's environment. This host setting is read
 at launch, stays outside plugins and bundles, and applies to both harnesses.
 `match: "all"` routes every launch through the provider and is the default when the field is absent.
-`match: "slash-models"` routes only model slugs containing `/` through the provider; other models use their native harness and login.
+`match: "slash-models"` routes only model slugs containing `/` (like `deepseek/deepseek-v4.1-flash` or `z-ai/glm-5.3-flash`) through the provider; models without `/` (like `gpt-6-astra` or `claude-fable-5-1`) use their native harness and login.
 The name must start with a lowercase letter, use letters, digits, underscores or hyphens, and
 must differ from the built-in `openai` provider. The URL may use HTTP or HTTPS
 and must contain no credentials, query, or fragment. `api_key_env` must name an
