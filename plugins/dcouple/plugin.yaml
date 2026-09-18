@@ -16,6 +16,7 @@ checksums:
   agents/exp1-luna-xhigh-reviewer.md: 4822cd74d11510e5f94ff9e28a85e3ef1f142c353d4fee7f0b9f6796a595d55b
   agents/exp1-luna-xhigh-worker.md: 78de8c0a9c416275d0468234bd9c13eed00ef66cf7e0bb914d5e8ae302615901
   agents/exp1-luna-xhigh.md: 003a4ebb213341e4d6ebcbc53c801869b834cf3d9d2e62a3c8353cac1547af35
+  agents/exp10-luna-meta-orchestrator.md: 5a67c0c3cc88b1251864c8ebd66d62cdf3ff66d3a283c710b1ada8dbb5a1eb4c
   agents/exp2-deepseek-flash-reviewer.md: 10fc8f2af6c2286bbef0488ebb2f8ba3ed8a5351a998a18651f1e494d82d32df
   agents/exp2-deepseek-flash-worker.md: 220aacca3f2748c79df9b5524e1560a01192b1c82f3edc2517cf97e60e2c0465
   agents/exp2-deepseek-flash.md: 2f5b48f7df676a8e7b3d9c7d012d77b5c89ca6116563f049c6106c259eb29303
@@ -55,6 +56,7 @@ checksums:
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
   profiles/exp1-luna-xhigh.yaml: aa55db7f0d1d9076d58e75965ebbb3d91c1505d1af8f2c683780f3e5ae3d8e27
+  profiles/exp10-luna-meta-orchestrator.yaml: 0460525a17aa4f3f70f166a7faefd1673fd428096f120c87b3bcfa0e722dcc6b
   profiles/exp2-deepseek-flash.yaml: 5860951bd344161f104a5325db05bc5a79479d01e69fe49cad1d61da74104a2a
   profiles/exp3-glm-flash.yaml: 5fbf3a970eb6fbc34b4b723e61be7f85e124f52f64921e343b427a7e6026588a
   profiles/exp4-luna-deepseek-split.yaml: 2d826a5bdc57193be4d71d1c8a5b39cdbfa357d4c9eda25f065d2fe843bd6ff4
