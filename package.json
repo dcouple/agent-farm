@@ -1,5 +1,5 @@
 {
-  "name": "@dcouple/agent-farm",
+  "name": "@greenfieldco/agent-farm",
   "version": "0.1.2",
   "publishConfig": {
     "access": "public"

@@ -24,6 +24,12 @@ Requires **Node 22.15+**, macOS or Linux, and the Claude Code and/or Codex CLI
 installed and authenticated.
 
 ```sh
+npm install --global @greenfieldco/agent-farm
+```
+
+Or install from source:
+
+```sh
 git clone https://github.com/dcouple/agent-farm.git
 cd agent-farm
 pnpm install --frozen-lockfile && pnpm build
@@ -148,8 +154,9 @@ agents, skill metadata, and workspace connections.
 ## Releasing
 
 Set `NPM_TOKEN` as a repository secret with permission to publish
-`@dcouple/agent-farm`. Bump the version in `package.json`, commit it, and push
-the commit. Then tag that commit and push the tag:
+`@greenfieldco/agent-farm` in the `greenfieldco` npm organization. Bump the
+version in `package.json`, commit it, and push the commit. Then tag that commit
+and push the tag:
 
 ```sh
 git tag vX.Y.Z
