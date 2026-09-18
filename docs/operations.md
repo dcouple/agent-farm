@@ -64,7 +64,7 @@ migration merged in [skills PR #114](https://github.com/dcouple/skills/pull/114)
 and the generated package merged in
 [Agent Farm PR #3](https://github.com/dcouple/agent-farm/pull/3).
 Run `agent-farm plugin install` after updating the CLI checkout to apply the
-bundled configuration. CLI v0.1.1 and plugin versions are independent.
+bundled configuration. CLI v0.1.2 and plugin versions are independent.
 
 ## Verification boundaries
 
