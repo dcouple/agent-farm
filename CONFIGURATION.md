@@ -79,6 +79,13 @@ assume `argv[0]` is the harness binary.
 agent-farm run my-profile --print-launch --message 'Summarize this project' -- -p --output-format json
 ```
 
+For the same profile, workspace, and canonical repository directory, Agent Farm
+keeps the runtime Codex home and its session files stable across plugin updates,
+profile edits, and Agent Farm upgrades, so later launches can resume the same
+thread. A different profile, workspace, or directory uses a different home;
+process child routes also have separate homes. Bundles remain content-addressed
+and integrity-checked, while skill links in the runtime home refresh on launch.
+
 ## Source files versus native output
 
 | Authoring file | Generated Codex skill | Generated Claude skill |
