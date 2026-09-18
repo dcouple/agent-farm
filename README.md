@@ -50,43 +50,58 @@ how everything fits together, and offers to launch your first session.
 
 ## Profiles
 
-Agent Farm ships with profiles for discussion, research, implementation, and
-experimentation. Run `agent-farm profiles list` to see all installed profiles.
+Agent Farm ships with profiles ready to use. The interactive launcher shows
+them like this:
 
-**Core profiles:**
+```
+◆  What would you like to do?
+│  ● astra-discuss              codex · gpt-6-astra · high
+│  ○ astra-researcher           codex · gpt-6-astra · high
+│  ○ implementer                codex · gpt-6-astra · medium
+│  ○ exp1-luna-xhigh            codex · gpt-5.6-luna · xhigh
+│  ○ exp2-deepseek-flash        codex · deepseek/deepseek-v4.1-flash · max
+│  ○ exp3-glm-flash             codex · z-ai/glm-5.3-flash · max
+│  ○ exp9-meta-orchestrator     codex · gpt-6-astra · high
+│  ─────────────────────
+│  + Create new profile
+│  ✎ Edit a profile
+│  ⊕ Inspect a profile
+```
 
-- `astra-discuss` — discuss work, clarify intent, create tickets and Grain briefs. The default starting point for any new task.
-- `astra-researcher` — deep dives, tech research, product comparisons, visual field guides. Outputs to Grain, artifacts, or local files.
-- `implementer` — take a ticket through planning, implementation, review, and PR.
+**Discussion** — `astra-discuss` clarifies intent and creates tickets.
+The default starting point.
 
-**Experimental profiles** — benchmark cheap models against the frontier:
+**Research** — `astra-researcher` runs deep dives, product comparisons,
+and visual field guides. Outputs to Grain, artifacts, or local files.
 
-- `exp1-luna-xhigh` — pure Luna XHigh stack on Codex. Proven daily-driver.
-- `exp2-deepseek-flash` — DeepSeek V4.1 Flash on Codex via OpenRouter. Highest bench scores among cheap models.
-- `exp3-glm-flash` — GLM 5.3 Flash on Codex via OpenRouter. Cheapest per-session.
-- `exp6-fable-gauntlet` — Fable 5.1 Gauntlet Loop. Fan-out, harsh critic, blind compare.
-- `exp7-astra-manager-loop` — Astra Manager Loop. Phased checklist, parallel workers.
-- `exp8-glm-deepseek-loop` — GLM plans, DeepSeek builds, GLM audits. Two cheap models in complementary roles.
-- `exp9-meta-orchestrator` — Astra orchestrates and delegates to other profiles across harnesses.
-- `exp10-luna-meta-orchestrator` — same as exp9 but on Luna XHigh for cheaper orchestration.
+**Implementation** — `implementer` takes a ticket through planning,
+implementation, review, and PR with sub-agents.
+
+**Experimental** — cheap-model profiles for benchmarking cost vs quality:
+
+| Profile | Model | Cost/session | Pattern |
+|---|---|---|---|
+| `exp1-luna-xhigh` | Luna XHigh | ~$0.50–2 | Proven daily-driver |
+| `exp2-deepseek-flash` | DeepSeek V4.1 Flash | ~$0.09–0.50 | Highest bench scores |
+| `exp3-glm-flash` | GLM 5.3 Flash | ~$0.03–0.15 | Cheapest, multimodal |
+| `exp6-fable-gauntlet` | Fable 5.1 | ~$10–50 | Fan-out, harsh critic |
+| `exp7-astra-manager-loop` | Astra | ~$5–20 | Phased checklist |
+| `exp8-glm-deepseek-loop` | GLM + DeepSeek | ~$0.10–0.15 | Two cheap models |
+| `exp9-meta-orchestrator` | Astra | varies | Launches other profiles |
+| `exp10-luna-meta-orchestrator` | Luna XHigh | varies | Same, cheaper orchestration |
+
+Run `agent-farm profiles list` to see all installed profiles.
 
 ## Using third-party models via OpenRouter
 
-Agent Farm can route profiles with vendor-prefixed model slugs (like
-`deepseek/deepseek-v4.1-flash`) through OpenRouter while keeping native
-models on their harness. One-time setup:
-
 ```sh
+# One-time setup
 export OPENROUTER_API_KEY="sk-or-..."
 echo 'export OPENROUTER_API_KEY="sk-or-..."' >> ~/.zshrc
-
-agent-farm provider set openrouter \
-  --base-url https://openrouter.ai/api \
-  --api-key-env OPENROUTER_API_KEY
+agent-farm provider set openrouter --base-url https://openrouter.ai/api --api-key-env OPENROUTER_API_KEY
 ```
 
-Then set `"match": "slash-models"` in `~/.config/agent-farm/settings.json`
-so native models (gpt-6-astra, claude-fable-5-1) skip the provider:
+Then add `"match": "slash-models"` to `~/.config/agent-farm/settings.json`:
 
 ```json
 {
@@ -99,8 +114,9 @@ so native models (gpt-6-astra, claude-fable-5-1) skip the provider:
 }
 ```
 
-After that, all profiles route automatically — no switching between runs.
-See the [configuration reference](CONFIGURATION.md) for details on `match` modes.
+Models with `/` in the slug route through OpenRouter. Native models use
+their harness directly. No switching between runs — see the
+[configuration reference](CONFIGURATION.md) for details.
 
 ## Four entry points
 
