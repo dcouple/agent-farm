@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import {spawnSync} from 'node:child_process';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 import {build} from '../dist/compiler.js';
 import {command,fileMap,verify} from '../dist/runtime.js';
 
@@ -45,6 +45,102 @@ test('print-launch prepares Codex bundle and home exactly as exec, without launc
   assert.equal(result.stdout.includes(secret),false);
   for(const relative of Object.keys(fileMap(launch.bundle)))assert.equal(fs.readFileSync(path.join(launch.bundle,relative),'utf8').includes(secret),false);
  }
+});
+
+test('print-launch resumes in the same home after plugin skill and profile changes',t=>{
+ const f=fixture(t),native=['exec','resume','stable-thread','--json'];
+ const print=()=>{
+  const result=f.invoke(['--print-launch','--',...native],'implementer');
+  assert.equal(result.status,0,result.stderr);assert.equal(result.stderr,'');
+  const launch=JSON.parse(result.stdout);
+  assert.deepEqual(launch.argv.slice(-native.length),native);
+  assert.equal(fs.existsSync(f.record),false);verify(launch.bundle);return launch;
+ };
+ const before=print(),session=path.join(before.env.CODEX_HOME,'sessions/2026/09/17/stable-thread.jsonl');
+ fs.mkdirSync(path.dirname(session),{recursive:true});fs.writeFileSync(session,'persisted thread');
+ const oldFiles=fileMap(before.bundle);
+ fs.writeFileSync(path.join(f.root,'skills/proof/SKILL.md'),'Updated plugin skill');
+ const after=print();
+ assert.notEqual(after.bundle,before.bundle);assert.deepEqual(fileMap(before.bundle),oldFiles);
+ assert.equal(after.env.CODEX_HOME,before.env.CODEX_HOME);
+ assert.equal(fs.readFileSync(session,'utf8'),'persisted thread');
+ assert.equal(fs.readFileSync(path.join(after.env.CODEX_HOME,'skills/proof/SKILL.md'),'utf8'),'Updated plugin skill');
+ fs.writeFileSync(path.join(f.root,'agents/implementer.yaml'),'harness: codex\nmodel: updated\nskills: [proof]\n');
+ const edited=print();assert.notEqual(edited.bundle,after.bundle);
+ assert.equal(edited.env.CODEX_HOME,before.env.CODEX_HOME);assert.equal(fs.readFileSync(session,'utf8'),'persisted thread');
+ assert.equal(edited.argv[edited.argv.indexOf('--model')+1],'updated');
+});
+
+test('resume identity survives profile retargeting and compiler/runtime upgrades',async t=>{
+ const f=fixture(t);fs.mkdirSync(path.join(f.root,'profiles'));
+ fs.writeFileSync(path.join(f.root,'profiles/entry.yaml'),'agent: planner\n');
+ const launch=bundle=>command(bundle,'main',{home:f.home,env:f.env});
+ const before=build(f.root,'entry',f.target),runtime=launch(before).env.CODEX_HOME;
+ const session=path.join(runtime,'sessions/thread.jsonl');fs.mkdirSync(path.dirname(session));fs.writeFileSync(session,'thread');
+ fs.writeFileSync(path.join(f.root,'profiles/entry.yaml'),'agent: implementer\n');
+ const retargeted=build(f.root,'entry',f.target);assert.notEqual(retargeted,before);
+ assert.equal(launch(retargeted).env.CODEX_HOME,runtime);
+ // Change the compiler/runtime bytes in an isolated installation, so both
+ // content hashes change without altering the identity contract.
+ const installation=path.join(f.base,'upgrade');fs.mkdirSync(installation);
+ fs.writeFileSync(path.join(installation,'package.json'),'{"type":"module"}');
+ fs.symlinkSync(fileURLToPath(new URL('../node_modules',import.meta.url)),path.join(installation,'node_modules'));
+ for(const name of ['compiler.js','runtime.js','skill-layout.js']) {
+  fs.copyFileSync(fileURLToPath(new URL('../dist/'+name,import.meta.url)),path.join(installation,name));
+ }
+ for(const name of ['compiler.js','runtime.js'])fs.appendFileSync(path.join(installation,name),'\n// Upgrade fixture\n');
+ const upgraded=await import(pathToFileURL(path.join(installation,'compiler.js')).href);
+ const bundle=upgraded.build(f.root,'entry',f.target);assert.notEqual(bundle,retargeted);verify(bundle);
+ assert.equal(upgraded.command(bundle,'main',{home:f.home,env:f.env}).env.CODEX_HOME,runtime);
+ assert.equal(fs.readFileSync(session,'utf8'),'thread');
+});
+
+test('profiles, workspaces, canonical directories and process child routes isolate homes',t=>{
+ const f=fixture(t);fs.mkdirSync(path.join(f.root,'profiles'));
+ for(const profile of ['a','b'])fs.writeFileSync(path.join(f.root,'profiles',profile+'.yaml'),'agent: planner\n');
+ fs.mkdirSync(path.join(f.root,'workspaces'));fs.writeFileSync(path.join(f.root,'workspaces/none.yaml'),'connections: {}\n');
+ const other=path.join(f.base,'other repo');fs.mkdirSync(other);
+ const alias=path.join(f.base,'repo alias');fs.symlinkSync(f.target,alias);
+ const home=(profile,target=f.target,workspace)=>command(build(f.root,profile,target,workspace),'main',{home:f.home,env:f.env}).env.CODEX_HOME;
+ const first=home('a');assert.notEqual(home('b'),first);
+ assert.notEqual(home('a',other),first);assert.notEqual(home('a',f.target,'none'),first);
+ assert.equal(home('a',alias),first);
+ fs.appendFileSync(path.join(f.root,'agents/planner.yaml'),'subagents: {worker: {agent: implementer, mode: process}}\n');
+ const bundle=build(f.root,'a',f.target);
+ assert.equal(command(bundle,'main',{home:f.home,env:f.env}).env.CODEX_HOME,first);
+ assert.notEqual(command(bundle,'main/children/worker',{home:f.home,env:f.env}).env.CODEX_HOME,first);
+});
+
+test('reused homes refresh overlays, restore native skills and remove obsolete or dangling links',t=>{
+ const f=fixture(t),native=path.join(f.home,'.codex/skills');
+ fs.mkdirSync(path.join(native,'proof'),{recursive:true});fs.writeFileSync(path.join(native,'proof/SKILL.md'),'Native proof');
+ fs.mkdirSync(path.join(f.root,'skills/extra'));fs.writeFileSync(path.join(f.root,'skills/extra/SKILL.md'),'Extra');
+ fs.writeFileSync(path.join(f.root,'agents/planner.yaml'),'harness: codex\nmodel: test\nskills: [proof, extra]\n');
+ const before=build(f.root,'planner',f.target),runtime=command(before,'main',{home:f.home,env:f.env}).env.CODEX_HOME;
+ assert.equal(fs.readFileSync(path.join(runtime,'skills/proof/SKILL.md'),'utf8'),'Proof skill');
+ // Bundle retention is a consumer concern; dangling old skill links must
+ // still recover on the next launch without touching runtime session files.
+ fs.rmSync(before,{recursive:true});
+ fs.writeFileSync(path.join(f.root,'agents/planner.yaml'),'harness: codex\nmodel: test\nskills: []\n');
+ const after=build(f.root,'planner',f.target);
+ assert.equal(command(after,'main',{home:f.home,env:f.env}).env.CODEX_HOME,runtime);
+ assert.equal(fs.readFileSync(path.join(runtime,'skills/proof/SKILL.md'),'utf8'),'Native proof');
+ assert.deepEqual(fs.readdirSync(path.join(runtime,'skills')),['proof']);
+ fs.mkdirSync(path.join(runtime,'skills/unmanaged'));
+ assert.throws(()=>command(after,'main',{home:f.home,env:f.env}),/Conflicting runtime path/);
+ assert.ok(fs.statSync(path.join(runtime,'skills/unmanaged')).isDirectory());
+});
+
+test('print-launch and standalone bundle runtime reject hand-edited bundles',t=>{
+ const f=fixture(t),printed=f.invoke(['--print-launch']);assert.equal(printed.status,0,printed.stderr);
+ const launch=JSON.parse(printed.stdout);
+ fs.appendFileSync(path.join(launch.bundle,'main/skills/proof/SKILL.md'),'Tampered');
+ const result=f.invoke(['--print-launch']);assert.equal(result.status,1);
+ assert.match(result.stderr,/Bundle integrity check failed; refusing modified bundle/);assert.equal(result.stdout,'');
+ const script=`import {run} from ${JSON.stringify(pathToFileURL(path.join(launch.bundle,'runtime.mjs')).href)};run(${JSON.stringify(launch.bundle)},'main',['--print-launch']);`;
+ const standalone=spawnSync(process.execPath,['--input-type=module','--eval',script],{env:f.env,encoding:'utf8'});
+ assert.equal(standalone.status,1);assert.match(standalone.stderr,/refusing modified bundle/);
+ assert.equal(standalone.stdout,'');assert.equal(fs.existsSync(f.record),false);
 });
 
 test('explain keeps runtime home unprepared',t=>{

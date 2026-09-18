@@ -160,7 +160,7 @@ export function build(root: string, agent: string, target: string, workspace?: s
   root=fs.realpathSync(root); target=fs.realpathSync(target);
   if (!fs.statSync(target).isDirectory()) throw new Error('Target must be a directory');
   const nodes=resolve(root,agent,workspace);
-  const manifest: Manifest={nodes,directory:target,workspace};
+  const manifest: Manifest={profile:name(agent),nodes,directory:target,workspace};
   const sources=new Map<string,{content:Buffer;mode:number}>();
   for (const [route,node] of Object.entries(nodes)) for (const skill of node.skills) for (const input of skillFiles(path.join(root,'skills',skill),node.harness)) {
     sources.set(path.join(route,'skills',skill,input.relative),{content:fs.readFileSync(input.source),mode:fs.statSync(input.source).mode & 0o111});

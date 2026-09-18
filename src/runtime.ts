@@ -33,7 +33,7 @@ export interface Agent {
   speed?: 'fast' | 'standard'; reasoning_effort?: string; instructions?: string; skills: string[];
   connections: Record<string, Connection>; children: Record<string, string>;
 }
-export interface Manifest { directory: string; workspace?: string; nodes: Record<string, Agent> }
+export interface Manifest { profile: string; directory: string; workspace?: string; nodes: Record<string, Agent> }
 export const hash = (data: string | Buffer): string => createHash('sha256').update(data).digest('hex');
 export function canonical(value: unknown): string {
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
@@ -70,17 +70,29 @@ function link(source: string, destination: string): void {
   } else fs.symlinkSync(source,destination);
 }
 export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv, home = os.homedir()): string {
+  const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
   const original = fs.realpathSync(env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.ORCHESTRA_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex'));
-  const runtime = path.join(home,'.cache/agent-farm/native-proof',hash(bundle+route).slice(0,24));
+  // Resume identity must survive bundle rebuilds and changes to the selected agent.
+  const identity={profile:manifest.profile,workspace:manifest.workspace ?? null,directory:manifest.directory,route};
+  const runtime = path.join(home,'.cache/agent-farm/native-proof',hash(canonical(identity)).slice(0,24));
   fs.mkdirSync(runtime,{recursive:true,mode:0o700});
   for (const item of ['config.toml','auth.json','.credentials.json','AGENTS.md','AGENTS.override.md','rules','plugins','mcp-oauth-locks']) link(path.join(original,item),path.join(runtime,item));
   const skills = path.join(runtime,'skills'); fs.mkdirSync(skills,{recursive:true});
   const selected = path.join(bundle,route,'skills');
   const names = fs.existsSync(selected) ? fs.readdirSync(selected) : [];
+  const desired = new Map<string,string>();
   if (fs.existsSync(path.join(original,'skills'))) for (const name of fs.readdirSync(path.join(original,'skills'))) {
-    if (!names.includes(name)) link(path.join(original,'skills',name),path.join(skills,name));
+    desired.set(name,path.join(original,'skills',name));
   }
-  for (const name of names) link(path.join(selected,name),path.join(skills,name));
+  for (const name of names) desired.set(name,path.join(selected,name));
+  // This private directory owns skill links, not session data. Refresh changed
+  // targets (including dangling links) and remove skills no longer selected.
+  for (const name of fs.readdirSync(skills)) {
+    const destination=path.join(skills,name);
+    if (!fs.lstatSync(destination).isSymbolicLink()) throw new Error(`Conflicting runtime path: ${destination}`);
+    if (path.resolve(skills,fs.readlinkSync(destination))!==desired.get(name)) fs.unlinkSync(destination);
+  }
+  for (const [name,source] of desired) link(source,path.join(skills,name));
   env.CODEX_HOME=runtime; env.AGENT_FARM_NATIVE_CODEX_HOME=original; return runtime;
 }
 export interface LaunchOptions { headless?: boolean; nativeArgs?: string[]; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string }
