@@ -66,6 +66,34 @@ These settings describe how Codex presents and invokes the skill. They do not
 declare child agents. The launcher preserves their bytes when translating the
 filename; it does not reinterpret policy or infer a Claude equivalent.
 
+## Prepared launches and native arguments
+
+`agent-farm run NAME --directory REPO --print-launch` writes the bundle and,
+for Codex profiles, prepares the runtime home just as `--exec` does. It prints
+JSON containing `argv` (including the executable), `cwd`, `bundle`, and `env`
+without starting a harness. `env` contains only Agent Farm's resolved overrides:
+`CODEX_HOME` and `AGENT_FARM_NATIVE_CODEX_HOME` for Codex, or an empty object for
+Claude. Merge these into the child environment, including any credentials supplied
+by the caller. Inherited environment variables and secret values are not printed.
+The caller owns spawning, stdio, process groups, and cancellation.
+
+Supply native arguments after `--`, or with repeatable `--native-arg` options.
+Use `--native-arg=--flag` for values starting with a dash. Repeated options come
+first, followed by arguments after `--`; all precede the final `--message` value.
+When any native arguments are supplied, they replace Agent Farm's default
+headless mode and output flags. Include the complete native mode you want:
+
+```bash
+agent-farm run planner --print-launch --message 'Plan ENG-123' -- -p --output-format stream-json --verbose
+agent-farm run implementer --print-launch --message 'Continue ENG-123' -- exec resume THREAD --json
+```
+
+Profile configuration and Claude's strict MCP flag remain in the launch.
+`--exec` still replaces the Agent Farm process directly with the native harness,
+preserving stdout and stderr. `--explain` does not prepare a Codex runtime home;
+use `--print-launch` when another process needs a launch ready to spawn.
+Choose one of `--build`, `--explain`, `--exec`, or `--print-launch`.
+
 ## Source files versus native output
 
 | Authoring file | Generated Codex skill | Generated Claude skill |
