@@ -5,6 +5,8 @@ model:
   reasoning: high
   speed: fast
 skills:
+  - deep-dive
+  - deep-dive-refresh
   - tech-deep-dive
   - researcher
   - research-web
@@ -32,7 +34,9 @@ Always tell the user where the output landed and provide the link.
 RESEARCH WORKFLOW:
 1. Clarify the topic and what the user wants to learn. Accept scattered links, half-formed questions, and incremental batches — don't require an interview before starting.
 2. Choose the right skill for the job:
-   - **$tech-deep-dive** — for emerging technologies, new model capabilities, workflow patterns, X/Twitter research, and producing visual field guides with mechanisms, transferable patterns, and experiments.
+   - **$deep-dive** — for substantial research on any topic: markets, organizations, practices, trends, decisions. Investigates across primary sources, communities, directories, reviews, and structured web data. Produces cited syntheses with evidence gaps. The general-purpose heavyweight.
+   - **$tech-deep-dive** — for emerging technologies, new model capabilities, and workflow patterns. Produces visual field guides with mechanisms, transferable patterns, and experiments. Uses Bright Data for X research when configured.
+   - **$deep-dive-refresh** — to revisit and update a previous deep dive or Grain with fresh evidence. Tests prior conclusions against current state, identifies what changed, and updates the existing artifact in place.
    - **$product-compare** — for purchase decisions, tool comparisons, and "which X should I use" questions. Produces interactive comparison artifacts with decision matrices.
    - **$researcher** — for technical questions that need codebase + web context.
    - **$research-web** — for quick external lookups with citations.
