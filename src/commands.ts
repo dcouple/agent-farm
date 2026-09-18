@@ -34,7 +34,7 @@ export const commands: Command[] = [
     examples: [
       'agent-farm run planner',
       'agent-farm run implementer --directory ~/repos/my-app',
-      'agent-farm run astra-planner --workspace my-project --message "Plan issue #42"',
+      'agent-farm run astra-discuss --workspace my-project --message "Plan issue #42"',
       'agent-farm run planner --directory ~/repos/my-app --print-launch',
       'agent-farm run implementer --print-launch --message "Continue" -- exec resume THREAD --json',
     ],
@@ -75,7 +75,7 @@ export const commands: Command[] = [
     ],
     examples: [
       'agent-farm inspect planner',
-      'agent-farm inspect astra-planner --workspace my-project',
+      'agent-farm inspect astra-discuss --workspace my-project',
     ],
   },
   {
@@ -135,7 +135,46 @@ export const commands: Command[] = [
       'agent-farm mcp login posthog --workspace bloomtext --harness claude',
       '',
       '# Then launch with the workspace:',
-      'agent-farm run astra-planner --workspace bloomtext',
+      'agent-farm run astra-discuss --workspace bloomtext',
+    ],
+  },
+  {
+    name: 'provider set',
+    usage: 'agent-farm provider set NAME --base-url URL --api-key-env VAR',
+    group: 'configure',
+    description: 'Configure a model provider (e.g. OpenRouter) for profiles that use provider-routed models (slugs with /). Native models skip the provider automatically.',
+    flags: [
+      {name: 'base-url', description: 'Provider API base URL', type: 'string'},
+      {name: 'api-key-env', description: 'Environment variable holding the API key', type: 'string'},
+      {name: 'config-root', description: 'Configuration directory', type: 'string', default: '~/.config/agent-farm'},
+    ],
+    examples: [
+      'agent-farm provider set openrouter --base-url https://openrouter.ai/api --api-key-env OPENROUTER_API_KEY',
+      'agent-farm provider set deepseek --base-url https://api.deepseek.com --api-key-env DEEPSEEK_API_KEY',
+    ],
+  },
+  {
+    name: 'provider show',
+    usage: 'agent-farm provider show',
+    group: 'inspect',
+    description: 'Show the currently configured provider, if any.',
+    flags: [
+      {name: 'config-root', description: 'Configuration directory', type: 'string', default: '~/.config/agent-farm'},
+    ],
+    examples: [
+      'agent-farm provider show',
+    ],
+  },
+  {
+    name: 'provider clear',
+    usage: 'agent-farm provider clear',
+    group: 'configure',
+    description: 'Remove the provider configuration. All profiles will use their native harness.',
+    flags: [
+      {name: 'config-root', description: 'Configuration directory', type: 'string', default: '~/.config/agent-farm'},
+    ],
+    examples: [
+      'agent-farm provider clear',
     ],
   },
   {

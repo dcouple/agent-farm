@@ -39,7 +39,7 @@ if (rawArgs[0] === 'doctor' && rawArgs.length === 1) {
 try {
   const {values,tokens}=parseArgs({args:rawArgs,allowPositionals:true,strict:true,tokens:true,options:{
     'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},
-    save:{type:'string'},model:{type:'string'},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},
+    save:{type:'string'},model:{type:'string'},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},'base-url':{type:'string'},'api-key-env':{type:'string'},
     build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},
     'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true}
   }});
@@ -92,6 +92,41 @@ try {
       const entry=operation==='load' ? loadWorkspace(path.resolve(values['config-root']!),positionals[2]!,{harness:values.harness}) : unloadWorkspace(positionals[2]!,{harness:values.harness});
       console.log(`${operation==='load'?'Loaded':'Unloaded'} workspace ${entry.workspace} (${entry.harness}). Start a fresh native session.`);
     }
+  } else if (positionals[0]==='provider') {
+    const operation=positionals[1];
+    const root=path.resolve(values['config-root']!);
+    const settingsPath=path.join(root,'settings.json');
+    if (operation==='set') {
+      if (!positionals[2]) throw new Error('Use: agent-farm provider set NAME --base-url URL --api-key-env VAR');
+      const baseUrl=values['base-url'];
+      const apiKeyEnv=values['api-key-env'];
+      if (!baseUrl || !apiKeyEnv) throw new Error('Provide --base-url and --api-key-env');
+      const settings={provider:{name:positionals[2],base_url:baseUrl,api_key_env:apiKeyEnv}};
+      fs.mkdirSync(root,{recursive:true});
+      fs.writeFileSync(settingsPath,JSON.stringify(settings,null,2)+'\n');
+      console.log(`Provider saved to ${settingsPath}`);
+      console.log(`  name: ${positionals[2]}`);
+      console.log(`  base_url: ${baseUrl}`);
+      console.log(`  api_key_env: ${apiKeyEnv}`);
+      console.log(`\nProfiles with vendor-prefixed model slugs (e.g. deepseek/deepseek-v4.1-flash) will route through this provider.`);
+      console.log(`Native models (e.g. gpt-6-astra, claude-fable-5-1) will use their harness directly.`);
+      if (!process.env[apiKeyEnv]) console.log(`\nWarning: ${apiKeyEnv} is not set in your environment. Export it before launching a profile.`);
+    } else if (operation==='show') {
+      if (fs.existsSync(settingsPath)) {
+        const settings=JSON.parse(fs.readFileSync(settingsPath,'utf8'));
+        if (settings.provider) {
+          console.log(`Provider: ${settings.provider.name}`);
+          console.log(`  base_url: ${settings.provider.base_url}`);
+          console.log(`  api_key_env: ${settings.provider.api_key_env}`);
+          console.log(`  key set: ${process.env[settings.provider.api_key_env] ? 'yes' : 'NO — export ' + settings.provider.api_key_env}`);
+        } else console.log('No provider configured.');
+      } else console.log('No provider configured.');
+    } else if (operation==='clear') {
+      if (fs.existsSync(settingsPath)) {
+        fs.unlinkSync(settingsPath);
+        console.log('Provider configuration removed. All profiles will use their native harness.');
+      } else console.log('No provider to clear.');
+    } else throw new Error('Use: agent-farm provider set|show|clear');
   } else if (positionals[0]==='mcp') {
     if (positionals.length!==3 || positionals[1]!=='login' || !values.workspace || !['claude','codex'].includes(values.harness ?? '')) throw new Error('Use: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex');
     if (values.message!==undefined || values.build || values.exec || values.explain) throw new Error('MCP login does not accept launch options');

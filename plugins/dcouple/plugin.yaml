@@ -6,7 +6,7 @@ source:
   commit: c7ae5b0bffc37de831c4149cc635a444877e31ad
 checksums:
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
-  profiles/astra-planner.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
+  profiles/astra-discuss.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
   profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
@@ -14,7 +14,7 @@ checksums:
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   agents/astra-implementer-high.md: 782487e44a581f162981e4497be9a03cbd345b94c316948e51f55b7b43b9475c
-  agents/astra-planner.md: f2fbd022ea3192cf928087ac342dc5c06d59ea034d74b378c2f5141800e6a029
+  agents/astra-discuss.md: f2fbd022ea3192cf928087ac342dc5c06d59ea034d74b378c2f5141800e6a029
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764

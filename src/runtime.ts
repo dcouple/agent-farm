@@ -155,7 +155,10 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
   const directory=path.join(bundle,route); const env={...(options.env ?? process.env)};
   const envOverrides: Record<string,string>={};
   const configRoot=path.resolve(options.configRoot ?? env.AGENT_FARM_CONFIG_ROOT ?? path.join(options.home ?? os.homedir(),'.config/agent-farm'));
-  const provider=loadProvider(configRoot);
+  const providerConfig=loadProvider(configRoot);
+  // Only apply the provider when the model slug contains '/' (e.g. deepseek/deepseek-v4.1-flash).
+  // Native models (gpt-6-astra, claude-fable-5-1) skip the provider and use their harness directly.
+  const provider=providerConfig && agent.model.includes('/') ? providerConfig : undefined;
   if (provider) envOverrides.AGENT_FARM_CONFIG_ROOT=configRoot;
   const nativeArgs=options.nativeArgs ?? [];
   // Explicit native arguments own the mode and output format, including resume.
