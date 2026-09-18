@@ -1,7 +1,13 @@
 {
   "name": "@dcouple/agent-farm",
   "version": "0.1.1",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dcouple/agent-farm.git"
+  },
   "type": "module",
   "packageManager": "pnpm@11.8.0",
   "engines": {
