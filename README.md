@@ -50,40 +50,57 @@ how everything fits together, and offers to launch your first session.
 
 ## Profiles
 
-Agent Farm ships with profiles ready to use. The interactive launcher shows
-them like this:
+Agent Farm ships with profiles for discussion, research, implementation, and
+experimentation. Run `agent-farm profiles list` to see all installed profiles.
 
+**Core profiles:**
+
+- `astra-discuss` — discuss work, clarify intent, create tickets and Grain briefs. The default starting point for any new task.
+- `astra-researcher` — deep dives, tech research, product comparisons, visual field guides. Outputs to Grain, artifacts, or local files.
+- `implementer` — take a ticket through planning, implementation, review, and PR.
+
+**Experimental profiles** — benchmark cheap models against the frontier:
+
+- `exp1-luna-xhigh` — pure Luna XHigh stack on Codex. Proven daily-driver.
+- `exp2-deepseek-flash` — DeepSeek V4.1 Flash on Codex via OpenRouter. Highest bench scores among cheap models.
+- `exp3-glm-flash` — GLM 5.3 Flash on Codex via OpenRouter. Cheapest per-session.
+- `exp6-fable-gauntlet` — Fable 5.1 Gauntlet Loop. Fan-out, harsh critic, blind compare.
+- `exp7-astra-manager-loop` — Astra Manager Loop. Phased checklist, parallel workers.
+- `exp8-glm-deepseek-loop` — GLM plans, DeepSeek builds, GLM audits. Two cheap models in complementary roles.
+- `exp9-meta-orchestrator` — Astra orchestrates and delegates to other profiles across harnesses.
+- `exp10-luna-meta-orchestrator` — same as exp9 but on Luna XHigh for cheaper orchestration.
+
+## Using third-party models via OpenRouter
+
+Agent Farm can route profiles with vendor-prefixed model slugs (like
+`deepseek/deepseek-v4.1-flash`) through OpenRouter while keeping native
+models on their harness. One-time setup:
+
+```sh
+export OPENROUTER_API_KEY="sk-or-..."
+echo 'export OPENROUTER_API_KEY="sk-or-..."' >> ~/.zshrc
+
+agent-farm provider set openrouter \
+  --base-url https://openrouter.ai/api \
+  --api-key-env OPENROUTER_API_KEY
 ```
-◆  What would you like to do?
-│  ● claude-quick-worker     claude · claude-opus-4-6[1m] · high
-│  ○ codex-quick-worker      codex · gpt-5.6-luna · max
-│  ○ claude-worker           claude · claude-fable-5-1 · high
-│  ○ codex-worker            codex · gpt-6-astra · medium
-│  ○ claude-pr-reviewer     claude · claude-opus-4-6 · high
-│  ○ codex-pr-reviewer      codex · gpt-5.5 · medium
-│  ─────────────────────
-│  + Create new profile
-│  ✎ Edit a profile
-│  ⊕ Inspect a profile
+
+Then set `"match": "slash-models"` in `~/.config/agent-farm/settings.json`
+so native models (gpt-6-astra, claude-fable-5-1) skip the provider:
+
+```json
+{
+  "provider": {
+    "name": "openrouter",
+    "base_url": "https://openrouter.ai/api",
+    "api_key_env": "OPENROUTER_API_KEY",
+    "match": "slash-models"
+  }
+}
 ```
 
-**Quick workers** — `claude-quick-worker` (Opus 4.6, 1M context) and
-`codex-quick-worker` (Luna Max) do everything in a single session with no
-sub-agents. Discussion → simple plan → implement → PR in one pass. Best
-for focused work like landing pages, small features, and quick fixes.
-
-**Workers** — `claude-worker` (Fable 5.1) and `codex-worker` (Astra) take
-a ticket from discussion through planning and implementation to a prepared
-PR. Each leans into its harness's strengths — Codex uses native sub-agents
-for implementation and QA, Claude uses a streamlined discussion → plan →
-implement → PR pipeline.
-
-**Reviewers** — `claude-pr-reviewer` and `codex-pr-reviewer` spawn 13
-parallel sub-agents to review a PR across independent principles (reuse,
-scope, security, spec fidelity, and more). Each sub-agent discovers the
-project's conventions first. Can optionally plan and apply fixes.
-
-Run `agent-farm profiles list` to see all installed profiles.
+After that, all profiles route automatically — no switching between runs.
+See the [configuration reference](CONFIGURATION.md) for details on `match` modes.
 
 ## Four entry points
 
