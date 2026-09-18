@@ -135,6 +135,20 @@ profiles and workspaces for you. To edit by hand:
 See the [configuration reference](CONFIGURATION.md) for file formats, child
 agents, skill metadata, and workspace connections.
 
+## Releasing
+
+Set `NPM_TOKEN` as a repository secret with permission to publish
+`@dcouple/agent-farm`. Bump the version in `package.json`, commit it, and push
+the commit. Then tag that commit and push the tag:
+
+```sh
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
+The release workflow checks that the tag matches the package version, runs the
+tests, builds, and publishes the public package to npm with provenance.
+
 ## Documentation
 
 - [Configuration reference](CONFIGURATION.md)
