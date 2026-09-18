@@ -14,10 +14,10 @@ skills:
 description: "Experiment: DeepSeek V4.1 Flash single writer with Astra advisor and final review. Same shape as luna-implementer, different model."
 subagents:
   advisor:
-    agent: exp-astra-advisor
+    agent: sw-astra-advisor
     mode: native
   final-reviewer:
-    agent: exp-astra-final-reviewer
+    agent: sw-astra-final-reviewer
     mode: native
 ---
 

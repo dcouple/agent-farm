@@ -19,7 +19,7 @@ subagents:
     agent: exp1-luna-xhigh-worker
     mode: native
   final-reviewer:
-    agent: exp-astra-final-reviewer
+    agent: sw-astra-final-reviewer
     mode: native
 ---
 
