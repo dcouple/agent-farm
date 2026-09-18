@@ -24,7 +24,8 @@ if (rawArgs.length === 0 || (isInit && rawArgs.filter(a => a !== '--full').lengt
   else await bareCommand(configRoot, process.cwd());
   process.exit(0);
 }
-if (isHelp || rawArgs.includes('--help') || rawArgs.includes('-h')) {
+const helpArgs=rawArgs.slice(0,rawArgs.indexOf('--')<0 ? rawArgs.length : rawArgs.indexOf('--'));
+if (isHelp || helpArgs.includes('--help') || helpArgs.includes('-h')) {
   const {helpCommand} = await import('./interactive.js');
   helpCommand(isHelp ? rawArgs[1] : undefined);
   process.exit(0);
@@ -36,11 +37,16 @@ if (rawArgs[0] === 'doctor' && rawArgs.length === 1) {
 }
 
 try {
-  const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{
+  const {values,tokens}=parseArgs({args:rawArgs,allowPositionals:true,strict:true,tokens:true,options:{
     'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},
     save:{type:'string'},model:{type:'string'},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},
-    build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'}
+    build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},
+    'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true}
   }});
+  const separator=tokens.find(t=>t.kind==='option-terminator')?.index ?? rawArgs.length;
+  const positionals=tokens.flatMap(t=>t.kind==='positional' && t.index<separator ? [t.value] : []);
+  const nativeArgs=[...(values['native-arg'] ?? []),...rawArgs.slice(separator+1)];
+  if ((values['print-launch'] || values['native-arg'] || separator<rawArgs.length) && !['run','agent'].includes(positionals[0] ?? '')) throw new Error('Prepared launches and native arguments require run or agent');
   const globalCommand=['set','unset','status'].includes(positionals[0] ?? '') && positionals[1]==='global';
   if ((values.save!==undefined || values.model!==undefined) && !globalCommand) throw new Error('--save and --model are only supported by unset global');
   if (globalCommand) {
@@ -125,9 +131,10 @@ try {
   } else {
     if (values.harness) throw new Error('--harness is only supported by load/unload; run uses the profile harness');
     if (positionals.length!==2 || !['run','agent'].includes(positionals[0]!)) throw new Error('Unknown command. Run agent-farm help for usage.');
-    if ([values.build,values.explain,values.exec].filter(Boolean).length>1) throw new Error('Choose only one of --build, --explain or --exec');
+    if ([values.build,values.explain,values.exec,values['print-launch']].filter(Boolean).length>1) throw new Error('Choose only one of --build, --explain, --exec or --print-launch');
+    if (values.build && nativeArgs.length) throw new Error('--build does not accept native arguments');
     const bundle=build(path.resolve(values['config-root']!),positionals[1]!,path.resolve(values.directory!),values.workspace);
-    if (!values.build && !values.explain) {
+    if (!values.build && !values.explain && !values['print-launch']) {
       const manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
       try {
         const warning=globalSkillWarning({harness:manifest.nodes.main.harness});
@@ -139,8 +146,10 @@ try {
       const args: string[]=[];
       if (values.exec) args.push('--exec');
       if (values.explain) args.push('--explain');
-      if (values.message!==undefined) args.push('--message',values.message);
-      run(bundle,'main',args);
+      if (values['print-launch']) args.push('--print-launch');
+      if (values.message!==undefined) args.push('--message='+values.message);
+      if (nativeArgs.length) args.push('--',...nativeArgs);
+      run(bundle,'main',args,undefined,path.resolve(values['config-root']!));
     }
   }
 } catch (error) { console.error('error:',error instanceof Error ? error.message : error); process.exitCode=1; }

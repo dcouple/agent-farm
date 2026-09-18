@@ -103,21 +103,21 @@ Regenerate `.seo/index.md` as a table of contents:
 # SEO Data Index
 
 ## Latest
-- [Current briefing](briefing.md) — YYYY-MM-DD
-- [Current strategy](strategy.md) — YYYY-MM-DD
+- [Current briefing](briefing.md): YYYY-MM-DD
+- [Current strategy](strategy.md): YYYY-MM-DD
 
 ## Archive
-- [2026-06-24](archive/2026/06/24/) — briefing, strategy, data
-- [2026-06-10](archive/2026/06/10/) — briefing, strategy
+- [2026-06-24](archive/2026/06/24/): briefing, strategy, data
+- [2026-06-10](archive/2026/06/10/): briefing, strategy
 - ...
 
 ## Active Experiments
-- [windows-landing-page](experiments/2026-06-24-windows-landing-page.md) — tracking
-- [remote-pane-blog-post](experiments/2026-06-10-remote-pane-blog-post.md) — tracking
+- [windows-landing-page](experiments/2026-06-24-windows-landing-page.md): tracking
+- [remote-pane-blog-post](experiments/2026-06-10-remote-pane-blog-post.md): tracking
 - ...
 
 ## Data Sources
-- [Current manifest](data/manifest.md) — what's connected
+- [Current manifest](data/manifest.md): what's connected
 ```
 
 **Success criteria**: `.seo/index.md` is up to date and links to everything.

@@ -66,6 +66,71 @@ These settings describe how Codex presents and invokes the skill. They do not
 declare child agents. The launcher preserves their bytes when translating the
 filename; it does not reinterpret policy or infer a Claude equivalent.
 
+## Prepared launches and native arguments
+
+`--print-launch` prints JSON containing `argv` (including `argv[0]`), `cwd`,
+`bundle`, and `env`; `env` contains only Agent Farm's own overrides, never
+inherited values. Native arguments go after `--` or through repeatable
+`--native-arg` options, precede the message, and replace the default headless
+flags when supplied. Consumers spawn the printed `argv` verbatim and must not
+assume `argv[0]` is the harness binary.
+
+```bash
+agent-farm run my-profile --print-launch --message 'Summarize this project' -- -p --output-format json
+```
+
+For the same profile, workspace, and canonical repository directory, Agent Farm
+keeps the runtime Codex home and its session files stable across plugin updates,
+profile edits, and Agent Farm upgrades, so later launches can resume the same
+thread. A different profile, workspace, or directory uses a different home;
+process child routes also have separate homes. Bundles remain content-addressed
+and integrity-checked, while skill links in the runtime home refresh on launch.
+
+## Host provider target
+
+To route launches through an API gateway, create `settings.json` in
+`~/.config/agent-farm/` (or the directory selected by `--config-root`):
+
+```json
+{
+  "provider": {
+    "name": "gateway",
+    "base_url": "http://127.0.0.1:8317",
+    "api_key_env": "GATEWAY_API_KEY"
+  }
+}
+```
+
+Supply the named variable in the child's environment. This host setting is read
+at launch, stays outside plugins and bundles, and applies to both harnesses.
+The name must start with a lowercase letter, use letters, digits, underscores or hyphens, and
+must differ from the built-in `openai` provider. The URL may use HTTP or HTTPS
+and must contain no credentials, query, or fragment. `api_key_env` must name an
+environment variable that Agent Farm does not override at launch.
+
+Codex receives a generated runtime `config.toml` with `model_provider` and a
+provider table containing `base_url`, `wire_api = "responses"`, and `env_key`.
+The profile's model still applies. Native configuration is left untouched;
+native credentials and other supported files remain linked when present.
+A provider launch works without a native Codex home or login. The endpoint
+must support the Responses API. Use the gateway root for `base_url`: Codex
+adds `/v1` if absent, while Claude adds `/v1/messages` itself.
+Native configuration settings are not copied into the generated provider configuration.
+
+Claude receives `ANTHROPIC_BASE_URL` and all four
+`ANTHROPIC_DEFAULT_HAIKU_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`,
+`ANTHROPIC_DEFAULT_OPUS_MODEL`, and `ANTHROPIC_DEFAULT_FABLE_MODEL` aliases,
+each set to the profile's model. The printed `ANTHROPIC_AUTH_TOKEN` is an
+environment reference, such as `${GATEWAY_API_KEY}`. Because Claude treats
+that variable literally, the printed argv includes a Node prefix that resolves
+the reference inside the launched child, then replaces itself with Claude.
+Spawn the complete argv verbatim with the inherited environment plus the
+printed overrides. No key value is printed or stored in the bundle; strict
+MCP mode and native stdio remain intact. The key need not exist during preparation.
+
+Remove the provider setting to restore native launch behavior, including linking
+the native Codex configuration on the next launch.
+
 ## Source files versus native output
 
 | Authoring file | Generated Codex skill | Generated Claude skill |
@@ -150,6 +215,27 @@ must be available on PATH or use an absolute path; servers run in the chosen
 repository. `env` contains literal **non-secret** settings. `env_vars` names
 variables inherited at launch, without resolving their values into the bundle.
 Do not put tokens in URLs, arguments, or literal environment values.
+
+For an HTTPS server that accepts an API-key bearer, name the child environment
+variable instead of storing the token:
+
+```yaml
+connections:
+  api:
+    type: mcp
+    url: https://mcp.example.com/mcp
+    auth: bearer_env
+    env_var: SERVICE_TOKEN
+```
+
+Supply `SERVICE_TOKEN` in the native client's environment at launch. Claude
+receives `Authorization: Bearer ${SERVICE_TOKEN}` and expands the reference
+when it loads the MCP configuration. Codex receives
+`bearer_token_env_var = "SERVICE_TOKEN"`, including in native child-agent files.
+The bundle and launch arguments contain only the variable name, never its value.
+`env_var` is required for `bearer_env` and is invalid for `native` or `none`.
+Bearer connections do not use the OAuth login command. Claude continues to use
+strict MCP mode with workspace and agent connections in the same configuration.
 
 Claude receives an HTTP/stdio MCP JSON configuration; Codex receives equivalent
 native configuration, including native child-agent files. Claude native children

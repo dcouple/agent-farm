@@ -105,7 +105,7 @@ literal `\n`, backticks, quotes, and Markdown fences.
 **Issue context:** #[issue number] - [one-line summary]
 
 ### Quality Gates
-- [Actual command/check]: PASS/FAIL/BLOCKED/N/A — evidence or reason
+- [Actual command/check]: PASS/FAIL/BLOCKED/N/A (evidence or reason)
 
 ### Must-Fix ([count])
 [Blocking findings with file:line evidence]

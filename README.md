@@ -24,6 +24,12 @@ Requires **Node 22.15+**, macOS or Linux, and the Claude Code and/or Codex CLI
 installed and authenticated.
 
 ```sh
+npm install --global @greenfieldco/agent-farm
+```
+
+Or install from source:
+
+```sh
 git clone https://github.com/dcouple/agent-farm.git
 cd agent-farm
 pnpm install --frozen-lockfile && pnpm build
@@ -37,8 +43,47 @@ Add `~/.local/bin` to your shell's `PATH`, then:
 agent-farm init
 ```
 
+After pulling updates, run `agent-farm plugin install` to sync new profiles.
+
 It checks your prerequisites, installs the default profiles and skills, explains
 how everything fits together, and offers to launch your first session.
+
+## Profiles
+
+Agent Farm ships with profiles ready to use. The interactive launcher shows
+them like this:
+
+```
+◆  What would you like to do?
+│  ● claude-quick-worker     claude · claude-opus-4-6[1m] · high
+│  ○ codex-quick-worker      codex · gpt-5.6-luna · max
+│  ○ claude-worker           claude · claude-fable-5-1 · high
+│  ○ codex-worker            codex · gpt-6-astra · medium
+│  ○ claude-pr-reviewer     claude · claude-opus-4-6 · high
+│  ○ codex-pr-reviewer      codex · gpt-5.5 · medium
+│  ─────────────────────
+│  + Create new profile
+│  ✎ Edit a profile
+│  ⊕ Inspect a profile
+```
+
+**Quick workers** — `claude-quick-worker` (Opus 4.6, 1M context) and
+`codex-quick-worker` (Luna Max) do everything in a single session with no
+sub-agents. Discussion → simple plan → implement → PR in one pass. Best
+for focused work like landing pages, small features, and quick fixes.
+
+**Workers** — `claude-worker` (Fable 5.1) and `codex-worker` (Astra) take
+a ticket from discussion through planning and implementation to a prepared
+PR. Each leans into its harness's strengths — Codex uses native sub-agents
+for implementation and QA, Claude uses a streamlined discussion → plan →
+implement → PR pipeline.
+
+**Reviewers** — `claude-pr-reviewer` and `codex-pr-reviewer` spawn 13
+parallel sub-agents to review a PR across independent principles (reuse,
+scope, security, spec fidelity, and more). Each sub-agent discovers the
+project's conventions first. Can optionally plan and apply fixes.
+
+Run `agent-farm profiles list` to see all installed profiles.
 
 ## Four entry points
 
@@ -95,6 +140,31 @@ profiles and workspaces for you. To edit by hand:
 
 See the [configuration reference](CONFIGURATION.md) for file formats, child
 agents, skill metadata, and workspace connections.
+
+## Releases
+
+### 0.1.2
+
+- Interactive setup, diagnostics, and managed global skills and MCP connections.
+- Printable native launches with argument passthrough and stable Codex resume homes.
+- Environment-variable bearer authentication for HTTP MCP connections and provider targeting.
+- Bundled dcouple plugin 0.1.7 with updated profiles and skills.
+- Tag-validated npm publishing with package integrity checks and provenance.
+
+## Releasing
+
+Set `NPM_TOKEN` as a repository secret with permission to publish
+`@greenfieldco/agent-farm` in the `greenfieldco` npm organization. Bump the
+version in `package.json`, commit it, and push the commit. Then tag that commit
+and push the tag:
+
+```sh
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
+The release workflow checks that the tag matches the package version, runs the
+tests, builds, and publishes the public package to npm with provenance.
 
 ## Documentation
 

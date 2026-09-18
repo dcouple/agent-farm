@@ -65,7 +65,7 @@ Cross-reference the three data sources:
 Write `.seo/briefing.md` with sections:
 
 ```markdown
-# SEO Briefing — [date]
+# SEO Briefing: [date]
 
 ## Summary
 3-5 bullet executive summary
@@ -95,7 +95,7 @@ Active experiments from `.seo/experiments.md` not yet past review date.
 Experiments past their review date with measured before/after metrics.
 
 ## Action Items (prioritized)
-1. [specific action] — [why] — [expected impact]
+1. [specific action]: [why], [expected impact]
 2. ...
 ```
 

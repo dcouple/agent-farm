@@ -16,7 +16,7 @@ not as a standalone workflow.
 
 1. Produce `.seo/data/` with fresh snapshots from every connected source.
 2. Compare against the most recent prior snapshot and compute deltas.
-3. Present a formatted summary to the user — not just files, a readable dashboard.
+3. Present a formatted summary to the user (not just files, a readable dashboard).
 
 If a source isn't connected, note the gap. Never fail because a source is
 missing. Work with what's available.
@@ -26,13 +26,13 @@ missing. Work with what's available.
 ### 1. Read prior snapshot
 
 Before pulling new data, check for the most recent prior snapshot:
-- Read `.seo/data/manifest.md` — check the timestamp. If fresh (<24h), skip
+- Read `.seo/data/manifest.md`. Check the timestamp. If fresh (<24h), skip
   the full pull and jump to Step 7 (visualize from existing data).
-- Read `.seo/archive/` — find the most recent dated directory (e.g.,
+- Read `.seo/archive/`. Find the most recent dated directory (e.g.,
   `.seo/archive/2026/06/24/data/`). If one exists, read the prior
   `analytics.md` and `search-console.md` to extract baseline numbers for
   delta comparison.
-- If no prior snapshot exists, this is the first pull. Deltas show as "—".
+- If no prior snapshot exists, this is the first pull. Deltas show as "N/A".
 
 Store the prior metrics in memory for use in Step 7.
 
@@ -78,7 +78,7 @@ schema supports:
 - Top referring domains (top 20, 7-day)
 - LLM channel breakdown: filter referrers for known LLM domains
   (chatgpt.com, gemini.google.com, perplexity.ai, www.perplexity.ai,
-  claude.ai, kagi.com, copilot.microsoft.com) — show views and uniques
+  claude.ai, kagi.com, copilot.microsoft.com): show views and uniques
 
 **If custom conversion events exist (discovered in Step 2):**
 - Conversion counts (today, 7d, 30d)
@@ -106,7 +106,7 @@ Write everything to `.seo/data/analytics.md`.
 If no analytics source is connected, write a stub noting the gap.
 
 **Success criteria**: `.seo/data/analytics.md` exists with the deepest data
-the discovered schema supports — not just pageviews.
+the discovered schema supports (not just pageviews).
 
 ### 4. Pull search console data
 
@@ -152,16 +152,16 @@ Write `.seo/data/manifest.md` listing:
 **Success criteria**: `.seo/data/manifest.md` exists. Any SEO skill can read
 this to know what data is available.
 
-### 7. Visualize — present formatted summary with deltas
+### 7. Visualize: present formatted summary with deltas
 
 This is the most important step. Do NOT skip it. After writing the data files,
 present a formatted dashboard to the user. This output goes directly into the
-conversation — it is NOT written to a file.
+conversation. It is NOT written to a file.
 
 **Format:**
 
 ```
-## Dashboard — {date}
+## Dashboard: {date}
 
 ### Headlines
 
@@ -170,7 +170,7 @@ conversation — it is NOT written to a file.
 | GSC clicks (28d) | 687     | 648    | +6% ▲   |
 | Impressions      | 18,521  | 17,696 | +5% ▲   |
 | Pageviews (30d)  | 6,199   | 5,800  | +7% ▲   |
-| Unique visitors  | 2,387   | —      | —       |
+| Unique visitors  | 2,387   | N/A    | N/A     |
 | Downloads (7d)   | 1,109   | 980    | +13% ▲  |
 | Stars            | 236     | 224    | +12 ▲   |
 
@@ -191,7 +191,7 @@ conversation — it is NOT written to a file.
 
 ### User Segments (if person properties discovered)
 
-{render whatever segments the schema discovery found — work emails,
+{render whatever segments the schema discovery found: work emails,
 plan tiers, geo clusters, org names. Adapt the table shape to the data.}
 
 ### Notable Changes
@@ -222,13 +222,13 @@ Examples of good suggestions:
   conversion events would close the attribution loop."
 
 Rules for suggestions:
-- Only suggest what the CURRENT schema is missing — don't repeat
+- Only suggest what the CURRENT schema is missing. Don't repeat
   suggestions for things already tracked
 - Be specific about what to name the event/property and what it
   unlocks ("would let future pulls show X")
 - Keep it to 1-3 suggestions, prioritized by impact on funnel
   clarity or audience understanding
-- These are suggestions, not demands — the user accepts or ignores
+- These are suggestions, not demands. The user accepts or ignores
   them, and the skill adapts to whatever schema exists next time
 ```
 
@@ -236,7 +236,7 @@ Rules for suggestions:
 - If a prior snapshot exists, compute percentage change for numeric metrics
 - Use ▲/▼ arrows for direction
 - Bold any metric that changed >10%
-- If this is the first pull, show "—" for Prior and Δ columns
+- If this is the first pull, show "N/A" for Prior and Δ columns
 - Highlight new entries that didn't exist in the prior snapshot (new pages
   indexed, new users, new queries appearing)
 - For absolute counts (stars, forks), show +N instead of percentage

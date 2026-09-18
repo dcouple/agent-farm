@@ -65,11 +65,17 @@ function connections(value: unknown): Record<string,Connection> {
     const description=typeof item.description==='string' ? item.description.trim() : undefined;
     if (item.type!=='mcp') throw new Error('Connection type must be mcp');
     if (item.url!==undefined) {
-      fields(item,['type','url','auth','description']);
-      if (typeof item.url!=='string' || !['native','none'].includes(String(item.auth))) throw new Error('Only HTTPS MCP with auth=native or none is supported');
+      fields(item,['type','url','auth','env_var','description']);
+      if (typeof item.url!=='string' || !['native','none','bearer_env'].includes(String(item.auth))) throw new Error('Only HTTPS MCP with auth=native, none, or bearer_env is supported');
       const url=new URL(item.url);
       if (url.protocol!=='https:' || !url.hostname || url.username || url.password || url.search || url.hash || /\s/.test(item.url)) throw new Error('Use an HTTPS endpoint without credentials or query parameters');
-      result[key]={type:'mcp',description,url:item.url,auth:item.auth as 'native'|'none'};
+      if (item.auth==='bearer_env') {
+        if (typeof item.env_var!=='string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(item.env_var)) throw new Error('MCP bearer_env requires env_var to name an environment variable');
+        result[key]={type:'mcp',description,url:item.url,auth:'bearer_env',env_var:item.env_var};
+      } else {
+        if (item.env_var!==undefined) throw new Error('MCP env_var requires auth: bearer_env');
+        result[key]={type:'mcp',description,url:item.url,auth:item.auth as 'native'|'none'};
+      }
     } else {
       fields(item,['type','command','args','env','env_vars','description']);
       if (typeof item.command!=='string' || !item.command.trim() || /[\r\n\0]/.test(item.command)) throw new Error('Local MCP requires a command executable');
@@ -154,7 +160,7 @@ export function build(root: string, agent: string, target: string, workspace?: s
   root=fs.realpathSync(root); target=fs.realpathSync(target);
   if (!fs.statSync(target).isDirectory()) throw new Error('Target must be a directory');
   const nodes=resolve(root,agent,workspace);
-  const manifest: Manifest={nodes,directory:target,workspace};
+  const manifest: Manifest={profile:name(agent),nodes,directory:target,workspace};
   const sources=new Map<string,{content:Buffer;mode:number}>();
   for (const [route,node] of Object.entries(nodes)) for (const skill of node.skills) for (const input of skillFiles(path.join(root,'skills',skill),node.harness)) {
     sources.set(path.join(route,'skills',skill,input.relative),{content:fs.readFileSync(input.source),mode:fs.statSync(input.source).mode & 0o111});

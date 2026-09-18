@@ -5,6 +5,7 @@ model:
   reasoning: high
 skills:
   - create-ticket
+  - ui-mockup
   - explain-visually
 description: Discuss work, clarify intent, and create actionable tickets and Grain briefs. The default starting point for any new task.
 subagents:

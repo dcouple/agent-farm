@@ -77,19 +77,19 @@ Use this structure:
 ## Implementation Review
 
 ### Quality Gates
-[Actual command/check]: PASS/FAIL/BLOCKED/N/A — evidence or reason
+[Actual command/check]: PASS/FAIL/BLOCKED/N/A (evidence or reason)
 
 ### Brief / Intent Fidelity
 PASS/FAIL
 
 ### Plan Completeness ([done]/[total] tasks)
 - [DONE] ...
-- [PARTIAL] ... — what's missing: ...
-- [MISSING] ... — expected in: ...
-- [DEVIATED] ... — deviation: ...
+- [PARTIAL] ... (what's missing: ...)
+- [MISSING] ... (expected in: ...)
+- [DEVIATED] ... (deviation: ...)
 
 ### Integration Check
-[Applicable integration]: wired / missing / N/A — evidence
+[Applicable integration]: wired / missing / N/A (evidence)
 Examples: routes, exports, UI/data connections, schemas, document links.
 
 ### Schema Changes

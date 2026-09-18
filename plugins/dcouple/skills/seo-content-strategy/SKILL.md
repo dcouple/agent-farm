@@ -88,33 +88,33 @@ Rank everything in a single prioritized list. For each item:
 Write `.seo/strategy.md`:
 
 ```markdown
-# Content Strategy — [date]
+# Content Strategy: [date]
 
 ## Based on
 Link to .seo/briefing.md, date of data pull
 
 ## Quick Wins
-1. [action] — [data point] — [expected impact]
+1. [action]: [data point], [expected impact]
 ...
 
 ## Pages to Rewrite (readability pass)
-- [page] — [why] — [data]
+- [page]: [why], [data]
 ...
 
 ## Explainer Pages to Create (authority pass)
-- [concept] — [search volume] — [intent]
+- [concept]: [search volume], [intent]
 ...
 
 ## Blog Posts to Write (content drafting)
-- [title idea] — [target keyword] — [volume] — [why now]
+- [title idea]: [target keyword], [volume], [why now]
 ...
 
 ## Landing Pages to Create
-- [page] — [target intent] — [volume]
+- [page]: [target intent], [volume]
 ...
 
 ## Indexing Requests
-- [URL] — [status] — [submitted date]
+- [URL]: [status], [submitted date]
 ...
 
 ## Publishing Calendar

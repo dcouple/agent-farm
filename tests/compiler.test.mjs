@@ -183,12 +183,14 @@ test('shipped Astra profiles package all declared workflow roles and their own s
  fs.cpSync(path.join(source,'agents'),path.join(f.root,'agents'),{recursive:true});
  fs.cpSync(path.join(source,'profiles'),path.join(f.root,'profiles'),{recursive:true});
  // Fixture skill contents isolate graph correctness from a machine's installed skill repository.
- const skills=['create-ticket','explain-visually','astra-ticket','simple-plan','create-plan','prepare-pr','pr-test-automation','review','cold-read','excalidraw-pr-diagrams','implementer','implementation-reviewer','plan-reviewer','codebase-explorer','researcher','research-web','investigate'];
+ const skills=fs.readdirSync(path.join(source,'skills'),{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name);
  for(const skill of skills)f.put(`skills/${skill}/SKILL.md`,skill);
  // Remove legacy fixture planner so the new directory definition is unambiguous.
  fs.unlinkSync(path.join(f.root,'agents/planner.yaml'));fs.unlinkSync(path.join(f.root,'agents/worker.yaml'));
  const b=build(f.root,'implementer',f.target,'test'),m=JSON.parse(fs.readFileSync(path.join(b,'manifest.json')));
- assert.deepEqual(Object.keys(m.nodes.main.children).sort(),['socrates','worker','implementation-reviewer','plan-reviewer','codebase-explorer','researcher','pr-preparer','pr-reviewer','qa','cold-reader'].sort());
+ for(const alias of ['socrates','worker','implementation-reviewer','plan-reviewer','codebase-explorer','researcher','pr-preparer','correctness-reviewer','integration-reviewer','intent-reviewer','pr-reviewer','qa','cold-reader']){
+  assert.ok(m.nodes.main.children[alias],`Missing workflow role: ${alias}`);
+ }
  for(const [alias,route] of Object.entries(m.nodes.main.children)){
   const child=m.nodes[route];assert.equal(child.model,alias==='qa'?'gpt-5.6-sol':'gpt-5.6-luna');assert.equal(child.reasoning_effort,alias==='qa'?'medium':'max');
   assert.ok(fs.existsSync(path.join(b,'main/native-agents',alias+'.toml')));

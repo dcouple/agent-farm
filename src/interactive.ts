@@ -106,7 +106,7 @@ async function launchProfile(configRoot: string, profile: string, workspace: str
 
   await sleep(300);
   p.outro(`Launching ${bold(profile)}`);
-  run(bundle, 'main', []);
+  run(bundle, 'main', [], undefined, configRoot);
 }
 
 async function createProfileFlow(configRoot: string): Promise<string | undefined> {

@@ -87,7 +87,7 @@ After all content is drafted, do a linking pass:
 - New pages link to relevant existing docs, explainers, and glossary
 - Existing pages that mention concepts covered by new pages get links added
 - Footer or navigation updated if new pages are primary surfaces
-- Footer navigation MUST be updated for new pages — do not defer this to a separate authority pass. Add compliance pages to the HIPAA Compliance column, alternative pages to a relevant section, and solutions pages to the Solutions column.
+- Footer navigation MUST be updated for new pages. Do not defer this to a separate authority pass. Add compliance pages to the HIPAA Compliance column, alternative pages to a relevant section, and solutions pages to the Solutions column.
 - Check if the project has CDN invalidation entries in deploy workflows (e.g., `.github/workflows/*-deploy.yml`) and add entries for every new page URL.
 - Glossary updated with any new terms introduced
 
@@ -105,7 +105,7 @@ Create a PR with a summary of all content created, target keywords, and the stra
 After merge/deploy, submit every new or significantly changed URL for indexing.
 Do NOT just list the URLs and leave it to the user. Actually submit them.
 
-**IndexNow** (if configured — look for an IndexNow key file in `public/`):
+**IndexNow** (if configured, look for an IndexNow key file in `public/`):
 Submit a batch POST to `https://api.indexnow.org/IndexNow` with the host,
 key, keyLocation, and urlList. This covers Bing, Yandex, and feeds into
 Google's crawl signals.

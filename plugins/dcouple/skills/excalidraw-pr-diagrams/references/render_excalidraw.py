@@ -30,7 +30,7 @@ def validate_excalidraw(data: dict) -> list[str]:
     elif not isinstance(data["elements"], list):
         errors.append("'elements' must be an array")
     elif len(data["elements"]) == 0:
-        errors.append("'elements' array is empty — nothing to render")
+        errors.append("'elements' array is empty: nothing to render")
 
     return errors
 

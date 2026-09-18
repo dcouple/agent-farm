@@ -148,7 +148,7 @@ Compare what you have vs what competitors have:
 Write `.seo/foundations.md`:
 
 ```markdown
-# SEO Foundations — [site name]
+# SEO Foundations: [site name]
 
 ## Product
 - What it does: [one sentence]
@@ -174,8 +174,8 @@ Write `.seo/foundations.md`:
 - E-E-A-T signals: [yes/no, what]
 
 ## Starting Point (priority order)
-1. [action] — [why this first]
-2. [action] — [why]
+1. [action]: [why this first]
+2. [action]: [why]
 3. ...
 
 ## Messaging Notes
