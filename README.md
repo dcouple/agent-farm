@@ -98,9 +98,14 @@ commands. `agent-farm doctor` tells you what's working and what's not.
 
 ```sh
 agent-farm run planner
+agent-farm run dcouple/implementer
 agent-farm run implementer --workspace my-project --message "Fix the failing tests"
 agent-farm run implementer --model gpt-6-astra --speed fast --arg review=full
 ```
+
+Several plugins can be installed together. Use `plugin/profile` when plugins
+publish the same role name; a bare name works only when it is unique, unless
+`default_plugin` selects a preferred plugin in `settings.json`.
 
 Run `agent-farm help run` for all flags.
 
@@ -127,11 +132,33 @@ profiles and workspaces for you. To edit by hand:
 
 ```text
 ~/.config/agent-farm/
-├── profiles/        # planner.yaml → agent: planner
-├── agents/          # planner.md → harness, model, skills, instructions
-├── skills/          # Reusable skill directories with SKILL.md
-└── workspaces/      # MCP connections per project
+├── profiles/             # Unnamed local namespace
+├── agents/               # Local agents
+├── skills/               # Local reusable skills
+├── plugins/
+│   ├── dcouple/          # Installed plugin namespace
+│   └── roles/            # Another plugin; names may overlap
+├── .plugins/             # Per-plugin install receipts
+└── workspaces/           # MCP connections per project
 ```
+
+```sh
+agent-farm plugin install                 # bundled dcouple
+agent-farm plugin install roles           # any bundled plugins/roles folder
+agent-farm plugin install /path/to/plugin
+agent-farm plugin list
+agent-farm plugin uninstall roles
+agent-farm profiles list
+```
+
+An update touches only that plugin's namespace and receipt. The first install
+after an older flat `dcouple` installation migrates receipt-matching files into
+`plugins/dcouple/`, reports changed or missing files left in place, and never
+deletes user-modified files.
+
+User-level `load` uses global harness skill directories. If two plugins select
+the same skill name, Agent Farm refuses the second load and names both owners;
+it never silently overwrites. `agent-farm loaded` reports each skill's plugin.
 
 See the [configuration reference](CONFIGURATION.md) for file formats, child
 agents, skill metadata, and workspace connections.

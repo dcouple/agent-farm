@@ -81,12 +81,29 @@ they are never templates for instructions, skills, or configuration files.
 
 ## Plugin rollout
 
-The bundled plugin is `dcouple` 0.1.3, including the SEO profile. The source
-migration merged in [skills PR #114](https://github.com/dcouple/skills/pull/114),
-and the generated package merged in
-[Agent Farm PR #3](https://github.com/dcouple/agent-farm/pull/3).
-Run `agent-farm plugin install` after updating the CLI checkout to apply the
-bundled configuration. CLI v0.1.2 and plugin versions are independent.
+The bundled default is `dcouple`; CLI and plugin versions are independent.
+Run `agent-farm plugin install` after updating the CLI checkout. Other bundled
+folders use `agent-farm plugin install NAME`, and arbitrary sources use a path.
+Use `agent-farm plugin list` to audit name, version, source, and profile count.
+
+Installed content is isolated under `plugins/<name>/` and has one receipt at
+`.plugins/<name>.json`. Updates hold the shared install lock but compare and
+write only that plugin's files and receipt. `plugin uninstall NAME` removes
+receipt-owned files only when their hashes still match; modified and missing
+paths are reported, and changed files are left in place.
+
+On the first namespaced `dcouple` install, a legacy flat receipt triggers a
+one-time migration. Files whose current hashes match the old receipt move into
+`plugins/dcouple/`. Modified, missing, and untracked local files remain in the
+flat namespace. The command reports both groups and records `dcouple` as the
+default plugin when no default exists so previously working bare profile names
+continue to resolve. Reconcile retained local files manually after reviewing
+the report; never delete them as part of an automated rollout.
+
+If two plugins publish the same profile, use `plugin/profile` or configure
+`default_plugin`. If globally loaded profiles select the same skill directory
+name, unload the current owner before loading the other plugin. Collision errors
+and `agent-farm loaded` name the owning plugins.
 
 ## Verification boundaries
 
