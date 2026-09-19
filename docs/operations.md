@@ -92,13 +92,11 @@ write only that plugin's files and receipt. `plugin uninstall NAME` removes
 receipt-owned files only when their hashes still match; modified and missing
 paths are reported, and changed files are left in place.
 
-On the first namespaced `dcouple` install, a legacy flat receipt triggers a
-one-time migration. Files whose current hashes match the old receipt move into
-`plugins/dcouple/`. Modified, missing, and untracked local files remain in the
-flat namespace. The command reports both groups and records `dcouple` as the
-default plugin when no default exists so previously working bare profile names
-continue to resolve. Reconcile retained local files manually after reviewing
-the report; never delete them as part of an automated rollout.
+If install detects a legacy flat receipt, it stops without moving or deleting
+anything. The error names the receipt and tells the operator to ask an agent to
+migrate the configuration into `plugins/<name>/` before retrying. This keeps
+legacy cleanup explicit and reviewable instead of guessing which flat files are
+still user-owned.
 
 If two plugins publish the same profile, use `plugin/profile` or configure
 `default_plugin`. If globally loaded profiles select the same skill directory

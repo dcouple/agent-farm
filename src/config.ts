@@ -67,10 +67,3 @@ export function loadHostSettings(root:string):HostSettings {
   if(settings.default_plugin!==undefined)configurationName(settings.default_plugin,'default plugin');
   return settings as HostSettings;
 }
-
-export function saveDefaultPlugin(root:string,plugin:string):void {
-  configurationName(plugin,'default plugin');
-  const settings=loadHostSettings(root);
-  if(settings.default_plugin!==undefined)return;
-  fs.writeFileSync(path.join(root,'settings.json'),JSON.stringify({...settings,default_plugin:plugin},null,2)+'\n');
-}

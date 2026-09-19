@@ -23,7 +23,6 @@ skills/
 workspaces/
   my-project.yaml                 Workspace MCP connections
 instructions/                  Optional shared instruction includes
-backups/                       Local migration backups, not active definitions
 plugins/
   dcouple/                     Installed plugin namespace
     plugin.yaml

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {parseDocument,stringify} from 'yaml';
-import {configurationName,pluginIdentity,saveDefaultPlugin} from './config.js';
+import {configurationName,pluginIdentity} from './config.js';
 import {resolveProfile} from './compiler.js';
 import {files,hash} from './runtime.js';
 
@@ -15,7 +15,6 @@ function manifest(root:string):Plugin{
  configurationName(value?.name,'plugin name');if(!/^\d+\.\d+\.\d+$/.test(value?.version??'')||value?.cli_major!==0)throw new Error(`Expected a valid plugin name, semantic version, and cli_major: 0 in ${file}`);return value;
 }
 function inventory(root:string){const entries:Record<string,string>={};for(const section of sections){const folder=path.join(root,section);if(!fs.existsSync(folder))continue;for(const file of files(folder))entries[path.relative(root,file)]=hash(fs.readFileSync(file));}return entries;}
-function flatEntries(root:string){const result:string[]=[];const visit=(folder:string)=>{for(const entry of fs.readdirSync(folder,{withFileTypes:true})){const item=path.join(folder,entry.name);if(entry.isDirectory()&&!entry.isSymbolicLink())visit(item);else result.push(path.relative(root,item));}};for(const section of sections){const folder=path.join(root,section);if(fs.existsSync(folder)&&fs.lstatSync(folder).isDirectory()&&!fs.lstatSync(folder).isSymbolicLink())visit(folder);}return result;}
 function validRelative(relative:string){const parts=relative.split(/[\\/]/);if((!sections.includes(parts[0]!)&&relative!=='plugin.yaml')||parts.includes('..')||path.isAbsolute(relative))throw new Error(`Invalid plugin receipt path: ${relative}`);}
 function assertSafeTarget(root:string,relative:string){let cursor=root;for(const part of relative.split(/[\\/]/)){cursor=path.join(cursor,part);try{if(fs.lstatSync(cursor).isSymbolicLink())throw new Error(`Symlink destination: ${cursor}`);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}}}
 
@@ -38,16 +37,16 @@ function sourceDescription(source:string,info:Plugin){return info.source??{path:
 export function installPlugin(source:string,root:string){
  source=fs.realpathSync(source);root=path.resolve(root);const {info,checksums}=validatePlugin(source,root);fs.mkdirSync(root,{recursive:true});const receipts=path.join(root,'.plugins');fs.mkdirSync(receipts,{recursive:true,mode:0o700});const lock=path.join(receipts,'install.lock');try{fs.mkdirSync(lock);}catch{throw new Error('Another plugin install is active or left a stale lock');}
  try{
-  const receiptFile=path.join(receipts,info.name+'.json'),existing=readReceipt(receiptFile),legacy=info.name==='dcouple'&&existing&&existing.layout!==2?existing:undefined,prior=existing?.layout===2?existing.checksums:{},pluginRoot=path.join(root,'plugins',info.name),desired:Record<string,string>={...checksums,'plugin.yaml':hash(fs.readFileSync(path.join(source,'plugin.yaml')))},changes=new Map<string,Buffer|undefined>(),migration={moved:[] as string[],stayed:[] as Array<{file:string;reason:string}>};
-  if(legacy){for(const [relative,digest] of Object.entries(legacy.checksums)){validRelative(relative);const flat=path.join(root,relative);let status:fs.Stats|undefined;try{status=fs.lstatSync(flat);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}const current=status?.isFile()?fs.readFileSync(flat):undefined;if(current&&hash(current)===digest)migration.moved.push(relative);else migration.stayed.push({file:relative,reason:status?(status.isFile()?'modified':'non-file'):'missing'});}for(const relative of flatEntries(root))if(!Object.hasOwn(legacy.checksums,relative))migration.stayed.push({file:relative,reason:'untracked'});}
+  const receiptFile=path.join(receipts,info.name+'.json'),existing=readReceipt(receiptFile);
+  if(existing&&existing.layout!==2)throw new Error(`Legacy flat plugin install detected for ${info.name}: ${receiptFile}. No files were changed. Ask your agent to migrate this configuration to the plugins/${info.name}/ namespace before installing again.`);
+  const prior=existing?.checksums??{},pluginRoot=path.join(root,'plugins',info.name),desired:Record<string,string>={...checksums,'plugin.yaml':hash(fs.readFileSync(path.join(source,'plugin.yaml')))},changes=new Map<string,Buffer|undefined>();
   for(const relative of new Set([...Object.keys(prior),...Object.keys(desired)])){validRelative(relative);const target=path.join(pluginRoot,relative);assertSafeTarget(root,path.relative(root,target));const current=fs.existsSync(target)?fs.readFileSync(target):undefined,digest=current?hash(current):undefined;if(digest===desired[relative])continue;if(current&&digest!==prior[relative])throw new Error(`Plugin ${info.name} file differs; preserve or reconcile it before updating: ${target}`);if(!current&&prior[relative])throw new Error(`Locally removed plugin ${info.name} file: ${target}`);changes.set(relative,current);}
-  const priorReceipt=fs.existsSync(receiptFile)?fs.readFileSync(receiptFile):undefined,settingsFile=path.join(root,'settings.json'),priorSettings=fs.existsSync(settingsFile)?fs.readFileSync(settingsFile):undefined,removedFlat=new Map<string,Buffer>();
+  const priorReceipt=fs.existsSync(receiptFile)?fs.readFileSync(receiptFile):undefined;
   try{
    for(const relative of changes.keys()){const target=path.join(pluginRoot,relative);fs.mkdirSync(path.dirname(target),{recursive:true});if(desired[relative])fs.copyFileSync(path.join(source,relative),target);else fs.unlinkSync(target);}
-   for(const relative of migration.moved){const flat=path.join(root,relative),content=fs.readFileSync(flat);removedFlat.set(relative,content);fs.unlinkSync(flat);}
-   const receipt:Receipt={name:info.name,version:info.version,layout:2,source:sourceDescription(source,info),checksums:desired};fs.writeFileSync(receiptFile+'.tmp',JSON.stringify(receipt,null,2),{mode:0o600});fs.renameSync(receiptFile+'.tmp',receiptFile);if(legacy)saveDefaultPlugin(root,'dcouple');
-  }catch(error){for(const [relative,old] of [...changes].reverse()){const target=path.join(pluginRoot,relative);if(old)fs.writeFileSync(target,old);else if(fs.existsSync(target))fs.unlinkSync(target);}for(const [relative,content] of removedFlat){const flat=path.join(root,relative);fs.mkdirSync(path.dirname(flat),{recursive:true});fs.writeFileSync(flat,content);}if(priorReceipt)fs.writeFileSync(receiptFile,priorReceipt);else if(fs.existsSync(receiptFile))fs.unlinkSync(receiptFile);if(priorSettings)fs.writeFileSync(settingsFile,priorSettings);else if(fs.existsSync(settingsFile))fs.unlinkSync(settingsFile);throw error;}
-  return {name:info.name,version:info.version,changed:changes.size+migration.moved.length,migration:legacy?migration:undefined};
+   const receipt:Receipt={name:info.name,version:info.version,layout:2,source:sourceDescription(source,info),checksums:desired};fs.writeFileSync(receiptFile+'.tmp',JSON.stringify(receipt,null,2),{mode:0o600});fs.renameSync(receiptFile+'.tmp',receiptFile);
+  }catch(error){for(const [relative,old] of [...changes].reverse()){const target=path.join(pluginRoot,relative);if(old)fs.writeFileSync(target,old);else if(fs.existsSync(target))fs.unlinkSync(target);}if(priorReceipt)fs.writeFileSync(receiptFile,priorReceipt);else if(fs.existsSync(receiptFile))fs.unlinkSync(receiptFile);throw error;}
+  return {name:info.name,version:info.version,changed:changes.size};
  }finally{fs.rmdirSync(lock);}
 }
 

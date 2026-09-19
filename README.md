@@ -151,10 +151,9 @@ agent-farm plugin uninstall roles
 agent-farm profiles list
 ```
 
-An update touches only that plugin's namespace and receipt. The first install
-after an older flat `dcouple` installation migrates receipt-matching files into
-`plugins/dcouple/`, reports changed or missing files left in place, and never
-deletes user-modified files.
+An update touches only that plugin's namespace and receipt. If Agent Farm finds
+an older flat plugin receipt, installation stops without changing files and asks
+you to have your agent migrate the configuration into the namespaced layout.
 
 User-level `load` uses global harness skill directories. If two plugins select
 the same skill name, Agent Farm refuses the second load and names both owners;
