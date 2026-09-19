@@ -24,6 +24,10 @@ export const commands: Command[] = [
       {name: 'workspace', description: 'Add MCP connections from a workspace', type: 'string'},
       {name: 'directory', description: 'Repository to open', type: 'string', default: 'cwd'},
       {name: 'message', description: 'Send an initial message after launch', type: 'string'},
+      {name: 'model', description: 'Override the entry agent model for this launch', type: 'string'},
+      {name: 'reasoning', description: 'Override the entry agent reasoning effort for this launch', type: 'string'},
+      {name: 'speed', description: 'Override Codex speed (fast or standard) for this launch', type: 'string'},
+      {name: 'arg', description: 'Repeatable declared launch argument in key=value form', type: 'string'},
       {name: 'build', description: 'Generate the bundle and print its path (no launch)', type: 'boolean'},
       {name: 'explain', description: 'Print the resolved launch command as JSON (no launch)', type: 'boolean'},
       {name: 'exec', description: 'Headless execution (no interactive terminal)', type: 'boolean'},
@@ -34,6 +38,7 @@ export const commands: Command[] = [
     examples: [
       'agent-farm run planner',
       'agent-farm run implementer --directory ~/repos/my-app',
+      'agent-farm run implementer --model gpt-6-astra --speed fast --arg review=full',
       'agent-farm run astra-discuss --workspace my-project --message "Plan issue #42"',
       'agent-farm run planner --directory ~/repos/my-app --print-launch',
       'agent-farm run implementer --print-launch --message "Continue" -- exec resume THREAD --json',

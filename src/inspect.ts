@@ -10,7 +10,8 @@ export function inspectProfile(root: string, profile: string, workspace?: string
     workspace,workspace_file:workspace ? path.join(root,'workspaces',workspace+'.yaml') : undefined,
     agents:Object.fromEntries(Object.entries(nodes).map(([route,agent])=>[route,{
       agent:agent.name,source_file:agent.source_file,harness:agent.harness,
-      model:{name:agent.model,reasoning:agent.reasoning_effort,speed:agent.speed ?? 'native default'},
+      model:{name:agent.model,reasoning:agent.reasoning_effort,speed:agent.speed ?? 'native default',sources:agent.launch?.model.sources},
+      arguments:agent.launch?.arguments ?? {},argument_definitions:agent.argument_definitions ?? {},preset:agent.launch?.preset,override:agent.launch?.override,
       mode:route==='main' ? 'entry point' : agent.mode,description:agent.description,
       skills:agent.skills.map(name=>({name,source_file:path.join(root,'skills',name,'SKILL.md')})),
       connections:agent.connections,subagents:agent.children

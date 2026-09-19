@@ -33,8 +33,35 @@ export interface Agent {
   source_file?: string; name: string; description?: string; mode?: 'native' | 'process'; harness: 'claude' | 'codex'; model: string;
   speed?: 'fast' | 'standard'; reasoning_effort?: string; instructions?: string; skills: string[];
   connections: Record<string, Connection>; children: Record<string, string>;
+  argument_definitions?: Record<string, ArgumentDefinition>; launch?: LaunchMetadata;
 }
 export interface Manifest { profile: string; directory: string; workspace?: string; nodes: Record<string, Agent> }
+export interface ArgumentDefinition { values?: string[]; type?: 'string' | 'path'; default?: string; description?: string }
+export type ModelSource = 'agent' | 'preset' | 'flag';
+export interface LaunchMetadata {
+  model: {name: string; reasoning?: string; speed?: 'fast' | 'standard'; sources: {name: ModelSource; reasoning: ModelSource | null; speed: ModelSource | null}};
+  arguments: Record<string,string>; preset?: string; override?: 'ad hoc' | 'preset'; headless: boolean;
+}
+export interface ModelInput { name?: unknown; reasoning?: unknown; speed?: unknown }
+export const reasoningValues = (harness: Agent['harness']): string[] => harness==='claude' ? ['low','medium','high','xhigh','max'] : ['minimal','low','medium','high','xhigh','max'];
+export function validateModel(harness: Agent['harness'], input: ModelInput, agent='agent', requireName=true): {name?: string;reasoning?: string;speed?: 'fast'|'standard'} {
+  const result: {name?: string;reasoning?: string;speed?: 'fast'|'standard'}={};
+  if (input.name!==undefined) {
+    if (typeof input.name!=='string' || !input.name.trim()) throw new Error(`Agent ${agent} requires a nonempty model name`);
+    result.name=input.name;
+  } else if (requireName) throw new Error(`Agent ${agent} requires a model name`);
+  if (input.reasoning!==undefined) {
+    const accepted=reasoningValues(harness);
+    if (typeof input.reasoning!=='string' || !accepted.includes(input.reasoning)) throw new Error(`Agent ${agent} reasoning value ${JSON.stringify(input.reasoning)} is invalid for ${harness}; accepted: ${accepted.join(', ')}`);
+    result.reasoning=input.reasoning;
+  }
+  if (input.speed!==undefined) {
+    if (harness!=='codex') throw new Error('model.speed supports fast or standard for Codex only');
+    if (input.speed!=='fast' && input.speed!=='standard') throw new Error(`Agent ${agent} speed value ${JSON.stringify(input.speed)} is invalid for codex; accepted: fast, standard`);
+    result.speed=input.speed;
+  }
+  return result;
+}
 export const hash = (data: string | Buffer): string => createHash('sha256').update(data).digest('hex');
 export function canonical(value: unknown): string {
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
@@ -61,6 +88,54 @@ export function fileMap(root: string): Record<string,string> {
 export function verify(bundle: string): void {
   const expected = JSON.parse(fs.readFileSync(path.join(bundle,'checksums.json'),'utf8'));
   if (canonical(fileMap(bundle)) !== canonical(expected)) throw new Error('Bundle integrity check failed; refusing modified bundle');
+}
+function acceptedArguments(agent: Agent): string {
+  const entries=Object.entries(agent.argument_definitions ?? {}).map(([key,item])=>item.values ? `${key} (${item.values.join('|')})` : `${key} (${item.type})`);
+  return entries.length ? entries.join(', ') : 'none';
+}
+function resolveLaunch(agent: Agent, options: Pick<LaunchOptions,'headless'|'model'|'reasoning'|'speed'|'args'>): LaunchMetadata {
+  const base=agent.launch ?? {model:{name:agent.model,reasoning:agent.reasoning_effort,speed:agent.speed,sources:{name:'agent',reasoning:agent.reasoning_effort?'agent':null,speed:agent.speed?'agent':null}},arguments:{},headless:false};
+  const flags={name:options.model,reasoning:options.reasoning,speed:options.speed};
+  const model=validateModel(agent.harness,{name:flags.name ?? base.model.name,reasoning:flags.reasoning ?? base.model.reasoning,speed:flags.speed ?? base.model.speed},agent.name);
+  const sources={...base.model.sources};
+  if (flags.name!==undefined) sources.name='flag';
+  if (flags.reasoning!==undefined) sources.reasoning='flag';
+  if (flags.speed!==undefined) sources.speed='flag';
+  const arguments_: Record<string,string>={...base.arguments};
+  for (const pair of options.args ?? []) {
+    const separator=pair.indexOf('=');
+    if (separator<1) throw new Error(`Agent ${agent.name} argument ${JSON.stringify(pair)} is malformed; use key=value. Accepted arguments: ${acceptedArguments(agent)}`);
+    const key=pair.slice(0,separator),value=pair.slice(separator+1),definition=agent.argument_definitions?.[key];
+    if (!definition) throw new Error(`Agent ${agent.name} does not declare argument ${key}; accepted arguments: ${acceptedArguments(agent)}`);
+    if (definition.values && !definition.values.includes(value)) throw new Error(`Agent ${agent.name} argument ${key} value ${JSON.stringify(value)} is invalid; accepted: ${definition.values.join(', ')}. Accepted arguments: ${acceptedArguments(agent)}`);
+    arguments_[key]=value;
+  }
+  const adHoc=flags.name!==undefined || flags.reasoning!==undefined || flags.speed!==undefined;
+  const orderedArguments=Object.fromEntries(Object.keys(agent.argument_definitions ?? {}).flatMap(key=>Object.hasOwn(arguments_,key)?[[key,arguments_[key]!]]:[]));
+  return {model:{name:model.name!,reasoning:model.reasoning,speed:model.speed,sources},arguments:orderedArguments,...(base.preset?{preset:base.preset}:{}),...(adHoc?{override:'ad hoc' as const}:base.override?{override:base.override}:{}),headless:!!options.headless};
+}
+function materializeLaunch(bundle: string, route: string, launch: LaunchMetadata): string {
+  const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
+  const current=manifest.nodes[route]; if (!current) throw new Error('Unknown bundled child');
+  if (canonical(current.launch)===canonical(launch)) return bundle;
+  const digest=hash(canonical({source:path.basename(bundle),route,launch})).slice(0,20);
+  const destination=path.join(path.dirname(bundle),path.basename(bundle)+'-launch-'+digest);
+  if (fs.existsSync(destination)) { verify(destination); return destination; }
+  const staging=fs.mkdtempSync(path.join(path.dirname(bundle),'.launching-'));
+  try {
+    fs.cpSync(bundle,staging,{recursive:true});
+    const selected=manifest.nodes[route]!;
+    selected.model=launch.model.name; selected.reasoning_effort=launch.model.reasoning; selected.speed=launch.model.speed; selected.launch=launch;
+    fs.writeFileSync(path.join(staging,'manifest.json'),JSON.stringify(manifest,null,2));
+    fs.writeFileSync(path.join(staging,route,'agent.json'),JSON.stringify(selected,null,2));
+    fs.writeFileSync(path.join(staging,'checksums.json'),JSON.stringify(fileMap(staging),null,2));
+    try { fs.renameSync(staging,destination); } catch (error) {
+      if (!fs.existsSync(destination)) throw error;
+      verify(destination);
+      if (canonical(fileMap(destination))!==canonical(fileMap(staging))) throw error;
+    }
+  } finally { fs.rmSync(staging,{recursive:true,force:true}); }
+  return destination;
 }
 function link(source: string, destination: string): void {
   if (!fs.existsSync(source)) return;
@@ -149,16 +224,17 @@ export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv,
   for (const [name,source] of desired) link(source,path.join(skills,name));
   env.CODEX_HOME=runtime; env.AGENT_FARM_NATIVE_CODEX_HOME=original; return runtime;
 }
-export interface LaunchOptions { headless?: boolean; nativeArgs?: string[]; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string; configRoot?: string }
+export interface LaunchOptions { headless?: boolean; nativeArgs?: string[]; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string; configRoot?: string; model?: string; reasoning?: string; speed?: string; args?: string[] }
 export function command(bundle: string, route: string, options: LaunchOptions = {}) {
   const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
   const agent=manifest.nodes[route]; if (!agent) throw new Error('Unknown bundled child');
+  const launch=resolveLaunch(agent,options);
   const directory=path.join(bundle,route); const env={...(options.env ?? process.env)};
   const envOverrides: Record<string,string>={};
   const configRoot=path.resolve(options.configRoot ?? env.AGENT_FARM_CONFIG_ROOT ?? path.join(options.home ?? os.homedir(),'.config/agent-farm'));
   const providerConfig=loadProvider(configRoot);
   // Hosts can opt into slash-only routing (e.g. deepseek/deepseek-v4.1-flash).
-  const provider=providerConfig && (providerConfig.match!=='slash-models' || agent.model.includes('/')) ? providerConfig : undefined;
+  const provider=providerConfig && (providerConfig.match!=='slash-models' || launch.model.name.includes('/')) ? providerConfig : undefined;
   // Process children must read the same host settings even when this model skips routing.
   if (providerConfig) envOverrides.AGENT_FARM_CONFIG_ROOT=configRoot;
   const nativeArgs=options.nativeArgs ?? [];
@@ -166,20 +242,22 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
   const defaultHeadless=options.headless && nativeArgs.length===0;
   let instructions=agent.instructions ?? '';
   if (Object.keys(agent.children).length) {
-    instructions+='\nBundled children (use native delegation for native roles; process launchers accept --message; do not regenerate config):\n';
+    instructions+='\nBundled children (use native delegation for native roles; process launchers accept --message, --model, --reasoning, --speed, and --arg; do not regenerate config):\n';
     instructions+=Object.entries(agent.children).map(([alias,childRoute])=>manifest.nodes[childRoute]!.mode==='native' ? `${alias}: native subagent (${manifest.nodes[childRoute]!.description ?? alias}). Use native delegation and follow-up tools.` : `${alias}: ${path.join(directory,'dispatch',alias)}`).join('\n');
   }
+  const context=['LAUNCH CONTEXT',`headless: ${launch.headless}`,...Object.entries(launch.arguments).map(([key,value])=>`${key}: ${value}`)].join('\n');
+  instructions=[instructions,context].filter(Boolean).join('\n\n');
   let argv: string[];
   if (agent.harness==='claude') {
     if (provider) {
       envOverrides.ANTHROPIC_BASE_URL=provider.base_url;
       envOverrides.ANTHROPIC_AUTH_TOKEN='${'+provider.api_key_env+'}';
-      for (const alias of ['HAIKU','SONNET','OPUS','FABLE']) envOverrides[`ANTHROPIC_DEFAULT_${alias}_MODEL`]=agent.model;
+      for (const alias of ['HAIKU','SONNET','OPUS','FABLE']) envOverrides[`ANTHROPIC_DEFAULT_${alias}_MODEL`]=launch.model.name;
     }
-    argv=['claude','--dangerously-skip-permissions','--model',agent.model,'--plugin-dir',directory,'--mcp-config',path.join(directory,'mcp.json'),'--strict-mcp-config'];
+    argv=['claude','--dangerously-skip-permissions','--model',launch.model.name,'--plugin-dir',directory,'--mcp-config',path.join(directory,'mcp.json'),'--strict-mcp-config'];
     const native=Object.fromEntries(Object.entries(agent.children).filter(([,r])=>manifest.nodes[r]!.mode==='native').map(([alias])=>[alias,JSON.parse(fs.readFileSync(path.join(directory,'native-agents',alias+'.json'),'utf8'))]));
     if (Object.keys(native).length) argv.push('--agents',JSON.stringify(native));
-    if (agent.reasoning_effort) argv.push('--effort',agent.reasoning_effort);
+    if (launch.model.reasoning) argv.push('--effort',launch.model.reasoning);
     if (instructions) argv.push('--append-system-prompt',instructions);
     if (defaultHeadless) argv.push('--print','--output-format','json');
   } else {
@@ -188,13 +266,13 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
       envOverrides.CODEX_HOME=env.CODEX_HOME!;
       envOverrides.AGENT_FARM_NATIVE_CODEX_HOME=env.AGENT_FARM_NATIVE_CODEX_HOME!;
     }
-    argv=['codex',...(defaultHeadless ? ['exec','--skip-git-repo-check','--json'] : []),'--yolo','--cd',manifest.directory,'--model',agent.model];
+    argv=['codex',...(defaultHeadless ? ['exec','--skip-git-repo-check','--json'] : []),'--yolo','--cd',manifest.directory,'--model',launch.model.name];
     if (instructions) argv.push('-c','developer_instructions='+JSON.stringify(instructions));
-    if (agent.reasoning_effort) argv.push('-c','model_reasoning_effort='+JSON.stringify(agent.reasoning_effort));
+    if (launch.model.reasoning) argv.push('-c','model_reasoning_effort='+JSON.stringify(launch.model.reasoning));
     for (const [alias,childRoute] of Object.entries(agent.children)) if (manifest.nodes[childRoute]!.mode==='native') {
       argv.push('-c',`agents.${alias}.description=${JSON.stringify(manifest.nodes[childRoute]!.description ?? alias)}`,'-c',`agents.${alias}.config_file=${JSON.stringify(path.join(directory,'native-agents',alias+'.toml'))}`);
     }
-    if (agent.speed) argv.push('-c','service_tier='+JSON.stringify(agent.speed==='fast' ? 'fast' : 'default'));
+    if (launch.model.speed) argv.push('-c','service_tier='+JSON.stringify(launch.model.speed==='fast' ? 'fast' : 'default'));
     for (const [key,value] of Object.entries(agent.connections)) argv.push('-c',`mcp_servers.${connectionName(key)}=${toml(codexConnection(value))}`);
   }
   argv.push(...nativeArgs);
@@ -206,7 +284,7 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
     const script=`import {execute} from ${JSON.stringify(pathToFileURL(path.join(bundle,'runtime.mjs')).href)}; const key=process.env[${JSON.stringify(provider.api_key_env)}]; if (!key) throw new Error("Provider environment variable is unavailable"); execute(process.argv.slice(1),process.cwd(),{...process.env,ANTHROPIC_AUTH_TOKEN:key});`;
     argv=[process.execPath,'--input-type=module','--eval',script,'--',...argv];
   }
-  return {argv,env,envOverrides,cwd:manifest.directory};
+  return {argv,env,envOverrides,cwd:manifest.directory,launch};
 }
 export function execute(argv: string[], cwd: string, environment: NodeJS.ProcessEnv): never {
   if (process.platform==='win32' || !process.execve) throw new Error('Native launch requires Node 22.15+ on macOS or Linux');
@@ -222,13 +300,17 @@ export function execute(argv: string[], cwd: string, environment: NodeJS.Process
   throw new Error('Native exec unexpectedly returned');
 }
 export function run(bundle: string, route: string, args: string[], launchCommand: typeof command = command, configRoot?: string): void {
-  const {values,tokens}=parseArgs({args,options:{exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true}},strict:true,allowPositionals:true,tokens:true});
+  const {values,tokens}=parseArgs({args,options:{exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true},model:{type:'string'},reasoning:{type:'string'},speed:{type:'string'},arg:{type:'string',multiple:true}},strict:true,allowPositionals:true,tokens:true});
   const separator=tokens.find(t=>t.kind==='option-terminator')?.index ?? args.length;
   if (tokens.some(t=>t.kind==='positional' && t.index<separator)) throw new Error('Native arguments must follow -- or use --native-arg');
   if (values.explain && values['print-launch']) throw new Error('Choose only one of --explain or --print-launch');
   verify(bundle);
-  const launch=launchCommand(bundle,route,{headless:values.exec || values['print-launch'],nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain,configRoot});
-  if (values.explain) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle},null,2));
-  else if (values['print-launch']) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides},null,2));
+  const requested={headless:values.exec || values['print-launch'],model:values.model,reasoning:values.reasoning,speed:values.speed,args:values.arg};
+  const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
+  const selected=manifest.nodes[route]; if (!selected) throw new Error('Unknown bundled child');
+  bundle=materializeLaunch(bundle,route,resolveLaunch(selected,requested));
+  const launch=launchCommand(bundle,route,{...requested,nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain,configRoot});
+  if (values.explain) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle,launch:launch.launch},null,2));
+  else if (values['print-launch']) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides,launch:launch.launch},null,2));
   else execute(launch.argv,launch.cwd,launch.env);
 }

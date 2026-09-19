@@ -99,6 +99,7 @@ commands. `agent-farm doctor` tells you what's working and what's not.
 ```sh
 agent-farm run planner
 agent-farm run implementer --workspace my-project --message "Fix the failing tests"
+agent-farm run implementer --model gpt-6-astra --speed fast --arg review=full
 ```
 
 Run `agent-farm help run` for all flags.
@@ -112,7 +113,7 @@ combines that definition with shared skills, child agent definitions, and option
 workspace MCP connections into a launch bundle in `.agent-farm/generated/` in the
 target repository, then opens Claude Code or Codex to work there.
 
-- **Profile** — a saved setup. "When I say *planner*, I mean: use this AI, with these skills, at this thinking level." Like choosing which worker to send.
+- **Profile** — a saved setup. "When I say *planner*, I mean: use this agent, optionally with these model fields and launch arguments." Like choosing which worker to send.
 - **Agent** — the worker definition. Which AI brain, what it knows, what instructions it follows, who it can delegate to.
 - **Skill** — a playbook. Step-by-step instructions for a kind of task: how to create a ticket, review code, or investigate a bug.
 - **Workspace** — the toolbox for a project. Which external tools (Linear, Sentry, databases) an agent can reach when working on that project.
@@ -134,6 +135,14 @@ profiles and workspaces for you. To edit by hand:
 
 See the [configuration reference](CONFIGURATION.md) for file formats, child
 agents, skill metadata, and workspace connections.
+
+Agents can declare validated enum, string, and path arguments. Profiles can
+save argument values and partial model presets; command-line `--model`,
+`--reasoning`, `--speed`, and repeatable `--arg key=value` flags win over the
+profile, while children keep their compiled models. Every entry identity gets a
+`LAUNCH CONTEXT` block containing `headless` and the resolved arguments. See the
+[configuration reference](CONFIGURATION.md#launch-overrides-and-context) for
+the schema, precedence, output metadata, and exact block format.
 
 ### Using third-party models via OpenRouter
 

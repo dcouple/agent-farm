@@ -117,22 +117,36 @@ test('invalid model settings fail rather than silently dropping options',t=>{
  const f=fixture(t);
  for(const model of ['{name: test, reasoning: typo}','{name: test, speed: fast}','{name: test, typo: high}']) {
   f.put('agents/planner.yaml',`harness: claude\nmodel: ${model}\n`);
-  assert.throws(f.build,/Unsupported|model.speed/);
+  assert.throws(f.build,/invalid|model.speed|Unsupported/);
  }
  f.put('agents/planner.yaml','harness: codex\nmodel: {name: test, reasoning: high}\nreasoning_effort: medium\n');
  assert.throws(f.build,/model.reasoning/);
 });
-test('profiles select agents and reject behavior overrides',t=>{
+test('profiles preset partial models and declared arguments but reject other behavior overrides',t=>{
  const f=fixture(t);
- f.put('agents/base.md','---\nharness: codex\nmodel: {name: first, reasoning: medium, speed: fast}\nskills: [proof]\n---\nBase intent.\n');
- f.put('profiles/entry.yaml','agent: base\n');
+ f.put('agents/base.md','---\nharness: codex\nmodel: {name: first, reasoning: medium, speed: standard}\nargs:\n  mode: {values: [standard, fast], default: standard}\n  source: {type: path}\nskills: [proof]\n---\nBase intent.\n');
+ f.put('profiles/entry.yaml','agent: base\nmodel: {name: second, speed: fast}\nargs: {mode: fast, source: ../plan.md}\n');
  const b=build(f.root,'entry',f.target),m=JSON.parse(fs.readFileSync(path.join(b,'manifest.json')));
- assert.equal(m.nodes.main.name,'base');assert.equal(m.nodes.main.speed,'fast');
+ assert.equal(m.nodes.main.name,'base');assert.equal(m.nodes.main.model,'second');assert.equal(m.nodes.main.reasoning_effort,'medium');assert.equal(m.nodes.main.speed,'fast');
  assert.equal(m.nodes.main.instructions,'Base intent.');
- for(const extra of ['model: second','instructions: Extra','subagents: {}','harness: claude','skills: []']){
+ assert.deepEqual(m.nodes.main.launch.model.sources,{name:'preset',reasoning:'agent',speed:'preset'});
+ assert.deepEqual(m.nodes.main.launch.arguments,{mode:'fast',source:'../plan.md'});assert.equal(m.nodes.main.launch.override,'preset');assert.equal(m.nodes.main.launch.preset,'entry');
+ for(const extra of ['instructions: Extra','subagents: {}','harness: claude','skills: []']){
   f.put('profiles/entry.yaml',`agent: base\n${extra}\n`);assert.throws(()=>build(f.root,'entry',f.target),/Unsupported/);
  }
+ f.put('profiles/entry.yaml','agent: base\nmodel: second\n');assert.throws(()=>build(f.root,'entry',f.target),/mapping/);
+ f.put('profiles/entry.yaml','agent: base\nargs: {unknown: value}\n');assert.throws(()=>build(f.root,'entry',f.target),/base.*unknown.*accepted arguments/i);
  f.put('profiles/entry.yaml','agent: missing\n');assert.throws(()=>build(f.root,'entry',f.target),/ENOENT/);
+});
+test('agent argument declarations validate enum, string, path, defaults, and names',t=>{
+ const f=fixture(t);
+ f.put('agents/planner.yaml','harness: codex\nmodel: test\nargs:\n  review: {values: [none, final, full], default: final}\n  parent: {type: path, description: Status file}\n  source: {type: string}\n');
+ const manifest=JSON.parse(fs.readFileSync(path.join(f.build(),'manifest.json')));
+ assert.deepEqual(manifest.nodes.main.launch.arguments,{review:'final'});
+ assert.deepEqual(manifest.nodes.main.argument_definitions.parent,{type:'path',description:'Status file'});
+ for(const args of ['{bad: {type: number}}','{Bad: {type: string}}','{mode: {values: []}}','{mode: {values: [one], default: two}}','{mode: {values: [one], type: string}}']) {
+  f.put('agents/planner.yaml',`harness: codex\nmodel: test\nargs: ${args}\n`);assert.throws(f.build,/Argument|configuration name/);
+ }
 });
 test('native Codex roles retain child model and skill paths and inherit parent connections',t=>{
  const f=fixture(t);
@@ -238,6 +252,7 @@ test('inspection reports resolved sources and child settings without generating 
  assert.equal(info.agents.main.source_file,path.join(f.root,'agents/planner.yaml'));
  assert.equal(info.agents['main/children/worker'].mode,'process');
  assert.equal(info.agents.main.connections.docs.url,'https://example.com/mcp');
+ assert.equal(info.agents.main.model.sources.name,'agent');assert.deepEqual(info.agents.main.arguments,{});
  assert.equal(info.agents.main.skills[0].source_file,path.join(f.root,'skills/proof/SKILL.md'));
  const list=spawnSync(process.execPath,[cli,'profiles','list','--config-root',f.root],{encoding:'utf8'});
  assert.equal(list.status,0,list.stderr);assert.match(list.stdout,/entry -> planner/);
