@@ -69,8 +69,8 @@ test('CLI global syntax, scoped workspace aliases, and pre-launch warnings',t=>{
  f.put('bin/codex','#!/bin/sh\necho native-started\n');fs.chmodSync(path.join(f.home,'bin/codex'),0o755);env.PATH=path.join(f.home,'bin')+':'+env.PATH;
  r=run(['run','saved','--directory',path.join(f.home,'repo')]);assert.equal(r.status,0,r.stderr);assert.match(r.stderr,/global skill\(s\)/);assert.match(r.stdout,/native-started/);
  r=run(['unset','global','saved']);assert.equal(r.status,0,r.stderr);
- f.put('library/workspaces/probe.yaml','connections: {}\n');
- r=run(['set','global','--workspace','probe','--harness','codex']);assert.equal(r.status,0,r.stderr);
- r=run(['unset','global','--workspace','probe','--harness','codex']);assert.equal(r.status,0,r.stderr);
+ f.put('library/workspace.yaml','connections: {}\n');
+ r=run(['set','global','--directory',f.root,'--harness','codex']);assert.equal(r.status,0,r.stderr);
+ r=run(['unset','global','--directory',f.root,'--harness','codex']);assert.equal(r.status,0,r.stderr);
  r=run(['unset','global']);assert.notEqual(r.status,0);r=run(['set','global','saved','--save','other']);assert.notEqual(r.status,0);
 });

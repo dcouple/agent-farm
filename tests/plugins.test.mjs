@@ -49,14 +49,14 @@ function cliRun(root,args){
 
 test('plugins install into isolated namespaces and list overlapping profiles',t=>{
  const root=fixture(t),source=makePlugin(root);
- put(root,'workspaces/private.yaml','LOCAL');
+ put(root,'workspace.yaml','LOCAL');
  const {profiles}=validatePlugin(dcouple);
  for(const name of ['planner','implementer'])assert.ok(profiles.some(profile=>profile.profile===name&&profile.agent===name),`Missing validated profile: ${name}`);
  assert.ok(installPlugin(dcouple,root).changed>0);
  assert.equal(installPlugin(dcouple,root).changed,0);
  assert.ok(installPlugin(source.root,root).changed>0);
  assert.equal(fs.readFileSync(path.join(root,'plugins/dcouple/profiles/planner.yaml'),'utf8'),fs.readFileSync(path.join(dcouple,'profiles/planner.yaml'),'utf8'));
- assert.equal(fs.readFileSync(path.join(root,'workspaces/private.yaml'),'utf8'),'LOCAL');
+ assert.equal(fs.readFileSync(path.join(root,'workspace.yaml'),'utf8'),'LOCAL');
  assert.deepEqual(listPlugins(root).map(item=>item.name),['dcouple','fixture']);
  const listed=listProfiles(root).filter(item=>item.profile==='implementer');
  assert.deepEqual(listed.map(item=>item.qualified),['dcouple/implementer','fixture/implementer']);

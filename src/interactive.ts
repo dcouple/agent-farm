@@ -1,3 +1,4 @@
+import {resolveInteractiveWorkspace} from './workspaces.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -38,12 +39,6 @@ function which(name: string): boolean {
   try { execSync(`which ${name}`, {stdio: 'ignore'}); return true; } catch { return false; }
 }
 
-function listWorkspaces(configRoot: string): string[] {
-  const dir = path.join(configRoot, 'workspaces');
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir).filter(f => f.endsWith('.yaml')).map(f => f.slice(0, -5)).sort();
-}
-
 function listSkills(configRoot: string): string[] {
   const dir = path.join(configRoot, 'skills');
   if (!fs.existsSync(dir)) return [];
@@ -57,20 +52,6 @@ function openInEditor(file: string) {
   const editor = process.env.EDITOR ?? process.env.VISUAL ?? 'nano';
   try { execSync(`${editor} ${JSON.stringify(file)}`, {stdio: 'inherit'}); }
   catch { p.log.warn(`Could not open ${editor}. Edit manually: ${file}`); }
-}
-
-async function pickWorkspace(configRoot: string): Promise<string | undefined> {
-  const workspaces = listWorkspaces(configRoot);
-  if (!workspaces.length) return undefined;
-  const wsChoice = await p.select({
-    message: 'Workspace',
-    options: [
-      {value: '__none__', label: 'None', hint: 'no extra tools'},
-      ...workspaces.map(w => ({value: w, label: w})),
-    ],
-  });
-  if (isCancel(wsChoice)) bail();
-  return wsChoice === '__none__' ? undefined : wsChoice as string;
 }
 
 async function pickDirectory(defaultDir: string): Promise<string> {
@@ -88,20 +69,20 @@ async function pickDirectory(defaultDir: string): Promise<string> {
   return path.resolve(dirChoice as string);
 }
 
-function rawCommand(profile: string, workspace: string | undefined, targetDir: string): string {
+function rawCommand(profile: string, targetDir: string): string {
   const parts = ['agent-farm run', profile];
-  if (workspace) parts.push('--workspace', workspace);
   parts.push('--directory', targetDir);
   return parts.join(' ');
 }
 
-async function launchProfile(configRoot: string, profile: string, workspace: string | undefined, targetDir: string) {
+async function launchProfile(configRoot: string, profile: string, targetDir: string) {
+  const workspace=await resolveInteractiveWorkspace(configRoot,{directory:targetDir});
   const s = p.spinner();
   s.start('Building configuration');
   const bundle = build(configRoot, profile, targetDir, workspace);
   s.stop(`${green('✓')} Bundle ready`);
 
-  const cmd = rawCommand(profile, workspace, targetDir);
+  const cmd = rawCommand(profile, targetDir);
   p.log.message(`  ${dim('$')} ${bold(cmd)}`);
 
   await sleep(300);
@@ -277,7 +258,6 @@ export async function bareCommand(configRoot: string, directory: string) {
     })),
     separator,
     {value: 'create', label: `${green('+')} Create new profile`},
-    {value: 'create-workspace', label: `${green('+')} Create new workspace`},
     {value: 'edit', label: `${yellow('✎')} Edit a profile`},
     {value: 'inspect', label: `${cyan('⊕')} Inspect a profile`},
   ];
@@ -293,16 +273,10 @@ export async function bareCommand(configRoot: string, directory: string) {
       const launch = await p.confirm({message: `Launch ${bold(created)} now?`, initialValue: true});
       if (isCancel(launch)) bail();
       if (launch) {
-        const workspace = await pickWorkspace(configRoot);
         const targetDir = await pickDirectory(directory);
-        await launchProfile(configRoot, created, workspace, targetDir);
+        await launchProfile(configRoot, created, targetDir);
       }
     }
-    return;
-  }
-
-  if (action === 'create-workspace') {
-    await createWorkspaceFlow(configRoot);
     return;
   }
 
@@ -358,9 +332,8 @@ export async function bareCommand(configRoot: string, directory: string) {
 
   // Launch
   const profile = action.replace('launch:', '');
-  const workspace = await pickWorkspace(configRoot);
   const targetDir = await pickDirectory(directory);
-  await launchProfile(configRoot, profile, workspace, targetDir);
+  await launchProfile(configRoot, profile, targetDir);
 }
 
 function truncateSkills(names: string[], max: number): string {
@@ -426,7 +399,7 @@ export async function initCommand(configRoot: string, directory: string, full = 
     `  ${bold('Profile')}    ${dim('=')} agent + model + skills for a job`,
     `  ${bold('Workspace')}  ${dim('=')} MCP connections ${dim('(Linear, Sentry, …)')}`,
     '',
-    `  Pick a profile → pick a workspace → pick a repo → go.`,
+    `  Pick a profile → pick a repo → go.`,
   ].join('\n'));
 
   // Plugin install
@@ -474,13 +447,7 @@ export async function initCommand(configRoot: string, directory: string, full = 
     ].filter(Boolean).join('\n'));
   }
 
-  const workspaces = listWorkspaces(configRoot);
-  if (workspaces.length) {
-    p.log.step(bold('Workspaces'));
-    for (const w of workspaces) p.log.message(`  ${green('●')} ${w}`);
-  } else {
-    p.log.info(`No workspaces yet ${dim('— add one in ~/.config/agent-farm/workspaces/')}`);
-  }
+  p.log.info('Project connections: .agent-farm/workspace.yaml; approve with agent-farm workspace trust.');
 
   if (!full) await continuePrompt();
 
@@ -493,7 +460,7 @@ export async function initCommand(configRoot: string, directory: string, full = 
     `  ${bold('agent-farm --help')}     All commands`,
     '',
     `  ${dim('Config:')} ~/.config/agent-farm/`,
-    `  ${dim('profiles/ · agents/ · skills/ · workspaces/')}`,
+    `  ${dim('profiles/ · agents/ · skills/ · workspace.yaml')}`,
   ].join('\n'));
 
   // Launch
@@ -559,130 +526,7 @@ export function doctorCommand(configRoot: string) {
   const skills = listSkills(configRoot);
   console.log(`    ${green('✓')} ${skills.length} skill(s)`);
 
-  // Workspaces
-  const workspaces = listWorkspaces(configRoot);
-  console.log(`    ${workspaces.length ? green('✓') : dim('–')} ${workspaces.length} workspace(s)${workspaces.length ? ': ' + workspaces.join(', ') : ''}`);
-
   console.log('');
-}
-
-async function createWorkspaceFlow(configRoot: string): Promise<string | undefined> {
-  p.log.step('Create a new workspace');
-  p.log.message(dim('  A workspace adds MCP connections to any profile you launch with it.'));
-
-  const name = await p.text({
-    message: 'Workspace name',
-    placeholder: 'my-project',
-    validate: (val) => {
-      if (!val || !val.trim()) return 'Required';
-      if (!/^[a-z][a-z0-9_-]{0,63}$/.test(val)) return 'Lowercase letters, numbers, hyphens. Start with a letter.';
-      if (fs.existsSync(path.join(configRoot, 'workspaces', val + '.yaml'))) return 'Already exists';
-    },
-  });
-  if (isCancel(name)) return undefined;
-  const wsName = name as string;
-
-  const connType = await p.select({
-    message: 'Connection type',
-    options: [
-      {value: 'remote', label: 'Remote MCP server', hint: 'HTTPS endpoint'},
-      {value: 'local', label: 'Local MCP command', hint: 'stdio process'},
-    ],
-  });
-  if (isCancel(connType)) return undefined;
-
-  const connName = await p.text({
-    message: 'Connection name',
-    placeholder: connType === 'remote' ? 'linear' : 'local-db',
-    validate: (val) => {
-      if (!val || !val.trim()) return 'Required';
-      if (!/^[a-z][a-z0-9_-]{0,63}$/.test(val)) return 'Lowercase letters, numbers, hyphens';
-    },
-  });
-  if (isCancel(connName)) return undefined;
-
-  let yamlContent: string;
-
-  if (connType === 'remote') {
-    const url = await p.text({
-      message: 'MCP endpoint URL',
-      placeholder: 'https://your-service.example/mcp',
-      validate: (val) => {
-        if (!val || !val.trim()) return 'Required';
-        try { const u = new URL(val); if (u.protocol !== 'https:') return 'Must be HTTPS'; }
-        catch { return 'Invalid URL'; }
-      },
-    });
-    if (isCancel(url)) return undefined;
-
-    const auth = await p.select({
-      message: 'Authentication',
-      options: [
-        {value: 'native', label: 'Native OAuth', hint: 'sign in via agent-farm mcp login'},
-        {value: 'none', label: 'None', hint: 'public endpoint'},
-      ],
-    });
-    if (isCancel(auth)) return undefined;
-
-    yamlContent = stringify({
-      connections: {[connName as string]: {type: 'mcp', url: url as string, auth: auth as string}},
-    });
-  } else {
-    const command = await p.text({
-      message: 'Command to run',
-      placeholder: 'my-mcp-server',
-      validate: (val) => { if (!val || !val.trim()) return 'Required'; },
-    });
-    if (isCancel(command)) return undefined;
-
-    const argsInput = await p.text({
-      message: `Arguments ${dim('(space-separated, optional)')}`,
-      placeholder: 'serve --port 3000',
-    });
-    if (isCancel(argsInput)) return undefined;
-
-    const args = (argsInput as string).trim() ? (argsInput as string).trim().split(/\s+/) : [];
-    const conn: Record<string, unknown> = {type: 'mcp', command: command as string};
-    if (args.length) conn.args = args;
-    yamlContent = stringify({connections: {[connName as string]: conn}});
-  }
-
-  const wantInstructions = await p.confirm({
-    message: 'Add workspace instructions?',
-    initialValue: false,
-  });
-  if (isCancel(wantInstructions)) return undefined;
-  if (wantInstructions) {
-    const instructions = await p.text({
-      message: 'Instructions',
-      placeholder: 'Use the project associated with this workspace.',
-      validate: (val) => { if (!val || !val.trim()) return 'Required'; },
-    });
-    if (isCancel(instructions)) return undefined;
-    const {parse} = await import('yaml');
-    const existing = parse(yamlContent) as Record<string, unknown>;
-    yamlContent = stringify({instructions: (instructions as string).trim(), ...existing});
-  }
-
-  // Preview
-  console.log('');
-  console.log(`  ${bold(wsName)}`);
-  for (const line of yamlContent.split('\n')) {
-    if (line.trim()) console.log(`  ${dim(line)}`);
-  }
-  console.log('');
-
-  const confirm = await p.confirm({message: 'Create this workspace?', initialValue: true});
-  if (isCancel(confirm) || !confirm) return undefined;
-
-  const wsDir = path.join(configRoot, 'workspaces');
-  fs.mkdirSync(wsDir, {recursive: true});
-  fs.writeFileSync(path.join(wsDir, wsName + '.yaml'), yamlContent);
-
-  p.log.success(`Created workspace ${bold(wsName)}`);
-  p.log.message(`  ${dim(path.join(wsDir, wsName + '.yaml'))}`);
-
-  return wsName;
 }
 
 export function helpCommand(query?: string) {

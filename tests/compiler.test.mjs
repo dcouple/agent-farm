@@ -15,8 +15,8 @@ function fixture(t) {
  put('agents/planner.yaml','harness: claude\nmodel: sonnet\nskills: [proof]\nsubagents: {worker: {agent: worker, mode: process}}\n');
  put('agents/worker.yaml','harness: codex\nmodel: gpt-6-astra\nskills: [proof]\n');
  put('skills/proof/SKILL.md','---\nname: proof\ndescription: Test\n---\nPROOF\n');put('skills/proof/helper.txt','SUPPORT');
- put('workspaces/test.yaml','connections:\n  docs:\n    type: mcp\n    auth: none\n    url: https://example.com/mcp\n');
- return {base,root,target,put,build:()=>build(root,'planner',target,'test')};
+ put('workspace.yaml','connections:\n  docs:\n    type: mcp\n    auth: none\n    url: https://example.com/mcp\n');
+ return {base,root,target,put,build:()=>build(root,'planner',target)};
 }
 test('complete child/support bundle reuses inputs',t=>{
  const f=fixture(t),b=f.build();assert.equal(f.build(),b);
@@ -48,7 +48,7 @@ test('malformed and duplicate YAML entries fail',t=>{
 });
 test('conflicting endpoints and secret URLs fail',t=>{
  const f=fixture(t);f.put('agents/planner.yaml','harness: claude\nmodel: test\nconnections:\n  docs:\n    type: mcp\n    auth: none\n    url: https://different.example/mcp\n');assert.throws(f.build,/Conflicting/);
- f.put('workspaces/test.yaml','connections:\n  docs:\n    type: mcp\n    auth: native\n    url: https://example.com/mcp?token=secret\n');assert.throws(f.build,/credentials/);
+ f.put('workspace.yaml','connections:\n  docs:\n    type: mcp\n    auth: native\n    url: https://example.com/mcp?token=secret\n');assert.throws(f.build,/credentials/);
 });
 test('symlink skill inputs fail',t=>{
  const f=fixture(t);fs.symlinkSync(path.join(f.root,'skills/proof/helper.txt'),path.join(f.root,'skills/proof/link'));assert.throws(f.build,/Symlink/);
@@ -80,7 +80,7 @@ test('Codex references native auth without copying payloads',t=>{
 });
 test('profiles coexist without changing repo instructions',t=>{
  const f=fixture(t);fs.writeFileSync(path.join(f.target,'AGENTS.md'),'ORIGINAL');const b=f.build();
- assert.notEqual(build(f.root,'worker',f.target,'test'),b);assert.equal(fs.readFileSync(path.join(f.target,'AGENTS.md'),'utf8'),'ORIGINAL');
+ assert.notEqual(build(f.root,'worker',f.target),b);assert.equal(fs.readFileSync(path.join(f.target,'AGENTS.md'),'utf8'),'ORIGINAL');
 });
 test('child aliases cannot collide with bundle support directories',t=>{
  const f=fixture(t);f.put('agents/planner.yaml','harness: claude\nmodel: test\nskills: [proof]\nsubagents: {skills: {agent: worker, mode: process}, dispatch: {agent: worker, mode: process}}\n');
@@ -201,7 +201,7 @@ test('shipped Astra profiles package all declared workflow roles and their own s
  for(const skill of skills)f.put(`skills/${skill}/SKILL.md`,skill);
  // Remove legacy fixture planner so the new directory definition is unambiguous.
  fs.unlinkSync(path.join(f.root,'agents/planner.yaml'));fs.unlinkSync(path.join(f.root,'agents/worker.yaml'));
- const b=build(f.root,'implementer',f.target,'test'),m=JSON.parse(fs.readFileSync(path.join(b,'manifest.json')));
+ const b=build(f.root,'implementer',f.target),m=JSON.parse(fs.readFileSync(path.join(b,'manifest.json')));
  for(const alias of ['socrates','worker','implementation-reviewer','plan-reviewer','codebase-explorer','researcher','pr-preparer','correctness-reviewer','integration-reviewer','intent-reviewer','pr-reviewer','qa','cold-reader']){
   assert.ok(m.nodes.main.children[alias],`Missing workflow role: ${alias}`);
  }
@@ -246,7 +246,7 @@ test('child modes are mandatory for both shorthand and mapping definitions',t=>{
 });
 test('inspection reports resolved sources and child settings without generating bundles',t=>{
  const f=fixture(t);f.put('profiles/entry.yaml','agent: planner\n');
- const run=spawnSync(process.execPath,[cli,'inspect','entry','--config-root',f.root,'--workspace','test'],{encoding:'utf8'});
+ const run=spawnSync(process.execPath,[cli,'inspect','entry','--config-root',f.root,'--directory',f.target],{encoding:'utf8'});
  assert.equal(run.status,0,run.stderr);const info=JSON.parse(run.stdout);
  assert.equal(info.profile_file,path.join(f.root,'profiles/entry.yaml'));
  assert.equal(info.agents.main.source_file,path.join(f.root,'agents/planner.yaml'));
