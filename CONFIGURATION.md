@@ -28,8 +28,25 @@ backups/                       Local migration backups, not active definitions
 
 ## Profiles
 
-Each YAML file contains only `agent: <name>`. Profiles are launchable entry
-points; they do not override model settings, tools, instructions, or children.
+Each YAML file selects `agent: <name>` and may optionally save a partial `model`
+override and declared launch `args`:
+
+```yaml
+agent: implementer
+model:
+  name: gpt-6-astra
+  reasoning: medium
+  speed: fast
+args:
+  mode: fast
+```
+
+Only `agent`, `model`, and `args` are accepted. A model preset may contain any
+of `name`, `reasoning`, and `speed`; omitted fields keep the agent value. A
+profile still cannot override the harness, tools, instructions, skills,
+connections, or children. Command-line flags take precedence over the profile
+preset, which takes precedence over agent defaults.
+
 `agent-farm run NAME` launches the complete identity. `agent-farm set global NAME` loads
 only its selected top-level skills into the native user skill directory.
 
@@ -43,6 +60,72 @@ prepended with `instructions_files`. Actual agents live here whether they are
 used as entry points, children, or both. A reference document such as
 `skills/create-ticket/references/socrates.md` is a reusable rubric, not another
 agent definition.
+
+Agents may also declare launch arguments in frontmatter:
+
+```yaml
+args:
+  mode:
+    values: [standard, fast]
+    default: standard
+    description: fast makes the lead do every package itself
+  review:
+    values: [none, final, full]
+    default: final
+  parent:
+    type: path
+    description: status file to keep current
+  source:
+    type: string
+```
+
+Each argument is either an enumeration with a nonempty `values` list or a
+free-form `type: string`/`type: path`. `default` and `description` are optional;
+an enum default must be one of its values. Argument names use the same lowercase
+configuration-name rule as agents. Paths are passed through literally and are
+not resolved or checked for existence.
+
+## Launch overrides and context
+
+The repeatable `--arg key=value` flag sets declared arguments. `--model`,
+`--reasoning`, and `--speed` override only the entry agent's model for that
+launch; compiled child models do not change. Reasoning and speed use the same
+harness-specific validation as agent frontmatter, and speed is Codex-only.
+
+```bash
+agent-farm run implementer \
+  --model gpt-6-astra --reasoning medium --speed fast \
+  --arg mode=fast --arg review=full
+```
+
+CLI model flags are reported as `override: ad hoc`; a saved model preset is
+reported as `override: preset`. Because agent instructions may be tuned for
+their configured model, an ad hoc override should be treated as an experiment.
+
+The entry identity always ends with this exact launch-context format, with
+declared arguments in declaration order and defaults included:
+
+```text
+LAUNCH CONTEXT
+headless: true
+mode: fast
+review: final
+parent: ../worktrees/invoice-pdf/.agent/status.json
+source: docs/agent/plans/invoice-pdf/handoff/WP-01.md
+```
+
+`headless` is `true` for `--exec` and prepared headless launches, and `false`
+otherwise. Claude receives the block through `--append-system-prompt`; Codex
+receives it through `developer_instructions`. It is present whether or not a
+message is supplied. Arguments are context only: there is no templating or
+substitution into instructions, skills, or frontmatter.
+
+Launch-specific state is materialized as a separate content-addressed bundle.
+Its identifier includes the resolved model, arguments, their sources, and the
+headless state. The original compiled bundle remains immutable, both bundles
+remain checksum-verified, and launches with different argument values cannot
+invalidate one another. The selected route's generated `agent.json` records the
+same resolved launch metadata as `--explain` and `--print-launch`.
 
 ## Skills
 
@@ -69,7 +152,7 @@ filename; it does not reinterpret policy or infer a Claude equivalent.
 ## Prepared launches and native arguments
 
 `--print-launch` prints JSON containing `argv` (including `argv[0]`), `cwd`,
-`bundle`, and `env`; `env` contains only Agent Farm's own overrides, never
+`bundle`, `env`, and `launch`; `env` contains only Agent Farm's own overrides, never
 inherited values. Native arguments go after `--` or through repeatable
 `--native-arg` options, precede the message, and replace the default headless
 flags when supplied. Consumers spawn the printed `argv` verbatim and must not
@@ -198,7 +281,10 @@ belongs with the configuration package that uses it.
 `agent-farm profiles list` displays each entry point's resolved model settings.
 `agent-farm inspect PROFILE --workspace WORKSPACE` returns the full resolved
 configuration graph and source paths without generating output. It reports
-configured MCP endpoints, not credentials or a live connection status.
+configured MCP endpoints, not credentials or a live connection status. It also
+reports the preset, resolved arguments, resolved model, and the agent/preset
+source of each model field. `--explain` and `--print-launch` add the actual
+launch metadata, including any flag sources and `ad hoc` override marker.
 
 `codex-issue-creator` aliases `astra-planner`. `codex-implementer` aliases the
 explicit `astra-implementer-high` entry point. The `implementer` entry point

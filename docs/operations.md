@@ -57,6 +57,28 @@ Native child declarations support one level; nested native child declarations ar
 rejected. Instructions asking a child not to delegate are not a security boundary.
 See the verification history for the native behaviors that have been exercised.
 
+Generated process-child dispatchers accept `--model`, `--reasoning`, `--speed`,
+and repeatable `--arg key=value` alongside the existing launch flags. They
+forward only values explicitly supplied to that dispatcher; a child never
+inherits its parent's launch overrides or arguments. The child launch validates
+against the child's harness and declarations, then writes its own resolved
+`LAUNCH CONTEXT` block.
+
+## Launch metadata and bundles
+
+`inspect`, `--explain`, and `--print-launch` report the resolved entry model,
+the source of each model field (`agent`, `preset`, or `flag`), resolved launch
+arguments, and any profile preset. Model flags are labeled `override: ad hoc`;
+saved model presets are labeled `override: preset`. The selected route's
+generated `agent.json` contains the same launch metadata for tracing consumers.
+
+Agent Farm first verifies the immutable compiled bundle. When resolved launch
+state differs, it creates a second checksum-verified, content-addressed launch
+bundle whose identifier includes the model, arguments, sources, and headless
+state. This keeps argument data compatible with bundle verification and allows
+several argument sets to coexist. Launch arguments are identity context only;
+they are never templates for instructions, skills, or configuration files.
+
 ## Plugin rollout
 
 The bundled plugin is `dcouple` 0.1.3, including the SEO profile. The source
