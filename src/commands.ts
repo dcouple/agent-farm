@@ -17,7 +17,7 @@ export interface Command {
 export const commands: Command[] = [
   {
     name: 'run',
-    usage: 'agent-farm run NAME [options] [-- native arguments...]',
+    usage: 'agent-farm run [PLUGIN/]NAME [options] [-- native arguments...]',
     group: 'launch',
     description: 'Launch a profile in the native Claude Code or Codex terminal.',
     flags: [
@@ -37,6 +37,7 @@ export const commands: Command[] = [
     ],
     examples: [
       'agent-farm run planner',
+      'agent-farm run dcouple/implementer',
       'agent-farm run implementer --directory ~/repos/my-app',
       'agent-farm run implementer --model gpt-6-astra --speed fast --arg review=full',
       'agent-farm run astra-discuss --workspace my-project --message "Plan issue #42"',
@@ -61,7 +62,7 @@ export const commands: Command[] = [
     name: 'profiles list',
     usage: 'agent-farm profiles list',
     group: 'inspect',
-    description: 'List all installed profiles with their agent, harness, and model.',
+    description: 'List local and installed profiles with qualified name, plugin/version, ambiguity, agent, harness, and model.',
     flags: [
       {name: 'config-root', description: 'Configuration directory', type: 'string', default: '~/.config/agent-farm'},
     ],
@@ -71,7 +72,7 @@ export const commands: Command[] = [
   },
   {
     name: 'inspect',
-    usage: 'agent-farm inspect NAME [--workspace NAME]',
+    usage: 'agent-farm inspect [PLUGIN/]NAME [--workspace NAME]',
     group: 'inspect',
     description: 'Show the resolved agent graph for a profile: model, skills, children, connections, and source files. Output is JSON.',
     flags: [
@@ -184,13 +185,27 @@ export const commands: Command[] = [
   },
   {
     name: 'plugin install',
-    usage: 'agent-farm plugin install [SOURCE]',
+    usage: 'agent-farm plugin install [SOURCE|BUNDLED-NAME]',
     group: 'plugins',
-    description: 'Install or update the bundled plugin (or a custom source) into ~/.config/agent-farm/. Local modifications produce conflicts rather than being overwritten.',
+    description: 'Install or update one isolated plugin. With no source, install bundled dcouple; a bundled name selects another plugins/ folder.',
     examples: [
       'agent-farm plugin install',
       'agent-farm plugin install /path/to/config',
     ],
+  },
+  {
+    name: 'plugin list',
+    usage: 'agent-farm plugin list',
+    group: 'plugins',
+    description: 'List installed plugin names, versions, sources, and profile counts.',
+    examples: ['agent-farm plugin list'],
+  },
+  {
+    name: 'plugin uninstall',
+    usage: 'agent-farm plugin uninstall NAME',
+    group: 'plugins',
+    description: 'Uninstall receipt-owned files that are unchanged and report modified files left in place.',
+    examples: ['agent-farm plugin uninstall roles'],
   },
   {
     name: 'plugin validate',
@@ -200,6 +215,13 @@ export const commands: Command[] = [
     examples: [
       'agent-farm plugin validate /path/to/config',
     ],
+  },
+  {
+    name: 'plugin pack',
+    usage: 'agent-farm plugin pack SOURCE OUTPUT',
+    group: 'plugins',
+    description: 'Create a checksummed plugin package from a source configuration directory.',
+    examples: ['agent-farm plugin pack ./plugins/roles /tmp/roles-package'],
   },
   {
     name: 'doctor',

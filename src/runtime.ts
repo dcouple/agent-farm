@@ -32,10 +32,12 @@ export function toml(value: unknown): string {
 export interface Agent {
   source_file?: string; name: string; description?: string; mode?: 'native' | 'process'; harness: 'claude' | 'codex'; model: string;
   speed?: 'fast' | 'standard'; reasoning_effort?: string; instructions?: string; skills: string[];
+  plugin?: string; plugin_version?: string; qualified_name?: string; skill_sources?: Record<string,string>;
+  skill_plugins?: Record<string,{plugin?:string;version?:string}>;
   connections: Record<string, Connection>; children: Record<string, string>;
   argument_definitions?: Record<string, ArgumentDefinition>; launch?: LaunchMetadata;
 }
-export interface Manifest { profile: string; directory: string; workspace?: string; nodes: Record<string, Agent> }
+export interface Manifest { profile: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace?: string; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
 export interface ArgumentDefinition { values?: string[]; type?: 'string' | 'path'; default?: string; description?: string }
 export type ModelSource = 'agent' | 'preset' | 'flag';
 export interface LaunchMetadata {
@@ -148,15 +150,12 @@ function link(source: string, destination: string): void {
 export interface Provider { name: string; base_url: string; api_key_env: string; match?: 'all' | 'slash-models' }
 export function loadProvider(root: string): Provider | undefined {
   const file=path.join(root,'settings.json');
-  let text: string;
-  try { text=fs.readFileSync(file,'utf8'); } catch (e) {
-    if ((e as NodeJS.ErrnoException).code==='ENOENT') return;
-    throw e;
-  }
-  let settings: unknown;
-  try { settings=JSON.parse(text); } catch { throw new Error('Host settings must be valid JSON'); }
+  let text:string;
+  try{text=fs.readFileSync(file,'utf8');}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return;throw e;}
+  let settings:Record<string,unknown>;
+  try{settings=JSON.parse(text);}catch{throw new Error('Host settings must be valid JSON');}
   const mapping=(v: unknown): v is Record<string,unknown>=>!!v && typeof v==='object' && !Array.isArray(v);
-  if (!mapping(settings) || Object.keys(settings).some(k=>k!=='provider')) throw new Error('Host settings support only provider');
+  if(!mapping(settings)||Object.keys(settings).some(k=>!['provider','default_plugin'].includes(k)))throw new Error('Host settings support only provider and default_plugin');
   if (settings.provider===undefined) return;
   const value=settings.provider;
   if (!mapping(value) || Object.keys(value).some(k=>!['name','base_url','api_key_env','match'].includes(k))) throw new Error('Provider supports only name, base_url, api_key_env, and match');
@@ -310,7 +309,8 @@ export function run(bundle: string, route: string, args: string[], launchCommand
   const selected=manifest.nodes[route]; if (!selected) throw new Error('Unknown bundled child');
   bundle=materializeLaunch(bundle,route,resolveLaunch(selected,requested));
   const launch=launchCommand(bundle,route,{...requested,nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain,configRoot});
-  if (values.explain) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle,launch:launch.launch},null,2));
-  else if (values['print-launch']) console.log(JSON.stringify({argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides,launch:launch.launch},null,2));
+  const metadata={profile:manifest.profile,plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
+  if (values.explain) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,launch:launch.launch},null,2));
+  else if (values['print-launch']) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides,launch:launch.launch},null,2));
   else execute(launch.argv,launch.cwd,launch.env);
 }
