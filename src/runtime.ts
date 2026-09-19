@@ -37,7 +37,7 @@ export interface Agent {
   connections: Record<string, Connection>; children: Record<string, string>;
   argument_definitions?: Record<string, ArgumentDefinition>; launch?: LaunchMetadata;
 }
-export interface Manifest { profile: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace_source?: WorkspaceMetadata; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
+export interface Manifest { profile: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace_source?: WorkspaceMetadata; workspace_telemetry?: TelemetrySettings; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
 export interface WorkspaceMetadata {source:string;overlay?:string;trust:'none'|'personal'|'trusted'|'untrusted'|'declined';repository?:string;common?:string;sha256?:string}
 export function trustFile(workspace:WorkspaceMetadata,home=os.homedir()):string {
   return path.join(home,'.local/state/agent-farm/workspace-trust',hash(workspace.common!),workspace.sha256!+'.json');
@@ -173,7 +173,7 @@ export function loadProvider(root: string): Provider | undefined {
   let settings:Record<string,unknown>;
   try{settings=JSON.parse(text);}catch{throw new Error('Host settings must be valid JSON');}
   const mapping=(v: unknown): v is Record<string,unknown>=>!!v && typeof v==='object' && !Array.isArray(v);
-  if(!mapping(settings)||Object.keys(settings).some(k=>!['provider','default_plugin'].includes(k)))throw new Error('Host settings support only provider and default_plugin');
+  if(!mapping(settings)||Object.keys(settings).some(k=>!['provider','default_plugin','telemetry'].includes(k)))throw new Error('Host settings support only provider, default_plugin, and telemetry');
   if (settings.provider===undefined) return;
   const value=settings.provider;
   if (!mapping(value) || Object.keys(value).some(k=>!['name','base_url','api_key_env','match'].includes(k))) throw new Error('Provider supports only name, base_url, api_key_env, and match');
@@ -242,6 +242,26 @@ export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv,
   env.CODEX_HOME=runtime; env.AGENT_FARM_NATIVE_CODEX_HOME=original; return runtime;
 }
 export interface LaunchOptions { headless?: boolean; nativeArgs?: string[]; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string; configRoot?: string; model?: string; reasoning?: string; speed?: string; args?: string[] }
+export interface TelemetrySettings {enabled?:boolean;directory?:string}
+export function validateTelemetry(value:unknown):TelemetrySettings|undefined {
+  if(value===undefined)return;
+  const fail=()=>new Error('Telemetry supports enabled (boolean) and directory (absolute path)');
+  if(!value || typeof value!=='object' || Array.isArray(value))throw fail();
+  const data=value as Record<string,unknown>;
+  if(Object.keys(data).some(key=>!['enabled','directory'].includes(key)))throw fail();
+  if(data.enabled!==undefined && typeof data.enabled!=='boolean')throw fail();
+  if(data.directory!==undefined && (typeof data.directory!=='string' || !path.isAbsolute(data.directory) || data.directory.includes('\0')))throw fail();
+  return {...(data.enabled===undefined?{}:{enabled:data.enabled as boolean}),...(data.directory===undefined?{}:{directory:data.directory as string})};
+}
+export function resolveTelemetry(root:string, workspace?:TelemetrySettings, env:NodeJS.ProcessEnv=process.env, home=os.homedir()):Required<TelemetrySettings> {
+  const file=path.join(root,'settings.json');
+  let host:unknown;
+  try {host=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')).telemetry:undefined;}catch{throw new Error('Host settings must be valid JSON');}
+  // Workspace values are the resolved repository + personal overlay snapshot.
+  const value={...validateTelemetry(host),...validateTelemetry(workspace)};
+  if (env.AGENT_FARM_TELEMETRY!==undefined && !['on','off'].includes(env.AGENT_FARM_TELEMETRY)) throw new Error('AGENT_FARM_TELEMETRY must be on or off');
+  return {enabled:env.AGENT_FARM_TELEMETRY ? env.AGENT_FARM_TELEMETRY==='on' : value.enabled ?? true,directory:value.directory ?? path.join(home,'.local/state/agent-farm/telemetry')};
+}
 export function command(bundle: string, route: string, options: LaunchOptions = {}) {
   const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
   assertWorkspaceTrust(manifest.workspace_source,options.home);
@@ -251,10 +271,11 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
   const envOverrides: Record<string,string>={};
   const configRoot=path.resolve(options.configRoot ?? env.AGENT_FARM_CONFIG_ROOT ?? path.join(options.home ?? os.homedir(),'.config/agent-farm'));
   const providerConfig=loadProvider(configRoot);
+  const telemetry=resolveTelemetry(configRoot,manifest.workspace_telemetry,env,options.home ?? os.homedir());
   // Hosts can opt into slash-only routing (e.g. deepseek/deepseek-v4.1-flash).
   const provider=providerConfig && (providerConfig.match!=='slash-models' || launch.model.name.includes('/')) ? providerConfig : undefined;
-  // Process children must read the same host settings even when this model skips routing.
-  if (providerConfig) envOverrides.AGENT_FARM_CONFIG_ROOT=configRoot;
+  // Children must also inherit disabled telemetry and hosts without providers.
+  envOverrides.AGENT_FARM_CONFIG_ROOT=configRoot;
   const nativeArgs=options.nativeArgs ?? [];
   // Explicit native arguments own the mode and output format, including resume.
   const defaultHeadless=options.headless && nativeArgs.length===0;
@@ -302,7 +323,13 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
     const script=`import {execute} from ${JSON.stringify(pathToFileURL(path.join(bundle,'runtime.mjs')).href)}; const key=process.env[${JSON.stringify(provider.api_key_env)}]; if (!key) throw new Error("Provider environment variable is unavailable"); execute(process.argv.slice(1),process.cwd(),{...process.env,ANTHROPIC_AUTH_TOKEN:key});`;
     argv=[process.execPath,'--input-type=module','--eval',script,'--',...argv];
   }
-  return {argv,env,envOverrides,cwd:manifest.directory,launch};
+  if (telemetry.enabled) {
+    // The receiver starts only when this command executes, including when a
+    // consumer spawns --print-launch output. No ports or session IDs at build time.
+    const descriptor={directory:telemetry.directory,bundle,route,harness:agent.harness,launch};
+    argv=[process.execPath,path.join(bundle,'telemetry.mjs'),JSON.stringify(descriptor),'--',...argv];
+  }
+  return {argv,env,envOverrides,cwd:manifest.directory,launch,telemetry};
 }
 export function execute(argv: string[], cwd: string, environment: NodeJS.ProcessEnv): never {
   if (process.platform==='win32' || !process.execve) throw new Error('Native launch requires Node 22.15+ on macOS or Linux');
@@ -329,7 +356,7 @@ export function run(bundle: string, route: string, args: string[], launchCommand
   const selected=manifest.nodes[route]; if (!selected) throw new Error('Unknown bundled child');
   bundle=materializeLaunch(bundle,route,resolveLaunch(selected,requested));
   const launch=launchCommand(bundle,route,{...requested,nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain,configRoot});
-  const metadata={workspace_source:manifest.workspace_source,profile:manifest.profile,plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
+  const metadata={workspace_source:manifest.workspace_source,telemetry:launch.telemetry,profile:manifest.profile,plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
   if (values.explain) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,launch:launch.launch},null,2));
   else if (values['print-launch']) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides,launch:launch.launch},null,2));
   else execute(launch.argv,launch.cwd,launch.env);

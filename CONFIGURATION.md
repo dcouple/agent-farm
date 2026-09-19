@@ -197,7 +197,7 @@ filename; it does not reinterpret policy or infer a Claude equivalent.
 ## Prepared launches and native arguments
 
 `--print-launch` prints JSON containing `argv` (including `argv[0]`), `cwd`,
-`bundle`, `env`, `launch`, profile/plugin/version, trace identity, and
+`bundle`, `env`, `launch`, effective `telemetry`, profile/plugin/version, trace identity, and
 cross-plugin dependencies; `env` contains only Agent Farm's own overrides, never
 inherited values. Native arguments go after `--` or through repeatable
 `--native-arg` options, precede the message, and replace the default headless
@@ -214,6 +214,134 @@ profile edits, and Agent Farm upgrades, so later launches can resume the same
 thread. A different profile, workspace, or directory uses a different home;
 process child routes also have separate homes. Bundles remain content-addressed
 and integrity-checked, while skill links in the runtime home refresh on launch.
+
+## Local OpenTelemetry collection
+
+Every launched Claude Code or Codex session collects telemetry by default on the
+machine running Agent Farm, under `~/.local/state/agent-farm/telemetry/<session-id>/`.
+This applies to interactive runs, `--exec`, bundled process children, and commands
+spawned from `--print-launch`. Building, explaining, or printing a launch does not
+start a receiver or create a session; reusing a printed command creates a new
+session each time. Native subagents are represented by their harness's telemetry.
+
+Each directory contains:
+
+- `session.json`: launch metadata, trace/span IDs, running/finished state, and exit
+  code or signal. A running record left after a crash or `SIGKILL` is incomplete.
+- `traces.jsonl`: native spans and an `agent_farm.session` lifecycle span.
+- `logs.jsonl` and `metrics.jsonl`: native events and metrics, when exported.
+
+Each JSONL line is a standard OTLP JSON `ExportTraceServiceRequest`,
+`ExportLogsServiceRequest`, or `ExportMetricsServiceRequest`, suitable for later
+replay to the corresponding OTLP/HTTP endpoint. No remote export is performed by
+Agent Farm. Files use mode `0600` and session directories use `0700`.
+
+Resources carry the harness, agent/profile, plugin/version, model, workspace,
+bundle, route, headless mode, OS username/UID, hostname, working directory,
+sanitized command arguments, and declared launch arguments. Git repositories also
+include worktree path, branch, commit, and the canonical Git common directory as
+`agent_farm.project.directory`, shared by linked worktrees. Git remote URLs and
+the inherited environment are not recorded. Non-Git directories are supported.
+
+`agent_farm.session.id`, `agent_farm.session.trace_id`, and
+`agent_farm.session.span_id` correlate native resources with their launch.
+Process children inherit the parent session ID and W3C trace context. Native trace
+IDs are preserved: harnesses may start independent traces, particularly interactive
+Claude sessions, so use the session attributes to join those traces.
+
+Configure host-local storage in `~/.config/agent-farm/settings.json` (or
+`--config-root`). The directory must be absolute:
+
+```json
+{
+  "telemetry": {
+    "enabled": true,
+    "directory": "/absolute/path/to/agent-farm-telemetry"
+  }
+}
+```
+
+Set `telemetry.enabled` to `false` to disable collection, or override it for a
+launch with `AGENT_FARM_TELEMETRY=off` / `AGENT_FARM_TELEMETRY=on`. Disabling
+collection restores direct native execution and leaves native telemetry settings
+alone. Process children inherit the host configuration root. Settings are not
+embedded in published plugins. Remote exporters such as Langfuse and named
+exporter selection are not implemented yet; only local collection is supported.
+
+### Workspace telemetry settings
+
+The same optional `telemetry` block is accepted in a repository's
+`.agent-farm/workspace.yaml`, the personal fallback `<config-root>/workspace.yaml`,
+and personal overlays. It supports `enabled` (boolean) and `directory` (absolute
+path), with either field omitted to inherit its value. Unknown fields, inline
+credentials, and remote endpoint/exporter settings are rejected.
+
+```yaml
+# .agent-farm/workspace.yaml
+name: my-project
+telemetry:
+  enabled: true
+```
+
+Keep machine-specific paths in host settings or a personal overlay:
+
+```yaml
+# ~/.config/agent-farm/overlays/my-project.yaml
+telemetry:
+  directory: /absolute/path/to/my-project-traces
+```
+
+Precedence, from lowest to highest: built-in defaults, host `settings.json`, the
+selected workspace, its personal overlay, then `AGENT_FARM_TELEMETRY` for the
+on/off switch. Telemetry merges field by field; an empty block inherits everything.
+The fallback workspace is selected only when there is no repository workspace
+file, and never receives an overlay. `--no-workspace` skips workspace telemetry
+but still uses host defaults and the environment override.
+
+Repository telemetry appears in the trust review and telemetry-only changes
+require approval just like other workspace changes. `workspace show` reports the
+merged workspace fields and provenance; `inspect`, `--explain`, and
+`--print-launch` report the effective `telemetry` values without starting collection.
+
+The resolved workspace telemetry is saved as `workspace_telemetry` in the bundle
+manifest. Process children use that snapshot rather than rediscovering the
+workspace or rereading its overlay. A new launch rebuilds when workspace or
+overlay telemetry changes; old repository bundles still fail if their approved
+workspace bytes change or approval is revoked. Host defaults and the environment
+override remain runtime inputs to each dispatch. Already printed commands retain
+the effective settings they were prepared with.
+
+Workspace telemetry affects sessions launched through Agent Farm. Global
+workspace installation continues to install only connections and instructions;
+it does not change telemetry for native CLI sessions launched independently.
+
+### Collection lifecycle and privacy
+
+With collection enabled, a supervisor inherits the terminal and streams, launches
+the harness, forwards termination signals, and preserves its exit status. The
+harness has a separate PID. A per-session HTTP receiver binds only to `127.0.0.1`
+on an ephemeral port with an unguessable URL path; it accepts OTLP/HTTP JSON, with
+an 8 MiB request limit. Local storage/listener failures warn without preventing
+the harness from running. Completed exports are saved as they arrive, and shutdown
+allows up to one second for in-flight requests after the harness exits.
+
+Agent Farm configures [Codex's OTLP exporters](https://developers.openai.com/codex/config-reference/)
+and [Claude Code's telemetry and beta tracing](https://code.claude.com/docs/en/monitoring-usage)
+for this receiver. Native detail depends on the installed harness version and its
+policy; older versions may emit only logs/metrics, and managed Claude settings can
+override telemetry configuration. The lifecycle span is independent of native
+telemetry support. The adapters avoid editing native config files. Explicit native
+Codex telemetry overrides are superseded while collection
+is enabled; inherited OTLP destinations/headers are cleared in the child.
+
+Prompt/instruction text and arbitrary native argument values are omitted from
+launch telemetry. Declared arguments with secret- or content-related names are
+redacted; other declared values are recorded, so do not put secrets in innocently
+named arguments. Native prompt/tool-content logging is disabled, but received
+native events can still contain sensitive metadata such as tool errors and paths.
+The collector preserves those payloads rather than claiming full content
+sanitization. No transcripts or stdout/stderr are captured. There is no automatic
+retention policy yet; remove completed session directories when no longer needed.
 
 ## Host provider target
 
@@ -330,7 +458,9 @@ connections:
     env_vars: [CLOUD_TOKEN]
 ```
 
-Only `name`, `connections`, and `instructions` are accepted. `name` is required
+Only `name`, `connections`, `instructions`, and `telemetry` are accepted. The
+optional [telemetry block](#workspace-telemetry-settings) configures local collection.
+`name` is required
 and uses the configuration-name rule: a lowercase letter followed by up to 63
 lowercase letters, digits, underscores, or hyphens. Instructions must be text.
 Agent Farm never writes this file. Repository `AGENTS.md`, `CLAUDE.md`, and
@@ -360,7 +490,7 @@ repository are refused.
 ### Personal overlays
 
 Put personal settings in `<config-root>/overlays/<name>.yaml`, where `name` is
-from the repository file. The overlay accepts `connections` and `instructions`,
+from the repository file. The overlay accepts `connections`, `instructions`, and `telemetry`,
 without a `name` field, and needs no approval. It stays available across worktrees
 because it lives outside the repository.
 
@@ -378,7 +508,8 @@ Connections merge field by field: `env` merges by key with the overlay winning;
 value. Overlay-only connections are added. Overlay instructions follow shared
 instructions. For example, shared `env: {PROJECT: team, ACCOUNT: shared}` plus
 overlay `env: {ACCOUNT: personal}` yields `{PROJECT: team, ACCOUNT: personal}`.
-The complete result must pass connection validation, including no overlap between
+Telemetry merges field by field with overlay values winning, and reports
+per-field provenance. The complete result must pass connection validation, including no overlap between
 `env` and `env_vars`. Different definitions in an agent's own connections still
 produce a conflict.
 
