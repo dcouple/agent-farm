@@ -99,7 +99,7 @@ commands. `agent-farm doctor` tells you what's working and what's not.
 ```sh
 agent-farm run planner
 agent-farm run dcouple/implementer
-agent-farm run implementer --workspace my-project --message "Fix the failing tests"
+agent-farm run implementer --directory ~/repos/my-project --message "Fix the failing tests"
 agent-farm run implementer --model gpt-6-astra --speed fast --arg review=full
 ```
 
@@ -127,8 +127,9 @@ target repository, then opens Claude Code or Codex to work there.
 
 ![A pixel-art farm shed organizing profiles, agents, skills, and workspaces into four labeled compartments](docs/assets/configuration-pixel-farm.png)
 
-All config lives in `~/.config/agent-farm/`. The interactive CLI creates
-profiles and workspaces for you. To edit by hand:
+Personal configuration lives in `~/.config/agent-farm/`. Project connections and
+instructions live in the tracked `.agent-farm/workspace.yaml` at each Git
+repository root. The interactive CLI creates profiles. To edit by hand:
 
 ```text
 ~/.config/agent-farm/
@@ -139,8 +140,35 @@ profiles and workspaces for you. To edit by hand:
 │   ├── dcouple/          # Installed plugin namespace
 │   └── roles/            # Another plugin; names may overlap
 ├── .plugins/             # Per-plugin install receipts
-└── workspaces/           # MCP connections per project
+├── overlays/             # Personal settings keyed by repository workspace name
+└── workspace.yaml        # Optional fallback workspace
 ```
+
+Run inside the repository or pass `--directory PATH`. Selection is: `--no-workspace`,
+then the approved repository file plus `<config-root>/overlays/<name>.yaml`, then
+`<config-root>/workspace.yaml` if no repository file exists, then none. The fallback
+has an optional `name`, needs no approval, and has no overlay.
+
+Repository files require `name`, with optional `connections` and `instructions`.
+Personal overlays omit `name`: connection fields replace shared values, `env`
+merges by key, `env_vars` lists union, and instructions append. The merged result
+is validated; conflicts with agent-defined connections still fail.
+
+```sh
+agent-farm workspace trust                    # review and approve this repository
+agent-farm workspace show                     # merged values, sources, trust state
+agent-farm workspace untrust                  # revoke repository approval
+agent-farm run implementer --explain
+```
+
+Trust binds the real Git common directory and the file's SHA-256, so linked
+worktrees share approval for identical content. Changes require approval again.
+Interactive runs ask; declining uses no workspace. Noninteractive launches and
+inspection fail until approved. `workspace trust --yes` supports scripted setup.
+The personal overlay and fallback need no approval. Symlinked workspace files
+and paths escaping the repository are refused. Keep secrets outside authoring
+files and ignore `.agent-farm/generated/`. See [configuration](CONFIGURATION.md#workspaces-and-repositories)
+for schema, merge examples, trust storage, and global workspace installation.
 
 ```sh
 agent-farm plugin install                 # bundled dcouple

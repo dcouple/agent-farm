@@ -1,3 +1,4 @@
+name: public
 connections:
   docs_smoke:
     type: mcp

@@ -11,4 +11,6 @@ Design before implementation:
 
 Current behavior verified in compiler, runtime, CLI, authentication, native workspace installation, inspection, host settings, and tests. Bundle placement is chosen in `src/compiler.ts` `build()`, under the launch directory's `.agent-farm/generated/`. Additional library consumers exist in `src/interactive.ts`.
 
-Validation: pending implementation.
+Trust record format: `workspace-trust/<sha256(real-common-directory)>/<sha256(file-bytes)>.json` contains `{ "version": 1, "common": "<real-common-directory>", "sha256": "<file-hash>" }`. A private `last.json` also stores the approved content for comparison. State directories use mode 0700 and records use mode 0600. Untrust removes every approval for that common directory, retaining the previous review snapshot. A previously approved version can be reused until revoked.
+
+Validation: typecheck, full tests, and build pass. A real PTY check confirmed that declining approval launches a fake native harness without workspace instructions. Tests cover repository/worktree discovery, fallback, overlays, provenance, trust changes and revocation, every noninteractive entry point, and process-child dispatch. Native OAuth consent and live MCP connectivity are outside these local checks.

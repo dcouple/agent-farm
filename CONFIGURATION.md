@@ -20,8 +20,9 @@ skills/
     references/
       intent-handoff.md        Supporting guidance
       socrates.md              Shared premise-review rubric
-workspaces/
-  my-project.yaml                 Workspace MCP connections
+workspace.yaml                 Optional personal fallback workspace
+overlays/
+  my-project.yaml              Personal project settings
 instructions/                  Optional shared instruction includes
 plugins/
   dcouple/                     Installed plugin namespace
@@ -309,30 +310,123 @@ the authoring directory, so the required metadata filename is generated.
 
 ## Workspaces and repositories
 
-Workspace YAML supplies named MCP connections. Repository `AGENTS.md`,
-`CLAUDE.md`, and repository references remain repository-owned; the central
-agent definitions do not replace them. Secrets and native OAuth credentials
-remain outside these authoring files.
-
-For example, `workspaces/my-project.yaml` can declare a remote MCP server:
+Track `.agent-farm/workspace.yaml` at the Git repository root to share project
+connections and instructions with every teammate and linked worktree:
 
 ```yaml
+name: my-project
+instructions: |
+  Use the authenticated gh CLI for GitHub tasks.
 connections:
   project-tools:
     type: mcp
     url: https://YOUR-MCP-SERVER.example/mcp
     auth: native
+  gcloud:
+    type: mcp
+    command: example-cloud-mcp
+    env:
+      CLOUDSDK_CORE_PROJECT: shared-project
+    env_vars: [CLOUD_TOKEN]
 ```
 
-Replace the placeholder with your provider's endpoint, then use
-`agent-farm run astra-planner --workspace my-project`. Provider-specific setup
-belongs with the configuration package that uses it.
+Only `name`, `connections`, and `instructions` are accepted. `name` is required
+and uses the configuration-name rule: a lowercase letter followed by up to 63
+lowercase letters, digits, underscores, or hyphens. Instructions must be text.
+Agent Farm never writes this file. Repository `AGENTS.md`, `CLAUDE.md`, and
+references remain repository-owned. Secrets and native OAuth credentials stay
+outside authoring files; environment-variable references stay references.
+
+Selection uses `--directory PATH`, or the current directory, in this order:
+
+1. `--no-workspace` selects none.
+2. The nearest enclosing Git repository's approved `.agent-farm/workspace.yaml`,
+   with its personal overlay.
+3. `<config-root>/workspace.yaml`, if there is no repository workspace file.
+4. None.
+
+The user fallback uses the same schema, with optional `name`. It needs no
+approval, receives no overlay, and is never layered under a repository file.
+An untrusted repository file blocks noninteractive use; it does not select the
+fallback. An orchestrator can run `agent-farm run PROFILE --directory /other/repo`
+to use that project's workspace automatically.
+
+Discovery walks up to the nearest `.git` directory or linked-worktree `.git`
+file. A bare repository has no working-tree workspace; absent an enclosing
+working tree, it uses the fallback. Malformed Git directory entries fail with an
+error. Symlinked workspace files and workspace paths resolving outside the
+repository are refused.
+
+### Personal overlays
+
+Put personal settings in `<config-root>/overlays/<name>.yaml`, where `name` is
+from the repository file. The overlay accepts `connections` and `instructions`,
+without a `name` field, and needs no approval. It stays available across worktrees
+because it lives outside the repository.
+
+```yaml
+# ~/.config/agent-farm/overlays/my-project.yaml
+instructions: Use my selected cloud account.
+connections:
+  gcloud:
+    env:
+      CLOUDSDK_CORE_ACCOUNT: me@example.com
+```
+
+Connections merge field by field: `env` merges by key with the overlay winning;
+`env_vars` lists are unioned; every other supplied field replaces its shared
+value. Overlay-only connections are added. Overlay instructions follow shared
+instructions. For example, shared `env: {PROJECT: team, ACCOUNT: shared}` plus
+overlay `env: {ACCOUNT: personal}` yields `{PROJECT: team, ACCOUNT: personal}`.
+The complete result must pass connection validation, including no overlap between
+`env` and `env_vars`. Different definitions in an agent's own connections still
+produce a conflict.
+
+### Trust and review
+
+Repository workspaces can launch commands and inject instructions into agents
+that bypass native permission prompts. Approve the exact file before using it:
+
+```sh
+agent-farm workspace trust --directory /path/to/repo
+agent-farm workspace trust --directory /path/to/repo --yes  # scripted approval
+agent-farm workspace show --directory /path/to/repo
+agent-farm workspace untrust --directory /path/to/repo
+```
+
+`trust` shows every connection's type, URL or full command and arguments,
+environment variable names without their values, and full instructions. If a
+previous version was approved, it shows that version and changed field paths.
+`--yes` still prints the summary. Approval is stored under
+`~/.local/state/agent-farm/workspace-trust/`, keyed by the real Git common directory
+and SHA-256 of the workspace bytes. Identical files in linked worktrees share
+approval. Changed content needs approval; `untrust` revokes all approved versions
+for that repository. Personal overlays and the user fallback are user-owned.
+
+An interactive `run` asks about an untrusted file. Declining launches without any
+workspace and says so. `--exec`, `--print-launch`, `--build`, `--explain`, `inspect`,
+noninteractive runs, MCP login, and native workspace installation never prompt;
+they fail with the file path and the `workspace trust` command. `workspace show`
+is an explicit review operation: it displays the merged workspace, per-field
+sources, overlay path, and trust state even before approval, without launching
+anything. Its output includes literal non-secret environment settings.
+
+Process children retain their parent's resolved workspace snapshot and launch
+directory. Dispatch checks approval again and refuses a changed, missing, or
+revoked repository workspace; rebuild through `run` after approving a new version.
+Overlay edits affect subsequent builds, not existing child snapshots.
+
+`inspect`, `--explain`, `--print-launch`, and bundle manifests report
+`workspace_source`: its `source` is `repository:<path>`, `user:<path>`, or `none`,
+with an overlay path when present and a trust state. Generated bundles stay under
+`.agent-farm/generated/` in the launch directory. Ignore that generated directory
+in Git; Agent Farm prints a one-time hint if it is not ignored.
 
 ## Inspection and compatibility names
 
 `agent-farm profiles list` displays each entry point's qualified name, plugin and
 version, ambiguity status, and resolved model settings.
-`agent-farm inspect PROFILE --workspace WORKSPACE` returns the full resolved
+`agent-farm inspect PROFILE --directory PATH` returns the full resolved
 configuration graph and source paths without generating output. It reports
 configured MCP endpoints, not credentials or a live connection status. It also
 reports the preset, resolved arguments, resolved model, and the agent/preset
@@ -402,8 +496,8 @@ project/account guidance is context, not an enforced access boundary.
 To sign in to a remote OAuth server, use the same workspace and connection name:
 
 ```sh
-agent-farm mcp login remote-service --workspace my-project --harness codex
-agent-farm mcp login remote-service --workspace my-project --harness claude
+agent-farm mcp login remote-service --directory /path/to/repo --harness codex
+agent-farm mcp login remote-service --directory /path/to/repo --harness claude
 ```
 
 The command runs the native client's login flow. Complete the browser consent in
@@ -448,15 +542,21 @@ secrets in descriptions.
 
 ## Global workspace installation
 
+Omit the profile to mount a workspace with `set global`. The equivalent explicit
+commands are `workspace load`, `workspace unload`, and `workspace loaded`.
+
 ```sh
-agent-farm set global --workspace my-project --harness codex
-agent-farm set global --workspace my-project --harness claude
+agent-farm workspace load --directory /path/to/repo --harness codex
+agent-farm workspace unload --directory /path/to/repo --harness codex
+agent-farm set global --directory /path/to/repo --harness codex
+agent-farm set global --directory /path/to/repo --harness claude
 agent-farm status global
-agent-farm unset global --workspace my-project --harness codex
-agent-farm unset global --workspace my-project --harness claude
+agent-farm unset global --directory /path/to/repo --harness codex
+agent-farm unset global --directory /path/to/repo --harness claude
 ```
 
-Load reads `workspaces/my-project.yaml` from the configured library. It installs
+Load resolves the approved repository workspace and overlay, or the user fallback,
+from `--directory PATH` (default: current directory). It installs
 all of that workspace's connections, global `instructions`, and connection
 `description` fields. Agent-specific connections are not included. No profile or
 model settings are changed. There is one global workspace slot per harness.
@@ -488,8 +588,9 @@ remove it only after confirming no workspace operation is still running.
 
 Authentication remains native. Environment-variable references remain references;
 Agent Farm does not resolve secret values into configuration. Remote login still
-uses `agent-farm mcp login CONNECTION --workspace my-project --harness HARNESS`.
+uses `agent-farm mcp login CONNECTION --directory /path/to/repo --harness HARNESS`.
 Unload removes configuration, not credentials. Start fresh native sessions to
 observe changes. Project-level native settings can override global configuration.
-Claude Agent Farm `run` uses `--strict-mcp-config`; explicitly select `--workspace`
-on scoped launches instead of relying on the global installation.
+Claude Agent Farm `run` uses `--strict-mcp-config`; scoped launches use their
+automatically resolved workspace and agent connections. Global installation is
+for native sessions started outside Agent Farm.
