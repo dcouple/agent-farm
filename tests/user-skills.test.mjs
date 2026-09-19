@@ -6,6 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {loadProfile,unloadProfile,loadedProfiles} from '../dist/user-skills.js';
+import {installPlugin} from '../dist/plugins.js';
 const cli=fileURLToPath(new URL('../dist/cli.js',import.meta.url));
 function fixture(t){
  const base=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'agent-farm-user-skills-')));
@@ -73,4 +74,11 @@ test('global load translates skill metadata, keeps content edits live, and unloa
  assert.equal(fs.existsSync(path.join(f.home,'.claude/skills/one/agents/openai.yaml')),false);
  unloadProfile('first',f.options);assert.ok(fs.existsSync(f.skill('shared')));assert.equal(fs.existsSync(f.skill('one')),false);
  assert.ok(fs.existsSync(path.join(f.root,'skills/one/metadata/codex.yaml')));
+});
+
+test('same-named plugin skills never overwrite each other and loaded state identifies owners',t=>{
+ const f=fixture(t),dcouple=fileURLToPath(new URL('../plugins/dcouple',import.meta.url)),source=path.join(f.home,'fixture-plugin'),put=(relative,text)=>{const file=path.join(source,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text);};
+ put('plugin.yaml','name: fixture\nversion: 1.0.0\ncli_major: 0\n');put('profiles/implementer.yaml','agent: worker\n');put('agents/worker.yaml','harness: codex\nmodel: test\nskills: [review]\n');put('skills/review/SKILL.md','---\nname: review\ndescription: Fixture.\n---\nFixture');
+ installPlugin(dcouple,f.root);installPlugin(source,f.root);loadProfile(f.root,'dcouple/astra-implementer-high',f.options);
+ assert.throws(()=>loadProfile(f.root,'fixture/implementer',f.options),/Skill review from plugin fixture conflicts with plugin dcouple/);const loaded=loadedProfiles(f.options);assert.equal(loaded[0].plugin,'dcouple');assert.equal(loaded[0].skills.find(skill=>skill.name==='review').plugin,'dcouple');assert.match(fs.readFileSync(path.join(f.home,'.codex/skills/review/SKILL.md'),'utf8'),/name: review/);
 });

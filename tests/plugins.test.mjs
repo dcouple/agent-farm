@@ -1,24 +1,40 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import {fileURLToPath} from 'node:url';
-import {installPlugin,validatePlugin} from '../dist/plugins.js';
-const plugin=fileURLToPath(new URL('../plugins/dcouple',import.meta.url));
+import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import {fileURLToPath} from 'node:url';import {spawnSync} from 'node:child_process';
+import {installPlugin,validatePlugin,listPlugins,uninstallPlugin} from '../dist/plugins.js';
+import {build} from '../dist/compiler.js';import {fileMap,hash} from '../dist/runtime.js';
+import {listProfiles,inspectProfile} from '../dist/inspect.js';
+const dcouple=fileURLToPath(new URL('../plugins/dcouple',import.meta.url));
+const cli=fileURLToPath(new URL('../dist/cli.js',import.meta.url));
 function fixture(t){const root=fs.mkdtempSync(path.join(os.tmpdir(),'agent-farm-plugin-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;}
-test('bundled plugin installs, validates all profiles and preserves local workspace files',t=>{
- const root=fixture(t);fs.mkdirSync(path.join(root,'workspaces'));fs.writeFileSync(path.join(root,'workspaces/private.yaml'),'LOCAL');
- const {profiles}=validatePlugin(plugin);
- for(const name of ['planner','implementer']){
-  assert.ok(profiles.some(profile=>profile.profile===name && profile.agent===name),`Missing validated profile: ${name}`);
- }
- assert.ok(installPlugin(plugin,root).changed>0);assert.equal(installPlugin(plugin,root).changed,0);
- for(const name of ['planner','implementer']){
-  assert.equal(fs.readFileSync(path.join(root,'profiles',name+'.yaml'),'utf8'),fs.readFileSync(path.join(plugin,'profiles',name+'.yaml'),'utf8'));
- }
- assert.equal(fs.readFileSync(path.join(root,'workspaces/private.yaml'),'utf8'),'LOCAL');
- fs.appendFileSync(path.join(root,'agents/planner.md'),'\nLOCAL EDIT');assert.throws(()=>installPlugin(plugin,root),/Local file differs/);
- assert.match(fs.readFileSync(path.join(root,'agents/planner.md'),'utf8'),/LOCAL EDIT/);
+function makePlugin(base,name='fixture',version='1.0.0',cross=false){const root=path.join(base,name+'-source'),put=(relative,text)=>{const file=path.join(root,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text);};put('plugin.yaml',`name: ${name}\nversion: ${version}\ncli_major: 0\n`);put('profiles/planner.yaml','agent: worker\n');put('profiles/implementer.yaml','agent: worker\n');put('agents/worker.md',`---\nharness: codex\nmodel: fixture-model\nskills: [review]\n${cross?'subagents: {socrates: {agent: dcouple/socrates, mode: process}}\n':''}instructions_files: [../instructions/worker.md]\n---\nFixture body.\n`);put('skills/review/SKILL.md','---\nname: review\ndescription: Fixture review.\n---\nFIXTURE REVIEW\n');put('instructions/worker.md','FIXTURE INSTRUCTIONS');return {root,put};}
+
+test('bundled and arbitrary plugins install into isolated namespaces',t=>{
+ const root=fixture(t);fs.mkdirSync(path.join(root,'workspaces'));fs.writeFileSync(path.join(root,'workspaces/private.yaml'),'LOCAL');const fixturePlugin=makePlugin(root);
+ const {profiles}=validatePlugin(dcouple);for(const name of ['planner','implementer'])assert.ok(profiles.some(profile=>profile.profile===name&&profile.agent===name),`Missing validated profile: ${name}`);
+ assert.ok(installPlugin(dcouple,root).changed>0);assert.equal(installPlugin(dcouple,root).changed,0);assert.ok(installPlugin(fixturePlugin.root,root).changed>0);
+ assert.equal(fs.readFileSync(path.join(root,'plugins/dcouple/profiles/planner.yaml'),'utf8'),fs.readFileSync(path.join(dcouple,'profiles/planner.yaml'),'utf8'));assert.equal(fs.readFileSync(path.join(root,'workspaces/private.yaml'),'utf8'),'LOCAL');
+ assert.deepEqual(listPlugins(root).map(item=>item.name),['dcouple','fixture']);const listed=listProfiles(root).filter(item=>item.profile==='implementer');assert.deepEqual(listed.map(item=>item.qualified),['dcouple/implementer','fixture/implementer']);assert.ok(listed.every(item=>item.ambiguous));assert.throws(()=>build(root,'implementer',root),/dcouple\/implementer.*fixture\/implementer/);
+ const explain=name=>spawnSync(process.execPath,[cli,'run',name,'--config-root',root,'--directory',root,'--explain'],{encoding:'utf8'});let launched=explain('fixture/implementer');assert.equal(launched.status,0,launched.stderr);assert.equal(JSON.parse(launched.stdout).trace_identity,'fixture/implementer@1.0.0');launched=explain('dcouple/implementer');assert.equal(launched.status,0,launched.stderr);assert.equal(JSON.parse(launched.stdout).plugin,'dcouple');launched=explain('implementer');assert.notEqual(launched.status,0);assert.match(launched.stderr,/dcouple\/implementer.*fixture\/implementer/);
+ fs.writeFileSync(path.join(root,'settings.json'),'{"default_plugin":"fixture"}\n');const preferred=build(root,'implementer',root),preferredManifest=JSON.parse(fs.readFileSync(path.join(preferred,'manifest.json')));assert.equal(preferredManifest.trace_identity,'fixture/implementer@1.0.0');assert.equal(preferredManifest.nodes.main.plugin,'fixture');
+ const own=build(root,'dcouple/implementer',root),other=build(root,'fixture/implementer',root);assert.notEqual(own,other);assert.equal(JSON.parse(fs.readFileSync(path.join(own,'manifest.json'))).plugin,'dcouple');assert.equal(inspectProfile(root,'fixture/implementer').plugin_version,'1.0.0');assert.match(fs.readFileSync(path.join(other,'main/instructions.md'),'utf8'),/FIXTURE/);assert.doesNotMatch(fs.readFileSync(path.join(other,'main/instructions.md'),'utf8'),/Socratic/);
+ const beforeReceipt=fs.readFileSync(path.join(root,'.plugins/dcouple.json')),beforeFiles=fileMap(path.join(root,'plugins/dcouple'));fixturePlugin.put('agents/worker.md','---\nharness: codex\nmodel: updated\nskills: [review]\ninstructions_files: [../instructions/worker.md]\n---\nFixture body.\n');installPlugin(fixturePlugin.root,root);assert.deepEqual(fs.readFileSync(path.join(root,'.plugins/dcouple.json')),beforeReceipt);assert.deepEqual(fileMap(path.join(root,'plugins/dcouple')),beforeFiles);
+ fs.appendFileSync(path.join(root,'plugins/fixture/skills/review/SKILL.md'),'\nUSER EDIT');const removed=uninstallPlugin('fixture',root);assert.ok(removed.removed.length>0);assert.equal(removed.stayed.find(item=>item.file==='skills/review/SKILL.md')?.reason,'modified');assert.match(fs.readFileSync(path.join(root,'plugins/fixture/skills/review/SKILL.md'),'utf8'),/USER EDIT/);assert.equal(listPlugins(root).some(item=>item.name==='fixture'),false);assert.ok(build(root,'dcouple/implementer',root));
 });
-test('plugin tampering and symlink destinations are rejected before installation',t=>{
- const root=fixture(t),copy=path.join(root,'plugin');fs.cpSync(plugin,copy,{recursive:true});fs.appendFileSync(path.join(copy,'agents/planner.md'),'tampered');
- assert.throws(()=>validatePlugin(copy),/integrity/);
- const target=path.join(root,'target');fs.mkdirSync(target);fs.symlinkSync(path.join(root,'missing'),path.join(target,'agents'));
- assert.throws(()=>installPlugin(plugin,target),/Symlink/);
+
+test('cross-plugin children resolve, are inspected in metadata, and name missing dependencies',t=>{
+ const root=fixture(t),source=makePlugin(root,'fixture','1.0.0',true);source.put('agents/worker.md','---\nharness: codex\nmodel: fixture-model\nskills: [dcouple/review]\nsubagents: {socrates: {agent: dcouple/socrates, mode: process}}\ninstructions_files: [../instructions/worker.md]\n---\nFixture body.\n');installPlugin(dcouple,root);installPlugin(source.root,root);const bundle=build(root,'fixture/implementer',root),manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json')));assert.equal(manifest.nodes['main/children/socrates'].plugin,'dcouple');assert.equal(manifest.nodes.main.skill_plugins.review.plugin,'dcouple');assert.deepEqual(manifest.cross_plugin_dependencies.map(item=>item.plugin),['dcouple']);uninstallPlugin('dcouple',root);assert.throws(()=>build(root,'fixture/implementer',root),/Missing plugin dcouple/);assert.throws(()=>validatePlugin(source.root,root),/Missing plugin dcouple/);
 });
+
+test('legacy flat dcouple installs migrate exact files, retain modifications, and preserve bare launches',t=>{
+ const root=fixture(t),manifest=fs.readFileSync(path.join(dcouple,'plugin.yaml'),'utf8'),checksums=Object.fromEntries([...manifest.matchAll(/^  ([^:]+): ([a-f0-9]{64})$/gm)].map(match=>[match[1],match[2]]));
+ for(const relative of Object.keys(checksums)){const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(dcouple,relative),target);}fs.mkdirSync(path.join(root,'.plugins'));fs.writeFileSync(path.join(root,'.plugins/dcouple.json'),JSON.stringify({name:'dcouple',version:'0.1.7',checksums}));fs.appendFileSync(path.join(root,'agents/planner.md'),'\nLOCAL EDIT');fs.writeFileSync(path.join(root,'agents/local-only.yaml'),'harness: codex\nmodel: local\n');
+ const result=installPlugin(dcouple,root);assert.ok(result.migration.moved.includes('profiles/planner.yaml'));assert.deepEqual(result.migration.stayed.find(item=>item.file==='agents/planner.md')?.reason,'modified');assert.deepEqual(result.migration.stayed.find(item=>item.file==='agents/local-only.yaml')?.reason,'untracked');assert.match(fs.readFileSync(path.join(root,'agents/planner.md'),'utf8'),/LOCAL EDIT/);assert.ok(fs.existsSync(path.join(root,'agents/local-only.yaml')));assert.equal(JSON.parse(fs.readFileSync(path.join(root,'settings.json'))).default_plugin,'dcouple');assert.ok(build(root,'planner',root));
+});
+
+test('plugin tampering and namespaced symlink destinations are rejected before installation',t=>{
+ const root=fixture(t),copy=path.join(root,'plugin');fs.cpSync(dcouple,copy,{recursive:true});fs.appendFileSync(path.join(copy,'agents/planner.md'),'tampered');assert.throws(()=>validatePlugin(copy),/integrity/);
+ const target=path.join(root,'target');fs.mkdirSync(path.join(target,'plugins'),{recursive:true});fs.symlinkSync(path.join(root,'missing'),path.join(target,'plugins/dcouple'));assert.throws(()=>installPlugin(dcouple,target),/Symlink/);
+});
+
+test('non-dcouple manifests validate and direct plugin roots remain runnable',t=>{const root=fixture(t),source=makePlugin(root,'roles');assert.equal(validatePlugin(source.root).info.name,'roles');const bundle=build(source.root,'planner',root),manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json')));assert.equal(manifest.trace_identity,'roles/planner@1.0.0');assert.equal(hash(fs.readFileSync(path.join(bundle,'main/skills/review/SKILL.md'))),hash(fs.readFileSync(path.join(source.root,'skills/review/SKILL.md'))));});
+
+test('plugin CLI supports bundled names, listing, and uninstall',t=>{const root=fixture(t),run=args=>spawnSync(process.execPath,[cli,'plugin',...args,'--config-root',root],{encoding:'utf8'});let result=run(['install','dcouple']);assert.equal(result.status,0,result.stderr);result=run(['list']);assert.equal(result.status,0,result.stderr);assert.equal(JSON.parse(result.stdout)[0].name,'dcouple');result=run(['uninstall','dcouple']);assert.equal(result.status,0,result.stderr);assert.equal(JSON.parse(result.stdout).name,'dcouple');assert.deepEqual(listPlugins(root),[]);});
