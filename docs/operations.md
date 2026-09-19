@@ -22,7 +22,7 @@ Existing installations retain `orchestra_<connection>` MCP registration names
 to reuse native OAuth credentials. This is a
 registration identifier, not an installed command alias.
 
-Use `agent-farm mcp login CONNECTION --workspace WORKSPACE --harness claude|codex`
+Use `agent-farm mcp login CONNECTION [--directory PATH] --harness claude|codex`
 for an initial remote OAuth sign-in. The native login owns storage and refresh;
 Agent Farm owns only the stable connection definition. On macOS, native Keychain
 credentials can be reused across generated runtime homes. Existing Codex file-based
@@ -32,6 +32,60 @@ every credential backend.
 
 `agent-farm inspect` reports configured connections, not whether they are currently
 authenticated or reachable. Use the native harness's MCP view to check connectivity.
+
+## Repository workspace operations
+
+Track `.agent-farm/workspace.yaml` at the repository root, with required `name`
+and optional `connections` and text `instructions`. Agent Farm reads this file;
+it never creates or modifies it. Launch discovery starts at `--directory PATH`
+or the current directory and walks to the nearest `.git` entry, including a
+linked worktree's `.git` file.
+
+Selection is `--no-workspace`, then the approved repository workspace plus its
+personal overlay, then `<config-root>/workspace.yaml` if no repository workspace
+exists, then none. The fallback has optional `name`, no overlay, and no approval.
+It is not layered beneath a repository file. This also supports orchestrators
+outside repositories; passing another repository as `--directory` selects that
+repository's workspace.
+
+`<config-root>/overlays/<name>.yaml` holds personal settings across worktrees.
+It accepts `connections` and `instructions`, without `name`. Connection `env`
+merges by key with overlay values winning; `env_vars` lists union; other supplied
+fields replace shared fields; new connections are added; instructions append.
+Validate the merged result, including no `env`/`env_vars` overlap. Conflicts with
+agent-defined connections still fail. Overlays need no approval.
+
+```sh
+agent-farm workspace trust --directory /path/to/repo
+agent-farm workspace show --directory /path/to/repo
+agent-farm workspace untrust --directory /path/to/repo
+agent-farm workspace load --directory /path/to/repo --harness claude
+agent-farm workspace unload --directory /path/to/repo --harness claude
+```
+
+Approval records live under `~/.local/state/agent-farm/workspace-trust/`, keyed by
+the real Git common directory and SHA-256 of the file. Linked worktrees share
+approval for identical content. Trust review shows connections, full commands
+and arguments, variable names without values, full instructions, and changes
+from the previous approval. `trust --yes` prints the same summary for scripted
+setup. `untrust` revokes all versions for the repository. Symlinked files and
+workspace paths resolving outside the repository are refused.
+
+Interactive runs ask about untrusted files; declining uses no workspace.
+Headless runs, prepared launches, builds, explanations, inspection, login, and
+native installation fail with the file path and trust command. Process children
+use the parent's snapshot and recheck trust without prompting. If a repository
+file changes or approval is revoked, existing dispatchers stop; approve and
+rebuild for the new configuration. Changing a file or revoking approval does not
+stop an already-running native agent or remove a globally mounted workspace;
+use `workspace unload` to remove its owned native configuration.
+
+`workspace show` reviews the merged configuration and field provenance even
+before approval. `inspect`, explanations, prepared launches, and manifests
+report `workspace_source` with `source`, optional `overlay`, and `trust`.
+`set global --directory PATH --harness HARNESS` and `unset global` with the same
+options are aliases for workspace load and unload when no profile is supplied.
+Ownership and concurrent-change checks protect native configuration and guidance.
 
 ## Generated files and shared configuration
 

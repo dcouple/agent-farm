@@ -1,3 +1,4 @@
+import {resolveWorkspace} from '../dist/workspaces.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,12 +10,12 @@ import {command,codexHome,fileMap,files,verify} from '../dist/runtime.js';
 function setup(t) {
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'agent-farm-mcp-'));
  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
- for(const d of ['agents','workspaces','one','two'])fs.mkdirSync(path.join(root,d));
+ for(const d of ['agents','one','two'])fs.mkdirSync(path.join(root,d));
  const put=(file,text)=>fs.writeFileSync(path.join(root,file),text);
  put('agents/parent.yaml','harness: codex\nmodel: test\nsubagents:\n  child:\n    agent: child\n    mode: native\n');
  put('agents/child.yaml','harness: codex\nmodel: test\n');
- put('workspaces/test.yaml',`instructions: Use the workspace project.\nconnections:\n  service:\n    type: mcp\n    command: node\n    args: ["a path with spaces", "$(literal)"]\n    env:\n      CLOUDSDK_CORE_PROJECT: example-project\n    env_vars: [MCP_TEST_SECRET]\n  remote:\n    type: mcp\n    url: https://example.com/mcp\n    auth: native\n`);
- return {root,put,build:(dir='one')=>build(root,'parent',path.join(root,dir),'test')};
+ put('workspace.yaml',`instructions: Use the workspace project.\nconnections:\n  service:\n    type: mcp\n    command: node\n    args: ["a path with spaces", "$(literal)"]\n    env:\n      CLOUDSDK_CORE_PROJECT: example-project\n    env_vars: [MCP_TEST_SECRET]\n  remote:\n    type: mcp\n    url: https://example.com/mcp\n    auth: native\n`);
+ return {root,put,build:(dir='one')=>build(root,'parent',path.join(root,dir))};
 }
 test('workspace stdio configuration reaches Codex parent and native children without resolving secrets',t=>{
  const f=setup(t),b=f.build();const r=command(b,'main',{prepare:false,env:{MCP_TEST_SECRET:'NEVER_PERSIST_ME'}});
@@ -43,7 +44,7 @@ test('bearer-by-env Linear joins profile connections in a strict Claude launch w
  const previous=process.env.LINEAR_API_KEY;
  t.after(()=>{if(previous===undefined)delete process.env.LINEAR_API_KEY;else process.env.LINEAR_API_KEY=previous;});
  process.env.LINEAR_API_KEY=secret;
- f.put('workspaces/test.yaml',`connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    auth: bearer_env\n    env_var: LINEAR_API_KEY\n`);
+ f.put('workspace.yaml',`connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    auth: bearer_env\n    env_var: LINEAR_API_KEY\n`);
  f.put('agents/parent.yaml',`harness: claude\nmodel: test\nconnections:\n  profile_service:\n    type: mcp\n    command: node\nsubagents:\n  child:\n    agent: child\n    mode: native\n`);
  f.put('agents/child.yaml','harness: claude\nmodel: test\n');
  const b=f.build(),r=command(b,'main',{env:{LINEAR_API_KEY:secret},headless:true});
@@ -65,7 +66,7 @@ test('bearer-by-env Linear joins profile connections in a strict Claude launch w
 });
 test('bearer-by-env reaches Codex launch overrides and native child files as a variable name',t=>{
  const f=setup(t),secret='CODEX_BEARER_MUST_NOT_BE_PERSISTED';
- f.put('workspaces/test.yaml',`connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    auth: bearer_env\n    env_var: LINEAR_API_KEY\n`);
+ f.put('workspace.yaml',`connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    auth: bearer_env\n    env_var: LINEAR_API_KEY\n`);
  const b=f.build(),r=command(b,'main',{prepare:false,env:{LINEAR_API_KEY:secret}});
  const setting=r.argv.find(a=>a.startsWith('mcp_servers.orchestra_linear='));
  assert.match(setting,/"bearer_token_env_var" = "LINEAR_API_KEY"/);
@@ -90,7 +91,7 @@ test('bearer-by-env rejects missing or invalid variable names and mixed authenti
   'auth: native\n    env_var: LINEAR_API_KEY',
   'auth: none\n    env_var: LINEAR_API_KEY',
  ]){
-  f.put('workspaces/test.yaml','connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    '+auth+'\n');
+  f.put('workspace.yaml','connections:\n  linear:\n    type: mcp\n    url: https://linear.example/mcp\n    '+auth+'\n');
   assert.throws(()=>f.build(),/env_var/);
  }
  assert.equal(fs.existsSync(path.join(f.root,'one/.agent-farm')),false);
@@ -106,8 +107,8 @@ test('malformed or mixed MCP transports fail before bundles are written',t=>{
   'type: mcp\n    command: node\n    env: {TOKEN: value}\n    env_vars: [TOKEN]',
   'type: mcp\n    args: []',
  ]) {
-  f.put('workspaces/test.yaml','connections:\n  service:\n    '+connection+'\n');
-  assert.throws(()=>resolve(f.root,'parent','test'));
+  f.put('workspace.yaml','connections:\n  service:\n    '+connection+'\n');
+  assert.throws(()=>resolve(f.root,'parent',resolveWorkspace(f.root,{directory:f.root})));
  }
  assert.equal(fs.existsSync(path.join(f.root,'one/.agent-farm')),false);
 });
@@ -123,10 +124,10 @@ test('native login uses launch-identical identities and restores the original Co
  const {loginCommand}=await import('../dist/mcp-auth.js');
  const f=setup(t),home=path.join(f.root,'home');
  const env={CODEX_HOME:'/generated-home',AGENT_FARM_NATIVE_CODEX_HOME:'/native-home'};
- const codex=loginCommand(f.root,'test','remote','codex',{home,env});
+ const codex=loginCommand(f.root,f.root,'remote','codex',{home,env});
  assert.equal(codex.env.CODEX_HOME,'/native-home');
  assert.deepEqual(codex.argv.slice(-3),['mcp','login','orchestra_remote']);
- const claude=loginCommand(f.root,'test','remote','claude',{home,env});
+ const claude=loginCommand(f.root,f.root,'remote','claude',{home,env});
  assert.deepEqual(claude.argv.slice(-3),['mcp','login','orchestra_remote']);
  const authConfig=JSON.parse(fs.readFileSync(path.join(claude.cwd,'.mcp.json')));
  f.build();
@@ -134,15 +135,15 @@ test('native login uses launch-identical identities and restores the original Co
  const launchConfig=JSON.parse(fs.readFileSync(path.join(f.build(),'main/mcp.json')));
  assert.deepEqual(authConfig.mcpServers.orchestra_remote,launchConfig.mcpServers.orchestra_remote);
  assert.deepEqual(Object.keys(authConfig.mcpServers),['orchestra_remote']);
- assert.throws(()=>loginCommand(f.root,'test','service','codex',{home,env}),/local servers use their own login/);
- assert.throws(()=>loginCommand(f.root,'test','missing','claude',{home,env}),/Unknown/);
+ assert.throws(()=>loginCommand(f.root,f.root,'service','codex',{home,env}),/local servers use their own login/);
+ assert.throws(()=>loginCommand(f.root,f.root,'missing','claude',{home,env}),/Unknown/);
 });
 
 test('connection descriptions follow resolved connections into parent, native, and process instructions',t=>{
  const f=setup(t);
- f.put('workspaces/test.yaml',`instructions: Global workspace guidance.\nconnections:\n  remote:\n    type: mcp\n    url: https://example.com/mcp\n    auth: native\n    description: Read the workspace project.\n`);
+ f.put('workspace.yaml',`instructions: Global workspace guidance.\nconnections:\n  remote:\n    type: mcp\n    url: https://example.com/mcp\n    auth: native\n    description: Read the workspace project.\n`);
  f.put('agents/child.yaml',`harness: codex\nmodel: test\nconnections:\n  child_only:\n    type: mcp\n    command: example-server\n    description: Child-specific tool guidance.\n`);
- const b=f.build(),nodes=resolve(f.root,'parent','test');
+ const b=f.build(),nodes=resolve(f.root,'parent',resolveWorkspace(f.root,{directory:f.root}));
  assert.match(nodes.main.instructions,/Global workspace guidance/);
  assert.match(nodes.main.instructions,/remote \(orchestra_remote\)\nRead the workspace project/);
  assert.doesNotMatch(nodes.main.instructions,/Child-specific/);
@@ -166,14 +167,14 @@ test('Claude native children receive connection descriptions and invalid descrip
  const f=setup(t);
  f.put('agents/parent.yaml','harness: claude\nmodel: test\nsubagents:\n  child:\n    agent: child\n    mode: native\n');
  f.put('agents/child.yaml','harness: claude\nmodel: test\n');
- f.put('workspaces/test.yaml','connections:\n  local:\n    type: mcp\n    command: test-server\n    description: Use this project.\n');
+ f.put('workspace.yaml','connections:\n  local:\n    type: mcp\n    command: test-server\n    description: Use this project.\n');
  const b=f.build();
  const child=JSON.parse(fs.readFileSync(path.join(b,'main/native-agents/child.json')));
  assert.match(child.prompt,/Use this project/);
  for(const value of ['42','[bad]','{bad: value}']){
-  f.put('workspaces/test.yaml',`connections:\n  local:\n    type: mcp\n    command: test-server\n    description: ${value}\n`);
+  f.put('workspace.yaml',`connections:\n  local:\n    type: mcp\n    command: test-server\n    description: ${value}\n`);
   assert.throws(()=>f.build(),/description must be text/);
  }
- f.put('workspaces/test.yaml','connections:\n  local:\n    type: mcp\n    command: test-server\n    description: "   "\n');
- assert.doesNotMatch(resolve(f.root,'parent','test').main.instructions,/# Workspace tools/);
+ f.put('workspace.yaml','connections:\n  local:\n    type: mcp\n    command: test-server\n    description: "   "\n');
+ assert.doesNotMatch(resolve(f.root,'parent',resolveWorkspace(f.root,{directory:f.root})).main.instructions,/# Workspace tools/);
 });

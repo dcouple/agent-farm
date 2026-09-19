@@ -91,7 +91,7 @@ Live TypeScript CLI smoke check: native Claude and Codex TUIs opened in the scra
 - 34 tests pass. New coverage requires explicit child launch modes and verifies
   that inspection reports resolved source paths, child models and MCP endpoints
   without generating bundles.
-- Added `agent-farm profiles list` and `agent-farm inspect NAME --workspace NAME`.
+- Added `agent-farm profiles list` and `agent-farm inspect NAME`.
   Added the explicit `astra-implementer-high` profile; old Codex entry-point
   names remain compatibility aliases. Medium Fast remains `implementer`.
 - Archived two obsolete local YAML definitions under central `backups/`.

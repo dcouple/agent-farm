@@ -37,7 +37,25 @@ export interface Agent {
   connections: Record<string, Connection>; children: Record<string, string>;
   argument_definitions?: Record<string, ArgumentDefinition>; launch?: LaunchMetadata;
 }
-export interface Manifest { profile: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace?: string; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
+export interface Manifest { profile: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace_source?: WorkspaceMetadata; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
+export interface WorkspaceMetadata {source:string;overlay?:string;trust:'none'|'personal'|'trusted'|'untrusted'|'declined';repository?:string;common?:string;sha256?:string}
+export function trustFile(workspace:WorkspaceMetadata,home=os.homedir()):string {
+  return path.join(home,'.local/state/agent-farm/workspace-trust',hash(workspace.common!),workspace.sha256!+'.json');
+}
+export function assertWorkspaceTrust(workspace:WorkspaceMetadata|undefined,home=os.homedir()):void {
+  if(!workspace?.source.startsWith('repository:'))return;
+  const file=workspace.source.slice('repository:'.length);
+  const fail=()=>new Error(`Untrusted repository workspace ${file}; run agent-farm workspace trust --directory ${JSON.stringify(workspace.repository)} before using it`);
+  if(workspace.trust!=='trusted'||!workspace.common||!workspace.sha256||!workspace.repository)throw fail();
+  try{
+    if(fs.lstatSync(file).isSymbolicLink())throw fail();
+    const relative=path.relative(workspace.repository,fs.realpathSync(file));
+    if(relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative))throw fail();
+    if(hash(fs.readFileSync(file))!==workspace.sha256)throw fail();
+    const record=JSON.parse(fs.readFileSync(trustFile(workspace,home),'utf8'));
+    if(record.version!==1||record.common!==workspace.common||record.sha256!==workspace.sha256)throw fail();
+  }catch{throw fail();}
+}
 export interface ArgumentDefinition { values?: string[]; type?: 'string' | 'path'; default?: string; description?: string }
 export type ModelSource = 'agent' | 'preset' | 'flag';
 export interface LaunchMetadata {
@@ -200,7 +218,7 @@ export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv,
   const native=env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.ORCHESTRA_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex');
   const original = provider && !fs.existsSync(native) ? path.resolve(native) : fs.realpathSync(native);
   // Resume identity must survive bundle rebuilds and changes to the selected agent.
-  const identity={profile:manifest.profile,workspace:manifest.workspace ?? null,directory:manifest.directory,route};
+  const identity={profile:manifest.profile,workspace:manifest.workspace_source?.source ?? null,directory:manifest.directory,route};
   const runtime = path.join(home,'.cache/agent-farm/native-proof',hash(canonical(identity)).slice(0,24));
   fs.mkdirSync(runtime,{recursive:true,mode:0o700});
   codexConfig(original,runtime,provider);
@@ -226,6 +244,7 @@ export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv,
 export interface LaunchOptions { headless?: boolean; nativeArgs?: string[]; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string; configRoot?: string; model?: string; reasoning?: string; speed?: string; args?: string[] }
 export function command(bundle: string, route: string, options: LaunchOptions = {}) {
   const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
+  assertWorkspaceTrust(manifest.workspace_source,options.home);
   const agent=manifest.nodes[route]; if (!agent) throw new Error('Unknown bundled child');
   const launch=resolveLaunch(agent,options);
   const directory=path.join(bundle,route); const env={...(options.env ?? process.env)};
@@ -306,10 +325,11 @@ export function run(bundle: string, route: string, args: string[], launchCommand
   verify(bundle);
   const requested={headless:values.exec || values['print-launch'],model:values.model,reasoning:values.reasoning,speed:values.speed,args:values.arg};
   const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
+  assertWorkspaceTrust(manifest.workspace_source);
   const selected=manifest.nodes[route]; if (!selected) throw new Error('Unknown bundled child');
   bundle=materializeLaunch(bundle,route,resolveLaunch(selected,requested));
   const launch=launchCommand(bundle,route,{...requested,nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain,configRoot});
-  const metadata={profile:manifest.profile,plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
+  const metadata={workspace_source:manifest.workspace_source,profile:manifest.profile,plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
   if (values.explain) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,launch:launch.launch},null,2));
   else if (values['print-launch']) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides,launch:launch.launch},null,2));
   else execute(launch.argv,launch.cwd,launch.env);

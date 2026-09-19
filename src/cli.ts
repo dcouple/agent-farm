@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {validatePlugin,packPlugin,installPlugin,listPlugins,uninstallPlugin} from './plugins.js';
 import os from 'node:os';
 import {parseArgs} from 'node:util';
+import {resolveWorkspace,resolveInteractiveWorkspace,trustWorkspace,untrustWorkspace,showWorkspace} from './workspaces.js';
 import {build} from './compiler.js';
 import {run,execute} from './runtime.js';
 import {loginCommand} from './mcp-auth.js';
@@ -40,7 +41,7 @@ if (rawArgs[0] === 'doctor' && rawArgs.length === 1) {
 try {
   const {values,tokens}=parseArgs({args:rawArgs,allowPositionals:true,strict:true,tokens:true,options:{
     'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},
-    save:{type:'string'},model:{type:'string'},reasoning:{type:'string'},speed:{type:'string'},arg:{type:'string',multiple:true},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},'base-url':{type:'string'},'api-key-env':{type:'string'},
+    save:{type:'string'},model:{type:'string'},reasoning:{type:'string'},speed:{type:'string'},arg:{type:'string',multiple:true},harness:{type:'string'},'no-workspace':{type:'boolean'},yes:{type:'boolean'},directory:{type:'string',default:process.cwd()},'base-url':{type:'string'},'api-key-env':{type:'string'},
     build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},
     'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true}
   }});
@@ -50,16 +51,18 @@ try {
   const runCommand=['run','agent'].includes(positionals[0] ?? '');
   if ((values['print-launch'] || values['native-arg'] || separator<rawArgs.length) && !['run','agent'].includes(positionals[0] ?? '')) throw new Error('Prepared launches and native arguments require run or agent');
   const globalCommand=['set','unset','status'].includes(positionals[0] ?? '') && positionals[1]==='global';
+  if(values.yes && !(positionals[0]==='workspace'&&positionals[1]==='trust'))throw new Error('--yes is only supported by workspace trust');
+  if(values['no-workspace'] && !runCommand && positionals[0]!=='inspect' && !(positionals[0]==='mcp'&&positionals[1]==='login') && !(positionals[0]==='workspace'&&positionals[1]==='show'))throw new Error('--no-workspace is supported by run, inspect, mcp login, and workspace show');
   if (values.save!==undefined && !globalCommand) throw new Error('--save is only supported by unset global');
   if (values.model!==undefined && !globalCommand && !runCommand) throw new Error('--model is only supported by run and unset global');
   if ((values.reasoning!==undefined || values.speed!==undefined || values.arg!==undefined) && !runCommand) throw new Error('--reasoning, --speed, and --arg are only supported by run');
   if (globalCommand) {
     const operation=positionals[0],profile=positionals[2];
-    if (values.message!==undefined || values.build || values.exec || values.explain || process.argv.includes('--directory') || process.argv.some(a=>a.startsWith('--directory='))) throw new Error('Global commands do not accept launch options');
+    if (values.message!==undefined || values.build || values.exec || values.explain) throw new Error('Global commands do not accept launch options');
     if (positionals.length>3) throw new Error('Use set global PROFILE, unset global PROFILE, or status global');
     if(values.harness && !['claude','codex'].includes(values.harness))throw new Error('harness must be claude or codex');
     if(operation==='status') {
-      if(profile || values.workspace || values.save || values.model)throw new Error('Use status global [--harness claude|codex]');
+      if(profile || values['no-workspace'] || values.save || values.model)throw new Error('Use status global [--harness claude|codex]');
       for(const harness of values.harness?[values.harness]:['claude','codex']) {
         const entries=globalSkills({harness});
         console.log(`${harness}: ${entries.length} global skill(s)`);
@@ -67,12 +70,12 @@ try {
       }
       for(const w of loadedWorkspaces().filter(w=>!values.harness||w.harness===values.harness))console.log(`Workspace: ${w.workspace} (${w.harness})`);
     } else if(values.save!==undefined) {
-      if(operation!=='unset'||profile||values.workspace)throw new Error('Use unset global --save NAME --harness HARNESS --model MODEL');
+      if(operation!=='unset'||profile||values['no-workspace'])throw new Error('Use unset global --save NAME --harness HARNESS --model MODEL');
       const saved=saveGlobalSkills(path.resolve(values['config-root']!),values.save,values.model ?? '',{harness:values.harness});
       console.log(`Saved and unmounted ${saved.skills} pre-existing skills as ${saved.profile}. Original files: ${saved.backup}. Remount: agent-farm set global ${saved.profile} --harness ${values.harness} --config-root ${JSON.stringify(path.resolve(values['config-root']!))}`);
-    } else if(values.workspace) {
-      if(profile || values.model)throw new Error('Set/unset a global workspace separately from a profile');
-      const item=operation==='set'?loadWorkspace(path.resolve(values['config-root']!),values.workspace,{harness:values.harness}):unloadWorkspace(values.workspace,{harness:values.harness});
+    } else if(!profile) {
+      if(values.model)throw new Error('Set/unset a global workspace separately from a profile');
+      const item=operation==='set'?loadWorkspace(path.resolve(values['config-root']!),path.resolve(values.directory!),{harness:values.harness}):unloadWorkspace(path.resolve(values.directory!),{harness:values.harness});
       console.log(`${operation==='set'?'Mounted':'Unmounted'} workspace ${item.workspace} (${item.harness}). Start a fresh session.`);
     } else {
       if(!profile || values.model)throw new Error('Use set global PROFILE or unset global PROFILE; pre-existing skills require unset global --save NAME --harness HARNESS --model MODEL');
@@ -86,14 +89,21 @@ try {
     }
   } else if (positionals[0]==='workspace') {
     const operation=positionals[1];
-    if (!['load','unload','loaded'].includes(operation ?? '') || positionals.length!==(operation==='loaded'?2:3)) throw new Error('Use: agent-farm workspace load|unload NAME --harness claude|codex, or workspace loaded');
-    if (values.workspace || values.message!==undefined || values.build || values.exec || values.explain || process.argv.includes('--directory') || process.argv.some(a=>a.startsWith('--directory='))) throw new Error('Global workspace commands do not accept launch options');
-    if (operation==='loaded') {
+    if (!['load','unload','loaded','trust','untrust','show'].includes(operation ?? '') || positionals.length!==2) throw new Error('Use: agent-farm workspace load|unload|trust|untrust|show [--directory PATH], or workspace loaded');
+    if (values.message!==undefined || values.build || values.exec || values.explain) throw new Error('Workspace commands do not accept launch options');
+    const directory=path.resolve(values.directory!),root=path.resolve(values['config-root']!);
+    if(operation==='trust') {
+      console.log(await trustWorkspace(directory,{yes:values.yes})?'Workspace trusted.':'Workspace approval declined.');
+    } else if(operation==='untrust') {
+      untrustWorkspace(directory);console.log('Repository workspace approvals revoked.');
+    } else if(operation==='show') {
+      console.log(JSON.stringify(showWorkspace(root,{directory,noWorkspace:values['no-workspace']}),null,2));
+    } else if (operation==='loaded') {
       if (values.harness) throw new Error('workspace loaded lists both harnesses; omit --harness');
       const entries=loadedWorkspaces();
       console.log(entries.length ? entries.map(e=>`${e.workspace} (${e.harness}): ${Object.keys(e.servers).join(', ')}`).join('\n') : 'No global workspaces loaded.');
     } else {
-      const entry=operation==='load' ? loadWorkspace(path.resolve(values['config-root']!),positionals[2]!,{harness:values.harness}) : unloadWorkspace(positionals[2]!,{harness:values.harness});
+      const entry=operation==='load' ? loadWorkspace(root,directory,{harness:values.harness}) : unloadWorkspace(directory,{harness:values.harness});
       console.log(`${operation==='load'?'Loaded':'Unloaded'} workspace ${entry.workspace} (${entry.harness}). Start a fresh native session.`);
     }
   } else if (positionals[0]==='provider') {
@@ -133,9 +143,9 @@ try {
       } else console.log('No provider to clear.');
     } else throw new Error('Use: agent-farm provider set|show|clear');
   } else if (positionals[0]==='mcp') {
-    if (positionals.length!==3 || positionals[1]!=='login' || !values.workspace || !['claude','codex'].includes(values.harness ?? '')) throw new Error('Use: agent-farm mcp login CONNECTION --workspace NAME --harness claude|codex');
+    if (positionals.length!==3 || positionals[1]!=='login' || !['claude','codex'].includes(values.harness ?? '')) throw new Error('Use: agent-farm mcp login CONNECTION [--directory PATH] --harness claude|codex');
     if (values.message!==undefined || values.build || values.exec || values.explain) throw new Error('MCP login does not accept launch options');
-    const launch=loginCommand(path.resolve(values['config-root']!),values.workspace,positionals[2]!,values.harness as 'claude'|'codex');
+    const launch=loginCommand(path.resolve(values['config-root']!),path.resolve(values.directory!),positionals[2]!,values.harness as 'claude'|'codex',{noWorkspace:values['no-workspace']});
     execute(launch.argv,launch.cwd,launch.env);
   } else if (positionals[0]==='plugin') {
     const operation=positionals[1];
@@ -152,16 +162,15 @@ try {
     if (positionals.length!==2 || (positionals[0]==='profiles' && positionals[1]!=='list')) throw new Error('Use: agent-farm profiles list or agent-farm inspect NAME');
     if (values.harness || values.message!==undefined || values.build || values.exec || values.explain) throw new Error('Inspection does not accept launch options');
     const root=path.resolve(values['config-root']!);
-    if (positionals[0]==='inspect') console.log(JSON.stringify(inspectProfile(root,positionals[1]!,values.workspace),null,2));
+    if (positionals[0]==='inspect') console.log(JSON.stringify(inspectProfile(root,positionals[1]!,{directory:values.directory,noWorkspace:values['no-workspace']}),null,2));
     else {
-      if (values.workspace) throw new Error('Use inspect NAME --workspace NAME to inspect workspace connections');
       const profiles=listProfiles(root);
       console.log(profiles.length ? profiles.map(p=>`${p.qualified} -> ${p.agent}${p.ambiguous?' [ambiguous bare name]':''} | plugin ${p.plugin??'local'} ${p.plugin_version??'-'} | ${p.harness} | ${p.model.name} ${p.model.reasoning ?? 'default'} | ${p.model.speed}`).join('\n') : 'No launch profiles found.');
     }
   } else if (['load','unload','loaded'].includes(positionals[0] ?? '')) {
     const operation=positionals[0];
     if (positionals.length!==(operation==='loaded' ? 1 : 2)) throw new Error('Use: agent-farm load NAME, unload NAME, or loaded');
-    if (values.workspace || values.message!==undefined || values.build || values.exec || values.explain || process.argv.includes('--directory') || process.argv.some(a=>a.startsWith('--directory='))) throw new Error('User-skill commands do not accept launch options');
+    if (values['no-workspace'] || values.message!==undefined || values.build || values.exec || values.explain) throw new Error('User-skill commands do not accept launch options');
     if (operation==='loaded') {
       if (values.harness) throw new Error('agent-farm loaded lists all harnesses');
       const entries=loadedProfiles();
@@ -179,7 +188,10 @@ try {
     if ([values.build,values.explain,values.exec,values['print-launch']].filter(Boolean).length>1) throw new Error('Choose only one of --build, --explain, --exec or --print-launch');
     if (values.build && nativeArgs.length) throw new Error('--build does not accept native arguments');
     if (values.build && (values.model!==undefined || values.reasoning!==undefined || values.speed!==undefined || values.arg!==undefined)) throw new Error('--build does not accept launch overrides or arguments');
-    const bundle=build(path.resolve(values['config-root']!),positionals[1]!,path.resolve(values.directory!),values.workspace);
+    const root=path.resolve(values['config-root']!),directory=path.resolve(values.directory!),options={directory,noWorkspace:values['no-workspace']};
+    const interactive=!values.exec&&!values['print-launch']&&!values.build&&!values.explain&&!!process.stdin.isTTY&&!!process.stderr.isTTY;
+    const workspace=interactive?await resolveInteractiveWorkspace(root,options):resolveWorkspace(root,options);
+    const bundle=build(root,positionals[1]!,directory,workspace);
     if (!values.build && !values.explain && !values['print-launch']) {
       const manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
       try {

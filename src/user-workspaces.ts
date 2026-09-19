@@ -2,13 +2,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {parse} from 'smol-toml';
-import {workspaceConfiguration} from './compiler.js';
+import {resolveWorkspace,repository} from './workspaces.js';
 import {canonical,claudeConnection,codexConnection,connectionName,toml} from './runtime.js';
 
 type Harness='claude'|'codex';
 export interface WorkspaceOptions {home?:string;env?:NodeJS.ProcessEnv;harness?:string}
 interface LoadedWorkspace {
-  workspace:string;harness:Harness;root:string;config:string;instructions:string;
+  workspace:string;directory:string;harness:Harness;root:string;config:string;instructions:string;
   servers:Record<string,unknown>;configBlock?:string;instructionBlock:string;
 }
 const configStart='# agent-farm workspace: begin';
@@ -70,11 +70,15 @@ function validateOwned(entry:LoadedWorkspace,configText:string|undefined,instruc
 export function loadedWorkspaces(options:WorkspaceOptions={}):LoadedWorkspace[] {
   return withRegistry(options,(_,entries)=>entries);
 }
-export function loadWorkspace(root:string,workspace:string,options:WorkspaceOptions={}):LoadedWorkspace {
+export function loadWorkspace(root:string,directory:string,options:WorkspaceOptions={}):LoadedWorkspace {
   if(options.harness!=='claude' && options.harness!=='codex')throw new Error('Workspace load requires --harness claude|codex');
   const harness=options.harness,home=options.home ?? os.homedir(),env=options.env ?? process.env;
   root=fs.realpathSync(root);
-  const ws=workspaceConfiguration(root,workspace);
+  directory=fs.realpathSync(directory);
+  const ws=resolveWorkspace(root,{directory,home:options.home});
+  if(ws.metadata.source==='none')throw new Error(`No workspace resolved from ${directory}`);
+  directory=repository(directory)?.root??directory;
+  const workspace=ws.name??ws.metadata.source;
   const nativeHome=harness==='codex' ? env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.ORCHESTRA_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex') : env.CLAUDE_CONFIG_DIR ?? path.join(home,'.claude');
   const config=path.resolve(harness==='codex' ? path.join(nativeHome,'config.toml') : env.CLAUDE_CONFIG_DIR ? path.join(nativeHome,'.claude.json') : path.join(home,'.claude.json'));
   const instructions=path.resolve(nativeHome,harness==='claude'?'CLAUDE.md':fs.existsSync(path.join(nativeHome,'AGENTS.override.md'))?'AGENTS.override.md':'AGENTS.md');
@@ -82,7 +86,7 @@ export function loadWorkspace(root:string,workspace:string,options:WorkspaceOpti
   const descriptions=Object.entries(ws.connections).filter(([,v])=>v.description).map(([k,v])=>`### ${k} (${connectionName(k)})\n${v.description}`);
   const instructionBlock='\n\n'+instructionStart+`\n## Workspace: ${workspace}\n\n`+[ws.instructions,...descriptions].filter(Boolean).join('\n\n')+'\n<!-- agent-farm workspace: end -->\n';
   const configBlock=harness==='codex' ? '\n\n'+configStart+'\n'+Object.entries(servers).map(([k,v])=>`[mcp_servers.${k}]\n`+Object.entries(v as Record<string,unknown>).map(([f,s])=>`${f} = ${toml(s)}`).join('\n')).join('\n\n')+'\n# agent-farm workspace: end\n' : undefined;
-  const item:LoadedWorkspace={workspace,harness,root,config,instructions,servers,...(configBlock===undefined?{}:{configBlock}),instructionBlock};
+  const item:LoadedWorkspace={workspace,directory,harness,root,config,instructions,servers,...(configBlock===undefined?{}:{configBlock}),instructionBlock};
   return withRegistry(options,(registry,entries)=>{
     const before=read(config),context=read(instructions),existing=entries.find(e=>e.harness===harness);
     if(existing){
@@ -102,10 +106,17 @@ export function loadWorkspace(root:string,workspace:string,options:WorkspaceOpti
     return item;
   });
 }
-export function unloadWorkspace(workspace:string,options:WorkspaceOptions={}):LoadedWorkspace {
+function canonicalDirectory(directory:string):string {
+  if(fs.existsSync(directory))return fs.realpathSync(directory);
+  const parent=path.dirname(directory);if(parent===directory)return directory;
+  return path.join(canonicalDirectory(parent),path.basename(directory));
+}
+export function unloadWorkspace(directory:string,options:WorkspaceOptions={}):LoadedWorkspace {
   if(options.harness!=='claude'&&options.harness!=='codex')throw new Error('Workspace unload requires --harness claude|codex');
+  directory=canonicalDirectory(path.resolve(directory));
+  if(fs.existsSync(directory))directory=repository(directory)?.root??fs.realpathSync(directory);
   return withRegistry(options,(registry,entries)=>{
-    const item=entries.find(e=>e.workspace===workspace&&e.harness===options.harness);
+    const item=entries.find(e=>e.directory===directory&&e.harness===options.harness);
     if(!item)throw new Error('Workspace is not loaded for this harness');
     const before=read(item.config),context=read(item.instructions);
     validateOwned(item,before,context);
