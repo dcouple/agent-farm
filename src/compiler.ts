@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseDocument } from 'yaml';
 import {skillFiles} from './skill-layout.js';
-import { canonical, command, execute, claudeConnection, codexConnection, connectionName, toml, files, fileMap, hash, verify, type Agent, type Connection, type Manifest } from './runtime.js';
+import { canonical, command, execute, claudeConnection, codexConnection, connectionName, toml, files, fileMap, hash, verify, validateModel, type Agent, type ArgumentDefinition, type Connection, type Manifest, type ModelSource } from './runtime.js';
 export {command, execute};
 function name(value: unknown): string {
   if (typeof value!=='string' || !/^[a-z][a-z0-9_-]{0,63}$/.test(value)) throw new Error('Expected a lowercase configuration name, not a path');
@@ -16,6 +16,39 @@ function mapping(value: unknown): Record<string,unknown> {
 function fields(data: Record<string,unknown>, allowed: string[]) {
   const extra=Object.keys(data).filter(k=>!allowed.includes(k));
   if (extra.length) throw new Error('Unsupported prototype fields: '+extra.join(', '));
+}
+function argumentDefinitions(value: unknown): Record<string,ArgumentDefinition> {
+  const result: Record<string,ArgumentDefinition>=Object.create(null);
+  for (const [key,input] of Object.entries(mapping(value))) {
+    name(key); const item=mapping(input); fields(item,['values','type','default','description']);
+    if (item.description!==undefined && typeof item.description!=='string') throw new Error(`Argument ${key} description must be text`);
+    if (item.default!==undefined && typeof item.default!=='string') throw new Error(`Argument ${key} default must be text`);
+    if (item.values!==undefined) {
+      if (item.type!==undefined) throw new Error(`Argument ${key} must use either values or type, not both`);
+      if (!Array.isArray(item.values) || !item.values.length || item.values.some(v=>typeof v!=='string') || new Set(item.values).size!==item.values.length) throw new Error(`Argument ${key} values must be a nonempty unique list of strings`);
+      if (item.default!==undefined && !item.values.includes(item.default)) throw new Error(`Argument ${key} default ${JSON.stringify(item.default)} is not accepted; accepted: ${item.values.join(', ')}`);
+      result[key]={values:item.values as string[],...(item.default===undefined?{}:{default:item.default as string}),...(item.description===undefined?{}:{description:item.description as string})};
+    } else {
+      if (item.type!=='string' && item.type!=='path') throw new Error(`Argument ${key} requires values or type: string|path`);
+      result[key]={type:item.type,...(item.default===undefined?{}:{default:item.default as string}),...(item.description===undefined?{}:{description:item.description as string})};
+    }
+  }
+  return result;
+}
+function acceptedArguments(definitions: Record<string,ArgumentDefinition>): string {
+  const entries=Object.entries(definitions).map(([key,item])=>item.values ? `${key} (${item.values.join('|')})` : `${key} (${item.type})`);
+  return entries.length ? entries.join(', ') : 'none';
+}
+function resolvedArguments(agent: string, definitions: Record<string,ArgumentDefinition>, input: unknown): Record<string,string> {
+  const result=Object.fromEntries(Object.entries(definitions).flatMap(([key,item])=>item.default===undefined?[]:[[key,item.default]]));
+  for (const [key,value] of Object.entries(mapping(input))) {
+    const item=definitions[key];
+    if (!item) throw new Error(`Agent ${agent} does not declare argument ${key}; accepted arguments: ${acceptedArguments(definitions)}`);
+    if (typeof value!=='string') throw new Error(`Agent ${agent} argument ${key} must be text; accepted arguments: ${acceptedArguments(definitions)}`);
+    if (item.values && !item.values.includes(value)) throw new Error(`Agent ${agent} argument ${key} value ${JSON.stringify(value)} is invalid; accepted: ${item.values.join(', ')}. Accepted arguments: ${acceptedArguments(definitions)}`);
+    result[key]=value;
+  }
+  return Object.fromEntries(Object.keys(definitions).flatMap(key=>Object.hasOwn(result,key)?[[key,result[key]!]]:[]));
 }
 function read(file: string) {
   const doc=parseDocument(fs.readFileSync(file,'utf8'),{uniqueKeys:true});
@@ -100,19 +133,30 @@ export function resolve(root: string, agent: string, workspace?: string): Record
   const ws=workspace ? workspaceConfiguration(root,workspace) : {connections:{},instructions:''};
   const defaults=ws.connections, workspaceInstructions=ws.instructions;
   const nodes: Record<string,Agent>=Object.create(null);
+  let profileModel: Record<string,unknown>|undefined, profileArguments: unknown, preset: string|undefined;
+  const profilePath=path.join(root,'profiles',name(agent)+'.yaml');
+  let entryAgent=agent;
+  if (fs.existsSync(profilePath)) {
+    const profile=read(profilePath); fields(profile,['agent','model','args']); entryAgent=name(profile.agent);
+    if (profile.model!==undefined) { profileModel=mapping(profile.model); fields(profileModel,['name','reasoning','speed']); }
+    if (profile.args!==undefined) profileArguments=profile.args;
+    if (profile.model!==undefined || profile.args!==undefined) preset=agent;
+  }
   function visit(agentName: string, trail: string[], route: string, overrides: Record<string,unknown>={}, inherited=defaults, mode: 'native'|'process'='process') {
     name(agentName); if (trail.includes(agentName)) throw new Error('Child-agent cycle: '+[...trail,agentName].join(' -> '));
     const agentPath=agentFile(root,agentName);
     const data={...definition(root,agentPath),...overrides};
-    fields(data,['harness','model','reasoning_effort','instructions','description','skills','connections','subagents']);
+    fields(data,['harness','model','reasoning_effort','instructions','description','skills','connections','subagents','args']);
     if (data.harness!=='claude' && data.harness!=='codex') throw new Error('harness must be claude or codex');
-    const model=typeof data.model==='string' ? {name:data.model,reasoning:data.reasoning_effort} : mapping(data.model);
-    fields(model,['name','reasoning','speed']);
-    if (typeof model.name!=='string' || !model.name.trim()) throw new Error('Every agent requires a model name');
+    const configuredModel=typeof data.model==='string' ? {name:data.model,reasoning:data.reasoning_effort} : mapping(data.model);
+    fields(configuredModel,['name','reasoning','speed']);
     if (typeof data.model!=='string' && data.reasoning_effort!==undefined) throw new Error('Use model.reasoning with structured models');
-    const efforts=data.harness==='claude' ? ['low','medium','high','xhigh','max'] : ['minimal','low','medium','high','xhigh','max'];
-    if (model.reasoning!==undefined && !efforts.includes(String(model.reasoning))) throw new Error('Unsupported model reasoning effort');
-    if (model.speed!==undefined && (data.harness!=='codex' || !['fast','standard'].includes(String(model.speed)))) throw new Error('model.speed supports fast or standard for Codex only');
+    const agentModel=validateModel(data.harness,configuredModel,agentName);
+    const entryPreset=route==='main' ? profileModel : undefined;
+    const selectedModel=entryPreset ? validateModel(data.harness,{...agentModel,...entryPreset},agentName) : agentModel;
+    const modelSources={name:(entryPreset?.name!==undefined?'preset':'agent') as ModelSource,reasoning:(selectedModel.reasoning===undefined?null:(entryPreset?.reasoning!==undefined?'preset':'agent')) as ModelSource|null,speed:(selectedModel.speed===undefined?null:(entryPreset?.speed!==undefined?'preset':'agent')) as ModelSource|null};
+    const definitions=argumentDefinitions(data.args ?? {});
+    const launchArguments=route==='main' ? resolvedArguments(agentName,definitions,profileArguments ?? {}) : resolvedArguments(agentName,definitions,{});
     for (const key of ['instructions','description','reasoning_effort']) if (data[key]!==undefined && typeof data[key]!=='string') throw new Error(`${key} must be text`);
     const skills=data.skills ?? [];
     if (!Array.isArray(skills) || skills.some(s=>typeof s!=='string') || new Set(skills).size!==skills.length) throw new Error('skills must be a unique list of local directory names');
@@ -128,7 +172,7 @@ export function resolve(root: string, agent: string, workspace?: string): Record
     }
     const descriptions=Object.entries(merged).filter(([,v])=>v.description).map(([key,v])=>`### ${key} (${connectionName(key)})\n${v.description}`);
     const toolInstructions=descriptions.length ? '# Workspace tools\n\n'+descriptions.join('\n\n') : '';
-    const node: Agent={source_file:agentPath,name:agentName,mode,description:data.description as string|undefined,harness:data.harness,model:model.name,speed:model.speed as Agent['speed'],instructions:[workspaceInstructions,toolInstructions,data.instructions].filter(Boolean).join('\n\n'),reasoning_effort:model.reasoning as string|undefined,skills,connections:merged,children:Object.create(null)};
+    const node: Agent={source_file:agentPath,name:agentName,mode,description:data.description as string|undefined,harness:data.harness,model:selectedModel.name!,speed:selectedModel.speed,instructions:[workspaceInstructions,toolInstructions,data.instructions].filter(Boolean).join('\n\n'),reasoning_effort:selectedModel.reasoning,skills,connections:merged,children:Object.create(null),argument_definitions:definitions,launch:{model:{name:selectedModel.name!,reasoning:selectedModel.reasoning,speed:selectedModel.speed,sources:modelSources},arguments:launchArguments,...(route==='main'&&preset?{preset}:{}),...(route==='main'&&profileModel?{override:'preset' as const}:{}),headless:false}};
     nodes[route]=node;
     for (const [alias,child] of Object.entries(mapping(data.subagents ?? {}))) {
       name(alias);
@@ -148,12 +192,7 @@ export function resolve(root: string, agent: string, workspace?: string): Record
       if (childMode==='native' && Object.keys(resolved.children).length) throw new Error('Nested native child definitions are not supported yet; use process mode');
     }
   }
-  const profilePath=path.join(root,'profiles',name(agent)+'.yaml');
-  if (fs.existsSync(profilePath)) {
-    const profile=read(profilePath);
-    fields(profile,['agent']);
-    visit(name(profile.agent),[],'main');
-  } else visit(agent,[],'main');
+  visit(entryAgent,[],'main');
   return nodes;
 }
 export function build(root: string, agent: string, target: string, workspace?: string): string {

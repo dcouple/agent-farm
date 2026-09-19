@@ -33,7 +33,7 @@ test('print-launch prepares Codex bundle and home exactly as exec, without launc
  const f=fixture(t),result=f.invoke(['--print-launch']);
  assert.equal(result.status,0,result.stderr);assert.equal(result.stderr,'');
  const launch=JSON.parse(result.stdout);
- assert.deepEqual(Object.keys(launch).sort(),['argv','bundle','cwd','env']);
+ assert.deepEqual(Object.keys(launch).sort(),['argv','bundle','cwd','env','launch']);
  assert.equal(launch.cwd,f.target);assert.ok(fs.statSync(launch.bundle).isDirectory());
  assert.ok(fs.statSync(launch.env.CODEX_HOME).isDirectory());
  assert.equal(launch.env.AGENT_FARM_NATIVE_CODEX_HOME,path.join(f.home,'.codex'));
@@ -46,6 +46,53 @@ test('print-launch prepares Codex bundle and home exactly as exec, without launc
   assert.equal(result.stdout.includes(secret),false);
   for(const relative of Object.keys(fileMap(launch.bundle)))assert.equal(fs.readFileSync(path.join(launch.bundle,relative),'utf8').includes(secret),false);
  }
+});
+
+function launchIdentity(launch,harness) {
+ if(harness==='claude')return launch.argv[launch.argv.indexOf('--append-system-prompt')+1];
+ const value=launch.argv.find(v=>v.startsWith('developer_instructions='));
+ return JSON.parse(value.slice('developer_instructions='.length));
+}
+
+test('entry model flags override only the entry model and report ad hoc sources',t=>{
+ const f=fixture(t);fs.appendFileSync(path.join(f.root,'agents/planner.yaml'),'subagents: {worker: {agent: implementer, mode: native}}\n');
+ const result=f.invoke(['--explain','--model','gpt-6-astra','--reasoning','medium','--speed','fast']);
+ assert.equal(result.status,0,result.stderr);const launch=JSON.parse(result.stdout);
+ assert.equal(launch.launch.override,'ad hoc');assert.deepEqual(launch.launch.model.sources,{name:'flag',reasoning:'flag',speed:'flag'});
+ assert.equal(launch.argv[launch.argv.indexOf('--model')+1],'gpt-6-astra');assert.ok(launch.argv.includes('model_reasoning_effort="medium"'));assert.ok(launch.argv.includes('service_tier="fast"'));
+ const manifest=JSON.parse(fs.readFileSync(path.join(launch.bundle,'manifest.json')));
+ assert.equal(manifest.nodes.main.model,'gpt-6-astra');assert.equal(manifest.nodes['main/children/worker'].model,'test');
+ assert.deepEqual(JSON.parse(fs.readFileSync(path.join(launch.bundle,'main/agent.json'))).launch,launch.launch);verify(launch.bundle);
+});
+
+test('launch arguments validate, include defaults, preserve paths, and enter both identities byte-for-byte',t=>{
+ for(const harness of ['codex','claude']) {
+  const f=fixture(t,harness);fs.writeFileSync(path.join(f.root,'agents/planner.yaml'),`harness: ${harness}\nmodel: test\nargs:\n  mode: {values: [standard, fast], default: standard}\n  review: {values: [none, final, full], default: final}\n  parent: {type: path}\n  source: {type: string}\n`);
+  const values=['--arg','mode=fast','--arg','review=full','--arg','parent=../worktrees/invoice-pdf/.agent/status.json','--arg','source=docs/agent/plans/invoice-pdf/handoff/WP-01.md'];
+  for(const message of [[],['--message','Start']]) {
+   const result=f.invoke(['--print-launch',...values,...message]);assert.equal(result.status,0,result.stderr);const launch=JSON.parse(result.stdout);
+   const expected='LAUNCH CONTEXT\nheadless: true\nmode: fast\nreview: full\nparent: ../worktrees/invoice-pdf/.agent/status.json\nsource: docs/agent/plans/invoice-pdf/handoff/WP-01.md';
+   assert.ok(launchIdentity(launch,harness).endsWith(expected));assert.deepEqual(launch.launch.arguments,{mode:'fast',review:'full',parent:'../worktrees/invoice-pdf/.agent/status.json',source:'docs/agent/plans/invoice-pdf/handoff/WP-01.md'});
+  }
+  const interactive=command(build(f.root,'planner',f.target),'main',{prepare:false});assert.ok(launchIdentity(interactive,harness).endsWith('LAUNCH CONTEXT\nheadless: false\nmode: standard\nreview: final'));
+  for(const [arg,pattern] of [['review=maybe',/planner.*review.*maybe.*none, final, full/i],['unknown=x',/planner.*unknown.*accepted arguments/i],['review',/planner.*review.*malformed.*key=value/i]]) {
+   const invalid=f.invoke(['--explain','--arg',arg]);assert.equal(invalid.status,1);assert.match(invalid.stderr,pattern);
+  }
+ }
+});
+
+test('different launch argument values create valid independent content-addressed bundles',t=>{
+ const f=fixture(t);fs.appendFileSync(path.join(f.root,'agents/planner.yaml'),'args: {review: {values: [final, full], default: final}}\n');
+ const first=f.invoke(['--print-launch','--arg','review=final']),second=f.invoke(['--print-launch','--arg','review=full']);
+ assert.equal(first.status,0,first.stderr);assert.equal(second.status,0,second.stderr);
+ const a=JSON.parse(first.stdout),b=JSON.parse(second.stdout);assert.notEqual(a.bundle,b.bundle);verify(a.bundle);verify(b.bundle);
+ assert.equal(JSON.parse(fs.readFileSync(path.join(a.bundle,'main/agent.json'))).launch.arguments.review,'final');assert.equal(JSON.parse(fs.readFileSync(path.join(b.bundle,'main/agent.json'))).launch.arguments.review,'full');
+});
+
+test('model flag validation is harness-specific and launch-only',t=>{
+ const claude=fixture(t,'claude');let result=claude.invoke(['--explain','--speed','fast']);assert.equal(result.status,1);assert.match(result.stderr,/model\.speed supports fast or standard for Codex only/);
+ result=claude.invoke(['--explain','--reasoning','minimal']);assert.equal(result.status,1);assert.match(result.stderr,/accepted: low, medium, high, xhigh, max/);
+ const nonRun=spawnSync(process.execPath,[cli,'inspect','planner','--config-root',claude.root,'--model','test'],{encoding:'utf8'});assert.equal(nonRun.status,1);assert.match(nonRun.stderr,/only supported by run and unset global/);
 });
 
 test('print-launch resumes in the same home after plugin skill and profile changes',t=>{
@@ -238,7 +285,7 @@ for(const parentSlash of [false,true])for(const childSlash of [false,true]) {
   configureProvider(f);
   const updated=spawnSync(path.join(parent.bundle,'main/dispatch/worker'),['--print-launch'],{env:{...f.env,...parent.env},encoding:'utf8'});
   assert.equal(updated.status,0,updated.stderr);const routed=JSON.parse(updated.stdout);
-  assert.equal(routed.bundle,parent.bundle);
+  assert.equal(routed.bundle,launch.bundle);
   assert.equal(parseToml(fs.readFileSync(path.join(routed.env.CODEX_HOME,'config.toml'),'utf8')).model_provider,provider.name);
   assertNoSecrets(routed,updated.stdout);
  });
@@ -414,6 +461,27 @@ test('standalone bundled dispatch supports prepared prints and both passthrough 
  assert.equal(result.status,0,result.stderr);const launch=JSON.parse(result.stdout);
  assert.deepEqual(launch.argv.slice(-6),['exec','resume','thread','--json','--','Continue']);
  assert.ok(fs.statSync(launch.env.CODEX_HOME).isDirectory());assert.equal(fs.existsSync(f.record),false);
+});
+
+test('process dispatch accepts and forwards explicit model overrides and arguments without parent inheritance',t=>{
+ const f=fixture(t,'claude');
+ fs.appendFileSync(path.join(f.root,'agents/planner.yaml'),'args: {parent: {type: string}}\nsubagents: {worker: {agent: implementer, mode: process}}\n');
+ fs.appendFileSync(path.join(f.root,'agents/implementer.yaml'),'args: {review: {values: [final, full], default: final}}\n');
+ const parentResult=f.invoke(['--print-launch','--arg','parent=parent-only']);assert.equal(parentResult.status,0,parentResult.stderr);const parent=JSON.parse(parentResult.stdout);
+ const child=spawnSync(path.join(parent.bundle,'main/dispatch/worker'),['--print-launch','--model','gpt-6-astra','--reasoning','medium','--speed','fast','--arg','review=full'],{env:{...f.env,...parent.env},encoding:'utf8'});
+ assert.equal(child.status,0,child.stderr);const launch=JSON.parse(child.stdout);
+ assert.equal(launch.launch.model.name,'gpt-6-astra');assert.equal(launch.launch.override,'ad hoc');assert.deepEqual(launch.launch.arguments,{review:'full'});assert.equal(launchIdentity(launch,'codex').includes('parent-only'),false);verify(launch.bundle);
+});
+
+test('profile presets match equivalent flags and flags take precedence',t=>{
+ const f=fixture(t);fs.mkdirSync(path.join(f.root,'profiles'));
+ fs.appendFileSync(path.join(f.root,'agents/implementer.yaml'),'args: {mode: {values: [standard, fast], default: standard}}\n');
+ fs.writeFileSync(path.join(f.root,'profiles/implementer-fast.yaml'),'agent: implementer\nmodel: {name: gpt-6-astra, reasoning: medium, speed: fast}\nargs: {mode: fast}\n');
+ const preset=f.invoke(['--explain'],'implementer-fast'),flags=f.invoke(['--explain','--model','gpt-6-astra','--reasoning','medium','--speed','fast','--arg','mode=fast'],'implementer');
+ assert.equal(preset.status,0,preset.stderr);assert.equal(flags.status,0,flags.stderr);const a=JSON.parse(preset.stdout),b=JSON.parse(flags.stdout);
+ assert.deepEqual({...a.launch,model:{...a.launch.model,sources:undefined},preset:undefined,override:undefined},{...b.launch,model:{...b.launch.model,sources:undefined},preset:undefined,override:undefined});
+ assert.equal(a.launch.preset,'implementer-fast');assert.equal(a.launch.override,'preset');assert.equal(b.launch.override,'ad hoc');
+ const overridden=f.invoke(['--explain','--model','different'],'implementer-fast');assert.equal(overridden.status,0,overridden.stderr);assert.equal(JSON.parse(overridden.stdout).launch.model.name,'different');assert.equal(JSON.parse(overridden.stdout).launch.model.sources.name,'flag');
 });
 
 test('conflicting modes and non-launch passthrough fail before generation',t=>{

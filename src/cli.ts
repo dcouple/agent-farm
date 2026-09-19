@@ -39,16 +39,19 @@ if (rawArgs[0] === 'doctor' && rawArgs.length === 1) {
 try {
   const {values,tokens}=parseArgs({args:rawArgs,allowPositionals:true,strict:true,tokens:true,options:{
     'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},
-    save:{type:'string'},model:{type:'string'},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},'base-url':{type:'string'},'api-key-env':{type:'string'},
+    save:{type:'string'},model:{type:'string'},reasoning:{type:'string'},speed:{type:'string'},arg:{type:'string',multiple:true},harness:{type:'string'},workspace:{type:'string'},directory:{type:'string',default:process.cwd()},'base-url':{type:'string'},'api-key-env':{type:'string'},
     build:{type:'boolean'},exec:{type:'boolean'},message:{type:'string'},explain:{type:'boolean'},
     'print-launch':{type:'boolean'},'native-arg':{type:'string',multiple:true}
   }});
   const separator=tokens.find(t=>t.kind==='option-terminator')?.index ?? rawArgs.length;
   const positionals=tokens.flatMap(t=>t.kind==='positional' && t.index<separator ? [t.value] : []);
   const nativeArgs=[...(values['native-arg'] ?? []),...rawArgs.slice(separator+1)];
+  const runCommand=['run','agent'].includes(positionals[0] ?? '');
   if ((values['print-launch'] || values['native-arg'] || separator<rawArgs.length) && !['run','agent'].includes(positionals[0] ?? '')) throw new Error('Prepared launches and native arguments require run or agent');
   const globalCommand=['set','unset','status'].includes(positionals[0] ?? '') && positionals[1]==='global';
-  if ((values.save!==undefined || values.model!==undefined) && !globalCommand) throw new Error('--save and --model are only supported by unset global');
+  if (values.save!==undefined && !globalCommand) throw new Error('--save is only supported by unset global');
+  if (values.model!==undefined && !globalCommand && !runCommand) throw new Error('--model is only supported by run and unset global');
+  if ((values.reasoning!==undefined || values.speed!==undefined || values.arg!==undefined) && !runCommand) throw new Error('--reasoning, --speed, and --arg are only supported by run');
   if (globalCommand) {
     const operation=positionals[0],profile=positionals[2];
     if (values.message!==undefined || values.build || values.exec || values.explain || process.argv.includes('--directory') || process.argv.some(a=>a.startsWith('--directory='))) throw new Error('Global commands do not accept launch options');
@@ -168,6 +171,7 @@ try {
     if (positionals.length!==2 || !['run','agent'].includes(positionals[0]!)) throw new Error('Unknown command. Run agent-farm help for usage.');
     if ([values.build,values.explain,values.exec,values['print-launch']].filter(Boolean).length>1) throw new Error('Choose only one of --build, --explain, --exec or --print-launch');
     if (values.build && nativeArgs.length) throw new Error('--build does not accept native arguments');
+    if (values.build && (values.model!==undefined || values.reasoning!==undefined || values.speed!==undefined || values.arg!==undefined)) throw new Error('--build does not accept launch overrides or arguments');
     const bundle=build(path.resolve(values['config-root']!),positionals[1]!,path.resolve(values.directory!),values.workspace);
     if (!values.build && !values.explain && !values['print-launch']) {
       const manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
@@ -182,6 +186,10 @@ try {
       if (values.exec) args.push('--exec');
       if (values.explain) args.push('--explain');
       if (values['print-launch']) args.push('--print-launch');
+      if (values.model!==undefined) args.push('--model='+values.model);
+      if (values.reasoning!==undefined) args.push('--reasoning='+values.reasoning);
+      if (values.speed!==undefined) args.push('--speed='+values.speed);
+      for (const value of values.arg ?? []) args.push('--arg='+value);
       if (values.message!==undefined) args.push('--message='+values.message);
       if (nativeArgs.length) args.push('--',...nativeArgs);
       run(bundle,'main',args,undefined,path.resolve(values['config-root']!));
