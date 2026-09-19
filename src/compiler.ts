@@ -1,3 +1,4 @@
+import {connections} from './connections.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
@@ -26,14 +27,6 @@ function definition(context:Namespace,file:string):Record<string,unknown>{
  if(body!==undefined)data.instructions=[data.instructions,body].filter(Boolean).join('\n\n');delete data.instructions_file;delete data.instructions_files;return data;
 }
 
-function connections(value:unknown):Record<string,Connection>{
- const result:Record<string,Connection>=Object.create(null);
- for(const [key,input] of Object.entries(mapping(value))){configurationName(key);const item=mapping(input);if(item.description!==undefined&&typeof item.description!=='string')throw new Error('Connection description must be text');const description=typeof item.description==='string'?item.description.trim():undefined;if(item.type!=='mcp')throw new Error('Connection type must be mcp');
-  if(item.url!==undefined){fields(item,['type','url','auth','env_var','description']);if(typeof item.url!=='string'||!['native','none','bearer_env'].includes(String(item.auth)))throw new Error('Only HTTPS MCP with auth=native, none, or bearer_env is supported');const url=new URL(item.url);if(url.protocol!=='https:'||!url.hostname||url.username||url.password||url.search||url.hash||/\s/.test(item.url))throw new Error('Use an HTTPS endpoint without credentials or query parameters');if(item.auth==='bearer_env'){if(typeof item.env_var!=='string'||!/^[A-Za-z_][A-Za-z0-9_]*$/.test(item.env_var))throw new Error('MCP bearer_env requires env_var to name an environment variable');result[key]={type:'mcp',description,url:item.url,auth:'bearer_env',env_var:item.env_var};}else{if(item.env_var!==undefined)throw new Error('MCP env_var requires auth: bearer_env');result[key]={type:'mcp',description,url:item.url,auth:item.auth as 'native'|'none'};}}
-  else{fields(item,['type','command','args','env','env_vars','description']);if(typeof item.command!=='string'||!item.command.trim()||/[\r\n\0]/.test(item.command))throw new Error('Local MCP requires a command executable');const args=item.args??[],env=mapping(item.env??{}),envVars=item.env_vars??[],envName=(v:unknown)=>typeof v==='string'&&/^[A-Za-z_][A-Za-z0-9_]*$/.test(v);if(!Array.isArray(args)||args.some(v=>typeof v!=='string'||v.includes('\0')))throw new Error('MCP args must be a list of strings');if(Object.entries(env).some(([k,v])=>!envName(k)||typeof v!=='string'||v.includes('\0')))throw new Error('MCP env must map environment names to strings');if(!Array.isArray(envVars)||envVars.some(v=>!envName(v))||new Set(envVars).size!==envVars.length)throw new Error('MCP env_vars must be unique environment names');if(envVars.some(v=>Object.hasOwn(env,v)))throw new Error('MCP env and env_vars cannot overlap');result[key]={type:'mcp',description,command:item.command,args,env:env as Record<string,string>,env_vars:envVars};}
- }
- return result;
-}
 
 export function workspaceConfiguration(root:string,workspace:string){const ws=read(path.join(root,'workspaces',configurationName(workspace)+'.yaml'));fields(ws,['connections','instructions']);if(ws.instructions!==undefined&&typeof ws.instructions!=='string')throw new Error('Workspace instructions must be text');return {connections:connections(ws.connections??{}),instructions:ws.instructions as string??''};}
 export interface Resolution{nodes:Record<string,Agent>;profile:string;profile_name:string;profile_file?:string;plugin?:string;plugin_version?:string;namespace_root:string;cross_plugin_dependencies:Array<{plugin:string;version?:string;references:string[]}>;}
