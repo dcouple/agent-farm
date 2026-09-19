@@ -12,6 +12,11 @@ for every conversation.
 Pick a setup, point it at a repo, and Agent Farm opens your native Claude Code
 or Codex terminal with that configuration loaded.
 
+Run `agent-farm traces` for the optional local browser. To expose read-only
+telemetry tools to launched agents, opt in with workspace
+`telemetry.agent_access.enabled: true`; optionally restrict `profiles` to an
+allowlist. See [agent access and UI settings](CONFIGURATION.md#agent-access-and-the-local-browser).
+
 Sessions automatically collect local OpenTelemetry traces, events, and metrics,
 including launch arguments, user, model, and Git worktree metadata. Data stays in
 `~/.local/state/agent-farm/telemetry/`. See [collection settings and coverage](CONFIGURATION.md#local-opentelemetry-collection)

@@ -15,6 +15,8 @@ export interface Command {
 }
 
 export const commands: Command[] = [
+  {name:'traces',usage:'agent-farm traces [--project DIR] [--directory STORE] [--scope project|machine] [--no-open] [--port PORT]',group:'inspect',description:'Open a local read-only telemetry browser. Defaults to the current project; --directory selects the telemetry store.'},
+  {name:'telemetry',usage:'agent-farm telemetry mcp [--project DIR] [--directory STORE] [--scope project|machine]',group:'inspect',description:'Serve read-only telemetry tools over stdio MCP. Launched profiles receive this automatically when workspace agent access permits it.'},
   {
     name: 'run',
     usage: 'agent-farm run [PLUGIN/]NAME [options] [-- native arguments...]',

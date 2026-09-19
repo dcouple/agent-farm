@@ -1,6 +1,6 @@
 import os from 'node:os';
 import {execFileSync} from 'node:child_process';
-import {hash,assertWorkspaceTrust,trustFile,validateTelemetry,type TelemetrySettings,type WorkspaceMetadata} from './runtime.js';
+import {hash,assertWorkspaceTrust,trustFile,validateTelemetry,mergeTelemetry,type TelemetrySettings,type WorkspaceMetadata} from './runtime.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {parseDocument} from 'yaml';
@@ -84,6 +84,8 @@ function provenance(data:Record<string,unknown>,source:string,result:Record<stri
   if(data.telemetry!==undefined){
     result.telemetry=source;
     for(const key of Object.keys(mapping(data.telemetry)))result[`telemetry.${key}`]=source;
+    const access=mapping(data.telemetry).agent_access;
+    if(access!==undefined)for(const key of Object.keys(mapping(access)))result[`telemetry.agent_access.${key}`]=source;
   }
   for(const [key,input] of Object.entries(mapping(data.connections??{}))){
     result[`connections.${key}`]=source;
@@ -113,10 +115,11 @@ export function applyOverlay(shared:WorkspaceData,content:string,file:string,sou
       merged[key]=next;
       } catch(e){throw new Error(`connection ${key}: ${(e as Error).message}`);}
     }
-    const telemetry=shared.telemetry===undefined&&data.telemetry===undefined?undefined:{...shared.telemetry,...validateTelemetry(data.telemetry)};
+    const telemetry=mergeTelemetry(shared.telemetry,validateTelemetry(data.telemetry));
     const result=validateWorkspace({name:shared.name,connections:merged,instructions:[shared.instructions,data.instructions].filter(Boolean).join('\n\n'),telemetry},file);
     const previous={...sources};provenance(data,`overlay:${file}`,sources);
     if(data.telemetry!==undefined&&shared.telemetry!==undefined)sources.telemetry=[String(previous.telemetry),`overlay:${file}`];
+    if(shared.telemetry?.agent_access!==undefined&&validateTelemetry(data.telemetry)?.agent_access!==undefined)sources['telemetry.agent_access']=[String(previous['telemetry.agent_access']),`overlay:${file}`];
     for(const key of Object.keys(mapping(data.connections??{})))if(shared.connections[key])sources[`connections.${key}`]=[String(previous[`connections.${key}`]),`overlay:${file}`];
     for(const [key,input] of Object.entries(mapping(data.connections??{}))){
       const patch=mapping(input),base=shared.connections[key];

@@ -36,7 +36,8 @@ test('print-launch prepares Codex bundle and home exactly as exec, without launc
  const f=fixture(t),result=f.invoke(['--print-launch']);
  assert.equal(result.status,0,result.stderr);assert.equal(result.stderr,'');
  const launch=JSON.parse(result.stdout);
- assert.deepEqual(Object.keys(launch).sort(),['argv','bundle','cross_plugin_dependencies','cwd','env','launch','profile','telemetry','trace_identity','workspace_source']);
+ assert.deepEqual(Object.keys(launch).sort(),['argv','bundle','cross_plugin_dependencies','cwd','env','launch','profile','telemetry','telemetry_access','trace_identity','workspace_source']);
+ assert.equal(launch.telemetry_access,false);
  assert.equal(launch.trace_identity,'local/planner@local');
  assert.equal(launch.cwd,f.target);assert.ok(fs.statSync(launch.bundle).isDirectory());
  assert.ok(fs.statSync(launch.env.CODEX_HOME).isDirectory());
@@ -137,7 +138,7 @@ test('resume identity survives profile retargeting and compiler/runtime upgrades
  const installation=path.join(f.base,'upgrade');fs.mkdirSync(installation);
  fs.writeFileSync(path.join(installation,'package.json'),'{"type":"module"}');
  fs.symlinkSync(fileURLToPath(new URL('../node_modules',import.meta.url)),path.join(installation,'node_modules'));
- for(const name of ['compiler.js','runtime.js','telemetry.js','skill-layout.js','config.js','connections.js','workspaces.js']) {
+ for(const name of ['compiler.js','runtime.js','telemetry.js','telemetry-query.js','telemetry-mcp.js','skill-layout.js','config.js','connections.js','workspaces.js']) {
   fs.copyFileSync(fileURLToPath(new URL('../dist/'+name,import.meta.url)),path.join(installation,name));
  }
  for(const name of ['compiler.js','runtime.js'])fs.appendFileSync(path.join(installation,name),'\n// Upgrade fixture\n');

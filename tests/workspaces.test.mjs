@@ -40,6 +40,23 @@ import {build} from '../dist/compiler.js';
 import {command,resolveTelemetry} from '../dist/runtime.js';
 import {loginCommand} from '../dist/mcp-auth.js';
 import {loadWorkspace,unloadWorkspace} from '../dist/user-workspaces.js';
+test('workspace agent access merges nested policy and applies entry profile to process children',async t=>{
+ const f=project(t);
+ f.put('repo/.agent-farm/workspace.yaml',shared+'telemetry:\n  enabled: false\n  agent_access:\n    enabled: true\n    profiles: [main]\n');
+ const overlay=f.put('config/overlays/project.yaml','telemetry:\n  agent_access:\n    scope: project\n');
+ await trustWorkspace(f.repo,{confirm:async()=>true});
+ let workspace=resolveWorkspace(f.root,{directory:f.repo});
+ assert.deepEqual(workspace.telemetry.agent_access,{enabled:true,profiles:['main'],scope:'project'});
+ assert.equal(workspace.provenance['telemetry.agent_access.scope'],`overlay:${overlay}`);
+ const bundle=build(f.root,'main',f.repo),env={...process.env,AGENT_FARM_TELEMETRY:'off'};
+ for(const route of ['main','main/children/child'])assert.ok(command(bundle,route,{configRoot:f.root,home:f.home,env}).argv.join(' ').includes('telemetry-mcp.mjs'));
+ f.put('config/overlays/project.yaml','telemetry:\n  agent_access:\n    profiles: []\n');
+ workspace=resolveWorkspace(f.root,{directory:f.repo});assert.deepEqual(workspace.telemetry.agent_access,{enabled:true,profiles:[]});
+ const denied=build(f.root,'main',f.repo);for(const route of ['main','main/children/child'])assert.ok(!command(denied,route,{configRoot:f.root,home:f.home,env}).argv.join(' ').includes('telemetry-mcp.mjs'));
+ // Existing bundles retain the approved workspace snapshot.
+ assert.ok(command(bundle,'main',{configRoot:f.root,home:f.home,env}).argv.join(' ').includes('telemetry-mcp.mjs'));
+ f.put('config/overlays/project.yaml','telemetry:\n  agent_access:\n    scope: machine\n');assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/host settings/);
+});
 const cli=fileURLToPath(new URL('../dist/cli.js',import.meta.url));
 const shared=`name: project
 instructions: Shared project instructions.

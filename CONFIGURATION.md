@@ -268,6 +268,89 @@ alone. Process children inherit the host configuration root. Settings are not
 embedded in published plugins. Remote exporters such as Langfuse and named
 exporter selection are not implemented yet; only local collection is supported.
 
+### Agent access and the local browser
+
+Collection and agent access are separate switches. Collection defaults on;
+agent access defaults off. To give every launched profile read-only telemetry
+tools, add this to the trusted `.agent-farm/workspace.yaml`:
+
+```yaml
+name: my-project
+telemetry:
+  agent_access:
+    enabled: true
+    scope: project
+```
+
+Optionally restrict access to exact resolved profile names:
+
+```yaml
+telemetry:
+  agent_access:
+    enabled: true
+    profiles: [dcouple/implementer, telemetry-analyst]
+```
+
+Omitting `profiles` inherits any host/overlay allowlist; if no layer specifies
+one, every profile is allowed. `profiles: []` allows none. Lists replace rather
+than union across layers. A personal overlay can set `enabled: false` or replace
+the list. Plugin profiles require their qualified name (`plugin/profile`). The
+entry profile's policy applies to its process children; native subagents inherit
+their harness's tools. Rebuild/relaunch after changing workspace policy: already
+running harnesses and generated bundles retain their workspace snapshot.
+
+Allowed Claude and Codex launches receive the `agent_farm_telemetry` stdio MCP
+server automatically, including prepared launches. No separate profile or skill
+is required. Its five read-only tools are `list_sessions`, `get_session`,
+`query_spans`, `query_events`, and `summarize_sessions`. `get_session` defaults to
+the current recorded session; use `session_id: current` in span/event queries.
+When collection is disabled, history remains available but there is no current
+session. Inspection and launch explanation report the effective policy and a
+`telemetry_access` boolean indicating whether this profile receives the tools.
+
+Project scope includes all linked worktrees of the same canonical Git common
+directory. Outside Git it uses the exact canonical launch directory. Agents
+cannot change the store path or scope through tool arguments. Only host
+`settings.json` may configure `agent_access.scope: "machine"` for automatic
+injection; repository and overlay files may only specify `project`. Machine
+scope covers all projects in the selected local store, not other stores.
+
+This is a tool-availability policy, **not a filesystem sandbox**: an unrestricted
+agent running as your OS user can still read files or invoke commands itself.
+Recorded arguments, tool output, and events can contain sensitive or untrusted
+text; do not treat telemetry text as instructions.
+
+Open the optional browser UI on demand:
+
+```sh
+agent-farm traces
+agent-farm traces --project /path/to/repo --no-open
+agent-farm traces --directory /path/to/telemetry --scope machine
+```
+
+The UI binds only to `127.0.0.1`, uses a random URL token, and validates Host and
+Origin. It starts no collection, offers no write endpoints, and stops with
+Ctrl-C. It lists and filters sessions, refreshes the list every five seconds, and
+shows launch metadata, spans with relative-duration bars, and events. The URL is
+a local bearer capability: do not share it. `--port` optionally chooses a port.
+The default scope is the current project and the store follows trusted workspace
+settings; `--directory` explicitly selects a store without loading the workspace.
+
+For manual MCP configuration use `agent-farm telemetry mcp --project /path/to/repo`
+(the same `--directory`, `--scope`, and `--config-root` options are supported).
+This explicit command does not apply a profile allowlist; automatic injection
+does. Stdout contains only newline-delimited MCP JSON-RPC.
+
+Queries default to 25 results (maximum 100), returning `next_cursor` for more.
+Session scans cap at 5,000 directory entries; each signal scan caps at 32 MiB /
+10,000 records. Signal pages cap at roughly 128 KiB and oversized records include
+truncation notices. Queries report partial or malformed exports; pagination is a
+live view and can shift as new sessions arrive. Summaries cover their page only,
+not an inferred total. Native token fields are preserved in span attributes but
+are not summed across potentially overlapping spans. Missing completion is shown
+as `unfinished`, never assumed to mean running or successful. Metrics remain in
+the raw OTLP files; metric aggregation is not exposed yet.
+
 ### Workspace telemetry settings
 
 The same optional `telemetry` block is accepted in a repository's

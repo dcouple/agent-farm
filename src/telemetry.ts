@@ -8,6 +8,7 @@ import {randomBytes,randomUUID} from 'node:crypto';
 import {spawn,execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import type {LaunchMetadata,Manifest} from './runtime.js';
+import {telemetryProject} from './telemetry-query.js';
 
 interface Descriptor {directory:string;bundle:string;route:string;harness:'claude'|'codex';launch:LaunchMetadata}
 type Attribute = {key:string;value:Record<string,unknown>};
@@ -70,7 +71,8 @@ export async function startSession(descriptor:Descriptor,argv:string[],env:NodeJ
     'agent_farm.launcher.pid':process.pid,'process.working_directory':manifest.directory,
     'process.command_args':[descriptor.harness,...redactArgs(argv.slice(argv.indexOf(descriptor.harness)+1))],
     ...Object.fromEntries(Object.entries(descriptor.launch.arguments).map(([k,v])=>['agent_farm.argument.'+k,sensitive.test(k)||content.test(k)?hidden:v])),
-    ...gitMetadata(manifest.directory)
+    ...gitMetadata(manifest.directory),
+    'agent_farm.project.directory':telemetryProject(manifest.directory).id
   };
   const resourceAttributes=attributes(metadata);
   // Each line is an unwrapped OTLP Export*ServiceRequest, not a custom envelope.
