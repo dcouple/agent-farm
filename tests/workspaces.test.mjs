@@ -122,6 +122,7 @@ connections:
  const inspect=f.run(['inspect','main']);assert.equal(inspect.status,0,inspect.stderr);assert.equal(JSON.parse(inspect.stdout).workspace_source.overlay,overlay);
  for(const flag of ['--explain','--print-launch']){const r=f.run(['run','main',flag]);assert.equal(r.status,0,r.stderr);const result=JSON.parse(r.stdout);assert.equal(result.workspace_source.overlay,overlay);const manifest=JSON.parse(fs.readFileSync(path.join(result.bundle,'manifest.json')));assert.deepEqual(manifest.workspace_source,result.workspace_source);assert.equal(manifest.workspace,undefined);}
  f.put('config/overlays/project.yaml','connections:\n  local:\n    env: {TOKEN: overlap}');assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),e=>e.message.includes(overlay)&&/local.*overlap/.test(e.message));
+ f.put('config/overlays/project.yaml','connections:\n  local:\n    env: wrong');assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/project.yaml.*local.*env/);
  f.put('config/overlays/project.yaml','connections:\n  local:\n    args: wrong');assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/project.yaml.*local.*args/);
 });
 test('merged workspace still conflicts with different agent connections',async t=>{
@@ -153,4 +154,28 @@ test('CLI trust --yes and untrust operate without prompting; generated ignore hi
  let r=f.run(['run','main','--explain']);assert.equal(r.status,0,r.stderr);assert.match(r.stderr,/Hint:.*gitignore/);
  f.put('config/agents/main.yaml','harness: claude\nmodel: changed');r=f.run(['run','main','--explain']);assert.equal(r.status,0,r.stderr);assert.doesNotMatch(r.stderr,/Hint:/);
  assert.equal(f.run(['workspace','untrust']).status,0);assert.equal(f.run(['run','main','--build']).status,1);
+});
+test('directory selection uses the other repository, and personal fallback never receives an overlay',async t=>{
+ const f=project(t),other=path.join(f.base,'other');fs.mkdirSync(other);execFileSync('git',['init','-q',other]);
+ f.put('other/.agent-farm/workspace.yaml',shared.replace('name: project','name: another').replace('Shared project instructions.','Other repository instructions.'));
+ await trustWorkspace(other,{confirm:async()=>true});
+ const r=f.run(['run','main','--explain'],other);assert.equal(r.status,0,r.stderr);const output=JSON.parse(r.stdout);assert.equal(output.workspace_source.source,`repository:${other}/.agent-farm/workspace.yaml`);assert.ok(output.argv.some(v=>v.includes('Other repository instructions.')));
+ f.put('config/workspace.yaml','name: project\ninstructions: Fallback');f.put('config/overlays/project.yaml','instructions: Overlay');
+ const fallback=resolveWorkspace(f.root,{directory:f.base});assert.equal(fallback.instructions,'Fallback');assert.equal(fallback.metadata.overlay,undefined);
+});
+test('bare repositories use fallback and malformed Git markers fail explicitly',t=>{
+ const f=project(t),bare=path.join(f.base,'bare');execFileSync('git',['init','--bare','-q',bare]);f.put('config/workspace.yaml','instructions: Fallback');
+ assert.equal(resolveWorkspace(f.root,{directory:bare}).instructions,'Fallback');
+ f.put('bad/.git','not a gitdir');assert.throws(()=>repository(path.join(f.base,'bad')),/Invalid Git directory file/);
+});
+test('show exposes default and merged field provenance without granting trust',t=>{
+ const f=project(t);f.put('config/overlays/project.yaml','connections:\n  local:\n    env: {ACCOUNT: personal}\n  added:\n    type: mcp\n    command: extra');
+ const preview=showWorkspace(f.root,{directory:f.repo});assert.equal(preview.metadata.trust,'untrusted');assert.deepEqual(preview.provenance['connections.local.env'],[`repository:${f.file}`,`overlay:${f.root}/overlays/project.yaml`]);assert.equal(preview.provenance['connections.added.args'],`overlay:${f.root}/overlays/project.yaml`);
+ assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/Untrusted/);
+});
+
+test('formatting-only changes require approval and explain why the content summary is unchanged',async t=>{
+ const f=project(t);await trustWorkspace(f.repo,{confirm:async()=>true});fs.appendFileSync(f.file,'\n# comment');
+ assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/Untrusted/);
+ let summary;await trustWorkspace(f.repo,{confirm:async value=>{summary=value;return false;}});assert.match(summary,/formatting, comments/);
 });

@@ -1,3 +1,6 @@
+import os from 'node:os';
+import {execFileSync} from 'node:child_process';
+import {hash,assertWorkspaceTrust,trustFile,type WorkspaceMetadata} from './runtime.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {parseDocument} from 'yaml';
@@ -67,9 +70,6 @@ export function validateWorkspace(data:Record<string,unknown>,file:string):Works
 
 export interface WorkspaceOptions {directory?:string;noWorkspace?:boolean;home?:string}
 export interface ResolvedWorkspace extends WorkspaceData {metadata:WorkspaceMetadata;provenance:Record<string,string|string[]>}
-import os from 'node:os';
-import {execFileSync} from 'node:child_process';
-import {hash,assertWorkspaceTrust,trustFile,type WorkspaceMetadata} from './runtime.js';
 export function noWorkspace(trust:WorkspaceMetadata['trust']='none'):ResolvedWorkspace {
   return {instructions:'',connections:{},metadata:{source:'none',trust},provenance:{}};
 }
@@ -91,22 +91,35 @@ export function applyOverlay(shared:WorkspaceData,content:string,file:string,sou
   try{
     const data=workspaceDocument(content,file,'overlay'),merged:Record<string,unknown>={...shared.connections};
     for(const [key,input] of Object.entries(mapping(data.connections??{}))){
+      try {
       configurationName(key);
       const patch=mapping(input),base=mapping(merged[key]??{});
       const next={...base,...patch};
-      if(patch.env!==undefined)next.env={...mapping(base.env??{}),...mapping(patch.env)};
+      if(patch.env!==undefined){
+        if(!patch.env||typeof patch.env!=='object'||Array.isArray(patch.env))throw new Error('env must map environment names to strings');
+        next.env={...mapping(base.env??{}),...mapping(patch.env)};
+      }
       if(patch.env_vars!==undefined){
         if(!Array.isArray(patch.env_vars))throw new Error(`connection ${key}: env_vars must be a list`);
         next.env_vars=[...new Set([...(Array.isArray(base.env_vars)?base.env_vars:[]),...patch.env_vars])];
       }
       merged[key]=next;
+      } catch(e){throw new Error(`connection ${key}: ${(e as Error).message}`);}
     }
     const result=validateWorkspace({name:shared.name,connections:merged,instructions:[shared.instructions,data.instructions].filter(Boolean).join('\n\n')},file);
     const previous={...sources};provenance(data,`overlay:${file}`,sources);
     for(const key of Object.keys(mapping(data.connections??{})))if(shared.connections[key])sources[`connections.${key}`]=[String(previous[`connections.${key}`]),`overlay:${file}`];
+    for(const [key,input] of Object.entries(mapping(data.connections??{}))){
+      const patch=mapping(input),base=shared.connections[key];
+      if(base&&'command' in base)for(const field of ['env','env_vars']){
+        if(patch[field]!==undefined&&Object.keys(base[field as 'env'|'env_vars']).length)sources[`connections.${key}.${field}`]=[String(previous[`connections.${key}.${field}`]),`overlay:${file}`];
+      }
+      const single=result.connections[key]!;
+      for(const field of Object.keys(single))sources[`connections.${key}.${field}`]??=`overlay:${file}`;
+    }
     if(data.instructions!==undefined&&shared.instructions)sources.instructions=[String(previous.instructions),`overlay:${file}`];
     return result;
-  }catch(e){throw new Error(`${file}: ${(e as Error).message}`);}
+  }catch(e){if((e as Error).message.startsWith(file+':'))throw e;throw new Error(`${file}: ${(e as Error).message}`);}
 }
 interface Candidate {repo:Repository;file:string;content:string;data:WorkspaceData;metadata:WorkspaceMetadata}
 function candidate(directory:string,home?:string):Candidate|undefined {
@@ -123,7 +136,7 @@ export function resolveWorkspace(root:string,options:WorkspaceOptions={}):Resolv
   if(item){
     assertWorkspaceTrust(item.metadata,options.home);
     const sources:Record<string,string|string[]>={};
-    provenance(workspaceDocument(item.content,item.file,'repository'),item.metadata.source,sources);
+    provenance({...item.data},item.metadata.source,sources);
     const overlay=path.resolve(root,'overlays',item.data.name+'.yaml'),content=readOptional(overlay);
     const data=content===undefined?item.data:applyOverlay(item.data,content,overlay,sources);
     return {...data,metadata:{...item.metadata,...(content===undefined?{}:{overlay})},provenance:sources};
@@ -131,7 +144,7 @@ export function resolveWorkspace(root:string,options:WorkspaceOptions={}):Resolv
   const file=path.resolve(root,'workspace.yaml'),content=readOptional(file);
   if(content===undefined)return noWorkspace();
   const document=workspaceDocument(content,file,'user'),data=validateWorkspace(document,file),source=`user:${file}`,sources:Record<string,string|string[]>={};
-  provenance(document,source,sources);
+  provenance({...data},source,sources);
   return {...data,metadata:{source,trust:'personal'},provenance:sources};
 }
 function redacted(data:WorkspaceData){
@@ -150,7 +163,8 @@ export function trustSummary(item:Candidate,home?:string):string {
     const old=JSON.parse(previous) as {content:string;sha256:string};
     if(old.sha256!==item.metadata.sha256){
       const before=validateWorkspace(workspaceDocument(old.content,'previous approval','repository'),'previous approval');
-      changes='Changed fields (environment values hidden): '+changedFields(before,item.data).join(', ')+'\nPreviously approved:\n'+JSON.stringify(redacted(before),null,2)+'\n';
+      const fields=changedFields(before,item.data);
+      changes=(fields.length?'Changed fields (environment values hidden): '+fields.join(', '):'Only file formatting, comments, or equivalent YAML representation changed.')+'\nPreviously approved:\n'+JSON.stringify(redacted(before),null,2)+'\n';
     }
   }
   return `Repository workspace: ${item.file}\nGit common directory: ${item.repo.common}\n${changes}Approve these connections and full instructions:\n${JSON.stringify(redacted(item.data),null,2)}`;
@@ -203,7 +217,7 @@ export function showWorkspace(root:string,options:WorkspaceOptions={}){
   if(item?.metadata.trust==='untrusted'){
     // Explicit review output never enters compilation or a native harness.
     const sources:Record<string,string|string[]>={};
-    provenance(workspaceDocument(item.content,item.file,'repository'),item.metadata.source,sources);
+    provenance({...item.data},item.metadata.source,sources);
     const overlay=path.resolve(root,'overlays',item.data.name+'.yaml'),content=readOptional(overlay);
     const data=content===undefined?item.data:applyOverlay(item.data,content,overlay,sources);
     return {...data,metadata:{...item.metadata,...(content===undefined?{}:{overlay})},provenance:sources};

@@ -51,6 +51,8 @@ try {
   const runCommand=['run','agent'].includes(positionals[0] ?? '');
   if ((values['print-launch'] || values['native-arg'] || separator<rawArgs.length) && !['run','agent'].includes(positionals[0] ?? '')) throw new Error('Prepared launches and native arguments require run or agent');
   const globalCommand=['set','unset','status'].includes(positionals[0] ?? '') && positionals[1]==='global';
+  if(values.yes && !(positionals[0]==='workspace'&&positionals[1]==='trust'))throw new Error('--yes is only supported by workspace trust');
+  if(values['no-workspace'] && !runCommand && positionals[0]!=='inspect' && !(positionals[0]==='mcp'&&positionals[1]==='login') && !(positionals[0]==='workspace'&&positionals[1]==='show'))throw new Error('--no-workspace is supported by run, inspect, mcp login, and workspace show');
   if (values.save!==undefined && !globalCommand) throw new Error('--save is only supported by unset global');
   if (values.model!==undefined && !globalCommand && !runCommand) throw new Error('--model is only supported by run and unset global');
   if ((values.reasoning!==undefined || values.speed!==undefined || values.arg!==undefined) && !runCommand) throw new Error('--reasoning, --speed, and --arg are only supported by run');
@@ -72,7 +74,7 @@ try {
       const saved=saveGlobalSkills(path.resolve(values['config-root']!),values.save,values.model ?? '',{harness:values.harness});
       console.log(`Saved and unmounted ${saved.skills} pre-existing skills as ${saved.profile}. Original files: ${saved.backup}. Remount: agent-farm set global ${saved.profile} --harness ${values.harness} --config-root ${JSON.stringify(path.resolve(values['config-root']!))}`);
     } else if(!profile) {
-      if(profile || values.model)throw new Error('Set/unset a global workspace separately from a profile');
+      if(values.model)throw new Error('Set/unset a global workspace separately from a profile');
       const item=operation==='set'?loadWorkspace(path.resolve(values['config-root']!),path.resolve(values.directory!),{harness:values.harness}):unloadWorkspace(path.resolve(values.directory!),{harness:values.harness});
       console.log(`${operation==='set'?'Mounted':'Unmounted'} workspace ${item.workspace} (${item.harness}). Start a fresh session.`);
     } else {
