@@ -271,8 +271,8 @@ export async function bareCommand(configRoot: string, directory: string) {
   const separator = {value: '__sep__', label: dim('─────────────────────'), hint: ''};
   const options: Choice[] = [
     ...profiles.map(prof => ({
-      value: 'launch:' + prof.profile,
-      label: prof.profile,
+      value: 'launch:' + prof.qualified,
+      label: prof.qualified,
       hint: `${prof.harness} · ${prof.model.name}${prof.model.reasoning && prof.model.reasoning !== 'default' ? ' · ' + prof.model.reasoning : ''}`,
     })),
     separator,
@@ -310,8 +310,8 @@ export async function bareCommand(configRoot: string, directory: string) {
     const editChoice = await p.select({
       message: 'Which profile?',
       options: profiles.map(prof => ({
-        value: prof.profile,
-        label: prof.profile,
+        value: prof.qualified,
+        label: prof.qualified,
         hint: `${prof.harness} · ${prof.model.name}`,
       })),
     });
@@ -331,8 +331,8 @@ export async function bareCommand(configRoot: string, directory: string) {
     const inspectChoice = await p.select({
       message: 'Which profile?',
       options: profiles.map(prof => ({
-        value: prof.profile,
-        label: prof.profile,
+        value: prof.qualified,
+        label: prof.qualified,
         hint: `${prof.harness} · ${prof.model.name}`,
       })),
     });
@@ -460,7 +460,7 @@ export async function initCommand(configRoot: string, directory: string, full = 
   // Profiles
   p.log.step(bold('Installed profiles'));
   for (const prof of allProfiles) {
-    const info = inspectProfile(configRoot, prof.profile);
+    const info = inspectProfile(configRoot, prof.qualified);
     const agent = info.agents.main!;
     const desc = agent.description ?? '';
     const skillNames = agent.skills.map(s => s.name);
@@ -468,7 +468,7 @@ export async function initCommand(configRoot: string, directory: string, full = 
     const skillPills = skillNames.slice(0, 4).map(s => cyan(s)).join(dim(' · '));
     const extra = skillNames.length > 4 ? dim(` +${skillNames.length - 4}`) : '';
     p.log.message([
-      `  ${bold(prof.profile)}  ${hBadge}  ${dim(prof.model.name)}`,
+      `  ${bold(prof.qualified)}  ${hBadge}  ${dim(prof.model.name)}`,
       desc ? `  ${dim(desc)}` : '',
       `  ${skillPills}${extra}`,
     ].filter(Boolean).join('\n'));
@@ -544,11 +544,11 @@ export function doctorCommand(configRoot: string) {
   // Profiles
   try {
     const profiles = listProfiles(configRoot);
-    console.log(`    ${green('✓')} ${profiles.length} profile(s): ${profiles.map(p => p.profile).join(', ') || dim('none')}`);
+    console.log(`    ${green('✓')} ${profiles.length} profile(s): ${profiles.map(p => p.qualified).join(', ') || dim('none')}`);
     let broken = 0;
     for (const prof of profiles) {
-      try { inspectProfile(configRoot, prof.profile); }
-      catch (e) { broken++; console.log(`    ${yellow('✗')} ${prof.profile}: ${e instanceof Error ? e.message : e}`); }
+      try { inspectProfile(configRoot, prof.qualified); }
+      catch (e) { broken++; console.log(`    ${yellow('✗')} ${prof.qualified}: ${e instanceof Error ? e.message : e}`); }
     }
     if (!broken && profiles.length) console.log(`    ${green('✓')} All profiles resolve`);
   } catch (e) {

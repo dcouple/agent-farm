@@ -1,258 +1,74 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { parseDocument } from 'yaml';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {parseDocument} from 'yaml';
 import {skillFiles} from './skill-layout.js';
-import { canonical, command, execute, claudeConnection, codexConnection, connectionName, toml, files, fileMap, hash, verify, validateModel, type Agent, type ArgumentDefinition, type Connection, type Manifest, type ModelSource } from './runtime.js';
-export {command, execute};
-function name(value: unknown): string {
-  if (typeof value!=='string' || !/^[a-z][a-z0-9_-]{0,63}$/.test(value)) throw new Error('Expected a lowercase configuration name, not a path');
-  return value;
+import {configurationName,loadHostSettings,namespaces,qualifiedName,type Namespace} from './config.js';
+import {canonical,command,execute,claudeConnection,codexConnection,connectionName,toml,files,fileMap,hash,verify,validateModel,type Agent,type ArgumentDefinition,type Connection,type Manifest,type ModelSource} from './runtime.js';
+export {command,execute};
+
+function mapping(value:unknown):Record<string,unknown>{if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Expected a YAML mapping');return value as Record<string,unknown>;}
+function fields(data:Record<string,unknown>,allowed:string[]){const extra=Object.keys(data).filter(k=>!allowed.includes(k));if(extra.length)throw new Error('Unsupported prototype fields: '+extra.join(', '));}
+function argumentDefinitions(value:unknown):Record<string,ArgumentDefinition>{const result:Record<string,ArgumentDefinition>=Object.create(null);for(const [key,input] of Object.entries(mapping(value))){configurationName(key);const item=mapping(input);fields(item,['values','type','default','description']);if(item.description!==undefined&&typeof item.description!=='string')throw new Error(`Argument ${key} description must be text`);if(item.default!==undefined&&typeof item.default!=='string')throw new Error(`Argument ${key} default must be text`);if(item.values!==undefined){if(item.type!==undefined)throw new Error(`Argument ${key} must use either values or type, not both`);if(!Array.isArray(item.values)||!item.values.length||item.values.some(v=>typeof v!=='string')||new Set(item.values).size!==item.values.length)throw new Error(`Argument ${key} values must be a nonempty unique list of strings`);if(item.default!==undefined&&!item.values.includes(item.default))throw new Error(`Argument ${key} default ${JSON.stringify(item.default)} is not accepted; accepted: ${item.values.join(', ')}`);result[key]={values:item.values as string[],...(item.default===undefined?{}:{default:item.default as string}),...(item.description===undefined?{}:{description:item.description as string})};}else{if(item.type!=='string'&&item.type!=='path')throw new Error(`Argument ${key} requires values or type: string|path`);result[key]={type:item.type,...(item.default===undefined?{}:{default:item.default as string}),...(item.description===undefined?{}:{description:item.description as string})};}}return result;}
+function acceptedArguments(definitions:Record<string,ArgumentDefinition>){const entries=Object.entries(definitions).map(([key,item])=>item.values?`${key} (${item.values.join('|')})`:`${key} (${item.type})`);return entries.length?entries.join(', '):'none';}
+function resolvedArguments(agent:string,definitions:Record<string,ArgumentDefinition>,input:unknown):Record<string,string>{const result=Object.fromEntries(Object.entries(definitions).flatMap(([key,item])=>item.default===undefined?[]:[[key,item.default]]));for(const [key,value] of Object.entries(mapping(input))){const item=definitions[key];if(!item)throw new Error(`Agent ${agent} does not declare argument ${key}; accepted arguments: ${acceptedArguments(definitions)}`);if(typeof value!=='string')throw new Error(`Agent ${agent} argument ${key} must be text; accepted arguments: ${acceptedArguments(definitions)}`);if(item.values&&!item.values.includes(value))throw new Error(`Agent ${agent} argument ${key} value ${JSON.stringify(value)} is invalid; accepted: ${item.values.join(', ')}. Accepted arguments: ${acceptedArguments(definitions)}`);result[key]=value;}return Object.fromEntries(Object.keys(definitions).flatMap(key=>Object.hasOwn(result,key)?[[key,result[key]!]]:[]));}
+function read(file:string){const doc=parseDocument(fs.readFileSync(file,'utf8'),{uniqueKeys:true});if(doc.errors.length)throw new Error(`${file}: ${doc.errors.map(e=>e.message).join('; ')}`);return mapping(doc.toJS({maxAliasCount:100}));}
+function agentFile(root:string,agent:string):string{const candidates=[path.join(root,'agents',agent+'.md'),path.join(root,'agents',agent,'agent.yaml'),path.join(root,'agents',agent+'.yaml')],existing=candidates.filter(file=>fs.existsSync(file));if(existing.length>1)throw new Error(`Ambiguous agent definition ${agent}: ${existing.join(', ')}`);return existing[0]??candidates[0]!;}
+function hasAgent(context:Namespace,agent:string){return fs.existsSync(agentFile(context.root,agent));}
+function profileFile(context:Namespace,profile:string){return path.join(context.root,'profiles',profile+'.yaml');}
+function label(context:Namespace,name:string){return context.plugin?`${context.plugin}/${name}`:`local profile ${name} (${profileFile(context,name)})`;}
+
+function definition(context:Namespace,file:string):Record<string,unknown>{
+ let body:string|undefined,data:Record<string,unknown>;
+ if(file.endsWith('.md')){const text=fs.readFileSync(file,'utf8'),match=/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/.exec(text);if(!match)throw new Error(`Agent Markdown requires YAML frontmatter: ${file}`);const doc=parseDocument(match[1]!,{uniqueKeys:true});if(doc.errors.length)throw new Error(`${file}: ${doc.errors.map(e=>e.message).join('; ')}`);data=mapping(doc.toJS({maxAliasCount:100}));body=match[2]!.trim();if(data.instructions!==undefined)throw new Error('Put agent instructions in the Markdown body, not frontmatter');}else data=read(file);
+ const sources=['instructions','instructions_file','instructions_files'].filter(key=>data[key]!==undefined);if(sources.length>1)throw new Error('Choose one instructions source: inline, instructions_file, or instructions_files');const input=data.instructions_file!==undefined?[data.instructions_file]:data.instructions_files;
+ if(input!==undefined){if(!Array.isArray(input)||!input.length||input.some(v=>typeof v!=='string'||!v.endsWith('.md')))throw new Error('Instruction files must be a nonempty list of Markdown paths');const boundary=fs.realpathSync(context.root);data.instructions=input.map(value=>{const source=fs.realpathSync(path.resolve(path.dirname(file),value as string)),relative=path.relative(boundary,source);if(relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative))throw new Error(`Instruction files for plugin ${context.plugin??'local'} must stay inside the configuration root ${boundary}: ${source}`);return fs.readFileSync(source,'utf8');}).join('\n\n');}
+ if(body!==undefined)data.instructions=[data.instructions,body].filter(Boolean).join('\n\n');delete data.instructions_file;delete data.instructions_files;return data;
 }
-function mapping(value: unknown): Record<string,unknown> {
-  if (!value || typeof value!=='object' || Array.isArray(value)) throw new Error('Expected a YAML mapping');
-  return value as Record<string,unknown>;
+
+function connections(value:unknown):Record<string,Connection>{
+ const result:Record<string,Connection>=Object.create(null);
+ for(const [key,input] of Object.entries(mapping(value))){configurationName(key);const item=mapping(input);if(item.description!==undefined&&typeof item.description!=='string')throw new Error('Connection description must be text');const description=typeof item.description==='string'?item.description.trim():undefined;if(item.type!=='mcp')throw new Error('Connection type must be mcp');
+  if(item.url!==undefined){fields(item,['type','url','auth','env_var','description']);if(typeof item.url!=='string'||!['native','none','bearer_env'].includes(String(item.auth)))throw new Error('Only HTTPS MCP with auth=native, none, or bearer_env is supported');const url=new URL(item.url);if(url.protocol!=='https:'||!url.hostname||url.username||url.password||url.search||url.hash||/\s/.test(item.url))throw new Error('Use an HTTPS endpoint without credentials or query parameters');if(item.auth==='bearer_env'){if(typeof item.env_var!=='string'||!/^[A-Za-z_][A-Za-z0-9_]*$/.test(item.env_var))throw new Error('MCP bearer_env requires env_var to name an environment variable');result[key]={type:'mcp',description,url:item.url,auth:'bearer_env',env_var:item.env_var};}else{if(item.env_var!==undefined)throw new Error('MCP env_var requires auth: bearer_env');result[key]={type:'mcp',description,url:item.url,auth:item.auth as 'native'|'none'};}}
+  else{fields(item,['type','command','args','env','env_vars','description']);if(typeof item.command!=='string'||!item.command.trim()||/[\r\n\0]/.test(item.command))throw new Error('Local MCP requires a command executable');const args=item.args??[],env=mapping(item.env??{}),envVars=item.env_vars??[],envName=(v:unknown)=>typeof v==='string'&&/^[A-Za-z_][A-Za-z0-9_]*$/.test(v);if(!Array.isArray(args)||args.some(v=>typeof v!=='string'||v.includes('\0')))throw new Error('MCP args must be a list of strings');if(Object.entries(env).some(([k,v])=>!envName(k)||typeof v!=='string'||v.includes('\0')))throw new Error('MCP env must map environment names to strings');if(!Array.isArray(envVars)||envVars.some(v=>!envName(v))||new Set(envVars).size!==envVars.length)throw new Error('MCP env_vars must be unique environment names');if(envVars.some(v=>Object.hasOwn(env,v)))throw new Error('MCP env and env_vars cannot overlap');result[key]={type:'mcp',description,command:item.command,args,env:env as Record<string,string>,env_vars:envVars};}
+ }
+ return result;
 }
-function fields(data: Record<string,unknown>, allowed: string[]) {
-  const extra=Object.keys(data).filter(k=>!allowed.includes(k));
-  if (extra.length) throw new Error('Unsupported prototype fields: '+extra.join(', '));
+
+export function workspaceConfiguration(root:string,workspace:string){const ws=read(path.join(root,'workspaces',configurationName(workspace)+'.yaml'));fields(ws,['connections','instructions']);if(ws.instructions!==undefined&&typeof ws.instructions!=='string')throw new Error('Workspace instructions must be text');return {connections:connections(ws.connections??{}),instructions:ws.instructions as string??''};}
+export interface Resolution{nodes:Record<string,Agent>;profile:string;profile_name:string;profile_file?:string;plugin?:string;plugin_version?:string;namespace_root:string;cross_plugin_dependencies:Array<{plugin:string;version?:string;references:string[]}>;}
+export interface ResolveOptions{hostRoot?:string;namespace?:Namespace}
+
+export function resolveProfile(root:string,requested:string,workspace?:string,options:ResolveOptions={}):Resolution{
+ root=fs.realpathSync(root);const catalog=namespaces(root,options.hostRoot),hostRoot=path.resolve(options.hostRoot??root),parsed=qualifiedName(requested);
+ const contextFor=(plugin:string,reference:string)=>{const found=catalog.find(item=>item.plugin===plugin);if(!found)throw new Error(`Missing plugin ${plugin} required by ${reference}`);return found;};
+ const candidates=(kind:'profile'|'agent',item:string)=>catalog.filter(context=>kind==='profile'?fs.existsSync(profileFile(context,item)):hasAgent(context,item));
+ let selected:Namespace,selectedProfileFile:string|undefined;const entryName=parsed.name;
+ if(options.namespace){selected=options.namespace;const candidate=profileFile(selected,entryName);if(fs.existsSync(candidate))selectedProfileFile=candidate;else if(!hasAgent(selected,entryName))throw new Error(`${selected.plugin?'Plugin '+selected.plugin:'Local configuration'} has no profile or agent named ${entryName}`);}
+ else if(parsed.plugin){selected=contextFor(parsed.plugin,requested);const candidate=profileFile(selected,entryName);if(fs.existsSync(candidate))selectedProfileFile=candidate;else if(!hasAgent(selected,entryName))throw new Error(`Plugin ${parsed.plugin} has no profile or agent named ${entryName}`);}
+ else{let matches=candidates('profile',entryName);const preferred=loadHostSettings(hostRoot).default_plugin;if(preferred&&matches.some(item=>item.plugin===preferred))matches=matches.filter(item=>item.plugin===preferred);if(matches.length>1)throw new Error(`Ambiguous profile ${entryName}; use one of: ${matches.map(item=>label(item,entryName)).join(', ')}`);if(matches.length===1){selected=matches[0]!;selectedProfileFile=profileFile(selected,entryName);}else{matches=candidates('agent',entryName);if(preferred&&matches.some(item=>item.plugin===preferred))matches=matches.filter(item=>item.plugin===preferred);if(matches.length>1)throw new Error(`Ambiguous agent ${entryName}; use one of: ${matches.map(item=>item.plugin?`${item.plugin}/${entryName}`:`local agent ${entryName}`).join(', ')}`);selected=matches[0]??catalog[0]!;}}
+ let profileDefinition:Record<string,unknown>|undefined,profileModel:Record<string,unknown>|undefined,profileArguments:unknown,preset:string|undefined;if(selectedProfileFile){profileDefinition=read(selectedProfileFile);fields(profileDefinition,['agent','model','args']);if(profileDefinition.model!==undefined){profileModel=mapping(profileDefinition.model);fields(profileModel,['name','reasoning','speed']);}if(profileDefinition.args!==undefined)profileArguments=profileDefinition.args;if(profileDefinition.model!==undefined||profileDefinition.args!==undefined)preset=entryName;}
+ const ws=workspace?workspaceConfiguration(hostRoot,workspace):{connections:{},instructions:''},defaults=ws.connections,workspaceInstructions=ws.instructions,nodes:Record<string,Agent>=Object.create(null),dependencyMap=new Map<string,{version?:string;references:Set<string>}>(),entryPlugin=selected.plugin;
+ const dependency=(context:Namespace,reference:string)=>{if(context.plugin&&context.plugin!==entryPlugin){const current=dependencyMap.get(context.plugin)??{version:context.version,references:new Set<string>()};current.references.add(reference);dependencyMap.set(context.plugin,current);}};
+ const referenceContext=(value:unknown,current:Namespace,kind:string)=>{const ref=qualifiedName(value),context=ref.plugin?contextFor(ref.plugin,`${kind} ${String(value)}`):current;dependency(context,`${kind}:${String(value)}`);return {context,name:ref.name};};
+ function visit(agentReference:unknown,current:Namespace,trail:string[],route:string,overrides:Record<string,unknown>={},inherited=defaults,mode:'native'|'process'='process'){
+  const resolvedRef=referenceContext(agentReference,current,'agent'),agentName=resolvedRef.name,context=resolvedRef.context,identity=`${context.plugin??'local'}/${agentName}`;if(trail.includes(identity))throw new Error('Child-agent cycle: '+[...trail,identity].join(' -> '));const agentPath=agentFile(context.root,agentName);if(!fs.existsSync(agentPath))throw new Error(`ENOENT: missing agent ${identity}: ${agentPath}`);
+  const data={...definition(context,agentPath),...overrides};fields(data,['harness','model','reasoning_effort','instructions','description','skills','connections','subagents','args']);if(data.harness!=='claude'&&data.harness!=='codex')throw new Error('harness must be claude or codex');const configuredModel=typeof data.model==='string'?{name:data.model,reasoning:data.reasoning_effort}:mapping(data.model);fields(configuredModel,['name','reasoning','speed']);if(typeof data.model!=='string'&&data.reasoning_effort!==undefined)throw new Error('Use model.reasoning with structured models');const agentModel=validateModel(data.harness,configuredModel,agentName),entryPreset=route==='main'?profileModel:undefined,selectedModel=entryPreset?validateModel(data.harness,{...agentModel,...entryPreset},agentName):agentModel,modelSources={name:(entryPreset?.name!==undefined?'preset':'agent') as ModelSource,reasoning:(selectedModel.reasoning===undefined?null:(entryPreset?.reasoning!==undefined?'preset':'agent')) as ModelSource|null,speed:(selectedModel.speed===undefined?null:(entryPreset?.speed!==undefined?'preset':'agent')) as ModelSource|null},definitions=argumentDefinitions(data.args??{}),launchArguments=route==='main'?resolvedArguments(agentName,definitions,profileArguments??{}):resolvedArguments(agentName,definitions,{});for(const key of ['instructions','description','reasoning_effort'])if(data[key]!==undefined&&typeof data[key]!=='string')throw new Error(`${key} must be text`);
+  const declared=data.skills??[];if(!Array.isArray(declared)||declared.some(s=>typeof s!=='string')||new Set(declared).size!==declared.length)throw new Error('skills must be a unique list of local or qualified names');const skills:string[]=[],skill_sources:Record<string,string>=Object.create(null),skill_plugins:Record<string,{plugin?:string;version?:string}>=Object.create(null);for(const value of declared){const skill=referenceContext(value,context,'skill'),folder=path.join(skill.context.root,'skills',skill.name);if(!fs.existsSync(path.join(folder,'SKILL.md')))throw new Error(`Missing skill ${skill.context.plugin?skill.context.plugin+'/':''}${skill.name} required by ${identity}: ${folder}`);files(folder);if(skills.includes(skill.name))throw new Error(`Agent ${identity} selects multiple skills named ${skill.name}`);skills.push(skill.name);skill_sources[skill.name]=folder;skill_plugins[skill.name]={plugin:skill.context.plugin,version:skill.context.version};}
+  const merged={...inherited};for(const [key,value] of Object.entries(connections(data.connections??{}))){if(merged[key]&&canonical(merged[key])!==canonical(value))throw new Error(`Conflicting connection ${key}`);merged[key]=value;}const descriptions=Object.entries(merged).filter(([,v])=>v.description).map(([key,v])=>`### ${key} (${connectionName(key)})\n${v.description}`),toolInstructions=descriptions.length?'# Workspace tools\n\n'+descriptions.join('\n\n'):'';
+  const node:Agent={source_file:agentPath,name:agentName,qualified_name:context.plugin?`${context.plugin}/${agentName}`:agentName,plugin:context.plugin,plugin_version:context.version,mode,description:data.description as string|undefined,harness:data.harness,model:selectedModel.name!,speed:selectedModel.speed,instructions:[workspaceInstructions,toolInstructions,data.instructions].filter(Boolean).join('\n\n'),reasoning_effort:selectedModel.reasoning,skills,skill_sources,skill_plugins,connections:merged,children:Object.create(null),argument_definitions:definitions,launch:{model:{name:selectedModel.name!,reasoning:selectedModel.reasoning,speed:selectedModel.speed,sources:modelSources},arguments:launchArguments,...(route==='main'&&preset?{preset}:{}),...(route==='main'&&profileModel?{override:'preset' as const}:{}),headless:false}};nodes[route]=node;
+  for(const [alias,child] of Object.entries(mapping(data.subagents??{}))){configurationName(alias);if(typeof child==='string')throw new Error(`Child ${alias} requires an explicit agent and mode: native or process`);const binding=mapping(child);fields(binding,['agent','description','harness','model','mode']);if(typeof binding.agent!=='string')throw new Error(`Child ${alias} requires an agent name`);const childMode=binding.mode;if(childMode!=='native'&&childMode!=='process')throw new Error('Child mode must be native or process');const {agent:unused,mode:unusedMode,...childOverrides}=binding;if(childOverrides.model!==undefined)childOverrides.reasoning_effort=undefined;const childRoute=route+'/children/'+alias;node.children[alias]=childRoute;visit(binding.agent,context,[...trail,identity],childRoute,childOverrides,merged,childMode);const childNode=nodes[childRoute]!;if(childMode==='native'&&childNode.harness!==node.harness)throw new Error('Native children must use the parent harness; use mode: process for cross-harness children');if(childMode==='native'&&Object.keys(childNode.children).length)throw new Error('Nested native child definitions are not supported yet; use process mode');}
+ }
+ if(profileDefinition)visit(profileDefinition.agent,selected,[],'main');else visit(entryName,selected,[],'main');
+ const profile=selected.plugin?`${selected.plugin}/${entryName}`:entryName,cross_plugin_dependencies=[...dependencyMap].sort(([a],[b])=>a.localeCompare(b)).map(([plugin,value])=>({plugin,version:value.version,references:[...value.references].sort()}));return {nodes,profile,profile_name:entryName,profile_file:selectedProfileFile,plugin:selected.plugin,plugin_version:selected.version,namespace_root:selected.root,cross_plugin_dependencies};
 }
-function argumentDefinitions(value: unknown): Record<string,ArgumentDefinition> {
-  const result: Record<string,ArgumentDefinition>=Object.create(null);
-  for (const [key,input] of Object.entries(mapping(value))) {
-    name(key); const item=mapping(input); fields(item,['values','type','default','description']);
-    if (item.description!==undefined && typeof item.description!=='string') throw new Error(`Argument ${key} description must be text`);
-    if (item.default!==undefined && typeof item.default!=='string') throw new Error(`Argument ${key} default must be text`);
-    if (item.values!==undefined) {
-      if (item.type!==undefined) throw new Error(`Argument ${key} must use either values or type, not both`);
-      if (!Array.isArray(item.values) || !item.values.length || item.values.some(v=>typeof v!=='string') || new Set(item.values).size!==item.values.length) throw new Error(`Argument ${key} values must be a nonempty unique list of strings`);
-      if (item.default!==undefined && !item.values.includes(item.default)) throw new Error(`Argument ${key} default ${JSON.stringify(item.default)} is not accepted; accepted: ${item.values.join(', ')}`);
-      result[key]={values:item.values as string[],...(item.default===undefined?{}:{default:item.default as string}),...(item.description===undefined?{}:{description:item.description as string})};
-    } else {
-      if (item.type!=='string' && item.type!=='path') throw new Error(`Argument ${key} requires values or type: string|path`);
-      result[key]={type:item.type,...(item.default===undefined?{}:{default:item.default as string}),...(item.description===undefined?{}:{description:item.description as string})};
-    }
-  }
-  return result;
-}
-function acceptedArguments(definitions: Record<string,ArgumentDefinition>): string {
-  const entries=Object.entries(definitions).map(([key,item])=>item.values ? `${key} (${item.values.join('|')})` : `${key} (${item.type})`);
-  return entries.length ? entries.join(', ') : 'none';
-}
-function resolvedArguments(agent: string, definitions: Record<string,ArgumentDefinition>, input: unknown): Record<string,string> {
-  const result=Object.fromEntries(Object.entries(definitions).flatMap(([key,item])=>item.default===undefined?[]:[[key,item.default]]));
-  for (const [key,value] of Object.entries(mapping(input))) {
-    const item=definitions[key];
-    if (!item) throw new Error(`Agent ${agent} does not declare argument ${key}; accepted arguments: ${acceptedArguments(definitions)}`);
-    if (typeof value!=='string') throw new Error(`Agent ${agent} argument ${key} must be text; accepted arguments: ${acceptedArguments(definitions)}`);
-    if (item.values && !item.values.includes(value)) throw new Error(`Agent ${agent} argument ${key} value ${JSON.stringify(value)} is invalid; accepted: ${item.values.join(', ')}. Accepted arguments: ${acceptedArguments(definitions)}`);
-    result[key]=value;
-  }
-  return Object.fromEntries(Object.keys(definitions).flatMap(key=>Object.hasOwn(result,key)?[[key,result[key]!]]:[]));
-}
-function read(file: string) {
-  const doc=parseDocument(fs.readFileSync(file,'utf8'),{uniqueKeys:true});
-  if (doc.errors.length) throw new Error(`${file}: ${doc.errors.map(e=>e.message).join('; ')}`);
-  return mapping(doc.toJS({maxAliasCount:100}));
-}
-function agentFile(root: string, agent: string): string {
-  const candidates=[path.join(root,'agents',agent+'.md'),path.join(root,'agents',agent,'agent.yaml'),path.join(root,'agents',agent+'.yaml')];
-  const existing=candidates.filter(file=>fs.existsSync(file));
-  if (existing.length>1) throw new Error(`Ambiguous agent definition: ${agent}`);
-  return existing[0] ?? candidates[0]!;
-}
-function definition(root: string, file: string): Record<string,unknown> {
-  let body: string|undefined;
-  let data: Record<string,unknown>;
-  if (file.endsWith('.md')) {
-    const text=fs.readFileSync(file,'utf8');
-    const match=/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/.exec(text);
-    if (!match) throw new Error(`Agent Markdown requires YAML frontmatter: ${file}`);
-    const doc=parseDocument(match[1]!,{uniqueKeys:true});
-    if (doc.errors.length) throw new Error(`${file}: ${doc.errors.map(e=>e.message).join('; ')}`);
-    data=mapping(doc.toJS({maxAliasCount:100})); body=match[2]!.trim();
-    if (data.instructions!==undefined) throw new Error('Put agent instructions in the Markdown body, not frontmatter');
-  } else data=read(file);
-  const sources=['instructions','instructions_file','instructions_files'].filter(key=>data[key]!==undefined);
-  if (sources.length>1) throw new Error('Choose one instructions source: inline, instructions_file, or instructions_files');
-  const input=data.instructions_file!==undefined ? [data.instructions_file] : data.instructions_files;
-  if (input!==undefined) {
-    if (!Array.isArray(input) || !input.length || input.some(v=>typeof v!=='string' || !v.endsWith('.md'))) throw new Error('Instruction files must be a nonempty list of Markdown paths');
-    const configRoot=fs.realpathSync(root);
-    data.instructions=input.map(value=>{
-      const source=fs.realpathSync(path.resolve(path.dirname(file),value as string));
-      const relative=path.relative(configRoot,source);
-      if (relative==='..' || relative.startsWith('..'+path.sep) || path.isAbsolute(relative)) throw new Error('Instruction files must stay inside the configuration root');
-      return fs.readFileSync(source,'utf8');
-    }).join('\n\n');
-  }
-  if (body!==undefined) data.instructions=[data.instructions,body].filter(Boolean).join('\n\n');
-  delete data.instructions_file; delete data.instructions_files;
-  return data;
-}
-function connections(value: unknown): Record<string,Connection> {
-  const result: Record<string,Connection>=Object.create(null);
-  for (const [key,input] of Object.entries(mapping(value))) {
-    name(key); const item=mapping(input);
-    if (item.description!==undefined && typeof item.description!=='string') throw new Error('Connection description must be text');
-    const description=typeof item.description==='string' ? item.description.trim() : undefined;
-    if (item.type!=='mcp') throw new Error('Connection type must be mcp');
-    if (item.url!==undefined) {
-      fields(item,['type','url','auth','env_var','description']);
-      if (typeof item.url!=='string' || !['native','none','bearer_env'].includes(String(item.auth))) throw new Error('Only HTTPS MCP with auth=native, none, or bearer_env is supported');
-      const url=new URL(item.url);
-      if (url.protocol!=='https:' || !url.hostname || url.username || url.password || url.search || url.hash || /\s/.test(item.url)) throw new Error('Use an HTTPS endpoint without credentials or query parameters');
-      if (item.auth==='bearer_env') {
-        if (typeof item.env_var!=='string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(item.env_var)) throw new Error('MCP bearer_env requires env_var to name an environment variable');
-        result[key]={type:'mcp',description,url:item.url,auth:'bearer_env',env_var:item.env_var};
-      } else {
-        if (item.env_var!==undefined) throw new Error('MCP env_var requires auth: bearer_env');
-        result[key]={type:'mcp',description,url:item.url,auth:item.auth as 'native'|'none'};
-      }
-    } else {
-      fields(item,['type','command','args','env','env_vars','description']);
-      if (typeof item.command!=='string' || !item.command.trim() || /[\r\n\0]/.test(item.command)) throw new Error('Local MCP requires a command executable');
-      const args=item.args ?? [], env=mapping(item.env ?? {}), envVars=item.env_vars ?? [];
-      if (!Array.isArray(args) || args.some(v=>typeof v!=='string' || v.includes('\0'))) throw new Error('MCP args must be a list of strings');
-      const envName=(v: unknown)=>typeof v==='string' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(v);
-      if (Object.entries(env).some(([k,v])=>!envName(k) || typeof v!=='string' || v.includes('\0'))) throw new Error('MCP env must map environment names to strings');
-      if (!Array.isArray(envVars) || envVars.some(v=>!envName(v)) || new Set(envVars).size!==envVars.length) throw new Error('MCP env_vars must be unique environment names');
-      if (envVars.some(v=>Object.hasOwn(env,v))) throw new Error('MCP env and env_vars cannot overlap');
-      result[key]={type:'mcp',description,command:item.command,args,env:env as Record<string,string>,env_vars:envVars};
-    }
-  }
-  return result;
-}
-export function workspaceConfiguration(root: string, workspace: string) {
-  const ws=read(path.join(root,'workspaces',name(workspace)+'.yaml'));
-  fields(ws,['connections','instructions']);
-  if (ws.instructions!==undefined && typeof ws.instructions!=='string') throw new Error('Workspace instructions must be text');
-  return {connections:connections(ws.connections ?? {}),instructions:ws.instructions as string ?? ''};
-}
-export function resolve(root: string, agent: string, workspace?: string): Record<string,Agent> {
-  const ws=workspace ? workspaceConfiguration(root,workspace) : {connections:{},instructions:''};
-  const defaults=ws.connections, workspaceInstructions=ws.instructions;
-  const nodes: Record<string,Agent>=Object.create(null);
-  let profileModel: Record<string,unknown>|undefined, profileArguments: unknown, preset: string|undefined;
-  const profilePath=path.join(root,'profiles',name(agent)+'.yaml');
-  let entryAgent=agent;
-  if (fs.existsSync(profilePath)) {
-    const profile=read(profilePath); fields(profile,['agent','model','args']); entryAgent=name(profile.agent);
-    if (profile.model!==undefined) { profileModel=mapping(profile.model); fields(profileModel,['name','reasoning','speed']); }
-    if (profile.args!==undefined) profileArguments=profile.args;
-    if (profile.model!==undefined || profile.args!==undefined) preset=agent;
-  }
-  function visit(agentName: string, trail: string[], route: string, overrides: Record<string,unknown>={}, inherited=defaults, mode: 'native'|'process'='process') {
-    name(agentName); if (trail.includes(agentName)) throw new Error('Child-agent cycle: '+[...trail,agentName].join(' -> '));
-    const agentPath=agentFile(root,agentName);
-    const data={...definition(root,agentPath),...overrides};
-    fields(data,['harness','model','reasoning_effort','instructions','description','skills','connections','subagents','args']);
-    if (data.harness!=='claude' && data.harness!=='codex') throw new Error('harness must be claude or codex');
-    const configuredModel=typeof data.model==='string' ? {name:data.model,reasoning:data.reasoning_effort} : mapping(data.model);
-    fields(configuredModel,['name','reasoning','speed']);
-    if (typeof data.model!=='string' && data.reasoning_effort!==undefined) throw new Error('Use model.reasoning with structured models');
-    const agentModel=validateModel(data.harness,configuredModel,agentName);
-    const entryPreset=route==='main' ? profileModel : undefined;
-    const selectedModel=entryPreset ? validateModel(data.harness,{...agentModel,...entryPreset},agentName) : agentModel;
-    const modelSources={name:(entryPreset?.name!==undefined?'preset':'agent') as ModelSource,reasoning:(selectedModel.reasoning===undefined?null:(entryPreset?.reasoning!==undefined?'preset':'agent')) as ModelSource|null,speed:(selectedModel.speed===undefined?null:(entryPreset?.speed!==undefined?'preset':'agent')) as ModelSource|null};
-    const definitions=argumentDefinitions(data.args ?? {});
-    const launchArguments=route==='main' ? resolvedArguments(agentName,definitions,profileArguments ?? {}) : resolvedArguments(agentName,definitions,{});
-    for (const key of ['instructions','description','reasoning_effort']) if (data[key]!==undefined && typeof data[key]!=='string') throw new Error(`${key} must be text`);
-    const skills=data.skills ?? [];
-    if (!Array.isArray(skills) || skills.some(s=>typeof s!=='string') || new Set(skills).size!==skills.length) throw new Error('skills must be a unique list of local directory names');
-    for (const skill of skills) {
-      const folder=path.join(root,'skills',name(skill));
-      if (!fs.existsSync(path.join(folder,'SKILL.md'))) throw new Error(`Missing local skill: ${skill}`);
-      files(folder);
-    }
-    const merged={...inherited};
-    for (const [key,value] of Object.entries(connections(data.connections ?? {}))) {
-      if (merged[key] && canonical(merged[key])!==canonical(value)) throw new Error(`Conflicting connection ${key}`);
-      merged[key]=value;
-    }
-    const descriptions=Object.entries(merged).filter(([,v])=>v.description).map(([key,v])=>`### ${key} (${connectionName(key)})\n${v.description}`);
-    const toolInstructions=descriptions.length ? '# Workspace tools\n\n'+descriptions.join('\n\n') : '';
-    const node: Agent={source_file:agentPath,name:agentName,mode,description:data.description as string|undefined,harness:data.harness,model:selectedModel.name!,speed:selectedModel.speed,instructions:[workspaceInstructions,toolInstructions,data.instructions].filter(Boolean).join('\n\n'),reasoning_effort:selectedModel.reasoning,skills,connections:merged,children:Object.create(null),argument_definitions:definitions,launch:{model:{name:selectedModel.name!,reasoning:selectedModel.reasoning,speed:selectedModel.speed,sources:modelSources},arguments:launchArguments,...(route==='main'&&preset?{preset}:{}),...(route==='main'&&profileModel?{override:'preset' as const}:{}),headless:false}};
-    nodes[route]=node;
-    for (const [alias,child] of Object.entries(mapping(data.subagents ?? {}))) {
-      name(alias);
-      if (typeof child==='string') throw new Error(`Child ${alias} requires an explicit agent and mode: native or process`);
-      const binding=mapping(child);
-      fields(binding,['agent','description','harness','model','mode']);
-      const childName=name(binding.agent);
-      const childMode=binding.mode;
-      if (childMode!=='native' && childMode!=='process') throw new Error('Child mode must be native or process');
-      const {agent:unused,mode:unusedMode,...childOverrides}=binding;
-      if (childOverrides.model!==undefined) childOverrides.reasoning_effort=undefined;
-      const childRoute=route+'/children/'+alias;
-      node.children[alias]=childRoute;
-      visit(childName,[...trail,agentName],childRoute,childOverrides,merged,childMode);
-      const resolved=nodes[childRoute]!;
-      if (childMode==='native' && resolved.harness!==node.harness) throw new Error('Native children must use the parent harness; use mode: process for cross-harness children');
-      if (childMode==='native' && Object.keys(resolved.children).length) throw new Error('Nested native child definitions are not supported yet; use process mode');
-    }
-  }
-  visit(entryAgent,[],'main');
-  return nodes;
-}
-export function build(root: string, agent: string, target: string, workspace?: string): string {
-  root=fs.realpathSync(root); target=fs.realpathSync(target);
-  if (!fs.statSync(target).isDirectory()) throw new Error('Target must be a directory');
-  const nodes=resolve(root,agent,workspace);
-  const manifest: Manifest={profile:name(agent),nodes,directory:target,workspace};
-  const sources=new Map<string,{content:Buffer;mode:number}>();
-  for (const [route,node] of Object.entries(nodes)) for (const skill of node.skills) for (const input of skillFiles(path.join(root,'skills',skill),node.harness)) {
-    sources.set(path.join(route,'skills',skill,input.relative),{content:fs.readFileSync(input.source),mode:fs.statSync(input.source).mode & 0o111});
-  }
-  const runtime=fs.readFileSync(fileURLToPath(new URL('./runtime.js',import.meta.url)));
-  const digest=hash(canonical({manifest,compiler:hash(fs.readFileSync(fileURLToPath(import.meta.url))),runtime:hash(runtime),skills:[...sources].sort(([a],[b])=>a.localeCompare(b)).map(([key,v])=>[key,hash(v.content),v.mode])}));
-  const bundle=path.join(target,'.agent-farm/generated',`${name(agent)}-${workspace ?? 'none'}-${digest.slice(0,20)}`);
-  if (fs.existsSync(bundle)) { verify(bundle); return bundle; }
-  fs.mkdirSync(path.dirname(bundle),{recursive:true});
-  const staging=fs.mkdtempSync(path.join(path.dirname(bundle),'.building-'));
-  function write(relative: string, data: string|Buffer, mode=0o644) {
-    const p=path.join(staging,relative); fs.mkdirSync(path.dirname(p),{recursive:true}); fs.writeFileSync(p,data,{mode});
-  }
-  try {
-    write('runtime.mjs',runtime);
-    for (const [key,value] of sources) write(key,value.content,value.mode ? 0o755 : 0o644);
-    for (const [route,node] of Object.entries(nodes)) {
-      write(path.join(route,'agent.json'),JSON.stringify(node,null,2));
-      write(path.join(route,'instructions.md'),node.instructions ?? '');
-      if (node.harness==='claude') {
-        write(path.join(route,'.claude-plugin/plugin.json'),JSON.stringify({name:'agent-farm-'+node.name,version:'0.1.0'}));
-        write(path.join(route,'mcp.json'),JSON.stringify({mcpServers:Object.fromEntries(Object.entries(node.connections).map(([k,v])=>[connectionName(k),claudeConnection(v)]))},null,2));
-      }
-      for (const [alias,childRoute] of Object.entries(node.children)) {
-        const child=nodes[childRoute]!;
-        const prompt=[child.instructions ?? '', 'Selected skill files (read these before doing the assigned work; resolve their links relative to each skill directory):', ...child.skills.map(skill=>path.join(bundle,childRoute,'skills',skill,'SKILL.md'))].join('\n');
-        if (child.mode==='native') {
-          if (node.harness==='codex') {
-            const lines=[`name = ${JSON.stringify(alias)}`,`description = ${JSON.stringify(child.description ?? child.name)}`,`model = ${JSON.stringify(child.model)}`,`developer_instructions = ${JSON.stringify(prompt)}`];
-            if (child.reasoning_effort) lines.push(`model_reasoning_effort = ${JSON.stringify(child.reasoning_effort)}`);
-            // Do not inherit the parent's Fast setting into a different model.
-            lines.push(`service_tier = ${JSON.stringify(child.speed==='fast' ? 'fast' : 'default')}`);
-            for (const [key,value] of Object.entries(child.connections)) {
-              lines.push(`[mcp_servers.${connectionName(key)}]`);
-              for (const [field,setting] of Object.entries(codexConnection(value))) lines.push(`${field} = ${toml(setting)}`);
-            }
-            write(path.join(route,'native-agents',alias+'.toml'),lines.join('\n')+'\n');
-          } else {
-            if (canonical(child.connections)!==canonical(node.connections)) throw new Error('Native Claude children currently inherit parent connections; use process mode for different connections');
-            write(path.join(route,'native-agents',alias+'.json'),JSON.stringify({description:child.description ?? child.name,prompt,model:child.model,effort:child.reasoning_effort},null,2));
-          }
-          continue;
-        }
-        write(path.join(route,'dispatch',alias),'#!/usr/bin/env node\nimport('+JSON.stringify(pathToFileURL(path.join(bundle,'runtime.mjs')).href)+').then(m=>m.run('+JSON.stringify(bundle)+','+JSON.stringify(childRoute)+',["--exec",...process.argv.slice(2)])).catch(e=>{console.error("error:",e.message);process.exitCode=1;});\n',0o755);
-      }
-    }
-    write('manifest.json',JSON.stringify(manifest,null,2));
-    write('checksums.json',JSON.stringify(fileMap(staging),null,2));
-    try { fs.renameSync(staging,bundle); } catch (e) {
-      if (!fs.existsSync(bundle)) throw e;
-      verify(bundle);
-      if (canonical(fileMap(bundle))!==canonical(fileMap(staging))) throw e;
-    }
-  } finally { fs.rmSync(staging,{recursive:true,force:true}); }
-  return bundle;
+
+export function resolve(root:string,agent:string,workspace?:string):Record<string,Agent>{return resolveProfile(root,agent,workspace).nodes;}
+
+export function build(root:string,agent:string,target:string,workspace?:string):string{
+ root=fs.realpathSync(root);target=fs.realpathSync(target);if(!fs.statSync(target).isDirectory())throw new Error('Target must be a directory');const resolution=resolveProfile(root,agent,workspace),nodes=resolution.nodes,trace_identity=`${resolution.plugin??'local'}/${resolution.profile_name}@${resolution.plugin_version??'local'}`,manifest:Manifest={profile:resolution.profile,plugin:resolution.plugin,plugin_version:resolution.plugin_version,trace_identity,nodes,directory:target,workspace,cross_plugin_dependencies:resolution.cross_plugin_dependencies};
+ const sources=new Map<string,{content:Buffer;mode:number}>();for(const [route,node] of Object.entries(nodes))for(const skill of node.skills)for(const input of skillFiles(node.skill_sources![skill]!,node.harness))sources.set(path.join(route,'skills',skill,input.relative),{content:fs.readFileSync(input.source),mode:fs.statSync(input.source).mode&0o111});const runtime=fs.readFileSync(fileURLToPath(new URL('./runtime.js',import.meta.url))),digest=hash(canonical({manifest,compiler:hash(fs.readFileSync(fileURLToPath(import.meta.url))),runtime:hash(runtime),skills:[...sources].sort(([a],[b])=>a.localeCompare(b)).map(([key,v])=>[key,hash(v.content),v.mode])})),bundleName=(resolution.plugin?resolution.plugin+'--':'')+resolution.profile_name+'-'+(workspace??'none')+'-'+digest.slice(0,20),bundle=path.join(target,'.agent-farm/generated',bundleName);if(fs.existsSync(bundle)){verify(bundle);return bundle;}fs.mkdirSync(path.dirname(bundle),{recursive:true});const staging=fs.mkdtempSync(path.join(path.dirname(bundle),'.building-'));const write=(relative:string,data:string|Buffer,mode=0o644)=>{const p=path.join(staging,relative);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,data,{mode});};
+ try{write('runtime.mjs',runtime);for(const [key,value] of sources)write(key,value.content,value.mode?0o755:0o644);for(const [route,node] of Object.entries(nodes)){write(path.join(route,'agent.json'),JSON.stringify(node,null,2));write(path.join(route,'instructions.md'),node.instructions??'');if(node.harness==='claude'){write(path.join(route,'.claude-plugin/plugin.json'),JSON.stringify({name:'agent-farm-'+(node.plugin?node.plugin+'-':'')+node.name,version:node.plugin_version??'0.1.0'}));write(path.join(route,'mcp.json'),JSON.stringify({mcpServers:Object.fromEntries(Object.entries(node.connections).map(([k,v])=>[connectionName(k),claudeConnection(v)]))},null,2));}for(const [alias,childRoute] of Object.entries(node.children)){const child=nodes[childRoute]!,prompt=[child.instructions??'','Selected skill files (read these before doing the assigned work; resolve their links relative to each skill directory):',...child.skills.map(skill=>path.join(bundle,childRoute,'skills',skill,'SKILL.md'))].join('\n');if(child.mode==='native'){if(node.harness==='codex'){const lines=[`name = ${JSON.stringify(alias)}`,`description = ${JSON.stringify(child.description??child.name)}`,`model = ${JSON.stringify(child.model)}`,`developer_instructions = ${JSON.stringify(prompt)}`];if(child.reasoning_effort)lines.push(`model_reasoning_effort = ${JSON.stringify(child.reasoning_effort)}`);lines.push(`service_tier = ${JSON.stringify(child.speed==='fast'?'fast':'default')}`);for(const [key,value] of Object.entries(child.connections)){lines.push(`[mcp_servers.${connectionName(key)}]`);for(const [field,setting] of Object.entries(codexConnection(value)))lines.push(`${field} = ${toml(setting)}`);}write(path.join(route,'native-agents',alias+'.toml'),lines.join('\n')+'\n');}else{if(canonical(child.connections)!==canonical(node.connections))throw new Error('Native Claude children currently inherit parent connections; use process mode for different connections');write(path.join(route,'native-agents',alias+'.json'),JSON.stringify({description:child.description??child.name,prompt,model:child.model,effort:child.reasoning_effort},null,2));}continue;}write(path.join(route,'dispatch',alias),'#!/usr/bin/env node\nimport('+JSON.stringify(pathToFileURL(path.join(bundle,'runtime.mjs')).href)+').then(m=>m.run('+JSON.stringify(bundle)+','+JSON.stringify(childRoute)+',["--exec",...process.argv.slice(2)])).catch(e=>{console.error("error:",e.message);process.exitCode=1;});\n',0o755);}}
+  write('manifest.json',JSON.stringify(manifest,null,2));write('checksums.json',JSON.stringify(fileMap(staging),null,2));try{fs.renameSync(staging,bundle);}catch(e){if(!fs.existsSync(bundle))throw e;verify(bundle);if(canonical(fileMap(bundle))!==canonical(fileMap(staging)))throw e;}
+ }finally{fs.rmSync(staging,{recursive:true,force:true});}return bundle;
 }

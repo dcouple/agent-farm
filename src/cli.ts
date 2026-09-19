@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {validatePlugin,packPlugin,installPlugin} from './plugins.js';
+import {validatePlugin,packPlugin,installPlugin,listPlugins,uninstallPlugin} from './plugins.js';
 import os from 'node:os';
 import {parseArgs} from 'node:util';
 import {build} from './compiler.js';
@@ -11,6 +11,7 @@ import {loginCommand} from './mcp-auth.js';
 import {loadWorkspace,unloadWorkspace,loadedWorkspaces} from './user-workspaces.js';
 import {inspectProfile,listProfiles} from './inspect.js';
 import {loadProfile,unloadProfile,loadedProfiles,globalSkills,globalSkillWarning,saveGlobalSkills} from './user-skills.js';
+import {configurationName,loadHostSettings} from './config.js';
 
 // Interactive mode: bare command, `init [--full]`, or `help [COMMAND]`
 const rawArgs = process.argv.slice(2);
@@ -104,7 +105,7 @@ try {
       const baseUrl=values['base-url'];
       const apiKeyEnv=values['api-key-env'];
       if (!baseUrl || !apiKeyEnv) throw new Error('Provide --base-url and --api-key-env');
-      const settings={provider:{name:positionals[2],base_url:baseUrl,api_key_env:apiKeyEnv}};
+      const settings={...loadHostSettings(root),provider:{name:positionals[2],base_url:baseUrl,api_key_env:apiKeyEnv}};
       fs.mkdirSync(root,{recursive:true});
       fs.writeFileSync(settingsPath,JSON.stringify(settings,null,2)+'\n');
       console.log(`Provider saved to ${settingsPath}`);
@@ -126,7 +127,8 @@ try {
       } else console.log('No provider configured.');
     } else if (operation==='clear') {
       if (fs.existsSync(settingsPath)) {
-        fs.unlinkSync(settingsPath);
+        const settings=loadHostSettings(root);delete settings.provider;
+        if(Object.keys(settings).length)fs.writeFileSync(settingsPath,JSON.stringify(settings,null,2)+'\n');else fs.unlinkSync(settingsPath);
         console.log('Provider configuration removed. All profiles will use their native harness.');
       } else console.log('No provider to clear.');
     } else throw new Error('Use: agent-farm provider set|show|clear');
@@ -137,10 +139,15 @@ try {
     execute(launch.argv,launch.cwd,launch.env);
   } else if (positionals[0]==='plugin') {
     const operation=positionals[1];
-    if (operation==='validate' && positionals.length===3) console.log(JSON.stringify(validatePlugin(path.resolve(positionals[2]!)),null,2));
+    if (operation==='validate' && positionals.length===3) console.log(JSON.stringify(validatePlugin(path.resolve(positionals[2]!),path.resolve(values['config-root']!)),null,2));
     else if (operation==='pack' && positionals.length===4) console.log(JSON.stringify(packPlugin(path.resolve(positionals[2]!),path.resolve(positionals[3]!)).info,null,2));
-    else if (operation==='install' && (positionals.length===2 || positionals.length===3)) console.log(JSON.stringify(installPlugin(positionals[2] ? path.resolve(positionals[2]) : fileURLToPath(new URL('../plugins/dcouple',import.meta.url)),path.resolve(values['config-root']!)),null,2));
-    else throw new Error('Use: agent-farm plugin validate SOURCE | pack SOURCE OUTPUT | install [SOURCE]');
+    else if (operation==='install' && (positionals.length===2 || positionals.length===3)) {
+      const input=positionals[2],candidate=input?path.resolve(input):undefined,bundledName=input&&candidate&&!fs.existsSync(candidate)?configurationName(input,'bundled plugin name'):'dcouple',bundled=fileURLToPath(new URL('../plugins/'+bundledName,import.meta.url));
+      const source=candidate&&fs.existsSync(candidate)?candidate:bundled;if(input&&!fs.existsSync(source))throw new Error(`Plugin source or bundled plugin not found: ${input}`);
+      console.log(JSON.stringify(installPlugin(source,path.resolve(values['config-root']!)),null,2));
+    } else if(operation==='list'&&positionals.length===2)console.log(JSON.stringify(listPlugins(path.resolve(values['config-root']!)),null,2));
+    else if(operation==='uninstall'&&positionals.length===3)console.log(JSON.stringify(uninstallPlugin(positionals[2]!,path.resolve(values['config-root']!)),null,2));
+    else throw new Error('Use: agent-farm plugin validate SOURCE | pack SOURCE OUTPUT | install [SOURCE|BUNDLED-NAME] | list | uninstall NAME');
   } else if (positionals[0]==='profiles' || positionals[0]==='inspect') {
     if (positionals.length!==2 || (positionals[0]==='profiles' && positionals[1]!=='list')) throw new Error('Use: agent-farm profiles list or agent-farm inspect NAME');
     if (values.harness || values.message!==undefined || values.build || values.exec || values.explain) throw new Error('Inspection does not accept launch options');
@@ -149,7 +156,7 @@ try {
     else {
       if (values.workspace) throw new Error('Use inspect NAME --workspace NAME to inspect workspace connections');
       const profiles=listProfiles(root);
-      console.log(profiles.length ? profiles.map(p=>`${p.profile} -> ${p.agent} | ${p.harness} | ${p.model.name} ${p.model.reasoning ?? 'default'} | ${p.model.speed}`).join('\n') : 'No launch profiles found.');
+      console.log(profiles.length ? profiles.map(p=>`${p.qualified} -> ${p.agent}${p.ambiguous?' [ambiguous bare name]':''} | plugin ${p.plugin??'local'} ${p.plugin_version??'-'} | ${p.harness} | ${p.model.name} ${p.model.reasoning ?? 'default'} | ${p.model.speed}`).join('\n') : 'No launch profiles found.');
     }
   } else if (['load','unload','loaded'].includes(positionals[0] ?? '')) {
     const operation=positionals[0];
@@ -158,7 +165,7 @@ try {
     if (operation==='loaded') {
       if (values.harness) throw new Error('agent-farm loaded lists all harnesses');
       const entries=loadedProfiles();
-      console.log(entries.length ? entries.map(p=>`${p.profile} (${p.harness}): ${p.skills.map(s=>path.basename(s.destination)).join(', ') || 'no skills'}`).join('\n') : 'No profiles loaded into user skills.');
+      console.log(entries.length ? entries.map(p=>`${p.profile} [plugin ${p.plugin??'local'}] (${p.harness}): ${p.skills.map(s=>`${path.basename(s.destination)} [plugin ${s.plugin??p.plugin??'local'}]`).join(', ') || 'no skills'}`).join('\n') : 'No profiles loaded into user skills.');
     } else if (operation==='load') {
       const entry=loadProfile(path.resolve(values['config-root']!),positionals[1]!,{harness:values.harness});
       console.log(`Loaded ${entry.profile}: ${entry.skills.length} skills for ${entry.harness}. Skills only; start a fresh native session to verify discovery.`);

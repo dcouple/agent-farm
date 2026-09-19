@@ -1,14 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import {resolve} from './compiler.js';
+import {resolve,resolveProfile} from './compiler.js';
 import {stringify} from 'yaml';
 import {files,hash} from './runtime.js';
 import {userSkillSource} from './skill-layout.js';
+import {namespaces} from './config.js';
 
 type Harness = 'claude' | 'codex';
-interface Entry { source: string; destination: string }
-interface Loaded { profile: string; harness: Harness; root: string; skills: Entry[] }
+interface Entry { name:string; plugin?:string; source: string; destination: string }
+interface Loaded { profile: string; plugin?:string; plugin_version?:string; harness: Harness; root: string; skills: Entry[] }
 interface State { version: 1; profiles: Record<string,Loaded> }
 export interface UserSkillOptions { home?: string; env?: NodeJS.ProcessEnv; harness?: string }
 function harness(value: string): Harness {
@@ -45,7 +46,7 @@ export function loadedProfiles(options: UserSkillOptions={}): Loaded[] {
 }
 export function loadProfile(root: string, profile: string, options: UserSkillOptions={}): Loaded {
   root=fs.realpathSync(root);
-  const agent=resolve(root,profile).main!;
+  const resolved=resolveProfile(root,profile),agent=resolved.nodes.main!;
   const selected=harness(options.harness ?? agent.harness);
   const home=options.home ?? os.homedir(),env=options.env ?? process.env;
   const nativeHome=selected==='codex' ? env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.ORCHESTRA_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex') : env.CLAUDE_CONFIG_DIR ?? path.join(home,'.claude');
@@ -53,8 +54,8 @@ export function loadProfile(root: string, profile: string, options: UserSkillOpt
   return withState(options,(state,save)=>{
     fs.mkdirSync(directory,{recursive:true});
     const target=fs.realpathSync(directory);
-    const item: Loaded={profile,harness:selected,root,skills:agent.skills.map(skill=>({source:userSkillSource(fs.realpathSync(path.join(root,'skills',skill)),selected,home),destination:path.join(target,skill)}))};
-    const key=selected+':'+profile,previous=state.profiles[key];
+    const item: Loaded={profile:resolved.profile,plugin:resolved.plugin,plugin_version:resolved.plugin_version,harness:selected,root,skills:agent.skills.map(skill=>({name:skill,plugin:agent.skill_plugins?.[skill]?.plugin,source:userSkillSource(fs.realpathSync(agent.skill_sources![skill]!),selected,home),destination:path.join(target,skill)}))};
+    const key=selected+':'+resolved.profile,previous=state.profiles[key];
     if (previous) {
       if (JSON.stringify(previous)!==JSON.stringify(item)) throw new Error('Profile selection changed; unload the existing profile before loading it again');
       for (const entry of previous.skills) if (!owned(entry)) throw new Error(`Managed skill changed or disappeared; preserving it: ${entry.destination}`);
@@ -63,8 +64,11 @@ export function loadProfile(root: string, profile: string, options: UserSkillOpt
     const tracked=Object.values(state.profiles).flatMap(p=>p.skills);
     for (const entry of item.skills) {
       const shared=tracked.find(e=>e.destination===entry.destination);
-      if (shared && (shared.source!==entry.source || !owned(shared))) throw new Error(`Conflicting managed skill: ${entry.destination}`);
-      if (!shared && stat(entry.destination)) throw new Error(`Existing user skill will not be overwritten: ${entry.destination}`);
+      if (shared && (shared.source!==entry.source || !owned(shared))) {
+        const owner=Object.values(state.profiles).find(p=>p.skills.some(e=>e.destination===entry.destination));
+        throw new Error(`Skill ${entry.name} from plugin ${entry.plugin??resolved.plugin??'local'} conflicts with plugin ${owner?.plugin??'local'} (${owner?.profile??'unknown profile'}) at ${entry.destination}`);
+      }
+      if (!shared && stat(entry.destination)) throw new Error(`Skill ${entry.name} from plugin ${entry.plugin??resolved.plugin??'local'} conflicts with an existing user skill at ${entry.destination}; it will not be overwritten`);
     }
     const created: Entry[]=[];
     try {
@@ -82,7 +86,8 @@ export function loadProfile(root: string, profile: string, options: UserSkillOpt
 export function unloadProfile(profile: string, options: UserSkillOptions={}): Loaded[] {
   if (options.harness) harness(options.harness);
   return withState(options,(state,save)=>{
-    const matches=Object.entries(state.profiles).filter(([,p])=>p.profile===profile && (!options.harness || p.harness===options.harness));
+    let matches=Object.entries(state.profiles).filter(([,p])=>(p.profile===profile||(!profile.includes('/')&&p.profile.endsWith('/'+profile)))&&(!options.harness||p.harness===options.harness));
+    if(!profile.includes('/')&&new Set(matches.map(([,p])=>p.profile)).size>1)throw new Error(`Loaded profile ${profile} is ambiguous; use one of: ${[...new Set(matches.map(([,p])=>p.profile))].join(', ')}`);
     if (!matches.length) throw new Error(`Profile is not loaded: ${profile}`);
     const remaining=Object.entries(state.profiles).filter(([key])=>!matches.some(([remove])=>remove===key));
     const retained=new Set(remaining.flatMap(([,p])=>p.skills.map(s=>s.destination)));
@@ -187,7 +192,7 @@ export function saveGlobalSkills(root:string,profile:string,model:string,options
         if(stat(dest))throw new Error(`Destination appeared while saving: ${dest}`);
         fs.renameSync(path.join(stage,relative),dest);installed.push(dest);
       }
-      resolve(root,profile);saved=true;
+      resolveProfile(root,profile,undefined,{namespace:namespaces(root)[0]});saved=true;
       const receipt={profile,root,harness:selected,entries:entries.map((e,i)=>({from:e.destination,to:path.join(backup,String(i))}))};
       fs.writeFileSync(path.join(backup,'receipt.json'),JSON.stringify(receipt,null,2),{mode:0o600});
       for(const e of receipt.entries) {

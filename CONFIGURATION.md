@@ -23,8 +23,43 @@ skills/
 workspaces/
   my-project.yaml                 Workspace MCP connections
 instructions/                  Optional shared instruction includes
-backups/                       Local migration backups, not active definitions
+plugins/
+  dcouple/                     Installed plugin namespace
+    plugin.yaml
+    profiles/ agents/ skills/ instructions/
+.plugins/
+  dcouple.json                 Install receipt; do not edit
 ```
+
+The top-level `profiles/`, `agents/`, `skills/`, and `instructions/` directories
+are the unnamed local namespace. Each installed plugin has the same four-section
+layout under `plugins/<name>/`. A plugin source directory is also a valid config
+root, so `agent-farm run planner --config-root /path/to/plugin` remains the
+development workflow.
+
+## Plugin and profile names
+
+Use `plugin/profile` to select an installed profile unambiguously, for example
+`agent-farm run dcouple/implementer`. Qualified names contain exactly one slash;
+both components use lowercase letters, digits, `_`, and `-`, beginning with a
+letter. `run`, `inspect`, `load`, and `unload` all accept qualified names.
+
+A bare name searches the local namespace and every installed plugin. It works
+when exactly one candidate exists. If several plugins publish the name, Agent
+Farm stops and lists all qualified candidates. Set `default_plugin` in
+`settings.json` to make a bare name prefer one plugin while leaving explicit
+qualified names unchanged:
+
+```json
+{
+  "default_plugin": "roles"
+}
+```
+
+`agent-farm profiles list` prints each qualified name, plugin version, and an
+ambiguity marker. `inspect`, `--explain`, `--print-launch`, bundle manifests, and
+each bundled `agent.json` include plugin/version metadata. The trace identity is
+`plugin/profile@version`; local definitions use `local/profile@local`.
 
 ## Profiles
 
@@ -127,6 +162,15 @@ remain checksum-verified, and launches with different argument values cannot
 invalidate one another. The selected route's generated `agent.json` records the
 same resolved launch metadata as `--explain` and `--print-launch`.
 
+Within a plugin, bare profile-agent, child-agent, and skill references resolve
+only in that plugin, regardless of what else is installed. A child may explicitly
+use another plugin (`agent: dcouple/socrates`), and a skill entry may do the same
+(`dcouple/review`). Missing dependencies fail validation and launch with the
+plugin name; `inspect` records resolved cross-plugin dependencies. Cycles,
+connection merging, native-child harness matching, and the one-level native-child
+limit apply across namespace boundaries. Instruction paths stay inside the
+plugin that owns the agent (or the config root for local agents).
+
 ## Skills
 
 `SKILL.md` frontmatter provides the skill name and description; its body defines
@@ -152,7 +196,8 @@ filename; it does not reinterpret policy or infer a Claude equivalent.
 ## Prepared launches and native arguments
 
 `--print-launch` prints JSON containing `argv` (including `argv[0]`), `cwd`,
-`bundle`, `env`, and `launch`; `env` contains only Agent Farm's own overrides, never
+`bundle`, `env`, `launch`, profile/plugin/version, trace identity, and
+cross-plugin dependencies; `env` contains only Agent Farm's own overrides, never
 inherited values. Native arguments go after `--` or through repeatable
 `--native-arg` options, precede the message, and replace the default headless
 flags when supplied. Consumers spawn the printed `argv` verbatim and must not
@@ -252,6 +297,13 @@ Existing file edits remain live. After adding/removing files or renaming a
 metadata path, unload all profiles sharing that skill and load them again.
 Unloading removes owned user-skill links, not source files or cached layouts.
 
+Claude and Codex user skill directories are global. Agent Farm therefore refuses
+to load a same-named skill from a different plugin instead of renaming or
+overwriting it. The error names the skill and both plugin owners. `agent-farm
+loaded` shows the owning plugin for every profile and skill. This conservative
+rule is portable across the harnesses: Codex documents duplicate frontmatter
+names as separate entries, while Claude documents name-based override precedence.
+
 Native global installs should use `agent-farm load`, rather than directly copying
 the authoring directory, so the required metadata filename is generated.
 
@@ -278,7 +330,8 @@ belongs with the configuration package that uses it.
 
 ## Inspection and compatibility names
 
-`agent-farm profiles list` displays each entry point's resolved model settings.
+`agent-farm profiles list` displays each entry point's qualified name, plugin and
+version, ambiguity status, and resolved model settings.
 `agent-farm inspect PROFILE --workspace WORKSPACE` returns the full resolved
 configuration graph and source paths without generating output. It reports
 configured MCP endpoints, not credentials or a live connection status. It also
