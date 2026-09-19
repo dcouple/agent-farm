@@ -52,6 +52,9 @@ checksums:
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
   agents/sw-baseline-raw.md: 8781c53d5e05b4d28e18d74e48e7db082b143d3aaa7532935c8d0ef76a2fca9d
+  agents/sw-fable-loop.md: 407142415e4c662388f3c36bb7db0f854b7e15eacfd917260989171b6d4e961a
+  agents/sw-fable-raw.md: d31ee20e3083000d102f292e9877eabfc4f95f2dc70094353ddd688285cff84c
+  agents/sw-fable-solo.md: 451a21c1bff66b3b39914bdef851027bb569a5403cc0ae78acc198b8c3d86748
   agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
   agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
   agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
@@ -79,6 +82,9 @@ checksums:
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   profiles/sw-baseline-raw.yaml: 92fd14cff370d2a36a9f4e297b2001e65a62cbd5a347d9dd5a199b5c5f272b68
+  profiles/sw-fable-loop.yaml: b1f9cdb09fb359cf2730915ebbb7dbe4f976d52b4c742c92f334d3a6e5d9a228
+  profiles/sw-fable-raw.yaml: bdd90b095b3b36c737cdde7373dfb4c845f79858e4a10c0d4afa8c40433abb16
+  profiles/sw-fable-solo.yaml: a398b1e83976d35e7477fd8c4dc956e429b8f675308903d866f277230d9b69f0
   profiles/sw-fast-implementer.yaml: 7ab3c22a35e50049d0fe3f9b1cbebcc87cd98d14e144478d29916445d0883907
   profiles/sw-flash-implementer.yaml: a6b9109ab2369d6de273a51d34ecb7b235489d2e2ef21f41e616870950f09b23
   profiles/sw-frontier-planner.yaml: a5a90ea00f4de7c4206fbca861a9870e3df8091441f7fb6b620b30fdb7413fb4
