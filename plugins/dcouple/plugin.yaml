@@ -52,11 +52,19 @@ checksums:
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
   agents/sw-baseline-raw.md: 8781c53d5e05b4d28e18d74e48e7db082b143d3aaa7532935c8d0ef76a2fca9d
+  agents/sw-deepseek-astra-loop.md: 6735feff61426c9ba8c156e103b4e6511007ce831138e1d1e21545526d4ee7ec
+  agents/sw-fable-loop-v2.md: fb855354a639ea9df9e1dc009375585378f8121d4073359a2aca057691f0eb54
+  agents/sw-fable-raw-v3.md: 048b87a822751b79a364259f4157e6b9b7f227f5deccedbc8036d69cf16dfb8e
+  agents/sw-fable-solo-v2.md: f40cc8f45b2219aea03861f0c5fe3b3a7ca1c84a66b9ff2f244a57f8a6600ef4
+  agents/sw-fable-solo-v3.md: 175e70530deaabb31491bf34258217a64a22a13e45ad181bc65a6aa7cd092ff8
   agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
   agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
   agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
+  agents/sw-luna-astra-loop.md: 307d0b497eab11e6955494665fc3e11e93e01c84acb31cca97d2aff67a3d6779
   agents/sw-luna-implementer.md: 9a80916bdd078f8fc56fe8ccf65bf32b51308ac9c6174a659435d9d556955a2a
   agents/sw-luna-orchestra.md: 7087f02632228b94dbb28af1bdb6429085df378b092a6259e3ecd8ab53102f50
+  agents/sw-luna-raw.md: 8ed1503930cef4565ae568d2adb41c1848e081b25b0e0fa7ed39e120c866da55
+  agents/sw-luna-tdd-loop.md: de6d0e5894596c477a7e2ba8e296310736f81bd21c5e1bea82dac03871de903e
   agents/sw-opus46-loop.md: 65b6f43c5b6cdd25c807cfcc6782eed60aed825ddd1856bb0ed9cd4c8bef99e1
   agents/worker.md: b92adc8ea7d4a798898203eda4eb5600abf45ebce2f4786820bf339439149a96
   profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
@@ -79,11 +87,19 @@ checksums:
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   profiles/sw-baseline-raw.yaml: 92fd14cff370d2a36a9f4e297b2001e65a62cbd5a347d9dd5a199b5c5f272b68
+  profiles/sw-deepseek-astra-loop.yaml: c9817ee3b3e2fa27aacf1e6c3f5c08880d8e180843da9d3d53acfef0c0ad90bd
+  profiles/sw-fable-loop-v2.yaml: 0d0308e24ab1339210a15bc3ac4cc0afc6bd8db0e5cea9ea27243741bcc61b48
+  profiles/sw-fable-raw-v3.yaml: 3442dde3bd77fb77947cdcc67b9de47821a88c9926d9ee1d74f4e37ab44e6f76
+  profiles/sw-fable-solo-v2.yaml: 2cede3f41cfa5ae7948f8512bc2467a21be4b2d3c2a1172ea3230685ee0a9f01
+  profiles/sw-fable-solo-v3.yaml: 2b116a5b5b6006cc068318e293d8ddae771a7b176a85e60b13cee7b75adf4c9d
   profiles/sw-fast-implementer.yaml: 7ab3c22a35e50049d0fe3f9b1cbebcc87cd98d14e144478d29916445d0883907
   profiles/sw-flash-implementer.yaml: a6b9109ab2369d6de273a51d34ecb7b235489d2e2ef21f41e616870950f09b23
   profiles/sw-frontier-planner.yaml: a5a90ea00f4de7c4206fbca861a9870e3df8091441f7fb6b620b30fdb7413fb4
   profiles/sw-luna-implementer.yaml: 3b05436e88badc0704bca01535746900ac3d4527bae62001b716ab3d07e1a29c
   profiles/sw-luna-orchestra.yaml: 20268d0de794b244a35b01846470ce71aa00b576f5d31dfe16b4e3f9b73ad261
+  profiles/sw-luna-astra-loop.yaml: b957dc799c88e82feaa6afbdcd1fd414c49c2f324768e16b733faf0fc9644869
+  profiles/sw-luna-raw.yaml: 94c8a3dda0ee0feab39acbb8508bff4b90b48cbf81c3ecb9c969a2a31abd2479
+  profiles/sw-luna-tdd-loop.yaml: 206fe2d470aae0bcda08b05eac3c9bd984b5bec6c6b834c53ed9451897de667c
   profiles/sw-opus46-loop.yaml: 41b69b63c969ef4e837927ac4545cf51c957088932bb04ea14b3a187b4e51fee
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
