@@ -35,10 +35,10 @@ checksums:
   agents/exp8-glm-auditor.md: ba90ba993a0d16fd5ac0c5c4bf43d9bb31762cbe75ff1ad74862e19e946b5d9f
   agents/exp8-glm-deepseek-loop.md: 4649d55181feb017d61100660bb520479dd6ce8c1174c864a81c541f756e7268
   agents/exp9-meta-orchestrator.md: 66b0ad3a23d558106e190b9369ef2ea39c9003c178b3e9ce4eb65a4a2190bcd2
-  agents/fx-deepseek-claude-raw.md: ef73476e38a18795a0374c380b943a0dcf04e2f99e33c0002e37e27cb0cbe931
+  agents/fx-deepseek-claude-raw.md: 34bf5125a9dc9407f8fdacc5e60a1d430f33f566f1a66cf81a68ad893c54d14e
   agents/fx-glm-claude-raw.md: ac5b6b063eb0db4c750a3da211642f62bd69e83d5705a50ae2f816b879dd5fad
-  agents/hx-deepseek-claude.md: ce6375997a4f7557b3f1f8c34f09d3f430aa159355f3be4cf3abc3f03039edc3
-  agents/hx-glm-claude.md: 7e777390ede1f6d22fccd6813d7ce97042365bd0a6aa09505737da895ec004f2
+  agents/hx-deepseek-claude.md: f3a74c7d3676295690c4e2d60d656533d729bc32b34dfbf1c8dab6dcb8202fd4
+  agents/hx-glm-claude.md: fd3b8741b8d5ddeb32cc6fdc845841ee7a09988d4758f3657dbdae93afa083f2
   agents/implementation-reviewer.md: 6dd4e83019c90b58da949a85cff7896203e6bce93905bd4a1fd676e87dad6add
   agents/implementer.md: af8b9cdb1f1efe3b5892bde3b052e56200c29f217975ee3d20f601b4ac1653f5
   agents/integration-reviewer.md: d0e9728efcee1a803d3be09625c400861fd20671b5c8160ab816bf988b5ecd0c
@@ -54,7 +54,7 @@ checksums:
   agents/rv-astra-low.md: eb971f066281d297619417507c0f5829339ac53f5414a73edde0f580375b705d
   agents/rv-astra-medium.md: 1b5056bafbe1bd740a0cc3a46f99f22c6382b5bb0f09f714439f20f00e1a9e49
   agents/rv-deepseek-claude.md: 2a67ac1309acf2ad9b7a8579d61f848f0b5ec902f129d613b520e4fa1a052af1
-  agents/rv-glm-claude.md: 9b4f75c0b26260fe86de31a4d4c7db99f5dff74965d36650aa44fb1557b73c20
+  agents/rv-glm-claude.md: c4da3c32b7f596caf96a11b07333f0da16baa7ca8abaccd054ebaef2fe7710a4
   agents/rv-glm-targeted.md: d8c386d7e2cfa7b2f6bc7f4f9d12e4086497512eff678e5053a119b7795a9a13
   agents/rv-luna-max.md: d19b046dde7743c55b5c81c894ed5569aba373f2e6dd5741c25ad473be42fc48
   agents/rv-terra-high.md: 9208e942476ac4d7948ab3ea7bf59efed74481a0e24501d1275369a4b33f1c5d
@@ -65,7 +65,7 @@ checksums:
   agents/scan-luna-worker.md: e6ee14013ec87384a247d01a0589c8b8e1480b9fb8700ee0650f866adbe93dcb
   agents/scan-orchestra-terra.md: 33c34d84688a7e8b7df94db17e1c490ad5758252344fcbe4ea55d812a592ce9b
   agents/scan-orchestra.md: 9855b0e822ea8c8c13ed678b5ae9f88cc516ba00e7e6f4d6b9e29eb80bae5e3d
-  agents/scan-reconciler.md: 6f9e0802d7e53e6749f7fd828011d8788218358cec273bd407725f36a647ed2a
+  agents/scan-reconciler.md: 894f3e49dbbcaf31aebf65988b65651036b83ab8aea52984e5542a691ca906da
   agents/scan-terra-worker.md: c1e6622c24ef74bedefedcf9d44c61009eb630d5522ea0a43c8c1cd75bfc72d0
   agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
@@ -74,27 +74,27 @@ checksums:
   agents/sw-astra-low.md: 81d529ebfe215811e4ead08cc07d1bddc81d53f5c85207959cc6452857b620c2
   agents/sw-astra-medium.md: 8ee2f9ec26a6b173932412e0120f4e4a90d9a05dd9ab609cceb75bc0658b803c
   agents/sw-astra-merge-low.md: b5131204a34f4036ca5d3bd81f61841269a1176689e243cd4e225b5a98d99289
-  agents/sw-astra-orch-luna.md: 9406beb977273788b5dae8d80925d5f51770128d88190f32698aad0c8eab94ad
+  agents/sw-astra-orch-luna.md: 81fecac613d4d2082f4f9f1b55d2910dc5a74093c6608a7a584ae02844ae473f
   agents/sw-baseline-raw.md: ae1d1a12b19140f29936dad215dd4457cf3490787bbb8aee373e4f3279bb972e
   agents/sw-deepseek-astra-loop.md: 6735feff61426c9ba8c156e103b4e6511007ce831138e1d1e21545526d4ee7ec
   agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
   agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
   agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
-  agents/sw-luna-astra-loop.md: 724f0c6ec9bee1b885504904df76f069c26ec9f542fb28365df27f8c3e983b23
+  agents/sw-luna-astra-loop.md: 8cb45150010b6e34865c98bb0b4056fcf8db9ae8474a15b453836ccb28eef60a
   agents/sw-luna-high.md: 123d4e0a36005a6d86a18c08442cb2a195f9e219bb31ff9021e50b34e812c829
-  agents/sw-luna-implementer.md: aa1b90ed71143af849b42f117423ab5e7c85213b145cea8aedab1e9f42ef7e79
+  agents/sw-luna-implementer.md: 227e26c80ec7ad547862868fd1ba0b93d405a4438d2c858c742bc35532c610a4
   agents/sw-luna-max-worker.md: a2727228f9ee4ef6a42d1fdad40c178710a1139fec1ebff874dca3ff31a84f95
-  agents/sw-luna-orchestra.md: 1a0fd011b285649090ffbeb324bb574cf939a726574ee97b1aec5c7875426373
+  agents/sw-luna-orchestra.md: 0e4de9315856f18c90bf8c7946c1595a91b2b12f1d46ab34f4f4f0f0ce4df181
   agents/sw-luna-raw.md: f60262ea31ef3ae17f89ecd321a24aa76424afe057b9efe26d17bde75d33a030
-  agents/sw-luna-tdd-loop.md: 459f7c230c363a1ed3f1de9b35c3a082b793bf95fe51ae8985c083308cf8aeee
+  agents/sw-luna-tdd-loop.md: 81715489e20a9f567bdd59c1f7ef723bb7d0f59970d51e46766cd52342f3bd75
   agents/sw-opus46-loop.md: 65b6f43c5b6cdd25c807cfcc6782eed60aed825ddd1856bb0ed9cd4c8bef99e1
   agents/sw-sol-high.md: bfead52b8a0bee12fbfb33f164c22021fb462299dbede3ce754116df5a6f13cb
-  agents/sw-sol-max.md: 211cf8384402ce7b63ca5d0689e0e21fd3fe6d684d75faa117d825fa7c4efc89
+  agents/sw-sol-max.md: 9f81d357dc106540cfb911842c7eb91b1a3f8400394702f59f774769637e367e
   agents/sw-terra-high.md: ff259d8e0ad10dd98883e68c6cc623595fdb7d266b75d8198841c99d9926a91e
   agents/sw-terra-raw.md: f2dd60dfc557d5fd13f3936b6da82e9075a8a09a87cfba6106f6444024df90e2
-  agents/sweep-bugs-flash.md: ee87ecb1c581d0eff930937950a33fc27151ad92987a7e4a9f3405d1179d2b9a
+  agents/sweep-bugs-flash.md: 46f5ca5977919c525b895ff418032a7e08639a5c07e99c82769a86df45515585
   agents/sweep-bugs-terra.md: 0a6678e9c18da94f8bb859d6718ded8b98d3ade145f68b936335176643f8a840
-  agents/sweep-sec-flash.md: a5358c0f823f5a5a2f08d2591eccc782da586dfc413df88236edb57ae205f621
+  agents/sweep-sec-flash.md: 943c017f67df9aa3d8c1ca03e22590627991e4b3d8f6e661b27957ae0bd212a9
   agents/tri-a-deepseek-write.md: fa87565d87c0228dbc7e9767f154ef96bdc0378b67f7b16e51fe60e72478ca17
   agents/tri-b-luna-write.md: 31c96f3d8c48f330e31e9367280171dce49eff19d52a7a97082a04b36db7a191
   agents/tri-c-glm-write.md: 27aaef60ca541b941c7544cb7638bdc3b3c39be13aba4bd1ba7800e95c59fd6f

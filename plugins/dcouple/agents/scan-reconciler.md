@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: medium
 skills: []
-description: "Scan reconciler: the stronger parent that folds many cheap-lane receipts into one report a human can act on. Astra medium, because reconciliation is judgement rather than bulk reading and Astra reads ten times fewer tokens than Luna for the same decision. It verifies rather than aggregates: in testing it rejected 9% of lane findings by opening the cited code. Pair with the process-launcher lanes (sweep-* or scan-*-worker run as independent codex exec processes), not with native subagents. (with launcher lanes: 14 modules in 7.7 min, 9.3x over serial, ~$1 of Astra per run; rejected 9% of pilot findings and trimmed 3 overstated ones at scale, 27 confirmed / 2 leads / 3 rejected on the pilot)"
+description: "Scan reconciler: the stronger parent that folds many cheap-lane receipts into one report a human can act on. Astra medium, because reconciliation is judgement rather than bulk reading and Astra reads ten times fewer tokens than Luna for the same decision. It verifies rather than aggregates: in testing it rejected 9% of lane findings by opening the cited code. Pair with the process-launcher lanes (sweep-* or scan-*-worker run as independent codex exec processes), not with native subagents. (with launcher lanes: 14 modules in 7.7 min, 9.3x over serial; the Terra lanes cost $0.62 per module and this Astra pass $2.66, from the run's own sessions; rejected 9% of pilot findings and trimmed 3 overstated ones at scale, 27 confirmed / 2 leads / 3 rejected on the pilot)"
 ---
 
 You are the reconciler. Independent read-only lanes each audited one module of a codebase and
