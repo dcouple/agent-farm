@@ -330,8 +330,14 @@ agent-farm traces --directory /path/to/telemetry --scope machine
 
 The UI binds only to `127.0.0.1`, uses a random URL token, and validates Host and
 Origin. It starts no collection, offers no write endpoints, and stops with
-Ctrl-C. It lists and filters sessions, refreshes the list every five seconds, and
-shows launch metadata, spans with relative-duration bars, and events. The URL is
+Ctrl-C. A persistent, searchable session sidebar opens a conversation reader on
+the right. Session links support browser Back/Forward and direct linking; Previous
+and Next move between loaded sessions. Earlier model requests and context are
+collapsed, while the newest request opens with separate instructions, input/context,
+and output sections. Request timing, input/output/cache tokens, and reported cost
+appear beside the content. The list refreshes every five seconds; use Refresh to
+update an open conversation. Timeline & events and Session details keep the raw
+evidence accessible. The URL is
 a local bearer capability: do not share it. `--port` optionally chooses a port.
 The default scope is the current project and the store follows trusted workspace
 settings; `--directory` explicitly selects a store without loading the workspace.
@@ -351,11 +357,48 @@ are not summed across potentially overlapping spans. Missing completion is shown
 as `unfinished`, never assumed to mean running or successful. Metrics remain in
 the raw OTLP files; metric aggregation is not exposed yet.
 
+### Conversation content capture
+
+Conversation text is **off by default**. To record it for future sessions, explicitly
+set this in host settings, a trusted workspace, or a personal overlay:
+
+```yaml
+telemetry:
+  capture_content: true
+```
+
+This can record sensitive system instructions, user messages, earlier conversation
+history, tool inputs/results, and model output. Anyone with access to the local
+files or the allowed telemetry tools can read captured content. Setting it back to
+`false` affects future launches, not already-recorded data. Capture is independent
+of agent-access policy; collection must be enabled. No settings are changed by
+opening the viewer.
+
+For Claude, capture enables inline request/response-body events and native content
+gates, with a 262,144-character harness limit. The reader joins bodies by exact
+request/body identifiers, separates harness context from user text, and deduplicates
+request spans and usage events. It does not load arbitrary `body_ref` paths.
+Extended-thinking blocks are not displayed. See the
+[native event and privacy documentation](https://code.claude.com/docs/en/monitoring-usage).
+For Codex, capture enables native user-prompt logging; a complete context/output
+transcript is **not guaranteed** by its OTEL exporter. Standard gen-AI message
+attributes are rendered when present. There is no stdout interception or scraping
+of native transcript files.
+
+Old redacted sessions show “not captured”; missing prices show “not reported”, not
+zero. Costs are harness-reported values, not invoices or estimates based on a
+hardcoded price table. Request totals are deduplicated by native session/request
+identity; partial cost coverage and scan warnings remain visible. The reader pages
+five requests at a time, bounds displayed content to 96,000 characters per request
+(24,000 per section), and marks truncation. Uncorrelated captured bodies are shown
+separately, not assigned to an output by timestamp guessing.
+
 ### Workspace telemetry settings
 
 The same optional `telemetry` block is accepted in a repository's
 `.agent-farm/workspace.yaml`, the personal fallback `<config-root>/workspace.yaml`,
-and personal overlays. It supports `enabled` (boolean) and `directory` (absolute
+and personal overlays. It supports `enabled` and `capture_content` (booleans),
+`agent_access` (the policy above), and `directory` (absolute
 path), with either field omitted to inherit its value. Unknown fields, inline
 credentials, and remote endpoint/exporter settings are rejected.
 
@@ -420,10 +463,11 @@ is enabled; inherited OTLP destinations/headers are cleared in the child.
 Prompt/instruction text and arbitrary native argument values are omitted from
 launch telemetry. Declared arguments with secret- or content-related names are
 redacted; other declared values are recorded, so do not put secrets in innocently
-named arguments. Native prompt/tool-content logging is disabled, but received
+named arguments. Native prompt/tool-content logging is disabled by default, but received
 native events can still contain sensitive metadata such as tool errors and paths.
 The collector preserves those payloads rather than claiming full content
-sanitization. No transcripts or stdout/stderr are captured. There is no automatic
+sanitization. Opt-in `capture_content` includes native conversation payloads as
+described above; stdout/stderr are never intercepted. There is no automatic
 retention policy yet; remove completed session directories when no longer needed.
 
 ## Host provider target

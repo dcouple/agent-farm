@@ -243,13 +243,14 @@ export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv,
 }
 export interface LaunchOptions { headless?: boolean; nativeArgs?: string[]; message?: string; prepare?: boolean; env?: NodeJS.ProcessEnv; home?: string; configRoot?: string; model?: string; reasoning?: string; speed?: string; args?: string[] }
 export interface AgentTelemetryAccess {enabled?:boolean;scope?:'project'|'machine';profiles?:string[]}
-export interface TelemetrySettings {enabled?:boolean;directory?:string;agent_access?:AgentTelemetryAccess}
+export interface TelemetrySettings {enabled?:boolean;directory?:string;capture_content?:boolean;agent_access?:AgentTelemetryAccess}
 export function validateTelemetry(value:unknown,host=false):TelemetrySettings|undefined {
   if(value===undefined)return;
   const fail=()=>new Error('Telemetry supports enabled (boolean), directory (absolute path), and agent_access (enabled, scope, profiles)');
   if(!value || typeof value!=='object' || Array.isArray(value))throw fail();
   const data=value as Record<string,unknown>;
-  if(Object.keys(data).some(key=>!['enabled','directory','agent_access'].includes(key)))throw fail();
+  if(Object.keys(data).some(key=>!['enabled','directory','capture_content','agent_access'].includes(key)))throw fail();
+  if(data.capture_content!==undefined&&typeof data.capture_content!=='boolean')throw new Error('telemetry.capture_content must be boolean');
   if(data.enabled!==undefined && typeof data.enabled!=='boolean')throw fail();
   if(data.directory!==undefined && (typeof data.directory!=='string' || !path.isAbsolute(data.directory) || data.directory.includes('\0')))throw fail();
   let access:AgentTelemetryAccess|undefined;
@@ -261,7 +262,7 @@ export function validateTelemetry(value:unknown,host=false):TelemetrySettings|un
     if(a.profiles!==undefined&&(!Array.isArray(a.profiles)||a.profiles.some(p=>typeof p!=='string'||!/^(?:[a-z][a-z0-9_-]{0,63}\/)?[a-z][a-z0-9_-]{0,63}$/.test(p))||new Set(a.profiles).size!==a.profiles.length))throw new Error('agent_access.profiles must be a unique list of exact resolved profile names');
     access={...(a.enabled===undefined?{}:{enabled:a.enabled as boolean}),...(a.scope===undefined?{}:{scope:a.scope as 'project'|'machine'}),...(a.profiles===undefined?{}:{profiles:a.profiles as string[]})};
   }
-  return {...(data.enabled===undefined?{}:{enabled:data.enabled as boolean}),...(data.directory===undefined?{}:{directory:data.directory as string}),...(access===undefined?{}:{agent_access:access})};
+  return {...(data.enabled===undefined?{}:{enabled:data.enabled as boolean}),...(data.directory===undefined?{}:{directory:data.directory as string}),...(data.capture_content===undefined?{}:{capture_content:data.capture_content as boolean}),...(access===undefined?{}:{agent_access:access})};
 }
 export function mergeTelemetry(base?:TelemetrySettings,patch?:TelemetrySettings):TelemetrySettings|undefined {
   if(base===undefined&&patch===undefined)return;
@@ -279,7 +280,7 @@ export function resolveTelemetry(root:string, workspace?:TelemetrySettings, env:
   // Workspace values are the resolved repository + personal overlay snapshot.
   const value=mergeTelemetry(validateTelemetry(host,true),validateTelemetry(workspace))??{};
   if (env.AGENT_FARM_TELEMETRY!==undefined && !['on','off'].includes(env.AGENT_FARM_TELEMETRY)) throw new Error('AGENT_FARM_TELEMETRY must be on or off');
-  return {enabled:env.AGENT_FARM_TELEMETRY ? env.AGENT_FARM_TELEMETRY==='on' : value.enabled ?? true,directory:value.directory ?? path.join(home,'.local/state/agent-farm/telemetry'),...(value.agent_access===undefined?{}:{agent_access:{enabled:false,scope:'project' as const,...value.agent_access}})};
+  return {enabled:env.AGENT_FARM_TELEMETRY ? env.AGENT_FARM_TELEMETRY==='on' : value.enabled ?? true,directory:value.directory ?? path.join(home,'.local/state/agent-farm/telemetry'),...(value.capture_content===undefined?{}:{capture_content:value.capture_content}),...(value.agent_access===undefined?{}:{agent_access:{enabled:false,scope:'project' as const,...value.agent_access}})};
 }
 export function command(bundle: string, route: string, options: LaunchOptions = {}) {
   const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
@@ -350,7 +351,7 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
   if (telemetry.enabled) {
     // The receiver starts only when this command executes, including when a
     // consumer spawns --print-launch output. No ports or session IDs at build time.
-    const descriptor={directory:telemetry.directory,bundle,route,harness:agent.harness,launch};
+    const descriptor={directory:telemetry.directory,bundle,route,harness:agent.harness,launch,captureContent:telemetry.capture_content===true};
     argv=[process.execPath,path.join(bundle,'telemetry.mjs'),JSON.stringify(descriptor),'--',...argv];
   }
   return {argv,env,envOverrides,cwd:manifest.directory,launch,telemetry,telemetry_access:access};

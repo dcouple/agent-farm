@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {normalizeConversation} from './telemetry-conversation.js';
 
 export type QueryScope='project'|'machine';
 export interface QueryOptions {directory:string;projectDirectory:string;scope:QueryScope;currentSession?:string}
@@ -155,6 +156,14 @@ export class TelemetryStore {
     }}finally{stream.destroy();}
     if(buffer.trim()){partial=true;warnings.push('An incomplete or unscanned final record was omitted.');}
     return {rows,warnings,partial};
+  }
+  async conversation(input:unknown={}) {
+    if(!object(input)||Object.keys(input).some(k=>!['session_id','cursor','limit'].includes(k)))throw new Error('Invalid conversation arguments');
+    const args=argumentsFor('query_spans',input),id=this.sessionId(args.session_id);
+    try{this.read(id);}catch{throw new Error('Session not found in configured scope or unreadable');}
+    const [spans,events]=await Promise.all([this.rows(id,'traces'),this.rows(id,'logs')]);
+    const normalized=normalizeConversation(spans.rows,events.rows),offset=Number(args.cursor??0),limit=Math.min(args.limit??5,5);
+    return {session_id:id,summary:normalized.summary,turns:normalized.turns.slice(offset,offset+limit),total:normalized.turns.length,next_cursor:offset+limit<normalized.turns.length?String(offset+limit):null,partial:spans.partial||events.partial,warnings:[...new Set([...spans.warnings,...events.warnings])]};
   }
   async query(name:string,input:unknown={}) {
     const a=argumentsFor(name,input),limit=a.limit??25,offset=Number(a.cursor??0);

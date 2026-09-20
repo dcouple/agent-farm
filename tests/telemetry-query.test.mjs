@@ -39,6 +39,8 @@ test('queries enforce scope, validate IDs/arguments, paginate, and distinguish u
   data=await f.store.query('summarize_sessions',{});assert.equal(data.success,1);assert.equal(data.unfinished,1);assert.equal(data.total_duration_ms,1000);
   await assert.rejects(f.store.query('get_session',{session_id:foreign.id}),/not found/);
   await assert.rejects(f.store.query('query_spans',{session_id:foreign.id}),/not found/);
+  await assert.rejects(f.store.conversation({session_id:foreign.id}),/not found/);
+  await assert.rejects(f.store.conversation({session_id:a.id,cursor:'-1'}),/Invalid/);
   for(const args of [{session_id:'../secret'},{session_id:a.id,directory:other},{session_id:'current'}])await assert.rejects(f.store.query('get_session',args));
   for(const args of [{limit:101},{limit:1.5},{cursor:'-1'},{from:'bogus'},{from:'2025-01-01',to:'2024-01-01'}])await assert.rejects(f.store.query('list_sessions',args));
   assert.equal((await new TelemetryStore({...f.options,scope:'machine'}).query('list_sessions')).total_matching,3);
@@ -74,12 +76,14 @@ test('stdio MCP negotiates, lists tools, reports tool errors, and emits only pro
 test('local UI requires its secret URL, validates origin, and serves scoped read-only queries',async t=>{
   const f=fixture(t),s=f.session(),ui=await startTelemetryUI(f.options);t.after(()=>new Promise(resolve=>ui.server.close(resolve)));
   assert.equal(ui.server.address().address,'127.0.0.1');
-  const page=await fetch(ui.url);assert.equal(page.status,200);assert.match(page.headers.get('content-security-policy'),/frame-ancestors 'none'/);assert.match(await page.text(),/Agent Farm traces/);
+  const page=await fetch(ui.url);assert.equal(page.status,200);assert.match(page.headers.get('content-security-policy'),/frame-ancestors 'none'/);assert.match(await page.text(),/Agent Farm · Sessions/);
   assert.equal((await fetch(new URL('/',ui.url))).status,404);
   assert.equal((await fetch(ui.url,{headers:{Origin:'https://evil.example'}})).status,403);
   assert.equal((await fetch(ui.url,{method:'POST'})).status,405);
   assert.equal(await new Promise((resolve,reject)=>{http.get(new URL(ui.url).origin,{path:'//['},res=>{res.resume();resolve(res.statusCode);}).on('error',reject);}),400);
   const data=await (await fetch(ui.url+'api/list_sessions')).json();assert.equal(data.items[0].id,s.id);
+  const conversation=await (await fetch(ui.url+'api/conversation?args='+encodeURIComponent(JSON.stringify({session_id:s.id})))).json();assert.equal(conversation.session_id,s.id);assert.equal(conversation.summary.cost_usd,null);
+  assert.equal((await fetch(ui.url+'api/conversation?args='+encodeURIComponent(JSON.stringify({session_id:s.id,directory:'/'})))).status,400);
   const script=await (await fetch(ui.url+'app.js')).text();assert.ok(!script.includes('innerHTML'));assert.match(script,/textContent/);new Script(script);
   assert.equal((await fetch(ui.url+'api/get_session?args='+encodeURIComponent(JSON.stringify({session_id:s.id,directory:'/'})))).status,400);
 });

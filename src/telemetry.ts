@@ -10,7 +10,7 @@ import {fileURLToPath} from 'node:url';
 import type {LaunchMetadata,Manifest} from './runtime.js';
 import {telemetryProject} from './telemetry-query.js';
 
-interface Descriptor {directory:string;bundle:string;route:string;harness:'claude'|'codex';launch:LaunchMetadata}
+interface Descriptor {directory:string;bundle:string;route:string;harness:'claude'|'codex';launch:LaunchMetadata;captureContent?:boolean}
 type Attribute = {key:string;value:Record<string,unknown>};
 const attributes=(values:Record<string,unknown>):Attribute[]=>Object.entries(values).filter(([,v])=>v!==undefined).map(([key,value])=>({key,value:typeof value==='boolean'?{boolValue:value}:typeof value==='number'?{intValue:String(value)}:Array.isArray(value)?{arrayValue:{values:value.map(v=>({stringValue:String(v)}))}}:{stringValue:String(value)}}));
 const sensitive=/(token|secret|password|credential|authorization|api[-_]?key|cookie)/i;
@@ -58,6 +58,7 @@ export async function startSession(descriptor:Descriptor,argv:string[],env:NodeJ
   const user=os.userInfo();
   const metadata={
     'agent_farm.session.id':id,'agent_farm.parent.session.id':env.AGENT_FARM_SESSION_ID,
+    'agent_farm.capture_content':descriptor.captureContent===true,
     'agent_farm.session.trace_id':traceId,'agent_farm.session.span_id':spanId,
     'agent_farm.profile':manifest.profile,'agent_farm.plugin':agent.plugin??manifest.plugin,
     'agent_farm.plugin.version':agent.plugin_version??manifest.plugin_version,'agent_farm.trace_identity':manifest.trace_identity,
@@ -141,15 +142,17 @@ export async function startSession(descriptor:Descriptor,argv:string[],env:NodeJ
   };
 }
 
-export function harnessTelemetry(harness:Descriptor['harness'],argv:string[],environment:NodeJS.ProcessEnv,session:Awaited<ReturnType<typeof startSession>>) {
+export function harnessTelemetry(harness:Descriptor['harness'],argv:string[],environment:NodeJS.ProcessEnv,session:Awaited<ReturnType<typeof startSession>>,captureContent=false) {
   const env:NodeJS.ProcessEnv={...environment,TRACEPARENT:session.traceparent,AGENT_FARM_TRACEPARENT:session.traceparent,AGENT_FARM_SESSION_ID:session.id};
   // No inherited remote destinations, headers, TLS options, or compression.
   for(const key of Object.keys(env))if(key.startsWith('OTEL_EXPORTER_OTLP_'))delete env[key];
   if(harness==='claude') {
     Object.assign(env,{CLAUDE_CODE_ENABLE_TELEMETRY:'1',CLAUDE_CODE_ENHANCED_TELEMETRY_BETA:'1',OTEL_EXPORTER_OTLP_ENDPOINT:session.endpoint,OTEL_EXPORTER_OTLP_PROTOCOL:'http/json',OTEL_TRACES_EXPORTER:'otlp',OTEL_LOGS_EXPORTER:'otlp',OTEL_METRICS_EXPORTER:'otlp',OTEL_LOG_USER_PROMPTS:'0',OTEL_LOG_TOOL_DETAILS:'0',OTEL_LOG_TOOL_CONTENT:'0',OTEL_LOG_RAW_API_BODIES:'0'});
+    for(const key of ['OTEL_LOG_USER_PROMPTS','OTEL_LOG_ASSISTANT_RESPONSES','OTEL_LOG_TOOL_DETAILS','OTEL_LOG_TOOL_CONTENT','OTEL_LOG_RAW_API_BODIES'])env[key]=captureContent?'1':'0';
+    if(captureContent)env.CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH='262144';
     delete env.BETA_TRACING_ENDPOINT;
   } else {
-    const config=['-c','otel.log_user_prompt=false'];
+    const config=['-c',`otel.log_user_prompt=${captureContent}`];
     for(const [key,signal] of [['exporter','logs'],['trace_exporter','traces'],['metrics_exporter','metrics']])config.push('-c',`otel.${key}={ otlp-http = { endpoint = ${JSON.stringify(session.endpoint+'/v1/'+signal)}, protocol = "json" } }`);
     // Insert before the prompt terminator, after caller options (CLI precedence).
     const separator=argv.indexOf('--');const index=separator<0?argv.length:separator;
@@ -161,7 +164,7 @@ export function harnessTelemetry(harness:Descriptor['harness'],argv:string[],env
 async function supervise(descriptor:Descriptor,argv:string[]) {
   let session:Awaited<ReturnType<typeof startSession>>|undefined;
   let env=process.env;
-  try {session=await startSession(descriptor,argv,env);({argv,env}=harnessTelemetry(descriptor.harness,argv,env,session));}
+  try {session=await startSession(descriptor,argv,env);({argv,env}=harnessTelemetry(descriptor.harness,argv,env,session,descriptor.captureContent===true));}
   catch {console.error('agent-farm: local telemetry unavailable; continuing session');}
   const child=spawn(argv[0]!,argv.slice(1),{cwd:JSON.parse(fs.readFileSync(path.join(descriptor.bundle,'manifest.json'),'utf8')).directory,env,stdio:'inherit'});
   const handlers=new Map<NodeJS.Signals,()=>void>();
