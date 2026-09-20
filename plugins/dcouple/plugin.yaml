@@ -35,6 +35,8 @@ checksums:
   agents/exp8-glm-auditor.md: ba90ba993a0d16fd5ac0c5c4bf43d9bb31762cbe75ff1ad74862e19e946b5d9f
   agents/exp8-glm-deepseek-loop.md: 4649d55181feb017d61100660bb520479dd6ce8c1174c864a81c541f756e7268
   agents/exp9-meta-orchestrator.md: 7cc316438a77748228665d7409c0e98ae6e2565dc179d10ea55e6d063edebfd5
+  agents/hx-deepseek-claude.md: a47891301f40058983a1a2460e95b1c9808f4a911fa1390985096939362b943b
+  agents/hx-glm-claude.md: d639fc1f42ea0dc5e23f875b37123931ce62e656e8250220517c60f024a61618
   agents/implementation-reviewer.md: 6dd4e83019c90b58da949a85cff7896203e6bce93905bd4a1fd676e87dad6add
   agents/implementer.md: af8b9cdb1f1efe3b5892bde3b052e56200c29f217975ee3d20f601b4ac1653f5
   agents/integration-reviewer.md: d0e9728efcee1a803d3be09625c400861fd20671b5c8160ab816bf988b5ecd0c
@@ -51,13 +53,30 @@ checksums:
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
+  agents/sw-astra-low.md: 133051f2bd4f85b2663a948e17b8ccef647ba97386dafe3df4ab8813dec8f9c7
+  agents/sw-astra-medium.md: 291afcada9c4ba0f33912d032280bba9dad7ff9340378b8720f9eabf7dcec7ee
+  agents/sw-astra-merge-low.md: 6901e3478a100c580ab07f2064d42805536db1aef70e684dcc8c201cd2a64fc4
+  agents/sw-astra-orch-luna.md: ca7fa09df4365cc81d41a9bafddbb3ac3e57ed1f31c9c0177f71ae0d668bc875
   agents/sw-baseline-raw.md: 8781c53d5e05b4d28e18d74e48e7db082b143d3aaa7532935c8d0ef76a2fca9d
+  agents/sw-deepseek-astra-loop.md: 6735feff61426c9ba8c156e103b4e6511007ce831138e1d1e21545526d4ee7ec
   agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
   agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
   agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
+  agents/sw-luna-astra-loop.md: 307d0b497eab11e6955494665fc3e11e93e01c84acb31cca97d2aff67a3d6779
+  agents/sw-luna-high.md: ea58af2fe84cc7bacb3281f1b752b68930b3ab36f152ac80a61226893cb8616f
   agents/sw-luna-implementer.md: 9a80916bdd078f8fc56fe8ccf65bf32b51308ac9c6174a659435d9d556955a2a
+  agents/sw-luna-max-worker.md: d12f048e94d87c1db2d5c070cac30f7c77a5282e271e525e996284bd37c1adc8
   agents/sw-luna-orchestra.md: 7087f02632228b94dbb28af1bdb6429085df378b092a6259e3ecd8ab53102f50
+  agents/sw-luna-raw.md: 8ed1503930cef4565ae568d2adb41c1848e081b25b0e0fa7ed39e120c866da55
+  agents/sw-luna-tdd-loop.md: de6d0e5894596c477a7e2ba8e296310736f81bd21c5e1bea82dac03871de903e
   agents/sw-opus46-loop.md: 65b6f43c5b6cdd25c807cfcc6782eed60aed825ddd1856bb0ed9cd4c8bef99e1
+  agents/sw-sol-high.md: cd210c3d7e364684a06553d59df01ea3e59eccc5f4c75ec2038c04c7c00d8366
+  agents/sw-sol-max.md: a23b01e689b6846c2ab86a90247bbf2e466779753ae0734da313f5aaa81a3da1
+  agents/sw-terra-high.md: d5841beeefeb05510236f985b40c936978cd9dd9441587c3144d104afd72b774
+  agents/sw-terra-raw.md: 42b898710f126cbab054f3d7c254ed171c33df525819f52df9857feef83137c2
+  agents/tri-a-deepseek-write.md: fa7e97ab3e98e38ec1f5eb8aa7c2cb9afed70e331180bb9fa843130fc0d8f17f
+  agents/tri-b-luna-write.md: d45bde3dbf91dcee6166ead960d17bf88c7b85d538a5e455f52d4e5c31fd5e13
+  agents/tri-c-glm-write.md: 09f58dd5fc3c918142926a82d69946b8bdae68f0da8402e33af4f2439dfb746a
   agents/worker.md: b92adc8ea7d4a798898203eda4eb5600abf45ebce2f4786820bf339439149a96
   profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
@@ -74,47 +93,66 @@ checksums:
   profiles/exp7-astra-manager-loop.yaml: c1ffbae5f4a5d2b4930fa0681bc16abfa8ecd22be77d8e8e6e791e1ebbab3bd3
   profiles/exp8-glm-deepseek-loop.yaml: ed8c9a5146ead8ac7dca9990cf2a31665ebda461e1e9fc0e7aefb5f1abc2c55f
   profiles/exp9-meta-orchestrator.yaml: c3e3617afb58b7290abb93923fe5041dae7206531732e9a0c14ede882978d4bf
+  profiles/hx-deepseek-claude.yaml: ada8deb9ea4ffe648ef01aacca9a11ceff3ecf118d71658ff60e3f7155a9d8ea
+  profiles/hx-glm-claude.yaml: 850b3cf686b35d61cdcbecd1688c396e53bde6e8e5cded215c5a0120fcc594a2
   profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
   profiles/parsa.yaml: f650fdeeed28391b5463a8bc0ed8db687b92332b7218273d72efb8e193eba913
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
+  profiles/sw-astra-low.yaml: 53d4356c1301a2a5547e5fe87e81235a67690cc08027552499efa4560f80433e
+  profiles/sw-astra-medium.yaml: e64a9e0c7d4317c575d8f20b75ec6968666cdd04894681146717dd0d6542b2d2
+  profiles/sw-astra-merge-low.yaml: 9dfa7e730c06482451b895b18663067963c57e67c7b45deb0ac29fc8da4b936c
+  profiles/sw-astra-orch-luna.yaml: a2e0618e4d35b9c8d8acf4f84b5205e94d173f979d210cc2395b93888da073d7
   profiles/sw-baseline-raw.yaml: 92fd14cff370d2a36a9f4e297b2001e65a62cbd5a347d9dd5a199b5c5f272b68
+  profiles/sw-deepseek-astra-loop.yaml: c9817ee3b3e2fa27aacf1e6c3f5c08880d8e180843da9d3d53acfef0c0ad90bd
   profiles/sw-fast-implementer.yaml: 7ab3c22a35e50049d0fe3f9b1cbebcc87cd98d14e144478d29916445d0883907
   profiles/sw-flash-implementer.yaml: a6b9109ab2369d6de273a51d34ecb7b235489d2e2ef21f41e616870950f09b23
   profiles/sw-frontier-planner.yaml: a5a90ea00f4de7c4206fbca861a9870e3df8091441f7fb6b620b30fdb7413fb4
+  profiles/sw-luna-astra-loop.yaml: b957dc799c88e82feaa6afbdcd1fd414c49c2f324768e16b733faf0fc9644869
+  profiles/sw-luna-high.yaml: 00229105f7f651960fe837cce6b83ef553e82c50b9dea2af9a857e41075585c7
   profiles/sw-luna-implementer.yaml: 3b05436e88badc0704bca01535746900ac3d4527bae62001b716ab3d07e1a29c
+  profiles/sw-luna-max-worker.yaml: 819dff09dc26cdb86995fd83e2f0121cd1650539588b2931a328b65fe3d779b1
   profiles/sw-luna-orchestra.yaml: 20268d0de794b244a35b01846470ce71aa00b576f5d31dfe16b4e3f9b73ad261
+  profiles/sw-luna-raw.yaml: 94c8a3dda0ee0feab39acbb8508bff4b90b48cbf81c3ecb9c969a2a31abd2479
+  profiles/sw-luna-tdd-loop.yaml: 206fe2d470aae0bcda08b05eac3c9bd984b5bec6c6b834c53ed9451897de667c
   profiles/sw-opus46-loop.yaml: 41b69b63c969ef4e837927ac4545cf51c957088932bb04ea14b3a187b4e51fee
+  profiles/sw-sol-high.yaml: b6694e89fdd3232bcbc4ce3192070b3b4a1d8e79618c7aaf9c5e283e66e8b47d
+  profiles/sw-sol-max.yaml: 596bf441900a9c17056831047b58514e5215d2ee76d5879f6b1a8c5e63c28b0b
+  profiles/sw-terra-high.yaml: 8ef2fd269d227b056d80cb15b8df2aef0ff11b15a7911ac2972c4f04ab7fab3c
+  profiles/sw-terra-raw.yaml: 0ab76cb7d5081a55c154b2c99fd147646a21f5e096febb5da82b2060d423fd11
+  profiles/tri-a-deepseek-write.yaml: 4a2e879e6c0182216d19723c80f751fa6d979c315bc43e0273e666d8513fb86e
+  profiles/tri-b-luna-write.yaml: be988a40a3bfd9fe879a0c463a7895724ed35c6c8b13395bbab77c2f4df07562
+  profiles/tri-c-glm-write.yaml: b96ee42a48e98540ac0e64bbf58eb1e4836138aed509f4f69507953b5c7b9bb6
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
-  skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b
   skills/create-plan/SKILL.md: d449b2f3cc05848ce6e8a03337112b8452a12b22df1ce91aa54c563377bf3285
+  skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b
+  skills/create-ticket/SKILL.md: 4022d565e0bf485dd28fbc2fad68f5d1ad48610f511b18f5a667c7853253a9d8
   skills/create-ticket/metadata/codex.yaml: 1ee7ab321aabc94523dce1813cdbfe876de5d0810afc8313d887f018dd274672
   skills/create-ticket/references/intent-handoff.md: 808cdc7b199455bbb50e5c34f4afafdbc8b52307591418aa906103b8e6cd20f0
   skills/create-ticket/references/socrates.md: f70a000f7d1a3ee5b291fd398c78d1e9fb9832c0e90a37af2b76726c36f7d49a
-  skills/create-ticket/SKILL.md: 4022d565e0bf485dd28fbc2fad68f5d1ad48610f511b18f5a667c7853253a9d8
-  skills/deep-dive-refresh/metadata/codex.yaml: 9639dbb116ed734678c85e89bab065fd4009928d05e8830dcf5a1e4b3974e6bd
   skills/deep-dive-refresh/SKILL.md: 7f2c7ad24334a6abbe7b548c122de41ff06703871f75906ab66834672839f4b8
+  skills/deep-dive-refresh/metadata/codex.yaml: 9639dbb116ed734678c85e89bab065fd4009928d05e8830dcf5a1e4b3974e6bd
+  skills/deep-dive/SKILL.md: 295d7862e4650ce4706419cc4872f87dd8c3cf182e5180c9f5f1db3f1733d9f7
   skills/deep-dive/metadata/codex.yaml: 5d62f049a521dda2788db54e8d714e916178a5e251dbca2078ecf16d35ac0493
   skills/deep-dive/references/bright-data.md: 4dec85c1ae55f534643e1c03e14747245f3b51f2fd21bd07a28c310f4a4e874a
   skills/deep-dive/references/reddit.md: f6e7b1f7f764a1a6dde07ea3d1bb5038bb238771a99097298cd1d84ddd1d4c37
   skills/deep-dive/references/x.md: 25463982d99167abe3b0eef940346077fe485abbd0747026e0afd6b4bbc3bc57
-  skills/deep-dive/SKILL.md: 295d7862e4650ce4706419cc4872f87dd8c3cf182e5180c9f5f1db3f1733d9f7
   skills/eli5/SKILL.md: df17e7f3989fdde3e12206e058ed932bc7d1a86ad75a940fd030b003fe1b90d7
   skills/excalidraw-pr-diagrams/README.md: a2830d1948b03db2c0d4e72f2bb9870f855bd7d945dfcc4d05fe9aab49a1711a
+  skills/excalidraw-pr-diagrams/SKILL.md: 8f0ef8cee660fa8262425fc3db6031c77b97023dc95757056c1cd454870e4b7e
   skills/excalidraw-pr-diagrams/references/color-palette.md: 275164ffee5b1c2c36ddeb5bbdbd73765aa8b337bd1bfe8b02a5a8d5f9581c7c
   skills/excalidraw-pr-diagrams/references/element-templates.md: 11234630e5642779a0baa2380c913125f15084dcd05d553db2899182d66f22aa
   skills/excalidraw-pr-diagrams/references/json-schema.md: 9048830015f3c0c4e075aa983763990d2a3d19fa32f0577917b6bfb49aeb9bd7
   skills/excalidraw-pr-diagrams/references/pyproject.toml: b68f2d373a50b623bb04f3f96e9ce12118d89b01d5ac7a538820f64e7fbdcdd0
   skills/excalidraw-pr-diagrams/references/render_excalidraw.py: f178207993afcc6b19e8b6954036ff2e8f03e6489062451f6dcd9f21d5999478
   skills/excalidraw-pr-diagrams/references/render_template.html: 5caa1087d0fa68cdc873103aa761590cb16d2ae888d67a08d517ebab01ca110d
-  skills/excalidraw-pr-diagrams/SKILL.md: 8f0ef8cee660fa8262425fc3db6031c77b97023dc95757056c1cd454870e4b7e
-  skills/explain-visually/metadata/codex.yaml: c4e2fe19e755367a5dd3b230696ee8a582c3d915851effab497d694a55afe5b1
   skills/explain-visually/SKILL.md: 4b9b6c36bdbcbda41f03af784d2a0043cc27fb7b6b2f5ea7ac0774fdd55de7ba
-  skills/good-writing-fundamentals/eval.md: 5c77d2c7da277c2f4ff5e2fac923243da663a3a7660cd05b7d595b09268e35eb
+  skills/explain-visually/metadata/codex.yaml: c4e2fe19e755367a5dd3b230696ee8a582c3d915851effab497d694a55afe5b1
   skills/good-writing-fundamentals/LICENSE: dd3cf8f8a976cbb1c62c573c5c22cdc664f4bfcfc777c8d321809e8187b19281
   skills/good-writing-fundamentals/SKILL.md: b4f35007442f605b68fda6e01c67587959e4c17ca620a4d1e578e256edb4488e
+  skills/good-writing-fundamentals/eval.md: 5c77d2c7da277c2f4ff5e2fac923243da663a3a7660cd05b7d595b09268e35eb
   skills/handoff/SKILL.md: a25b69fd638f007d3cce528fe5ffce826f6712bdbb1e60001cd777bd28754c32
   skills/html-explainer/SKILL.md: 6b8b68e42d69f3cff775b3a7b34b55c3608d26565e22161a78099d4c4c4745d8
   skills/implement/SKILL.md: a4138c79fb165a86ef3fe754806439814e23ea94e9507da2bd3c7d072e319852
@@ -122,18 +160,18 @@ checksums:
   skills/implementer/SKILL.md: d1a631887115fb34b980a2aaaa36304947c833e67b4fe355aa2dd1545249be6f
   skills/investigate/SKILL.md: b0199e594f142eaf17a44c193de78e04463212d7b2cdc9a858796d0d51d1e5e6
   skills/plan-reviewer/SKILL.md: 157d2b8c19ed80ef4755698d718849118c69181fc6c656c3f3836548aabeff10
-  skills/pr-test-automation/metadata/codex.yaml: 77406b135582b47bee2701089371eb3cb574936fba1c2975d6ee0b8bc14c5dd7
   skills/pr-test-automation/SKILL.md: a6a96fc203f07b3d78096e1c74e2abdf65e74ed052a3094dfcb29de2894d9797
+  skills/pr-test-automation/metadata/codex.yaml: 77406b135582b47bee2701089371eb3cb574936fba1c2975d6ee0b8bc14c5dd7
+  skills/prepare-pr/SKILL.md: dc29840b85f1cc30ee4a92a79a771a13255ba8ac2eab16ef4b6c1ef828e856c9
   skills/prepare-pr/assets/pr-walkthrough.html: d3028a699a3d3db47b1fd715042ce383a133dd10ce1bbfec5a6c1580f26e139a
   skills/prepare-pr/references/writing-guide.md: 16b34fde6e45c9a3f163efe5e31dcb1cbedd31bbdde9823977fe84d9a62013f3
-  skills/prepare-pr/SKILL.md: dc29840b85f1cc30ee4a92a79a771a13255ba8ac2eab16ef4b6c1ef828e856c9
-  skills/product-compare/metadata/codex.yaml: 0495b94cd57246a5676d1ae10712341587d96e85a12b985403f7424afa8349ae
   skills/product-compare/SKILL.md: 484ffd10d695baf8af0b8462e4afb999b9cae42e9aac38563265330abe64c34f
+  skills/product-compare/metadata/codex.yaml: 0495b94cd57246a5676d1ae10712341587d96e85a12b985403f7424afa8349ae
   skills/refactor-apply/SKILL.md: 069b1acacaad9c1b6ea873ff6eb7de20fd571048bdbd08c44b0cbe408ec844bd
   skills/refactor-deep/SKILL.md: 8e5383649e394d4e071fd10406c566c71eb6cf4bd62b65e1da5cb4f54aceadc5
   skills/refactor-simple/SKILL.md: 7a8d4efe49957f51609c382076d0ca087902faf73ff5d37b995b8405d4600246
-  skills/refactor/references/specialist-review.md: e9615b1a9172b06cb65179e5a166d04285dccd855f3e3195ab7b5a11f6118c07
   skills/refactor/SKILL.md: 0048f960400ac6053ebd948c138f32a5c9ca5a5242e70fec34d91fa5b322a47f
+  skills/refactor/references/specialist-review.md: e9615b1a9172b06cb65179e5a166d04285dccd855f3e3195ab7b5a11f6118c07
   skills/research-web/SKILL.md: e4d7741a699f69bf350485695fcce75e526aa4d9d6bbfd8e4e755c969bbab163
   skills/researcher/SKILL.md: 6fdec2189cd092a479c4003c0923d34e6f2c03207f7bbb9a75e637579417ad35
   skills/review/CRITERIA.md: 96d7e4ce5476d2dcfde99a4a986c08033e0e0860770afcd71372844c0f742370
@@ -150,9 +188,9 @@ checksums:
   skills/seo-writing-framework/SKILL.md: e38ba974dd465af400e7f3d079aae045227a414b068df50cca0682d62768b5e0
   skills/simple-plan/SKILL.md: f44e315d73df99f49dcda35335216181e4829733e4c6103cb4f6a875bfece6d3
   skills/smallest-test/SKILL.md: 4cf2ff62440d498328e66b76a81c754a1429862256b0481a750cfa7409acc437
+  skills/tech-deep-dive/SKILL.md: 078e77e0fa52d10de29f31835c1c5e9f312a6654a0ecd2101ed14630f907eb1b
   skills/tech-deep-dive/metadata/codex.yaml: d47507a02e6eb5fa552ea35c7ffc6c58a48d1b7bbb22361e2777d49a6dc6ff1f
   skills/tech-deep-dive/references/bright-data.md: 22e4a2d85b6fa5e405e007dff23aa08ef0281bcf8d6bc4d852786b196dbea1d7
   skills/tech-deep-dive/references/reddit.md: 98c59ca2e5244834c2ebbc41b391b9116a4ef22b6ce3f24af66e5d39a758f823
-  skills/tech-deep-dive/SKILL.md: 078e77e0fa52d10de29f31835c1c5e9f312a6654a0ecd2101ed14630f907eb1b
-  skills/ui-mockup/metadata/codex.yaml: c4d429511137c9dc38631c01586ec9b474b3547bc5e597559da1e7fcd994d135
   skills/ui-mockup/SKILL.md: c2e908da3ec9076babf9fe1185605bc2d2ca54e64a67630004705dba52169fc5
+  skills/ui-mockup/metadata/codex.yaml: c4d429511137c9dc38631c01586ec9b474b3547bc5e597559da1e7fcd994d135
