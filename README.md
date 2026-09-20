@@ -12,8 +12,10 @@ for every conversation.
 Pick a setup, point it at a repo, and Agent Farm opens your native Claude Code
 or Codex terminal with that configuration loaded.
 
-Run `agent-farm traces` for a searchable session list and conversation reader,
-with collapsible instructions/context, outputs, token usage, and reported cost.
+Run `agent-farm traces` for a compact profile-session list and hierarchical run
+explorer: user turns, nested sub-agents, a shared-time-axis timeline, and breadcrumb
+drill-down. The reader includes collapsible instructions/context, outputs, token
+usage, and reported cost. Missing parent links or turn boundaries stay explicit.
 Conversation text requires explicit `telemetry.capture_content: true` for new
 sessions; it is off by default because it can contain sensitive data. To expose read-only
 telemetry tools to launched agents, opt in with workspace

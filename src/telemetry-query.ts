@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {normalizeConversation} from './telemetry-conversation.js';
+import {buildHierarchy,descendants,type Dataset} from './telemetry-hierarchy.js';
 
 export type QueryScope='project'|'machine';
 export interface QueryOptions {directory:string;projectDirectory:string;scope:QueryScope;currentSession?:string}
@@ -101,7 +102,7 @@ export class TelemetryStore {
   }
   private view(s:ObjectMap){
     const a=Object.fromEntries(Object.entries(s.attributes as ObjectMap).map(([key,value])=>[key,typeof value==='string'?value.slice(0,512):undefined])),finished=s.state==='finished';
-    return {id:s.id,trace_id:s.traceId,span_id:s.spanId,parent_span_id:s.parentSpanId,started_at:new Date(Number(BigInt(s.startTimeUnixNano)/1000000n)).toISOString(),duration_ms:duration(s.startTimeUnixNano,s.endTimeUnixNano),status:finished?(s.exitCode===0&&!s.signal&&!s.error?'success':'failed'):'unfinished',completion_recorded:finished,harness:a['agent_farm.harness'],profile:a['agent_farm.profile'],model:a['gen_ai.request.model'],user:a['process.owner'],project:a['agent_farm.project.directory']??a['process.working_directory'],worktree:a['vcs.worktree']??a['process.working_directory'],exit_code:s.exitCode,signal:s.signal};
+    return {id:s.id,parent_session_id:a['agent_farm.parent.session.id'],trace_id:s.traceId,span_id:s.spanId,parent_span_id:s.parentSpanId,started_at:new Date(Number(BigInt(s.startTimeUnixNano)/1000000n)).toISOString(),duration_ms:duration(s.startTimeUnixNano,s.endTimeUnixNano),status:finished?(s.exitCode===0&&!s.signal&&!s.error?'success':'failed'):'unfinished',completion_recorded:finished,harness:a['agent_farm.harness'],profile:a['agent_farm.profile'],model:a['gen_ai.request.model'],user:a['process.owner'],project:a['agent_farm.project.directory']??a['process.working_directory'],worktree:a['vcs.worktree']??a['process.working_directory'],exit_code:s.exitCode,signal:s.signal};
   }
   private sessions(a:ObjectMap){
     const warnings:string[]=[],sessions:ReturnType<TelemetryStore['view']>[]= [];
@@ -125,13 +126,13 @@ export class TelemetryStore {
     if(typeof id!=='string'||!uuid.test(id))throw new Error('No valid session ID; current is available only when this session is recorded');
     return id;
   }
-  private async rows(id:string,signal:'traces'|'logs'){
+  private async rows(id:string,signal:'traces'|'logs',byteLimit=maxSignalBytes,rowLimit=maxRows){
     const rows:ObjectMap[]=[],warnings:string[]=[];let partial=false,fd:number;
     try{fd=this.open(id,signal+'.jsonl');}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return {rows,warnings:['No '+signal+' exports have been recorded.'],partial:false};throw e;}
     const size=fs.fstatSync(fd).size;
     if(size===0){fs.closeSync(fd);return {rows,warnings,partial};}
-    if(size>maxSignalBytes){partial=true;warnings.push('Signal scan capped at 32 MiB; results may omit records.');}
-    const stream=fs.createReadStream('',{fd,autoClose:true,end:Math.min(size,maxSignalBytes)-1,encoding:'utf8'});
+    if(size>byteLimit){partial=true;warnings.push('Signal scan reached its byte limit; results may omit records.');}
+    const stream=fs.createReadStream('',{fd,autoClose:true,end:Math.min(size,byteLimit)-1,encoding:'utf8'});
     let buffer='';
     try {outer:for await(const chunk of stream){
       buffer+=chunk;
@@ -146,7 +147,7 @@ export class TelemetryStore {
               for(const record of scope[signal==='traces'?'spans':'logRecords']??[]){
                 const attributes=attrs(record.attributes);
                 rows.push(signal==='traces'?{trace_id:record.traceId,span_id:record.spanId,parent_span_id:record.parentSpanId,name:record.name,start_time_unix_nano:record.startTimeUnixNano,end_time_unix_nano:record.endTimeUnixNano,duration_ms:duration(record.startTimeUnixNano,record.endTimeUnixNano),error:record.status?.code===2||record.status?.code==='STATUS_CODE_ERROR',status:record.status,attributes,resource_attributes:attrs(resource.resource?.attributes)}:{trace_id:record.traceId,span_id:record.spanId,time_unix_nano:record.timeUnixNano,severity:record.severityText,body:record.body,attributes,resource_attributes:attrs(resource.resource?.attributes)});
-                if(rows.length>=maxRows){partial=true;warnings.push('Record scan capped at 10000 rows.');break outer;}
+                if(rows.length>=rowLimit){partial=true;warnings.push('Record scan reached its row limit.');break outer;}
               }
             }
           }
@@ -156,6 +157,44 @@ export class TelemetryStore {
     }}finally{stream.destroy();}
     if(buffer.trim()){partial=true;warnings.push('An incomplete or unscanned final record was omitted.');}
     return {rows,warnings,partial};
+  }
+  async runs(input:unknown={}) {
+    const args=argumentsFor('list_sessions',input),all=this.sessions({}),matching=new Set(this.sessions(args).sessions.map(s=>s.id));
+    const index=new Map(all.sessions.map(s=>[s.id,s]));
+    const rootOf=(s:typeof all.sessions[number])=>{const chain=[s];let current=s;while(current.parent_session_id&&index.has(current.parent_session_id)){const next=index.get(current.parent_session_id)!;if(chain.some(s=>s.id===next.id))return [...chain].sort((a,b)=>a.id.localeCompare(b.id))[0]!;chain.push(next);current=next;}return current;};
+    const groups=new Map<string,{session:typeof all.sessions[number];count:number;matched:boolean}>();
+    for(const s of all.sessions){const root=rootOf(s),group=groups.get(root.id)??{session:root,count:0,matched:false};group.count++;group.matched ||= matching.has(s.id);groups.set(root.id,group);}
+    const results=[...groups.values()].filter(g=>g.matched).sort((a,b)=>b.session.started_at.localeCompare(a.session.started_at)||a.session.id.localeCompare(b.session.id));
+    const offset=Number(args.cursor??0),limit=args.limit??25;
+    return {items:results.slice(offset,offset+limit).map(g=>({...g.session,child_sessions:g.count-1,ancestry_unavailable:!!g.session.parent_session_id})),total_matching:results.length,next_cursor:offset+limit<results.length?String(offset+limit):null,partial:all.partial,warnings:all.warnings};
+  }
+  async explorer(input:unknown={}) {
+    if(!object(input)||Object.keys(input).some(k=>!['session_id','node_id','cursor','limit'].includes(k)))throw new Error('Invalid explorer arguments');
+    const {node_id,...rest}=input,args=argumentsFor('query_spans',rest),id=this.sessionId(args.session_id);
+    if(node_id!==undefined&&(typeof node_id!=='string'||node_id.length>1000))throw new Error('Invalid node ID');
+    try{this.read(id);}catch{throw new Error('Session not found in configured scope or unreadable');}
+    const scan=this.sessions({}),family=new Set([id]);let changed=true;
+    while(changed){changed=false;for(const s of scan.sessions)if(s.parent_session_id&&family.has(s.parent_session_id)&&!family.has(s.id)){family.add(s.id);changed=true;}}
+    const members=scan.sessions.filter(s=>family.has(s.id)).sort((a,b)=>a.id===id?-1:b.id===id?1:a.started_at.localeCompare(b.started_at));
+    const datasets:Dataset[]=[],warnings=[...scan.warnings];let partial=scan.partial,spanBudget=4000,eventBudget=8000;
+    if(members.length>16){partial=true;warnings.push('Explorer limited to 16 linked sessions. Open a child session directly to inspect more.');}
+    for(const session of members.slice(0,16)){
+      if(spanBudget<=0||eventBudget<=0){partial=true;warnings.push('Run activity scan reached its row budget. Open a child session directly for its records.');datasets.push({session,spans:[],events:[]});continue;}
+      const [spans,events]=await Promise.all([this.rows(session.id,'traces',2*1024*1024,Math.min(1000,spanBudget)),this.rows(session.id,'logs',2*1024*1024,Math.min(2000,eventBudget))]);
+      spanBudget-=spans.rows.length;eventBudget-=events.rows.length;
+      datasets.push({session,spans:spans.rows,events:events.rows});partial ||= spans.partial||events.partial;warnings.push(...spans.warnings,...events.warnings);
+    }
+    const graph=buildHierarchy(datasets);warnings.push(...graph.warnings);
+    const node=graph.nodes.find(n=>n.id===(node_id??'session:'+id));if(!node)throw new Error('Activity not found in this run');
+    const ids=descendants(graph.nodes,node.id),owned=new Set(ids);
+    // Conversation belongs to this agent, not every nested agent's transcript.
+    for(const child of graph.nodes)if(child.id!==node.id&&ids.has(child.id)&&['agent','session'].includes(child.kind))for(const nested of descendants(graph.nodes,child.id))owned.delete(nested);
+    const requests=graph.nodes.filter(n=>owned.has(n.id)).flatMap(n=>graph.contents.get(n.id)??[]).sort((a,b)=>(a.started_at??'').localeCompare(b.started_at??''));
+    const offset=Number(args.cursor??0),limit=Math.min(args.limit??5,5),row=graph.records.get(node.id);
+    const first=requests[0],last=requests.filter(r=>r.kind==='request').at(-1);
+    const prompt=typeof row?.attributes?.user_prompt==='string'?row.attributes.user_prompt.slice(0,24000):first?.input.filter(s=>s.role==='user').at(-1)?.text;
+    const final=!partial&&node.kind==='turn'&&node.status==='completed'&&!last?.error&&last?.finish_reason==='end_turn'?last.output:[];
+    return {root_session_id:id,nodes:graph.nodes,node,session:datasets.find(d=>d.session.id===node.session_id)?.session,attributes:safeValue(row?.attributes??{}),prompt:prompt&&!/^\s*(?:<REDACTED>|\[REDACTED\])\s*$/i.test(prompt)?prompt:null,final_output:final,requests:requests.slice(offset,offset+limit),total_requests:requests.length,next_cursor:offset+limit<requests.length?String(offset+limit):null,partial,warnings:[...new Set(warnings)]};
   }
   async conversation(input:unknown={}) {
     if(!object(input)||Object.keys(input).some(k=>!['session_id','cursor','limit'].includes(k)))throw new Error('Invalid conversation arguments');

@@ -4,6 +4,7 @@ export interface ContentSection {role:string;title:string;text:string;truncated:
 export interface ConversationTurn {
   id:string;kind:'request'|'message'|'unlinked';model?:string;started_at?:string;duration_ms?:number;
   request_id?:string;prompt_id?:string;native_session?:string;error:boolean;
+  trace_id?:string;span_id?:string;finish_reason?:string;
   usage:{input?:number;output?:number;cache_read?:number;cache_write?:number};cost_usd?:number;
   instructions:ContentSection[];input:ContentSection[];output:ContentSection[];
   tools:{name:string;description?:string}[];warnings:string[];sources:string[];
@@ -35,13 +36,13 @@ function content(value:unknown):string {
 
 export function normalizeConversation(spans:RecordData[],events:RecordData[]){
   const turns:ConversationTurn[]=[],requests=new Map<string,ConversationTurn>(),spanIndex=new Map<string,ConversationTurn>(),bodies=new Map<string,RecordData>();
-  const scope=(row:RecordData)=>String(row.attributes?.['session.id']??'');
+  const scope=(row:RecordData)=>String(row.attributes?.['session.id']??row.attributes?.['conversation.id']??'');
   const key=(row:RecordData,id:string)=>scope(row)+'|'+id;
   const spanKey=(row:RecordData)=>String(row.trace_id??'')+'|'+String(row.span_id??'');
   const requestId=(a:RecordData)=>text(a.request_id??a['gen_ai.response.id']);
   function create(row:RecordData,kind:ConversationTurn['kind']='request'){
     const a=row.attributes??{},id=requestId(a);
-    const turn:ConversationTurn={id:'turn-'+turns.length,kind,request_id:id,prompt_id:text(a['prompt.id']),native_session:text(a['session.id']),model:text(a['gen_ai.request.model']??a.model),started_at:timestamp(row),duration_ms:number(row.duration_ms??a.duration_ms),error:row.error===true||a.success===false||a.success==='false',usage:{},instructions:[],input:[],output:[],tools:[],warnings:[],sources:[]};
+    const turn:ConversationTurn={id:'turn-'+turns.length,kind,request_id:id,prompt_id:text(a['prompt.id']??a['turn.id']),native_session:text(a['session.id']??a['conversation.id']),model:text(a['gen_ai.request.model']??a.model),started_at:timestamp(row),duration_ms:number(row.duration_ms??a.duration_ms),error:row.error===true||a.success===false||a.success==='false',usage:{},instructions:[],input:[],output:[],tools:[],warnings:[],sources:[]};
     turns.push(turn);if(id)requests.set(key(row,id),turn);return turn;
   }
   function find(row:RecordData):ConversationTurn|undefined {
@@ -54,7 +55,7 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
     }
     turn.cost_usd=number(a.cost_usd)??turn.cost_usd;
     turn.model=text(a['gen_ai.request.model']??a.model)??turn.model;
-    turn.prompt_id=text(a['prompt.id'])??turn.prompt_id;
+    turn.prompt_id=text(a['prompt.id']??a['turn.id'])??turn.prompt_id;
   }
   const budget=new Map<ConversationTurn,number>();
   function section(turn:ConversationTurn,where:'instructions'|'input'|'output',role:string,title:string,value:unknown){
@@ -87,7 +88,7 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
     const a=row.attributes??{},name=String(row.name??'');
     if(!(a['span.type']==='llm_request'||name==='claude_code.llm_request'||a['gen_ai.operation.name']==='chat'||a['gen_ai.operation.name']==='generate_content'))continue;
     let turn=find(row);if(!turn)turn=create(row);
-    if(row.span_id)spanIndex.set(spanKey(row),turn);usage(turn,a);turn.sources.push('span');
+    if(row.span_id){spanIndex.set(spanKey(row),turn);turn.span_id=text(row.span_id);turn.trace_id=text(row.trace_id);}turn.finish_reason=text(a.stop_reason);usage(turn,a);turn.sources.push('span');
     for(const field of ['system_prompt','user_system_prompt','gen_ai.system_instructions'])if(visible(a[field]))section(turn,'instructions','system',field==='user_system_prompt'?'User instructions':'System instructions',parse(a[field]));
     const messages=parse(a['gen_ai.input.messages']);if(Array.isArray(messages))input(turn,{messages});
     section(turn,'input','context','New context',parse(a.new_context));
@@ -108,7 +109,7 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
     if(name==='api_response_body'){
       const turn=find(row)??create(row);const body=parse(a.body);const request=typeof a.request_body_id==='string'?bodies.get(key(row,a.request_body_id)):undefined;
       if(request){input(turn,request.attributes.body);usedBodies.add(request);}
-      if(object(body)){budget.set(turn,Math.max(0,(budget.get(turn)??0)-turn.output.reduce((n,s)=>n+s.text.length,0)));turn.output=[];section(turn,'output','assistant','Assistant output',body.content??body.output);usage(turn,body.usage??{});}
+      if(object(body)){budget.set(turn,Math.max(0,(budget.get(turn)??0)-turn.output.reduce((n,s)=>n+s.text.length,0)));turn.output=[];section(turn,'output','assistant','Assistant output',body.content??body.output);usage(turn,body.usage??{});turn.finish_reason=text(body.stop_reason)??turn.finish_reason;}
       else section(turn,'output','assistant','Unparsed response body',body);
       turn.sources.push('response body');if(a.body_truncated===true||a.body_truncated==='true')turn.warnings.push('The harness truncated the response body.');
       if(a.body_ref)turn.warnings.push('File-referenced bodies are not loaded by this viewer.');
@@ -125,7 +126,7 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
       if(a.body_ref)turn.warnings.push('File-referenced bodies are not loaded by this viewer.');
     }
     if(name==='user_prompt'||name==='codex.user_prompt'){
-      const candidates=turns.filter(t=>t.native_session===text(a['session.id'])&&t.prompt_id===text(a['prompt.id'])&&t.prompt_id!==undefined);
+      const candidates=turns.filter(t=>t.native_session===text(a['session.id']??a['conversation.id'])&&t.prompt_id===text(a['prompt.id']??a['turn.id'])&&t.prompt_id!==undefined);
       if(candidates.length){for(const turn of candidates)if(turn.input.length===0)section(turn,'input','user','User prompt (not full context)',a.prompt);}
       else if(visible(a.prompt)){const turn=create(row,'message');section(turn,'input','user','User prompt',a.prompt);turn.sources.push('user prompt');}
     }

@@ -359,6 +359,36 @@ the raw OTLP files; metric aggregation is not exposed yet.
 
 ### Conversation content capture
 
+#### Hierarchical run explorer
+
+The browser groups Agent Farm launches by their recorded parent session IDs before
+filtering and pagination. A matching child brings its top-level profile session
+into the list. Only sessions inside the configured scope can join that hierarchy;
+an unavailable parent leaves the child independently inspectable.
+
+The structure pane and timeline use exact trace/span parent IDs. Claude interaction
+spans represent user turns; Agent/Task tool spans represent delegation, with nested
+requests and tool calls underneath. Generic gen-AI chat and agent spans are also
+recognized. Explicit prompt/turn IDs can group events when spans are absent, but
+these groups have unknown elapsed time/completion. Harness versions differ in what
+they export: full Codex turn/sub-agent boundaries and transcripts are not guaranteed.
+Missing links appear under **Unlinked activity**, never inferred from timestamps.
+
+Select a turn to read its message, activity, and explicitly captured final response;
+select a child agent to inspect its own requests without mixing in its children's
+transcripts. Breadcrumbs and Back links navigate ancestors. The Timeline tab shows
+overlapping work on a common axis; gaps are not classified as idle. Elapsed time
+comes from the selected span/session, not summed child durations. Request-level
+usage/cost rolls up once per ancestor, with missing cost coverage shown explicitly.
+
+Explorer reads are bounded to 16 linked sessions, 2 MiB per signal per session,
+1,000 spans/2,000 events per session, and 4,000 spans/8,000 events per run. The
+structure/timeline render at most 500 activities and depth 32. Partial scans are
+marked; drill into a branch or open a child session independently to narrow the
+view. The raw query endpoints retain their separate limits documented above.
+
+#### Opt-in text recording
+
 Conversation text is **off by default**. To record it for future sessions, explicitly
 set this in host settings, a trusted workspace, or a personal overlay:
 

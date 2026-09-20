@@ -17,7 +17,7 @@ export async function startTelemetryUI(options:QueryOptions,port=0){
     const route=url.pathname.slice(prefix.length);
     if(route===''||route==='app.js'){res.writeHead(200,{'Content-Type':route?'text/javascript; charset=utf-8':'text/html; charset=utf-8'});res.end(route?'('+telemetryBrowser.toString()+')();':telemetryPage);return;}
     if(!route.startsWith('api/')){send(404,{error:'Not found'});return;}
-    try{const args=JSON.parse(url.searchParams.get('args')??'{}');send(200,route==='api/conversation'?await store.conversation(args):await store.query(route.slice(4),args));}catch(e){send(400,{error:(e as Error).message});}
+    try{const args=JSON.parse(url.searchParams.get('args')??'{}');send(200,route==='api/explorer'?await store.explorer(args):route==='api/runs'?await store.runs(args):route==='api/conversation'?await store.conversation(args):await store.query(route.slice(4),args));}catch(e){send(400,{error:(e as Error).message});}
   });
   await new Promise<void>((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',()=>{const address=server.address();if(!address||typeof address==='string')return reject(new Error('No listener'));origin='http://127.0.0.1:'+address.port;resolve();});});
   return {server,url:origin+'/'+token+'/'};
