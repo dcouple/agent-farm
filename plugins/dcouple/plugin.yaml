@@ -61,6 +61,8 @@ checksums:
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
   agents/rv-astra-low.md: eb971f066281d297619417507c0f5829339ac53f5414a73edde0f580375b705d
   agents/rv-astra-medium.md: 1b5056bafbe1bd740a0cc3a46f99f22c6382b5bb0f09f714439f20f00e1a9e49
+  agents/rv-astra-timebound-medium.md: dab2fa75d757374be116bf137958276e7d213fcbc7a6423d96f9e91b265603c4
+  agents/rv-astra-timebound.md: ec90303df1661c39974182c27b72fc19ce856043613e1de9b0e275c10b437af3
   agents/rv-deepseek-claude.md: 2a67ac1309acf2ad9b7a8579d61f848f0b5ec902f129d613b520e4fa1a052af1
   agents/rv-deepseek-high.md: d8afea8b33b05fb03a11feed73948dc4a97134af5d29a975fff0f5039ae9dc38
   agents/rv-deepseek-low.md: c00ac973392663656ca20e6903707eb5bc01ee9ae3c13abc912fffbb19d16dc3
@@ -151,6 +153,8 @@ checksums:
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/rv-astra-low.yaml: ce73d2e3f33f6b5eee32a73eb6b7d6b044ef8eb70b47b6dd1ad17bd9d8c38335
   profiles/rv-astra-medium.yaml: 98c53f0d7f855263d5da9ab9f90bc9f37234a4ab646990e8685b1548d13e0057
+  profiles/rv-astra-timebound-medium.yaml: 0fe7d1794701577568e21849ef5c6e522337f4ce9a509d6435b1566120d2a231
+  profiles/rv-astra-timebound.yaml: c7111c53010361631f66deb6f31d2d0603435804f77c6ae2a58ace7145009907
   profiles/rv-deepseek-claude.yaml: d8ff2ba491abf7a1656dc812d19f0f44b3651e3d190a0218589025d301ef97c9
   profiles/rv-deepseek-high.yaml: 380961e3545d7459653e25c79bd8a2497fb378921d74f3b8872b70d7318a9340
   profiles/rv-deepseek-low.yaml: 28d4cf11093428065c533f9dd4ee19331e33025280216c51eca509d84246cd9e
@@ -208,7 +212,7 @@ checksums:
   skills/astra-flash-orchestration/SKILL.md: 09f5044991623b7c214ab1e9057d51b2937a7de71c2f49deffafe7509986cb66
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
-  skills/codex-queue-wait/SKILL.md: 1cb95d0cb800e265e3301e4261eb91f89f7e3f3f9266d52816b5ceb9dd34fbf2
+  skills/codex-queue-wait/SKILL.md: 3028432249a5a21075f9f49650789605d170db46eb9271716a374d1226614aec
   skills/codex-queue-wait/scripts/notify.sh: f3684ba47263d6925ea21018c05ea7c74453da8d99b241ebc7200a1f7d3a4ceb
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/SKILL.md: d449b2f3cc05848ce6e8a03337112b8452a12b22df1ce91aa54c563377bf3285

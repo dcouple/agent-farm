@@ -16,7 +16,7 @@ message into an existing thread, and the thread resumes when it arrives.
 1. **Find your own thread id, once, at the start.** Your rollout is the newest session file whose `cwd`
    is your working directory:
    ```bash
-   codex_self_thread() { for f in $(ls -t ~/.codex/sessions/$(date +%Y/%m/%d)/*.jsonl 2>/dev/null); do
+   codex_self_thread() { for f in $(ls -t ${CODEX_HOME:-$HOME/.codex}/sessions/$(date +%Y/%m/%d)/*.jsonl $HOME/.cache/agent-farm/native-proof/*/sessions/$(date +%Y/%m/%d)/*.jsonl 2>/dev/null); do
      python3 - "$f" "$PWD" <<'PY'
    import json,sys; m=json.loads(open(sys.argv[1]).readline())["payload"]
    if m.get("cwd")==sys.argv[2]: print(m["session_id"]); raise SystemExit(0)
@@ -25,7 +25,8 @@ message into an existing thread, and the thread resumes when it arrives.
      [ $? -eq 0 ] && return; done; }
    THREAD=$(codex_self_thread)
    ```
-   If that yields nothing, ask the launcher for it; never guess.
+   If that yields nothing, ask the launcher for it; never guess. The waiter inherits your environment, so
+   `CODEX_HOME` (if set) reaches `codex queue` unchanged.
 2. **Launch the work as detached processes** (`nohup ... &`, one per lane), each writing a receipt file
    (`<receipts-dir>/<lane>/meta.json`) when it finishes. Never launch it in your own foreground.
 3. **Start the waiter, detached:**
