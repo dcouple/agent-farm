@@ -212,8 +212,8 @@ checksums:
   skills/astra-flash-orchestration/SKILL.md: 09f5044991623b7c214ab1e9057d51b2937a7de71c2f49deffafe7509986cb66
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
-  skills/codex-queue-wait/SKILL.md: 3028432249a5a21075f9f49650789605d170db46eb9271716a374d1226614aec
-  skills/codex-queue-wait/scripts/notify.sh: f3684ba47263d6925ea21018c05ea7c74453da8d99b241ebc7200a1f7d3a4ceb
+  skills/codex-queue-wait/SKILL.md: d97bdc088651da1faf49c3368ad5d224d547285bf7f005247cb7aa6e847d3735
+  skills/codex-queue-wait/scripts/notify.sh: 72b1e25ace739b5ed5a20c8fc6f772d2ffdc5e51ef04e5501759bbfc56582ad1
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/SKILL.md: d449b2f3cc05848ce6e8a03337112b8452a12b22df1ce91aa54c563377bf3285
   skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b

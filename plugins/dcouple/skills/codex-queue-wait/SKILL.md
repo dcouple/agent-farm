@@ -27,13 +27,22 @@ message into an existing thread, and the thread resumes when it arrives.
    ```
    If that yields nothing, ask the launcher for it; never guess. The waiter inherits your environment, so
    `CODEX_HOME` (if set) reaches `codex queue` unchanged.
-2. **Launch the work as detached processes** (`nohup ... &`, one per lane), each writing a receipt file
-   (`<receipts-dir>/<lane>/meta.json`) when it finishes. Never launch it in your own foreground.
-3. **Start the waiter, detached:**
+2. **Launch the work as detached processes**, one per lane, each wrapped so a receipt appears when it
+   finishes. Never launch it in your own foreground:
    ```bash
-   nohup scripts/notify.sh <receipts-dir> <expected-count> "$THREAD" >/dev/null 2>&1 &
+   R=<receipts-dir>; mkdir -p $R/lane1
+   nohup bash -c 'agent-farm run <builder-profile> --exec < brief-lane1.md > '"$R"'/lane1/raw.json 2> '"$R"'/lane1/err.log; printf "{\"exit\":%d}" $? > '"$R"'/lane1/meta.json' >/dev/null 2>&1 &
    ```
-   It loops on the filesystem, not on you, and calls `codex queue --thread "$THREAD" --message ...` once.
+3. **Start the waiter, detached.** Two modes, and you must pick the right one:
+   - Interactive session (`codex` TUI or app-server): the thread stays alive, so the waiter queues a
+     message: `nohup scripts/notify.sh <receipts-dir> <count> "$THREAD" >/dev/null 2>&1 &`
+   - **Non-interactive (`codex exec`, which is how `agent-farm run --exec` runs you): ending your turn
+     ends the process, and a queued message wakes nothing.** The waiter must resume the session instead;
+     pass your own profile name as the 5th argument and it will run
+     `agent-farm run <profile> --exec --message "<msg>" -- exec resume "$THREAD"`:
+     `nohup scripts/notify.sh <receipts-dir> <count> "$THREAD" "" <your-profile> >/dev/null 2>&1 &`
+     Your resumed turn's output is written to `<receipts-dir>/parent-resume.json`.
+   Either way the waiter loops on the filesystem, not on you, and wakes you exactly once.
 4. **Say what is running and where results will land, then END YOUR TURN.** Literally stop responding.
    Do not sleep, do not `wait`, do not re-read the receipts directory, do not write an empty string to a
    child's stdin. If no waiter is possible, say: "I'm stopping here; wake me when the lanes finish" and
