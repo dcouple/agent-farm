@@ -5,6 +5,7 @@ model:
   reasoning: high
   speed: fast
 skills:
+  - codex-queue-wait
   - astra-ticket
   - create-ticket
   - explain-visually

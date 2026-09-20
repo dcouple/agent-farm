@@ -3,8 +3,9 @@ harness: claude
 model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
-skills: []
-description: "Reconciler under test: DeepSeek V4.1 Flash on the claude harness with the scan-reconciler body. Hypothesis: a cheap model that opens the cited code rejects the same lane findings Astra rejected (3 of 32 on the pilot) for about a twentieth of Astra's $2.66. (vs Astra reconciler: result pending)"
+skills:
+  - codex-queue-wait
+description: "Reconciler under test: DeepSeek V4.1 Flash on the claude harness with the scan-reconciler body. Hypothesis: a cheap model that opens the cited code rejects the same lane findings Astra rejected (3 of 32 on the pilot) for about a twentieth of Astra's $2.66. (vs Astra reconciler $2.66: $0.05, 24 min. RESULT 2026-09-20: matched 1 of Astra's 3 pilot rejections and CONFIRMED as HIGH the pending-invitee finding Astra correctly refuted (hydration routes pending relationships elsewhere). Astra keeps the seat)"
 ---
 
 You are the reconciler. Independent read-only lanes each audited one module of a codebase and

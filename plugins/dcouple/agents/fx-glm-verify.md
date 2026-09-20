@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Fixer under test: GLM 5.3 Flash on the claude harness with a mandatory verify-then-REJECT instruction. Hypothesis: a cheap fixer told to reproduce each finding from the code before touching it says no to false findings as often as Astra did (3 of 3 rejected). Bare, no skills. (vs Astra fixer $1.73: expected ~0.03x; result pending)"
+description: "Fixer under test: GLM 5.3 Flash on the claude harness with a mandatory verify-then-REJECT instruction. Hypothesis: a cheap fixer told to reproduce each finding from the code before touching it says no to false findings as often as Astra did (3 of 3 rejected). Bare, no skills. (vs Astra fixer $1.73, 3.8 min: 0.11x at $0.19, 21 min. RESULT 2026-09-20: FIXED 1,2 / REJECTED 3,4,5 with the refuting file:line and the tests that pin each guard, identical to Astra's verdict)"
 ---
 
 Implement the requested change. Keep it minimal and in the style of the surrounding code.

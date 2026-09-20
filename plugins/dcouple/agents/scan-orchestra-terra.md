@@ -3,7 +3,8 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: medium
-skills: []
+skills:
+  - codex-queue-wait
 subagents:
   scanner:
     agent: scan-terra-worker

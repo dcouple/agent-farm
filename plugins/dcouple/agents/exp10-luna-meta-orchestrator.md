@@ -4,6 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: xhigh
 skills:
+  - codex-queue-wait
   - astra-ticket
   - create-ticket
   - explain-visually

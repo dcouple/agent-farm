@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Fixer under test: DeepSeek V4.1 Flash on the claude harness with a mandatory verify-then-REJECT instruction. Hypothesis: a cheap fixer told to reproduce each finding from the code before touching it says no to false findings as often as Astra did (3 of 3 rejected). Bare, no skills. (vs Astra fixer $1.73: expected ~0.07x; result pending)"
+description: "Fixer under test: DeepSeek V4.1 Flash on the claude harness with a mandatory verify-then-REJECT instruction. Hypothesis: a cheap fixer told to reproduce each finding from the code before touching it says no to false findings as often as Astra did (3 of 3 rejected). Bare, no skills. (vs Astra fixer $1.73, 3.8 min: 0.05x at $0.08, 53 min. RESULT 2026-09-20: FIXED 1,2 / REJECTED 3,4,5 with file:line evidence, identical to Astra's verdict)"
 ---
 
 Implement the requested change. Keep it minimal and in the style of the surrounding code.
