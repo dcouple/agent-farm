@@ -15,7 +15,8 @@ export interface Command {
 }
 
 export const commands: Command[] = [
-  {name:'traces',usage:'agent-farm traces [--project DIR] [--directory STORE] [--scope project|machine] [--no-open] [--port PORT]',group:'inspect',description:'Open a local read-only telemetry browser. Defaults to the current project; --directory selects the telemetry store.'},
+  {name:'ui',usage:'agent-farm ui [--project DIR] [--config-root DIR] [--directory STORE] [--scope project|machine] [--no-open] [--port PORT]',group:'inspect',description:'Launch the local Agent Farm dashboard for sessions and profile management. Opens your browser, not an agent session. --directory selects the telemetry store; --config-root selects editable host configuration.'},
+  {name:'traces',usage:'agent-farm traces [UI OPTIONS]',group:'inspect',description:'Compatibility alias for agent-farm ui. Opens the dashboard; it does not launch an agent.'},
   {name:'telemetry',usage:'agent-farm telemetry mcp [--project DIR] [--directory STORE] [--scope project|machine]',group:'inspect',description:'Serve read-only telemetry tools over stdio MCP. Launched profiles receive this automatically when workspace agent access permits it.'},
   {
     name: 'run',

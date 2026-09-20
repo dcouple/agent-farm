@@ -9,7 +9,7 @@ import {startTelemetryUI} from './telemetry-ui.js';
 import type {QueryOptions} from './telemetry-query.js';
 
 export async function telemetryCommand(args:string[]){
-  const ui=args[0]==='traces';
+  const ui=args[0]==='traces'||args[0]==='ui';
   if(!ui&&args[1]!=='mcp')throw new Error('Use agent-farm telemetry mcp');
   const {values,positionals}=parseArgs({args:args.slice(ui?1:2),options:{directory:{type:'string'},project:{type:'string'},scope:{type:'string',default:'project'},'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},'no-open':{type:'boolean'},port:{type:'string',default:'0'}}});
   if(positionals.length)throw new Error('Unexpected arguments');
@@ -21,7 +21,7 @@ export async function telemetryCommand(args:string[]){
   const options:QueryOptions={directory:path.resolve(values.directory??settings.directory),projectDirectory,scope:values.scope,currentSession:process.env.AGENT_FARM_SESSION_ID||undefined};
   if(!ui){await serveTelemetryMcp(options);return;}
   const port=Number(values.port);if(!/^\d+$/.test(values.port!)||!Number.isInteger(port)||port<0||port>65535)throw new Error('Invalid port');
-  const {url,server}=await startTelemetryUI(options,port);console.log('Agent Farm traces: '+url+'\nPress Ctrl-C to stop.');
+  const {url,server}=await startTelemetryUI(options,port,{configRoot:root,projectDirectory});console.log('Agent Farm UI: '+url+'\nPress Ctrl-C to stop.');
   process.once('SIGINT',()=>server.close());process.once('SIGTERM',()=>server.close());
   if(!values['no-open']){const child=spawn(process.platform==='darwin'?'open':process.platform==='win32'?'explorer.exe':'xdg-open',[url],{stdio:'ignore'});child.on('error',()=>console.error('Open the URL above in your browser.'));child.unref();}
 }

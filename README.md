@@ -12,7 +12,14 @@ for every conversation.
 Pick a setup, point it at a repo, and Agent Farm opens your native Claude Code
 or Codex terminal with that configuration loaded.
 
-Run `agent-farm traces` for a compact profile-session list and hierarchical run
+Run `agent-farm ui` to open the local dashboard for **Sessions** and **Profiles**.
+Create profiles from existing agent definitions, edit model/argument presets,
+inspect resolved instructions and skills, and review changes before saving.
+Plugin profiles are read-only and can be duplicated into local presets. The UI
+command launches only the browser interface, not an agent; `agent-farm traces`
+remains a compatibility alias.
+
+Sessions provides a compact profile-session list and hierarchical run
 explorer: user turns, nested sub-agents, a shared-time-axis timeline, and breadcrumb
 drill-down. The reader includes collapsible instructions/context, outputs, token
 usage, and reported cost. Missing parent links or turn boundaries stay explicit.

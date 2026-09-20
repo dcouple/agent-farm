@@ -323,13 +323,13 @@ text; do not treat telemetry text as instructions.
 Open the optional browser UI on demand:
 
 ```sh
-agent-farm traces
-agent-farm traces --project /path/to/repo --no-open
-agent-farm traces --directory /path/to/telemetry --scope machine
+agent-farm ui
+agent-farm ui --project /path/to/repo --no-open
+agent-farm ui --directory /path/to/telemetry --scope machine
 ```
 
 The UI binds only to `127.0.0.1`, uses a random URL token, and validates Host and
-Origin. It starts no collection, offers no write endpoints, and stops with
+Origin. It starts neither an agent nor collection, and stops with
 Ctrl-C. A persistent, searchable session sidebar opens a conversation reader on
 the right. Session links support browser Back/Forward and direct linking; Previous
 and Next move between loaded sessions. Earlier model requests and context are
@@ -341,6 +341,42 @@ evidence accessible. The URL is
 a local bearer capability: do not share it. `--port` optionally chooses a port.
 The default scope is the current project and the store follows trusted workspace
 settings; `--directory` explicitly selects a store without loading the workspace.
+
+`agent-farm traces` remains a compatibility alias for `agent-farm ui`. Both open
+the same light-themed dashboard with Sessions and Profiles navigation. Telemetry
+and the telemetry MCP tools remain read-only; profile management has separate
+same-origin JSON POST endpoints requiring an additional request header.
+
+### Managing profiles in the UI
+
+`--config-root DIR` chooses the host configuration directory (default:
+`~/.config/agent-farm`). Profiles are host configuration, not files written into
+the selected project. The project determines trusted workspace context when
+resolving a profile. Profile inspection and validation still enforce workspace
+trust, even when `--directory` bypasses workspace discovery for telemetry.
+
+- **New profile** creates a launch preset referencing an existing agent, with an
+  optional model override. Define agents through `agent-farm init` or configuration
+  files first; this version does not edit shared agent definitions.
+- Local profiles have a form for the agent reference, model/reasoning/speed
+  overrides, and declared arguments. Blank overrides inherit the agent setting.
+  Invalid profiles expose YAML source for repair.
+- **Resolved** shows effective settings, instructions, skills, source information,
+  and the workspace-controlled telemetry access decision. It does not expose
+  connection objects or provider credentials. Captured instructions can still be
+  sensitive; keep the local URL private.
+- Plugin profiles cannot be edited in place. **Duplicate to local** qualifies
+  their agent reference so the local preset retains plugin dependencies.
+- **Review changes** validates with the same resolver as launches and shows the
+  before/after source without writing. **Save profile** validates again and
+  atomically replaces the local preset. Existing files require a matching content
+  revision; stale edits and creation collisions fail instead of overwriting them.
+- Writes are limited to local `profiles/<name>.yaml`; symlink write targets and
+  directories are rejected. Existing comments are preserved by form edits.
+  Changes affect future launches, never running sessions or prepared snapshots.
+
+There are no profile deletion, plugin installation, agent-launch, or workspace
+trust mutation controls in this first management UI.
 
 For manual MCP configuration use `agent-farm telemetry mcp --project /path/to/repo`
 (the same `--directory`, `--scope`, and `--config-root` options are supported).

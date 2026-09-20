@@ -39,7 +39,7 @@ if (rawArgs[0] === 'doctor' && rawArgs.length === 1) {
 }
 
 try {
-  if(rawArgs[0]==='traces'||rawArgs[0]==='telemetry'){
+  if(rawArgs[0]==='ui'||rawArgs[0]==='traces'||rawArgs[0]==='telemetry'){
     await (await import('./telemetry-cli.js')).telemetryCommand(rawArgs);
   }else{
   const {values,tokens}=parseArgs({args:rawArgs,allowPositionals:true,strict:true,tokens:true,options:{

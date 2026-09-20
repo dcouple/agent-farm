@@ -48,7 +48,7 @@ export function telemetryBrowser(){
       if(append){const ids=new Set(sessions.map(s=>s.id));sessions.push(...data.items.filter((s:Data)=>!ids.has(s.id)));}else sessions=data.items;
       cursor=data.next_cursor;($('more') as HTMLButtonElement).hidden=!cursor;
       $('list-status').textContent=data.total_matching+' profile session'+(data.total_matching===1?'':'s')+(data.partial?' · partial scan':'')+(data.warnings.length?' · '+data.warnings.join(' '):'');if(!quiet||before!==JSON.stringify(sessions))renderList();
-      if(!selectedHash()&&sessions[0]){history.replaceState(null,'','#session='+sessions[0].id);await loadDetail(sessions[0].id);}
+      if(!selectedHash()&&new URLSearchParams(location.hash.slice(1)).get('view')!=='profiles'&&sessions[0]){history.replaceState(null,'','#session='+sessions[0].id);await loadDetail(sessions[0].id);}
     }catch(e){error(e);}finally{loading=false;}
   }
   function documentText(text:string,parent:HTMLElement){
