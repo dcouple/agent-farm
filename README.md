@@ -172,6 +172,7 @@ for schema, merge examples, trust storage, and global workspace installation.
 
 ```sh
 agent-farm plugin install                 # bundled dcouple
+agent-farm plugin install greenfield      # bundled role-named profiles, see plugins/greenfield/README.md
 agent-farm plugin install roles           # any bundled plugins/roles folder
 agent-farm plugin install /path/to/plugin
 agent-farm plugin list
