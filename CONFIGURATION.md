@@ -331,7 +331,14 @@ agent-farm ui --directory /path/to/telemetry --scope machine
 The UI binds only to `127.0.0.1`, uses a random URL token, and validates Host and
 Origin. It starts neither an agent nor collection, and stops with
 Ctrl-C. A persistent, searchable session sidebar opens a conversation reader on
-the right. Session links support browser Back/Forward and direct linking; Previous
+the right. The sidebar groups loaded sessions by full worktree path, with
+collapsible groups and explicit profile labels. Distinct paths are never merged
+just because their folder names match; missing worktrees fall back to the project
+path or an Unknown worktree group. Group counts reflect loaded, filtered sessions.
+The default Timeline shows nested activities on a wide shared time axis, retaining
+the light app theme. Turn reader provides conversation content; Timeline & events
+restores the earlier native spans/events list with relative-duration bars.
+Session links support browser Back/Forward and direct linking; Previous
 and Next move between loaded sessions. Earlier model requests and context are
 collapsed, while the newest request opens with separate instructions, input/context,
 and output sections. Request timing, input/output/cache tokens, and reported cost

@@ -5,17 +5,27 @@ export const telemetryPage=String.raw`<!doctype html>
 .session-list{padding:6px}.session-link{padding:8px 10px;margin-bottom:2px;border-radius:6px}.session-title{font-size:13px;align-items:center}.session-title>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.session-title .dot{margin:0 2px}.session-meta{display:flex;justify-content:space-between;gap:8px;font-size:11px;margin-top:2px}.session-meta>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.session-meta>span:last-child{flex-shrink:0;font-variant-numeric:tabular-nums}.sidebar-head{padding:14px 12px 10px}.sidebar h1{font-size:18px;margin-bottom:10px}.sidebar input,.sidebar select,.sidebar button{padding:6px 8px}.list-status{margin-top:8px}@media(min-width:681px){.shell{grid-template-columns:280px minmax(0,1fr)}}
 .detail-inner{max-width:none;padding:0}.explorer-layout{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100%}.structure{padding:18px 10px;background:#fafbf9;border-right:1px solid var(--line);min-width:0}.structure h2{font-size:13px;margin:0 8px 12px}.structure details{margin:0 0 0 10px;border-left:1px solid var(--line);padding-left:5px}.structure summary{cursor:pointer;font-size:11px;color:var(--muted)}.tree-link{display:block;padding:6px 7px;border-radius:5px;text-decoration:none;font-size:12px;overflow-wrap:anywhere}.tree-link[aria-current=true]{background:#e5eee2;color:#204b32;font-weight:650}.tree-link small{display:block;color:var(--muted);font-size:10px}.reader{padding:24px 28px 60px;min-width:0;max-width:1200px;width:100%;margin:auto}.breadcrumbs{display:flex;flex-wrap:wrap;gap:7px;font-size:11px;margin-bottom:20px}.reader h1{font-size:25px;letter-spacing:-.7px;margin:6px 0}.reader .stats{margin:18px 0}.reader .stat{padding:10px 13px}.reader .stat-value{font-size:18px}.reader .document{padding:8px 16px}.reader .section-label{margin-top:18px}.activity-list{border:1px solid var(--line);background:white;border-radius:8px;overflow:hidden}.activity-row{display:grid;grid-template-columns:minmax(140px,1fr) minmax(130px,2fr) 65px;gap:12px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:12px}.activity-row:last-child{border:0}.activity-row a{overflow-wrap:anywhere}.activity-track{position:relative;height:20px;background:repeating-linear-gradient(to right,#f2f5f1 0,#f2f5f1 calc(25% - 1px),#e1e7e2 calc(25% - 1px),#e1e7e2 25%);border-radius:3px}.activity-bar{position:absolute;top:5px;height:10px;border-radius:3px;background:#72a485;min-width:2px}.activity-bar.agent{background:#9b83cf}.activity-bar.tool{background:#c69a59}.activity-bar.request{background:#6c9fcb}.activity-bar.failed{background:#bd6556}.ruler{display:flex;justify-content:space-between;font:10px ui-monospace,monospace;color:var(--muted);margin:8px 0}.turn-link{display:block;padding:14px 16px;background:white;border:1px solid var(--line);border-radius:7px;margin:8px 0;text-decoration:none}.turn-link small{display:block;color:var(--muted);margin-top:4px}.reader .notice{margin:10px 0;font-size:11px}.back-link{display:inline-block;font-size:12px;margin-bottom:10px}.reader .turn{margin:8px 0}.reader .turn>summary{padding:10px 14px}.reader .turn-body{padding:15px}.reader .tabs{gap:18px}.reader .empty{padding:24px 10px}@media(max-width:1150px){.explorer-layout{grid-template-columns:190px minmax(0,1fr)}.reader{padding:20px 18px}.shell{grid-template-columns:240px minmax(0,1fr)}}@media(max-width:900px){.explorer-layout{display:block}.structure{border-right:0;border-bottom:1px solid var(--line);max-height:230px;overflow:auto}.activity-row{grid-template-columns:minmax(110px,1fr) minmax(70px,1fr) 50px;gap:6px}}@media(max-width:680px){.reader{padding:18px 14px}.activity-row{font-size:11px}.structure{max-height:180px}}
 .reader{margin:0 auto;align-self:start}.reader .detail-heading{flex-wrap:wrap}.activity-track small{font-size:10px}.structure summary{padding:3px 0}
+.worktree-group{margin-bottom:8px}.worktree-group>summary{cursor:pointer;padding:9px 5px;font-size:12px;font-weight:650;display:flex;align-items:center;gap:6px}.worktree-group>summary:before{content:'›';color:var(--muted)}.worktree-group[open]>summary:before{transform:rotate(90deg)}.worktree-group>summary::-webkit-details-marker{display:none}.worktree-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.worktree-count{font-size:10px;color:var(--muted);background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:0 5px}.worktree-path{font-size:10px;color:var(--muted);padding:0 8px 7px;overflow-wrap:anywhere}.worktree-sessions{margin-left:8px;border-left:1px solid var(--line);padding-left:4px}.session-profile{display:inline-block;font-size:10px;padding:1px 5px;border:1px solid var(--line);border-radius:4px;background:var(--accent);margin:4px 0 1px;max-width:100%;overflow-wrap:anywhere}
+.explorer-layout.timeline-layout{display:block}.timeline-layout .reader{max-width:none}.trace-waterfall .activity-row{grid-template-columns:minmax(180px,25%) minmax(180px,1fr) 72px;min-height:52px;gap:16px}.trace-waterfall .activity-track{height:32px;background:repeating-linear-gradient(to right,var(--wash) 0,var(--wash) calc(25% - 1px),var(--line) calc(25% - 1px),var(--line) 25%)}.trace-waterfall .activity-bar{height:16px;top:8px;border-radius:4px}.trace-waterfall .activity-row small{display:block;font-size:10px}.timeline-axis{background:var(--wash);font-size:11px;font-weight:600;color:var(--muted)}.timeline-ticks{display:flex;justify-content:space-between;font:10px ui-monospace,monospace}.tabs{flex-wrap:wrap}@media(max-width:800px){.trace-waterfall{overflow-x:auto}.trace-waterfall .activity-row{min-width:550px}}
 </style></head><body>
 <header class="topbar"><div class="brand"><span class="logo" aria-hidden="true">▦</span>Agent Farm <span style="font-weight:400;color:#91ad9b">/</span> <span style="font-weight:400">Sessions</span></div><small>LOCAL TELEMETRY · READ ONLY</small></header>
 <div class="shell"><aside class="sidebar" aria-label="Session navigation"><div class="sidebar-head"><h1>Sessions</h1><form id="filters"><input class="search" id="search" placeholder="Search loaded sessions…" aria-label="Search loaded sessions"><div class="filter-row"><select name="harness" aria-label="Harness"><option value="">All harnesses</option><option>claude</option><option>codex</option></select><select name="status" aria-label="Outcome"><option value="">All outcomes</option><option>success</option><option>failed</option><option>unfinished</option></select></div><details class="filter-extra"><summary>More filters</summary><input name="profile" placeholder="Exact profile" aria-label="Exact profile"><input name="project" placeholder="Project contains" aria-label="Project contains"><label>From (UTC)<input name="from" type="date"></label><label>Through (UTC)<input name="to" type="date"></label></details><button class="filter-submit">Apply filters</button></form><p id="list-status" class="list-status" role="status">Loading sessions…</p></div><nav id="sessions" class="session-list" aria-label="Recorded sessions"></nav><button id="more" class="list-more" hidden>Load more sessions</button></aside><main id="detail" class="detail"><div class="empty"><h2>Your sessions, one conversation at a time.</h2><p>Select a run to explore its context, output, and usage.</p></div></main></div><div id="status" role="status"></div><script src="app.js"></script></body></html>`;
 
-// Serialized after TypeScript compilation; keep all browser dependencies local.
-export function telemetryBrowser(){
+/** Preserve newest-first input order, grouping by full path rather than basename. */
+export function groupSessionsByWorktree<T extends {worktree?:unknown;project?:unknown}>(sessions:T[]){
+  const groups=new Map<string,{path:string;label:string;sessions:T[]}>();
+  for(const session of sessions){const path=typeof session.worktree==='string'&&session.worktree?session.worktree:typeof session.project==='string'?session.project:'';let group=groups.get(path);if(!group){group={path,label:path?path.replace(/\\/g,'/').split('/').filter(Boolean).pop()??path:'Unknown worktree',sessions:[]};groups.set(path,group);}group.sessions.push(session);}
+  return [...groups.values()];
+}
+
+// Serialized after TypeScript compilation; helper is explicitly injected by the server.
+export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
   type Data=Record<string,any>;
   const $=(id:string)=>document.getElementById(id)!;
-  let sessions:Data[]=[],selected='',cursor:string|null=null,filters:Data={},loading=false,generation=0,tab='conversation';
+  let sessions:Data[]=[],selected='',cursor:string|null=null,filters:Data={},loading=false,generation=0,tab='timeline';
   let explorerData:Data|undefined;
   const positions=new Map<string,number>();
+  const worktreeExpanded=new Map<string,boolean>();
   const number=(value:any)=>typeof value==='number'?value.toLocaleString(undefined,{maximumFractionDigits:0}):'—';
   const money=(value:any)=>typeof value==='number'?'$'+value.toFixed(value<.01?5:4):'Not reported';
   const duration=(value:any)=>typeof value==='number'?(value>=60000?Math.floor(value/60000)+'m '+Math.floor(value%60000/1000)+'s':value>=1000?(value/1000).toFixed(2)+'s':value.toFixed(0)+'ms'):'—';
@@ -30,14 +40,23 @@ export function telemetryBrowser(){
   function renderList(){
     const list=$('sessions'),scroll=list.scrollTop;list.replaceChildren();
     const search=($('search') as HTMLInputElement).value.toLowerCase();
-    for(const s of sessions.filter(s=>[s.profile,s.model,s.worktree,s.id].some(v=>String(v??'').toLowerCase().includes(search)))){
-      const link=el('a','',list,'session-link') as HTMLAnchorElement;link.href='#session='+encodeURIComponent(s.id);link.setAttribute('aria-current',String(s.id===selected));
-      const title=el('div','',link,'session-title');el('span',s.profile??'Unnamed session',title);const dot=el('span','',title,'dot '+s.status);dot.title=s.status;
+    const matching=sessions.filter(s=>[s.profile,s.model,s.worktree,s.project,s.id].some(v=>String(v??'').toLowerCase().includes(search)));
+    for(const group of groupWorktrees(matching)){
+      const box=el('details','',list,'worktree-group') as HTMLDetailsElement;box.open=search.length>0||(worktreeExpanded.get(group.path)??true);
+      const summary=el('summary','',box);summary.title=group.path||'No worktree was recorded';el('span',group.label,summary,'worktree-name');el('small',String(group.sessions.length),summary,'worktree-count');
+      el('div',group.path||'No path recorded',box,'worktree-path');
+      box.ontoggle=()=>{if(box.isConnected&&!search)worktreeExpanded.set(group.path,box.open);};
+      const items=el('div','',box,'worktree-sessions');
+      for(const s of group.sessions){
+      const link=el('a','',items,'session-link') as HTMLAnchorElement;link.href='#session='+encodeURIComponent(s.id);link.setAttribute('aria-current',String(s.id===selected));
+      const title=el('div','',link,'session-title');el('span',date(s.started_at)+' · '+String(s.id).slice(0,6),title);const dot=el('span','',title,'dot '+s.status);dot.title=s.status;
+      el('span','Profile: '+(s.profile??'Not recorded'),link,'session-profile');
       const metadata=(s.harness??'agent')+' · '+(s.model??'unknown model');
       const meta=el('div','',link,'session-meta');el('span',metadata,meta);el('span',duration(s.duration_ms),meta);
-      const started=date(s.started_at);const when=el('div','',link,'session-meta');el('span',started,when);if(s.child_sessions)el('span','+'+s.child_sessions+' linked',when);
+      const started=date(s.started_at);if(s.child_sessions)el('div','+'+s.child_sessions+' linked agent sessions',link,'session-meta');
       link.title=[s.profile??'Unnamed session',s.status,metadata,started,s.worktree??s.project??''].join(' · ');
       link.setAttribute('aria-label',link.title);
+      }
     }
     if(!list.children.length)el('p','No matching sessions.',list,'empty');list.scrollTop=scroll;
   }
@@ -96,7 +115,7 @@ export function telemetryBrowser(){
     for(const [name,title] of [['query_spans','Spans'],['query_events','Events']]){
       el('h3',title!,root);const list=el('div','',root);let next:string|undefined;
       const more=button('Load '+title,root,async()=>{more.disabled=true;try{
-        const data=await query(name!,{session_id:explorerData?.node.session_id??selected,limit:50,...(next?{cursor:next}:{})});if(token!==generation||tab!=='metadata')return;
+        const selectedTab=tab,data=await query(name!,{session_id:explorerData?.node.session_id??selected,limit:50,...(next?{cursor:next}:{})});if(token!==generation||tab!==selectedTab)return;
         const max=Math.max(1,...data.items.map((row:Data)=>row.duration_ms??0));
         for(const row of data.items){const item=el('div','',list,'timeline-row'),heading=el('div','',item,'timeline-name');el('span',row.name??row.attributes?.['event.name']??row.body?.stringValue??'Event',heading);el('span',duration(row.duration_ms),heading);if(row.duration_ms!==undefined)el('div','',item,'bar').style.width=(100*row.duration_ms/max)+'%';const raw=el('details','',item,'raw-details');el('summary','Raw attributes',raw);el('pre',JSON.stringify(row,null,2),raw,'raw');}
         if(data.warnings.length)el('p',data.warnings.join(' '),list,'notice');next=data.next_cursor??undefined;more.hidden=!next;more.textContent='Load more';
@@ -105,7 +124,7 @@ export function telemetryBrowser(){
   }
   function activityLink(n:Data,parent:HTMLElement,title=n.name,cls='tree-link'){
     const link=el('a',title,parent,cls) as HTMLAnchorElement;
-    link.href='#'+new URLSearchParams({session:selected,node:n.id}).toString();link.setAttribute('aria-current',String(explorerData?.node.id===n.id));return link;
+    link.href='#'+new URLSearchParams({session:selected,node:n.id}).toString();link.setAttribute('aria-current',String(explorerData?.node.id===n.id));link.onclick=()=>{if(['agent','tool','request'].includes(n.kind))tab='conversation';else if(n.kind==='session')tab='timeline';};return link;
   }
   function ancestry(data:Data){const list:Data[]=[],seen=new Set<string>();let n=data.node;while(n&&!seen.has(n.id)){seen.add(n.id);list.unshift(n);n=data.nodes.find((p:Data)=>p.id===n.parent_id);}return list;}
   function activityRows(parent:HTMLElement,data:Data,all=false){
@@ -115,7 +134,10 @@ export function telemetryBrowser(){
     if(!rows.length){el('div','No nested activity recorded for this selection.',parent,'missing');return;}
     const start=Date.parse(n.started_at),total=n.duration_ms;
     if(Number.isFinite(start)&&typeof total==='number'){const ruler=el('div','',parent,'ruler');el('span',date(n.started_at),ruler);el('span',duration(total)+' elapsed · overlapping work is not added',ruler);}
-    const list=el('div','',parent,'activity-list');
+    const list=el('div','',parent,'activity-list'+(tab==='timeline'?' trace-waterfall':''));
+    if(tab==='timeline'){
+      const head=el('div','',list,'activity-row timeline-axis');el('span','Agent / activity',head);const ticks=el('div','',head,'timeline-ticks');for(let i=0;i<=4;i++)el('span',typeof total==='number'?duration(total*i/4):'—',ticks);el('span','Duration',head);
+    }
     for(const {node:row,depth} of rows){const item=el('div','',list,'activity-row'),name=el('div','',item);name.style.paddingLeft=Math.min(depth,8)*12+'px';activityLink(row,name,row.name,'');el('small',' · '+row.kind+' · '+row.status,name,'muted');const track=el('div','',item,'activity-track');
       const offset=Date.parse(row.started_at)-start;
       if(Number.isFinite(offset)&&typeof total==='number'&&total>0&&typeof row.duration_ms==='number'){
@@ -126,7 +148,7 @@ export function telemetryBrowser(){
   }
   function renderDetail(token:number){
     if(!explorerData)return;const data=explorerData,n=data.node,s=data.session??{},root=$('detail');root.replaceChildren();
-    const layout=el('div','',root,'explorer-layout'),tree=el('nav','',layout,'structure');tree.setAttribute('aria-label','Session structure');el('h2','Session structure',tree);
+    const layout=el('div','',root,'explorer-layout'+(['timeline','events'].includes(tab)?' timeline-layout':'')),tree=el('nav','',layout,'structure');tree.hidden=['timeline','events'].includes(tab);tree.setAttribute('aria-label','Session structure');el('h2','Session structure',tree);
     const ancestors=ancestry(data),expanded=new Set(ancestors.map(a=>a.id)),children=new Map<string,Data[]>();for(const row of data.nodes){const key=row.parent_id??'';children.set(key,[...(children.get(key)??[]),row]);}
     let count=0;const draw=(row:Data,parent:HTMLElement,depth=0)=>{if(depth>32||count++>=500)return;const link=activityLink(row,parent);el('small',row.kind+' · '+duration(row.duration_ms),link);const nested=children.get(row.id)??[];if(nested.length){const box=el('details','',parent) as HTMLDetailsElement;box.open=expanded.has(row.id);el('summary',nested.length+' activities',box);for(const child of nested)draw(child,box,depth+1);}};
     for(const row of data.nodes.filter((r:Data)=>!r.parent_id))draw(row,tree);if(count>=500)el('small','Tree limited to 500 activities.',tree);
@@ -136,9 +158,10 @@ export function telemetryBrowser(){
     const sub=el('div','',inner,'subheading');el('span',n.status,sub,'badge '+n.status);el('span',(s.harness??'Agent')+' · '+(s.user??'Unknown user')+' · '+date(n.started_at),sub);el('div',s.worktree??'',inner,'subheading');
     const stats=el('div','',inner,'stats');for(const [title,value,note] of [['Elapsed',duration(n.duration_ms),'Wall time, not summed agent time'],['Model requests',number(n.requests),'Including linked descendants'],['Output tokens',number(n.output_tokens),'Input: '+number(n.input_tokens)],['Reported cost',money(n.cost_usd),n.cost_coverage+'/'+n.requests+' requests report cost']]){const stat=el('div','',stats,'stat');el('span',title!,stat,'stat-label');el('span',value!,stat,'stat-value');el('small',note!,stat,'stat-note');}
     if(data.partial||data.warnings.length)el('p',[data.partial?'Partial telemetry.':'',...data.warnings].join(' '),inner,'notice');
-    const tabs=el('div','',inner,'tabs');for(const [id,title] of [['conversation','Turn reader'],['timeline','Timeline'],['metadata','Details & raw data']]){const b=button(title!,tabs,()=>{tab=id!;renderDetail(token);});b.className='tab';b.setAttribute('aria-pressed',String(tab===id));if(tab===id)b.setAttribute('aria-selected','true');}
+    const tabs=el('div','',inner,'tabs');for(const [id,title] of [['timeline','Timeline'],['conversation','Turn reader'],['events','Timeline & events'],['metadata','Details & raw data']]){const b=button(title!,tabs,()=>{tab=id!;renderDetail(token);});b.className='tab';b.setAttribute('aria-pressed',String(tab===id));if(tab===id)b.setAttribute('aria-selected','true');}
     const panel=el('div','',inner);
     if(tab==='timeline'){el('p','Recorded parent/child relationships on a shared time axis. Gaps are not classified as idle.',panel,'muted');activityRows(panel,data,true);return;}
+    if(tab==='events'){el('p','Native spans and events. Bars compare recorded durations within each loaded page; they do not indicate start offsets.',panel,'muted');void renderRaw(panel,token);return;}
     if(tab==='metadata'){const meta=el('dl','',panel,'metadata');for(const [key,value] of Object.entries({...s,...n})){el('dt',key.replaceAll('_',' '),meta);el('dd',String(value??'Not recorded'),meta);}const attributes=el('details','',panel,'raw-details');el('summary','Selected activity attributes',attributes);el('pre',JSON.stringify(data.attributes,null,2),attributes,'raw');if(n.kind==='session'&&n.session_id!==selected){const link=el('a','Open child session independently',panel) as HTMLAnchorElement;link.href='#session='+encodeURIComponent(n.session_id);}button('Open session raw events',panel,()=>{const raw=el('div','',panel);void renderRaw(raw,token);});return;}
     if(n.kind==='session'){
       el('p','Each turn spans a user message to the agent response. Expand an agent to inspect its nested work.',panel,'muted');const turns=data.nodes.filter((r:Data)=>r.kind==='turn'&&r.parent_id===n.id);for(const turn of turns){const link=activityLink(turn,panel,turn.name,'turn-link');el('small',duration(turn.duration_ms)+' · '+turn.requests+' requests · '+money(turn.cost_usd),link);}
