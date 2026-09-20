@@ -56,6 +56,18 @@ weaker.
 
 ## Phase 4 — RECONCILE
 
+Before you reconcile, know why these rules exist. They are the reconciliation section of the
+`benchmark-profiles` skill at ~/.claude/skills/benchmark-profiles/SKILL.md, and each one is there
+because skipping it produced a wrong published number:
+
+- A scanner's CONFIDENCE field is a hint. In testing, the parent that opened the cited code anyway
+  rejected 9% of findings a scanner had marked CONFIRMED, including one that trusted a doc comment
+  over the vendored implementation and one that mistook a deliberately built feature for a hole.
+- Two passes that scored the same found different defects. Only what both found is a result; what
+  one found is a lead.
+- Read the implementation, not the comment. Read the caller, not the function. A finding that
+  survives only as a description has not been verified.
+
 This is the phase only you can do, and it is why you are the expensive model here.
 
 - **Deduplicate.** The same defect will surface in several modules under different names. Merge them

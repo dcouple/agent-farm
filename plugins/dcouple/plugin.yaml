@@ -16,7 +16,7 @@ checksums:
   agents/exp1-luna-xhigh-reviewer.md: 4822cd74d11510e5f94ff9e28a85e3ef1f142c353d4fee7f0b9f6796a595d55b
   agents/exp1-luna-xhigh-worker.md: 78de8c0a9c416275d0468234bd9c13eed00ef66cf7e0bb914d5e8ae302615901
   agents/exp1-luna-xhigh.md: 003a4ebb213341e4d6ebcbc53c801869b834cf3d9d2e62a3c8353cac1547af35
-  agents/exp10-luna-meta-orchestrator.md: cbc10924e3325ad78295be668bd7e08babf2423bc7b3a9b2d670844083ad6157
+  agents/exp10-luna-meta-orchestrator.md: 790ca55ea0bfa8fe9e8594049c42dd8c68efcf4238eebb0e5d12bf779a444160
   agents/exp2-deepseek-flash-reviewer.md: 10fc8f2af6c2286bbef0488ebb2f8ba3ed8a5351a998a18651f1e494d82d32df
   agents/exp2-deepseek-flash-worker.md: 220aacca3f2748c79df9b5524e1560a01192b1c82f3edc2517cf97e60e2c0465
   agents/exp2-deepseek-flash.md: 2f5b48f7df676a8e7b3d9c7d012d77b5c89ca6116563f049c6106c259eb29303
@@ -34,7 +34,7 @@ checksums:
   agents/exp8-deepseek-builder.md: fc90d8acaefd6947d2ab858c74ecdc9c1a7fa65672e7ee5e766401c8df760bf0
   agents/exp8-glm-auditor.md: ba90ba993a0d16fd5ac0c5c4bf43d9bb31762cbe75ff1ad74862e19e946b5d9f
   agents/exp8-glm-deepseek-loop.md: 4649d55181feb017d61100660bb520479dd6ce8c1174c864a81c541f756e7268
-  agents/exp9-meta-orchestrator.md: 7cc316438a77748228665d7409c0e98ae6e2565dc179d10ea55e6d063edebfd5
+  agents/exp9-meta-orchestrator.md: c9f39be4f76d852635157b98163dfb568ea6d8c0e62ab1bd5549819b11fc27d9
   agents/fx-deepseek-claude-raw.md: bd4efd4f7981b1322527ae6e1304ddc09b815157e39c7807320530dc12921c07
   agents/fx-glm-claude-raw.md: c505da7368359da6890f0fe1799fc5f57a04b0f0c1d2174538b5a4bb1d29f801
   agents/hx-deepseek-claude.md: a47891301f40058983a1a2460e95b1c9808f4a911fa1390985096939362b943b
@@ -63,8 +63,8 @@ checksums:
   agents/rvs-luna-skilled.md: 2f8488fd178a1158f25c43ebbdfe0a378525e3b32a2200a863c82e76ed64402b
   agents/rvs-terra-skilled.md: edefba501d77f9da487c56bf38f971a3617a00f0c0beb4c4c030600874c36e67
   agents/scan-luna-worker.md: d49f402a764d51b3372fcae152237af42cdf965b958d2abb889700875643cd4e
-  agents/scan-orchestra-terra.md: daae12d6f2ff3627800ad807da8710ee0e1b328650a4df7eda5e83779fd6fb51
-  agents/scan-orchestra.md: 46761fa597e783a60eb6a87aeaceffa3afb7ad899a3a432f1f6e4c5b401aff39
+  agents/scan-orchestra-terra.md: e1efa758867064bd3a2b8619c60c4c60db27e7b7013912e8bf787c1cfb32dcd2
+  agents/scan-orchestra.md: fbbbd98a5c5ec025fbe219cd8ff4c256729e5e4a7a55b5d5b1d07e80f81a86c8
   agents/scan-reconciler.md: 7ca3c923095da36ea63c4701a17b9f14f45cb290d3cc8e57e85a28ef501b7406
   agents/scan-terra-worker.md: d97be16ce53ae9f0754d7245fdf2fffda2510e24e9040679ae1c4b47a6529ee2
   agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2

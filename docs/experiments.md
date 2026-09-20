@@ -203,3 +203,17 @@ now verify each finding against the code before fixing it and report `REJECTED` 
 reasons, because a fixer that accepted five findings of which three were false silently "fixed" all
 five, while one that checked first pushed back on the three. The `rvs-*-skilled` profiles are kept
 only as negative-result controls: loading review skills made every model worse or equal.
+
+## Benchmark methodology is now in the skill and referenced from the orchestrators
+
+The `benchmark-profiles` skill at `~/.claude/skills/benchmark-profiles/SKILL.md` now carries the
+method the study converged on: inject ground truth rather than derive it, with an injector that
+refuses on a missing or non-unique anchor; have a stronger model audit each injection blind; run a
+control arm on unmodified code for the false-positive floor; run every arm twice and report only
+what both found; never score by keyword; return receipts with a CONFIDENCE field the parent is told
+to ignore until it has read the cited file; and use a process launcher above four lanes because the
+native subagent cap is four including the root.
+
+`exp9-meta-orchestrator` and `exp10-luna-meta-orchestrator` reference the skill and restate its
+eight binding rules before their profile-comparison section. `scan-orchestra` and
+`scan-orchestra-terra` reference the reconciliation rules in their phase-four instructions.

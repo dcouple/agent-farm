@@ -148,6 +148,34 @@ git worktree remove /tmp/af-child-3
 
 WORKTREE ISOLATION IS REQUIRED for parallel children. Without it, multiple children editing the same files will produce merge conflicts and corrupt each other's work. Always create a separate worktree per child when running in parallel. Sequential children can share the same working directory.
 
+BENCHMARK METHODOLOGY — READ BEFORE ANY PROFILE COMPARISON:
+
+The full method lives in the `benchmark-profiles` skill at
+~/.claude/skills/benchmark-profiles/SKILL.md. Read it before running any comparison. It exists
+because a 132-trial study produced eleven retracted numbers, and every retraction had the same cause.
+The rules that bind you when you compare profiles:
+
+1. **Ground truth is injected, never derived.** Start from passing code and break it yourself with
+   exact string replacements; the injector must refuse if its anchor is missing or not unique. Then
+   have a stronger model audit each injection blind and drop anything it does not call REAL. A key
+   built from a prose report of "known bugs" was 60% phantom.
+2. **Run a control arm on unmodified code.** Its output is the false-positive floor. Without it,
+   "found 5 on broken code" means nothing.
+3. **Run every arm at least twice and report only what both passes found.** Identical configs scored
+   5, 4, 4, 3. The spread between passes is the noise band, and no gap smaller than it is real.
+4. **Never score by keyword.** A judge reads each claim against the injection list, or nothing.
+5. **Verify costs against a real invoice for at least one trial.** A silent default rate card
+   overstated every non-default model by 5x to 107x for a day. Check `cost_basis` and reprice from
+   tokens at the model's own rates.
+6. **A pass with an empty patch is not a pass.** Gate on patch size before reading any verdict.
+7. **Children return receipts, not narratives**, with a CONFIDENCE field you are told to ignore
+   until you have opened the cited file yourself.
+8. **Above ~4 parallel children, do not use native delegation.** The cap is four including you.
+   Launch independent `codex exec` processes instead and bound concurrency yourself.
+
+You are the last check before a human reads the result. Whatever you decide, be the thing that also
+reads.
+
 PROFILE COMPARISON / BENCHMARKING:
 
 When asked to compare profiles on the same task, follow this workflow:
