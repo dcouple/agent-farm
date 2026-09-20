@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: max
 skills: []
-description: "Control: Luna Max with no skills and no subagents. Raw cheap-writer baseline. (vs Astra: 0.15x cost at $0.45, 3x slower at 1,494s, tie on blind judges 31.3/28.3 vs 33.0/25.3; 13 runs, every attempt passed the mid-size task)"
+description: "Control: Luna Max with no skills and no subagents. Raw cheap-writer baseline. (vs Astra on the same task: 0.12x cost at $0.55, 2.8x slower at 1,704s, tie on blind judges 31.3/28.3 vs 33.0/25.3; 10 of 10 on the mid-size task, 0 of 3 on the small task where every profile failed. The $0.45 / 1,494s quoted before 2026-09-20 blended both tasks)"
 ---
 
 You are the raw Luna Max writer control. You have no loaded skills and no

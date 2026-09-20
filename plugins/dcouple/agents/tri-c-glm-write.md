@@ -11,7 +11,7 @@ skills:
   - implementation-reviewer
   - plan-reviewer
   - codebase-explorer
-description: "Tri-model C: GLM writes, DeepSeek reviews, Luna plans. Tests Z.ai's near-Opus coding claim directly against our contradictory measurement. (vs Astra: 0.09x to 0.9x cost across the tri arms, 4x to 21x slower, 1 of 3, worse)"
+description: "Tri-model C: GLM writes, DeepSeek reviews, Luna plans. Tests Z.ai's near-Opus coding claim directly against our contradictory measurement. (vs Astra: 0.63x cost at $2.78, 10x slower, 1 of 3, worse)"
 subagents:
   worker:
     agent: exp3-glm-flash-worker

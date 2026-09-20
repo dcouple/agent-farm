@@ -13,7 +13,7 @@ skills:
   - review
   - cold-read
   - investigate
-description: "Experimental: Token-efficient meta-orchestrator that launches other Agent Farm profiles for multi-harness workflows. Luna XHigh plans and coordinates; child profiles implement and review on their native harnesses. (vs Astra: 0.11x cost at $0.34, 3x slower, 3 of 3 tie; the cheapest passing config in the study)"
+description: "Experimental: Token-efficient meta-orchestrator that launches other Agent Farm profiles for multi-harness workflows. Luna XHigh plans and coordinates; child profiles implement and review on their native harnesses. (vs Astra: 0.20x cost at $0.90 with child processes counted, 2.3x slower at 1,422s, 3 of 3 tie. The $0.34 published for a day priced the parent alone; the runner missed the agent-farm children this profile launches, so it costs 1.6x the bare Luna writer, not less)"
 subagents:
   socrates:
     agent: astra-socrates

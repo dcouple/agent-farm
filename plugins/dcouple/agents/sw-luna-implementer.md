@@ -11,7 +11,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: Luna Max single writer with Astra advisor on call and Astra final review. The default bet. (vs Astra: 0.23x cost at $0.69, 5x slower at 2,441s, 3 of 3 tie; no measurable gain over sw-luna-raw, the advisor was where the money went)"
+description: "Experiment: Luna Max single writer with Astra advisor on call and Astra final review. The default bet. (vs Astra: 0.16x cost at $0.69, 4x slower at 2,441s, 3 of 3 tie; no measurable gain over sw-luna-raw, the advisor was where the money went)"
 subagents:
   advisor:
     agent: sw-astra-advisor
