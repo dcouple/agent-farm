@@ -268,6 +268,44 @@ alone. Process children inherit the host configuration root. Settings are not
 embedded in published plugins. Remote exporters such as Langfuse and named
 exporter selection are not implemented yet; only local collection is supported.
 
+### Artifact bundle exports
+
+Export selected sessions and their recorded descendants into an existing local
+document bundle (a directory containing `bundle.json`):
+
+```sh
+agent-farm telemetry export --bundle tmp/greenfield/my-work --session current
+agent-farm telemetry export --bundle tmp/greenfield/my-work --session SESSION_ID --require-finished
+```
+
+Repeat `--session` for additional roots. Subsequent exports can omit it to reuse
+the roots recorded in `bundle.json`. Exports are always project-scoped; use
+`--project DIR` from outside the project. `--directory STORE` selects local storage;
+inside a launched session the export command inherits its collector store.
+The command copies `session.json` and available raw OTLP JSONL signals into
+`evidence/telemetry/<session-id>/`, preserving unrelated manifest fields, including
+the existing published artifact identity. It records roots, included sessions,
+export time, completeness, and `publication: pending` under `telemetry`.
+
+To refresh the local bundle automatically after a launched harness exits, set
+`AGENT_FARM_ARTIFACT_BUNDLE` to the absolute bundle directory before launch. The
+bundle must exist by exit. Export failures are reported without changing the
+harness's exit status. This does not upload anything: the parent/orchestrator
+must refresh the existing artifact using the destination's publishing tools after
+the process exits. `--require-finished` refuses a snapshot if a selected session
+or known descendant has not recorded completion. A crash may leave sessions
+unfinished indefinitely; do not label those snapshots complete.
+
+Captured conversation content requires `--include-content` to export, or explicit
+`AGENT_FARM_EXPORT_CONTENT=on` for post-exit exports. Metadata itself can contain
+private paths or tool arguments. Keep artifact access private and never bundle the
+whole machine store. Exports reject symlink files/directories and are bounded to
+100 roots, 500 sessions, 64 MiB per signal, and 256 MiB total. Concurrent exports
+to one bundle fail with a lock error; retry after the active export finishes.
+
+Project workspace instructions own provider-specific upload commands and audience
+policy. Shared skills should describe the evidence contract without naming tools.
+
 ### Agent access and the local browser
 
 Collection and agent access are separate switches. Collection defaults on;

@@ -58,6 +58,21 @@ function fixture(t,harness='claude'){
 const lines=(s,signal)=>fs.readFileSync(path.join(s.directory,signal+'.jsonl'),'utf8').trim().split('\n').map(JSON.parse);
 const attrs=list=>Object.fromEntries(list.map(a=>[a.key,a.value.stringValue??a.value.intValue??a.value.boolValue??a.value.arrayValue]));
 
+for(const harness of ['claude','codex'])test(`${harness}: post-exit artifact export includes lifecycle and preserves harness exit status`,t=>{
+ const f=fixture(t,harness),bundle=path.join(f.base,'artifact');fs.mkdirSync(bundle);
+ fs.writeFileSync(path.join(bundle,'bundle.json'),JSON.stringify({published:{kind:'grain',id:'existing'}}));
+ f.env.AGENT_FARM_ARTIFACT_BUNDLE=bundle;f.env.EXIT_CODE='7';
+ const r=f.invoke(['--exec']);assert.equal(r.status,7,r.stderr);
+ const manifest=JSON.parse(fs.readFileSync(path.join(bundle,'bundle.json'))),[s]=f.sessions();
+ assert.equal(manifest.telemetry.complete,true);assert.equal(manifest.published.id,'existing');
+ const exported=path.join(bundle,'evidence/telemetry',s.id);
+ assert.equal(JSON.parse(fs.readFileSync(path.join(exported,'session.json'))).exitCode,7);
+ assert.match(fs.readFileSync(path.join(exported,'traces.jsonl'),'utf8'),/agent_farm.session/);
+ assert.match(r.stderr,/publication pending/);
+ f.env.AGENT_FARM_ARTIFACT_BUNDLE=path.join(f.base,'missing');
+ const failed=f.invoke(['--exec']);assert.equal(failed.status,7);assert.match(failed.stderr,/artifact telemetry export failed/);
+});
+
 for(const harness of ['claude','codex'])test(`${harness}: prepared launches collect native signals and lifecycle, remain reusable, and redact metadata`,t=>{
  const f=fixture(t,harness);
  const result=f.invoke(['--print-launch','--arg','api_key=ARG-SECRET','--message','PROMPT-SECRET','--','--unknown-key','NATIVE-SECRET']);
@@ -92,6 +107,7 @@ for(const harness of ['claude','codex'])test(`${harness}: prepared launches coll
 
 test('direct launch and standalone cross-harness process children share trace context and config root',t=>{
  const f=fixture(t);
+ const artifact=path.join(f.base,'artifact');fs.mkdirSync(artifact);fs.writeFileSync(path.join(artifact,'bundle.json'),'{}');f.env.AGENT_FARM_ARTIFACT_BUNDLE=artifact;
  fs.appendFileSync(path.join(f.root,'agents/main.yaml'),'subagents: {worker: {agent: worker, mode: process}}\n');
  fs.writeFileSync(path.join(f.root,'agents/worker.yaml'),'harness: codex\nmodel: child\nskills: []\n');
  const bundle=build(f.root,'main',f.cwd);f.env.DISPATCH=path.join(bundle,'main/dispatch/worker');
@@ -100,6 +116,9 @@ test('direct launch and standalone cross-harness process children share trace co
  const parent=sessions.find(s=>s.attributes['agent_farm.route']==='main'),child=sessions.find(s=>s!==parent);
  assert.equal(child.traceId,parent.traceId);assert.equal(child.parentSpanId,parent.spanId);
  assert.equal(child.attributes['agent_farm.parent.session.id'],parent.id);assert.equal(child.attributes['gen_ai.request.model'],'child');
+ const exported=JSON.parse(fs.readFileSync(path.join(artifact,'bundle.json'))).telemetry;
+ assert.deepEqual(exported.session_ids,[parent.id]);assert.deepEqual(new Set(exported.exported_session_ids),new Set([parent.id,child.id]));assert.equal(exported.complete,true);
+ assert.match(r.stderr,/incomplete snapshot/);assert.match(r.stderr,/complete snapshot/);
 });
 
 test('provider wrapper resolves secrets in the child without persisting them',t=>{
