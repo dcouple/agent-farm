@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-terra
   reasoning: high
 skills: []
-description: "Reviewer benchmark: Terra on Codex. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model."
+description: "Reviewer benchmark: Terra on Codex. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model. (vs Astra: 0.26x to 0.75x cost, 2x FASTER at 1.6 to 4.2 min, 2 of 5 vs 1 of 5; two runs with the same lens found different defects)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

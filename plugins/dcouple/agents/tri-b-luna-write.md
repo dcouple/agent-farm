@@ -11,7 +11,7 @@ skills:
   - implementation-reviewer
   - plan-reviewer
   - codebase-explorer
-description: "Tri-model B: Luna writes, DeepSeek reviews, GLM plans and owns the schema contract. Role assignment from our own measured per-dimension scores."
+description: "Tri-model B: Luna writes, DeepSeek reviews, GLM plans and owns the schema contract. Role assignment from our own measured per-dimension scores. (vs Astra: 0.09x to 0.9x cost across the tri arms, 4x to 21x slower, 3 of 3 tie; the only tri arm that held the gate)"
 subagents:
   worker:
     agent: exp1-luna-xhigh-worker

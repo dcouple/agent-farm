@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Reviewer benchmark: GLM 5.3 Flash on the Claude harness. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model."
+description: "Reviewer benchmark: GLM 5.3 Flash on the Claude harness. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model. (vs Astra: 0.05x cost at $0.061, 8x slower at 10.3 min, 3 of 5 vs 1 of 5; the cheapest respectable single review)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

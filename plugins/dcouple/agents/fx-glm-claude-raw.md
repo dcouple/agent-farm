@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Fix-stage implementer: z-ai/glm-5.3-flash on the claude harness, no skills, no subagents. Mirrors sw-luna-raw's shape so the harness is the only variable."
+description: "Fix-stage implementer: z-ai/glm-5.3-flash on the claude harness, no skills, no subagents. Mirrors sw-luna-raw's shape so the harness is the only variable. (vs Astra fixer: 0.03x cost at $0.056 real, 11x slower at 42.5 min, 14 files, output not scored; the harness reported $9.84, a 175x rate-card overstatement)"
 ---
 
 Implement the requested change. Keep it minimal and in the style of the surrounding code.

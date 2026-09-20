@@ -11,7 +11,7 @@ skills:
   - implementation-reviewer
   - plan-reviewer
   - codebase-explorer
-description: "Tri-model A: DeepSeek writes and authors tests, GLM plans and reviews, Luna advises only. Role assignment from published coding benchmarks."
+description: "Tri-model A: DeepSeek writes and authors tests, GLM plans and reviews, Luna advises only. Role assignment from published coding benchmarks. (vs Astra: 0.09x to 0.9x cost across the tri arms, 4x to 21x slower, 2 of 3, worse)"
 subagents:
   worker:
     agent: exp2-deepseek-flash-worker

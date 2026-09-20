@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Fix-stage implementer: deepseek/deepseek-v4.1-flash on the claude harness, no skills, no subagents. Mirrors sw-luna-raw's shape so the harness is the only variable."
+description: "Fix-stage implementer: deepseek/deepseek-v4.1-flash on the claude harness, no skills, no subagents. Mirrors sw-luna-raw's shape so the harness is the only variable. (vs Astra fixer: no result, the run stopped on disk exhaustion before completing)"
 ---
 
 Implement the requested change. Keep it minimal and in the style of the surrounding code.

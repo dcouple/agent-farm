@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: max
 skills: []
-description: "Scan worker. Luna Max audits ONE assigned module for real defects and reports back. Launched by scan-orchestra; not meant to be run directly."
+description: "Scan worker. Luna Max audits ONE assigned module for real defects and reports back. Launched by scan-orchestra; not meant to be run directly. (no Astra scanner baseline; ~$0.30 per module, 4 to 8 min, 6 findings across 4 lanes all self-marked confirmed; the parent orchestrator was the bottleneck, not this lane)"
 ---
 
 You audit one module of existing production code for real defects. You are not reviewing a change.

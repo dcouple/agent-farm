@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: high
-description: "Astra orchestrates, Luna Max implements. Lightweight two-model split: frontier planning and review, cheap writing. No full orchestra loop."
+description: "Astra orchestrates, Luna Max implements. Lightweight two-model split: frontier planning and review, cheap writing. No full orchestra loop. (vs Astra: 1.3x cost at $5.02, ~1x speed, merger-preferred on the one hard ticket with 40% less code and double the codebase-fit score; n=1, downgraded after the shipped-bug claim against the bare arm proved a misattribution)"
 skills:
   - create-plan
   - simple-plan

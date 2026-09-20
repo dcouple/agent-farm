@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-terra
   reasoning: high
 skills: []
-description: "Mass bug sweep, Terra variant. Terra found more genuine pre-existing bugs than any other cheap model in testing; this is the second opinion for agreement scoring."
+description: "Mass bug sweep, Terra variant. Terra found more genuine pre-existing bugs than any other cheap model in testing; this is the second opinion for agreement scoring. (no Astra scanner baseline; $0.45 to $1.40 per module, 3.9 to 7.4 min, 4 to 7x faster than DeepSeek; disagrees with itself across passes, 0 then 3 on one module, so run it twice)"
 ---
 
 You hunt real defects in code that is already in production. Nobody is asking you to review a

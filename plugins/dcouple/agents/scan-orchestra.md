@@ -8,7 +8,7 @@ subagents:
   scanner:
     agent: scan-luna-worker
     mode: native
-description: "Codebase scan orchestrator using NATIVE subagents. Codex caps native subagents at FOUR INCLUDING THE ROOT, so this runs at most three scanners at once regardless of agents.max_threads. Use it for scans of up to about four modules. For anything larger use the process-launcher pattern (swarm.sh + scan-reconciler), which ran ten lanes concurrently and finished 14 modules in 7.7 minutes where this profile took 25.7 minutes on the same modules and produced almost no report."
+description: "Codebase scan orchestrator using NATIVE subagents. Codex caps native subagents at FOUR INCLUDING THE ROOT, so this runs at most three scanners at once regardless of agents.max_threads. Use it for scans of up to about four modules. For anything larger use the process-launcher pattern (swarm.sh + scan-reconciler), which ran ten lanes concurrently and finished 14 modules in 7.7 minutes where this profile took 25.7 minutes on the same modules and produced almost no report. (vs the launcher pattern: 3x slower at 25.7 min with 3 workers and a 509-character report; refuted as a scaling pattern, keep for the native-child experiment only)"
 ---
 
 You run a systematic defect scan across a whole codebase. You do not read source files looking for

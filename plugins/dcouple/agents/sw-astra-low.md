@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: low
 skills: []
-description: "Effort ablation: gpt-6-astra at reasoning low, no skills, no subagents. Mirror of the raw writer controls with only the effort level changed."
+description: "Effort ablation: gpt-6-astra at reasoning low, no skills, no subagents. Mirror of the raw writer controls with only the effort level changed. (vs Astra high: ~1x cost, ~1x speed, 2 of 2, judged 32.5 to 33.5; the effort ladder is flat from low to max)"
 ---
 
 You are a raw writer control. You have no loaded skills and no subagents. Work

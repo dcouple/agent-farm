@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: max
 skills: []
-description: "Reviewer benchmark: Luna Max on Codex. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model."
+description: "Reviewer benchmark: Luna Max on Codex. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model. (vs Astra: 0.31x cost at $0.36, 15x slower at 19 to 25 min, mean 4 of 5 with range 3 to 5 across identical runs vs 1 of 5)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

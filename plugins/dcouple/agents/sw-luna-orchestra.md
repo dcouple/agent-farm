@@ -13,7 +13,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: Luna Max orchestrating Luna Max workers with Astra final review. Tests H3 — can a cheap model orchestrate?"
+description: "Experiment: Luna Max orchestrating Luna Max workers with Astra final review. Tests H3 — can a cheap model orchestrate? (vs Astra: 0.13x cost at $0.40, 4x slower, 2 of 3, slightly worse)"
 subagents:
   worker:
     agent: exp1-luna-xhigh-worker

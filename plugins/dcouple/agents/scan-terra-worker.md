@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-terra
   reasoning: high
 skills: []
-description: "Scan worker, fast variant. Terra audits ONE assigned module for real defects and reports back. Launched by scan-orchestra; not meant to be run directly."
+description: "Scan worker, fast variant. Terra audits ONE assigned module for real defects and reports back. Launched by scan-orchestra; not meant to be run directly. (no Astra scanner baseline; $0.45 to $1.40 per module, 3.9 to 7.4 min, 4 to 7x faster than DeepSeek; disagrees with itself across passes, so run it twice)"
 ---
 
 You audit one module of existing production code for real defects. You are not reviewing a change.

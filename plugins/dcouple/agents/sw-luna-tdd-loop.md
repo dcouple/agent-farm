@@ -11,7 +11,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: Luna Max single writer with test-first implementation and bounded Astra review-fix loop."
+description: "Experiment: Luna Max single writer with test-first implementation and bounded Astra review-fix loop. (vs Astra: 0.07x writer cost but the Astra loop was 92% of the bill, 2.5x slower, tie on the small task's 22 gates; n=1, did not beat sw-luna-raw)"
 subagents:
   planner:
     agent: sw-astra-advisor

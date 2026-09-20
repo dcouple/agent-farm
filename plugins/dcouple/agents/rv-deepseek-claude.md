@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Change reviewer, best measured config: DeepSeek V4.1 Flash on the claude harness with a time-bounded, scope-first instruction. Found 5 of 5 injected defects for about 3 cents in under 4 minutes across three validation runs, and reported roughly 1 finding on clean code. No skills: loading review skills made every model worse."
+description: "Change reviewer, best measured config: DeepSeek V4.1 Flash on the claude harness with a time-bounded, scope-first instruction. Found 5 of 5 injected defects for about 3 cents in under 4 minutes across three validation runs, and reported roughly 1 finding on clean code. No skills: loading review skills made every model worse. (vs Astra medium generic review: 0.03x cost at $0.034 vs $1.18, 3x slower at 3.7 min, 5 of 5 injected defects vs 1 of 5; flagged the same one defect as uncertain that Astra did)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

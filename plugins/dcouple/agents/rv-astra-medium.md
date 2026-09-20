@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: medium
 skills: []
-description: "Reviewer benchmark: Astra at medium effort, the expensive control. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model."
+description: "Reviewer benchmark: Astra at medium effort, the expensive control. No skills, no subagents. Body text is byte-identical across every rv- profile so the only variable is the model. (this IS the review baseline: $1.18, 78s, 1 of 5 known defects with the generic instruction; as a verifier of 5 injected defects it identified all 5 and called one ambiguous)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

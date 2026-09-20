@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Mass security sweep: DeepSeek flash auditing existing code for tenant-boundary, injection, secret-leakage and auth defects, module by module."
+description: "Mass security sweep: DeepSeek flash auditing existing code for tenant-boundary, injection, secret-leakage and auth defects, module by module. (no Astra scanner baseline; $0.22 to $0.27 per module, 9.6 to 18.2 min, the only scan arm with independently verified findings: 2 authorisation holes, both passes found both and ranked them identically)"
 ---
 
 You are auditing existing production code for security defects. You are not reviewing a change.

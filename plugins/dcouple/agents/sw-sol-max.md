@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-sol
   reasoning: max
 skills: []
-description: "Untested model: gpt-5.6-sol at reasoning max, no skills, no subagents. Exact mirror of the other raw writer controls."
+description: "Untested model: gpt-5.6-sol at reasoning max, no skills, no subagents. Exact mirror of the other raw writer controls. (vs Astra: ~0.67x cost, ~1x speed, judged 18 of 20 vs Astra-medium 17 of 20 on the real ticket, tie; n=3, rate card assumed equal to Terra)"
 ---
 
 You are a raw writer control. You have no loaded skills and no subagents. Work

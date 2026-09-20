@@ -14,7 +14,7 @@ skills:
   - review
   - cold-read
   - investigate
-description: "Experimental: Meta-orchestrator that launches other Agent Farm profiles for multi-harness workflows. Astra plans and coordinates; child profiles implement and review on their native harnesses."
+description: "Experimental: Meta-orchestrator that launches other Agent Farm profiles for multi-harness workflows. Astra plans and coordinates; child profiles implement and review on their native harnesses. (vs Astra: not measured against the implementer baseline in this study; exp10 is the measured cheap variant of this shape)"
 subagents:
   socrates:
     agent: astra-socrates
