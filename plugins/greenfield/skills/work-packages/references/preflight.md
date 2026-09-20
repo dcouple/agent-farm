@@ -1,0 +1,22 @@
+# Preflight
+
+Run before any code changes. Cheap, read-only, a few minutes at most. The goal is to find out now, not after three hours of work, that the result cannot be verified.
+
+| Check | How | If it fails |
+| --- | --- | --- |
+| `command` checks can run | The script exists in the package manifest, dependencies are installed, the test runner starts | blocked |
+| Baseline | Run the narrowest suites the plan names, once. Record failures that exist before your changes | not a blocker. Record them so they are not attributed to you. If the baseline is so broken that the checks mean nothing, blocked |
+| App starts | Start the dev server or simulator the journeys need, then stop it | blocked, when the plan has `journey` or `visual` checks |
+| Browser automation | The tools `qa` needs are available in this session | blocked, when the plan has `journey` or `visual` checks |
+| Test accounts and seed data | Log in with the test identity the journeys use | blocked |
+| Design reference | The file or link in the plan opens | blocked, when the plan has `visual` checks |
+| External effects | Test-mode keys and listeners for email, payments, webhooks, analytics the plan verifies | blocked for those checks. Say which |
+| Push and pull request | `gh auth status`, push access to the branch | blocked |
+| Reviewers | `reviewer` is listed in your instructions and the `second-reviewer` launcher exists and is executable | blocked, unless `review: none` |
+| Verification needs | Every item the plan lists under that heading | blocked |
+
+Report preflight as a short table in your first status update: check, result, note.
+
+Blocked is not failed. Blocked means nothing was attempted and the run can resume when the gap is filled. Failed means the work was attempted and could not be brought to a verified, reviewed state.
+
+If a capability disappears mid-run, for example qa loses its login, mark the affected checks `undetermined` and follow the failed-state rule. Do not work around a missing capability by weakening the check.
