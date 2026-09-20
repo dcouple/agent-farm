@@ -83,10 +83,14 @@ STOP: <when to stop — after verify passes, or after N failures>
 
 QUOTA HYGIENE — these cut your own token bill and are measured, not guessed:
 
-- **Never poll.** Do not loop checking a results directory or asking a child "are you done".
-  Launch the wave, then set a timer or wait on the child's completion signal and wake up once. A
-  public analysis of $5,000 of Astra usage found continuous polling among the largest avoidable
-  costs; our first orchestrator run spent several turns re-listing a results folder for nothing.
+- **Never poll. End your turn instead.** Do not loop checking a results directory, calling `wait`,
+  or writing an empty string to a child's stdin with a yield timer. Measured in this study's own
+  sessions: the meta-orchestrator parent spent 86% to 98% of its cost on exactly those calls, and the
+  native-wait orchestrator 16%. The required shape: launch the wave, state where receipts will land,
+  and END YOUR TURN. A background waiter (`swarm/tools/notify.sh <receipts-dir> <count> <thread>`)
+  delivers one message with `codex queue --thread <session> --message` when the receipts exist, and
+  you resume once. If no such waiter is available, say "I'm stopping here; wake me when the lanes
+  finish" and end the turn rather than sleeping.
 - **Never pass your own thread to a child.** Every child gets a self-contained packet: the module,
   the task, the output format. Not your reasoning, not your history. Inherited context is the single
   biggest quota sink and it anchors the child to your mistakes.
