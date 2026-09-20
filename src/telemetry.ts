@@ -9,6 +9,7 @@ import {spawn,execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import type {LaunchMetadata,Manifest} from './runtime.js';
 import {telemetryProject} from './telemetry-query.js';
+import {exportTelemetry} from './telemetry-export.js';
 
 interface Descriptor {directory:string;bundle:string;route:string;harness:'claude'|'codex';launch:LaunchMetadata;captureContent?:boolean}
 type Attribute = {key:string;value:Record<string,unknown>};
@@ -164,8 +165,10 @@ export function harnessTelemetry(harness:Descriptor['harness'],argv:string[],env
 async function supervise(descriptor:Descriptor,argv:string[]) {
   let session:Awaited<ReturnType<typeof startSession>>|undefined;
   let env=process.env;
-  try {session=await startSession(descriptor,argv,env);({argv,env}=harnessTelemetry(descriptor.harness,argv,env,session,descriptor.captureContent===true));}
+  try {session=await startSession(descriptor,argv,env);({argv,env}=harnessTelemetry(descriptor.harness,argv,env,session,descriptor.captureContent===true));env.AGENT_FARM_TELEMETRY_STORE=descriptor.directory;}
   catch {console.error('agent-farm: local telemetry unavailable; continuing session');}
+  const artifactSession=process.env.AGENT_FARM_ARTIFACT_SESSION_ID??session?.id;
+  if(session&&process.env.AGENT_FARM_ARTIFACT_BUNDLE&&artifactSession)env.AGENT_FARM_ARTIFACT_SESSION_ID=artifactSession;
   const child=spawn(argv[0]!,argv.slice(1),{cwd:JSON.parse(fs.readFileSync(path.join(descriptor.bundle,'manifest.json'),'utf8')).directory,env,stdio:'inherit'});
   const handlers=new Map<NodeJS.Signals,()=>void>();
   for(const signal of ['SIGINT','SIGTERM','SIGHUP','SIGQUIT'] as NodeJS.Signals[]) {
@@ -175,6 +178,10 @@ async function supervise(descriptor:Descriptor,argv:string[]) {
   child.once('error',error=>{failure=(error as NodeJS.ErrnoException).code??'spawn_error';console.error(`agent-farm: harness launch failed (${failure})`);});
   child.once('close',async(code,signal)=>{
     try {await session?.finish(code,signal,failure);}catch {console.error('agent-farm: could not finish local telemetry');}
+    if(session&&process.env.AGENT_FARM_ARTIFACT_BUNDLE){
+      try{const result=exportTelemetry({directory:descriptor.directory,projectDirectory:JSON.parse(fs.readFileSync(path.join(descriptor.bundle,'manifest.json'),'utf8')).directory,scope:'project'},{bundle:process.env.AGENT_FARM_ARTIFACT_BUNDLE,sessionIds:[artifactSession??session.id],includeContent:process.env.AGENT_FARM_EXPORT_CONTENT==='on'});console.error('agent-farm: artifact telemetry exported; '+(result.complete?'complete':'incomplete')+' snapshot, publication pending');}
+      catch(error){console.error('agent-farm: artifact telemetry export failed: '+(error as Error).message);}
+    }
     for(const [name,handler] of handlers)process.removeListener(name,handler);
     if(signal)process.kill(process.pid,signal);
     else process.exitCode=failure?1:code??1;

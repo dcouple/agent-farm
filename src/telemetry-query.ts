@@ -126,6 +126,28 @@ export class TelemetryStore {
     if(typeof id!=='string'||!uuid.test(id))throw new Error('No valid session ID; current is available only when this session is recorded');
     return id;
   }
+  /** Raw, scoped snapshot for artifact export; never exposed as an MCP query. */
+  exportSnapshot(roots:string[],includeContent=false,requireFinished=false){
+    if(!roots.length||roots.length>100)throw Error('Export requires 1–100 explicit session IDs');
+    const selected=new Set(roots.map(id=>this.sessionId(id)));
+    for(const id of selected)this.read(id);
+    const scan=this.sessions({});if(scan.partial||scan.warnings.length)throw Error('Cannot safely enumerate descendants: '+scan.warnings.join(' '));
+    let changed=true;while(changed){changed=false;for(const s of scan.sessions)if(s.parent_session_id&&selected.has(s.parent_session_id)&&!selected.has(s.id)){selected.add(s.id);changed=true;}}
+    if(selected.size>500)throw Error('Export exceeds 500 sessions');
+    let bytes=0;
+    return [...selected].map(id=>{
+      const metadata=this.read(id);
+      if(metadata.attributes['agent_farm.capture_content']===true&&!includeContent)throw Error('Session '+id+' captured conversation content; explicitly use --include-content to export it');
+      if(requireFinished&&metadata.state!=='finished')throw Error('Session '+id+' has not finished');
+      const files:Record<string,Buffer>={'session.json':Buffer.from(JSON.stringify(metadata,null,2)+'\n')};bytes+=files['session.json']!.length;
+      if(bytes>256*1024*1024)throw Error('Telemetry export exceeds byte limits');
+      for(const name of ['traces.jsonl','logs.jsonl','metrics.jsonl']){
+        let fd:number;try{fd=this.open(id,name);}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')continue;throw e;}
+        try{const size=fs.fstatSync(fd).size;if(size>64*1024*1024||bytes+size>256*1024*1024)throw Error('Telemetry export exceeds byte limits');const data=Buffer.alloc(size);let read=0;while(read<size){const n=fs.readSync(fd,data,read,size-read,read);if(!n)throw Error('Telemetry changed while exporting');read+=n;}files[name]=data;bytes+=size;}finally{fs.closeSync(fd);}
+      }
+      return {id,finished:metadata.state==='finished',files};
+    });
+  }
   private async rows(id:string,signal:'traces'|'logs',byteLimit=maxSignalBytes,rowLimit=maxRows){
     const rows:ObjectMap[]=[],warnings:string[]=[];let partial=false,fd:number;
     try{fd=this.open(id,signal+'.jsonl');}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return {rows,warnings:['No '+signal+' exports have been recorded.'],partial:false};throw e;}

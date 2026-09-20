@@ -268,6 +268,44 @@ alone. Process children inherit the host configuration root. Settings are not
 embedded in published plugins. Remote exporters such as Langfuse and named
 exporter selection are not implemented yet; only local collection is supported.
 
+### Artifact bundle exports
+
+Export selected sessions and their recorded descendants into an existing local
+document bundle (a directory containing `bundle.json`):
+
+```sh
+agent-farm telemetry export --bundle tmp/greenfield/my-work --session current
+agent-farm telemetry export --bundle tmp/greenfield/my-work --session SESSION_ID --require-finished
+```
+
+Repeat `--session` for additional roots. Subsequent exports can omit it to reuse
+the roots recorded in `bundle.json`. Exports are always project-scoped; use
+`--project DIR` from outside the project. `--directory STORE` selects local storage;
+inside a launched session the export command inherits its collector store.
+The command copies `session.json` and available raw OTLP JSONL signals into
+`evidence/telemetry/<session-id>/`, preserving unrelated manifest fields, including
+the existing published artifact identity. It records roots, included sessions,
+export time, completeness, and `publication: pending` under `telemetry`.
+
+To refresh the local bundle automatically after a launched harness exits, set
+`AGENT_FARM_ARTIFACT_BUNDLE` to the absolute bundle directory before launch. The
+bundle must exist by exit. Export failures are reported without changing the
+harness's exit status. This does not upload anything: the parent/orchestrator
+must refresh the existing artifact using the destination's publishing tools after
+the process exits. `--require-finished` refuses a snapshot if a selected session
+or known descendant has not recorded completion. A crash may leave sessions
+unfinished indefinitely; do not label those snapshots complete.
+
+Captured conversation content requires `--include-content` to export, or explicit
+`AGENT_FARM_EXPORT_CONTENT=on` for post-exit exports. Metadata itself can contain
+private paths or tool arguments. Keep artifact access private and never bundle the
+whole machine store. Exports reject symlink files/directories and are bounded to
+100 roots, 500 sessions, 64 MiB per signal, and 256 MiB total. Concurrent exports
+to one bundle fail with a lock error; retry after the active export finishes.
+
+Project workspace instructions own provider-specific upload commands and audience
+policy. Shared skills should describe the evidence contract without naming tools.
+
 ### Agent access and the local browser
 
 Collection and agent access are separate switches. Collection defaults on;
@@ -323,15 +361,22 @@ text; do not treat telemetry text as instructions.
 Open the optional browser UI on demand:
 
 ```sh
-agent-farm traces
-agent-farm traces --project /path/to/repo --no-open
-agent-farm traces --directory /path/to/telemetry --scope machine
+agent-farm ui
+agent-farm ui --project /path/to/repo --no-open
+agent-farm ui --directory /path/to/telemetry --scope machine
 ```
 
 The UI binds only to `127.0.0.1`, uses a random URL token, and validates Host and
-Origin. It starts no collection, offers no write endpoints, and stops with
+Origin. It starts neither an agent nor collection, and stops with
 Ctrl-C. A persistent, searchable session sidebar opens a conversation reader on
-the right. Session links support browser Back/Forward and direct linking; Previous
+the right. The sidebar groups loaded sessions by full worktree path, with
+collapsible groups and explicit profile labels. Distinct paths are never merged
+just because their folder names match; missing worktrees fall back to the project
+path or an Unknown worktree group. Group counts reflect loaded, filtered sessions.
+The default Timeline shows nested activities on a wide shared time axis, retaining
+the light app theme. Turn reader provides conversation content; Timeline & events
+restores the earlier native spans/events list with relative-duration bars.
+Session links support browser Back/Forward and direct linking; Previous
 and Next move between loaded sessions. Earlier model requests and context are
 collapsed, while the newest request opens with separate instructions, input/context,
 and output sections. Request timing, input/output/cache tokens, and reported cost
@@ -341,6 +386,42 @@ evidence accessible. The URL is
 a local bearer capability: do not share it. `--port` optionally chooses a port.
 The default scope is the current project and the store follows trusted workspace
 settings; `--directory` explicitly selects a store without loading the workspace.
+
+`agent-farm traces` remains a compatibility alias for `agent-farm ui`. Both open
+the same light-themed dashboard with Sessions and Profiles navigation. Telemetry
+and the telemetry MCP tools remain read-only; profile management has separate
+same-origin JSON POST endpoints requiring an additional request header.
+
+### Managing profiles in the UI
+
+`--config-root DIR` chooses the host configuration directory (default:
+`~/.config/agent-farm`). Profiles are host configuration, not files written into
+the selected project. The project determines trusted workspace context when
+resolving a profile. Profile inspection and validation still enforce workspace
+trust, even when `--directory` bypasses workspace discovery for telemetry.
+
+- **New profile** creates a launch preset referencing an existing agent, with an
+  optional model override. Define agents through `agent-farm init` or configuration
+  files first; this version does not edit shared agent definitions.
+- Local profiles have a form for the agent reference, model/reasoning/speed
+  overrides, and declared arguments. Blank overrides inherit the agent setting.
+  Invalid profiles expose YAML source for repair.
+- **Resolved** shows effective settings, instructions, skills, source information,
+  and the workspace-controlled telemetry access decision. It does not expose
+  connection objects or provider credentials. Captured instructions can still be
+  sensitive; keep the local URL private.
+- Plugin profiles cannot be edited in place. **Duplicate to local** qualifies
+  their agent reference so the local preset retains plugin dependencies.
+- **Review changes** validates with the same resolver as launches and shows the
+  before/after source without writing. **Save profile** validates again and
+  atomically replaces the local preset. Existing files require a matching content
+  revision; stale edits and creation collisions fail instead of overwriting them.
+- Writes are limited to local `profiles/<name>.yaml`; symlink write targets and
+  directories are rejected. Existing comments are preserved by form edits.
+  Changes affect future launches, never running sessions or prepared snapshots.
+
+There are no profile deletion, plugin installation, agent-launch, or workspace
+trust mutation controls in this first management UI.
 
 For manual MCP configuration use `agent-farm telemetry mcp --project /path/to/repo`
 (the same `--directory`, `--scope`, and `--config-root` options are supported).
