@@ -135,3 +135,31 @@ Two cautions carried over from the run that produced these:
    logs before attributing a result to a skill.
 2. An empty patch passes every verification gate, because the gates run against
    an unmodified checkout. Always check patch size before reading a pass.
+
+## Reviewer profiles (`rv-`)
+
+Added for the review benchmark. Each is a bare reviewer: one model, no skills, no subagents, with
+**byte-identical body text** so the only variable is the model. They exist to measure the checking
+half of the pipeline, which the writing experiments never touched.
+
+- `rv-glm-claude`, `rv-deepseek-claude`: cheap outside models on the Claude harness.
+- `rv-luna-max`, `rv-terra-high`: cheap native models on Codex.
+- `rv-astra-low`, `rv-astra-medium`: the frontier controls.
+- `rv-glm-targeted`: identical model and harness to `rv-glm-claude`, differing only in what it is
+  told to look for. It exists to isolate instruction from model.
+
+**The result these produced:** the instruction mattered far more than the model. Given a generic
+"review this code", a frontier model found 1 of 5 known defects for $1.18. Given a targeted
+instruction to verify each signal against the schema, a cheap model found 4 of 5 for $0.36. A single
+cheap reviewer aimed at one class of problem found 4 of 5 for $0.15 in 9 minutes.
+
+Running five cheap reviewers in parallel, each with a different lens, found all five defects for
+about the price of one frontier run. Reviews are read-only, so they parallelise without conflict.
+
+Two cautions:
+
+1. **A single review is not reliable.** The identical reviewer run four times on identical code
+   scored 5, 4, 4 and 3 of 5, missing different defects each time.
+2. **Reviewers miss what generated tests catch.** Zero of five reviewers noticed a change that
+   declared a command 68 times without wiring it into help text, which its own contract test catches
+   deterministically. Run both.

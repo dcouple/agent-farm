@@ -49,6 +49,13 @@ checksums:
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
   agents/refactor.md: c0207fd6f06470bedb6d2cc4248c24490c8de1bd52d3a766dd2df009e2c231ba
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
+  agents/rv-astra-low.md: 10b14c9d542e9dc58e58032276982421e0b73308c2d238c827d74a8554f07e62
+  agents/rv-astra-medium.md: ce135dd19c97afaa955aea666b9ac92b887e7165e88503eabfe1ab594e614efe
+  agents/rv-deepseek-claude.md: f9d7db7b109fcee23f395f5d267ecbc0d142ae78f8cfb18631ce9abf7421d478
+  agents/rv-glm-claude.md: eae75e33aca61d3efe9da46d5343e9b221753e4105395bb6202997cb6dc3a0e5
+  agents/rv-glm-targeted.md: c8844b7b46d3c3036669549bb11498845c1aa4799d9ebba5d27675551e178416
+  agents/rv-luna-max.md: fcf7abf7d89b72b9310e7a778a4e5e54b72086f9e9dc0e2bdaa324a51e680f0c
+  agents/rv-terra-high.md: acf0ad69841798bb21390281cb8600e549e9930a55410645069ad1fda0d2e3cb
   agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
@@ -98,6 +105,13 @@ checksums:
   profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
   profiles/parsa.yaml: f650fdeeed28391b5463a8bc0ed8db687b92332b7218273d72efb8e193eba913
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
+  profiles/rv-astra-low.yaml: ce73d2e3f33f6b5eee32a73eb6b7d6b044ef8eb70b47b6dd1ad17bd9d8c38335
+  profiles/rv-astra-medium.yaml: 98c53f0d7f855263d5da9ab9f90bc9f37234a4ab646990e8685b1548d13e0057
+  profiles/rv-deepseek-claude.yaml: d8ff2ba491abf7a1656dc812d19f0f44b3651e3d190a0218589025d301ef97c9
+  profiles/rv-glm-claude.yaml: 82fd3cf99e2f859a8838cac42875c090b4b2db4ac7b384db4dfedc91daa221b7
+  profiles/rv-glm-targeted.yaml: 7048c3389c3367e2c31418e9a2cb9afe133e0d8a575bffbfa8808f57cc113491
+  profiles/rv-luna-max.yaml: 5e32e7bd0dc8c1cc196fca22839c9e42e5efaae9e69198a396cc4e75f8971c42
+  profiles/rv-terra-high.yaml: e8faf139ec877b00f0c6fe063e7ddd8f0266984b5959f5474410dae66290b228
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   profiles/sw-astra-low.yaml: 53d4356c1301a2a5547e5fe87e81235a67690cc08027552499efa4560f80433e
   profiles/sw-astra-medium.yaml: e64a9e0c7d4317c575d8f20b75ec6968666cdd04894681146717dd0d6542b2d2
