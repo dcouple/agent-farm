@@ -188,7 +188,7 @@ export function loadProvider(root: string): Provider | undefined {
   return {name:value.name,base_url:value.base_url,api_key_env:value.api_key_env,...(value.match===undefined ? {} : {match:value.match})};
 }
 const providerConfigMarker='# Agent Farm generated provider configuration\n';
-function codexConfig(original: string, runtime: string, provider?: Provider): void {
+function codexConfig(original: string, runtime: string, provider?: Provider, rootUsesProvider = true): void {
   const destination=path.join(runtime,'config.toml');
   let current: fs.Stats | undefined;
   try { current=fs.lstatSync(destination); } catch (e) { if ((e as NodeJS.ErrnoException).code!=='ENOENT') throw e; }
@@ -199,8 +199,10 @@ function codexConfig(original: string, runtime: string, provider?: Provider): vo
     return;
   }
   if (current?.isSymbolicLink() && path.resolve(runtime,fs.readlinkSync(destination))!==path.join(original,'config.toml')) throw new Error(`Conflicting runtime path: ${destination}`);
+  // A slash-model native child needs the provider table even when the root stays on its default
+  // provider; only emit the top-level selector when the root itself routes through it.
   const content=providerConfigMarker+[
-    `model_provider = ${toml(provider.name)}`,
+    ...(rootUsesProvider ? [`model_provider = ${toml(provider.name)}`] : []),
     `[model_providers.${provider.name}]`,
     `name = ${toml(provider.name)}`,
     // Claude adds /v1/messages itself; Codex adds only /responses.
@@ -213,7 +215,7 @@ function codexConfig(original: string, runtime: string, provider?: Provider): vo
   fs.writeFileSync(temporary,content,{mode:0o600,flag:'wx'});
   try { fs.renameSync(temporary,destination); } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
 }
-export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv, home = os.homedir(), provider?: Provider): string {
+export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv, home = os.homedir(), provider?: Provider, rootUsesProvider = true): string {
   const manifest: Manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
   const native=env.AGENT_FARM_NATIVE_CODEX_HOME ?? env.ORCHESTRA_NATIVE_CODEX_HOME ?? env.CODEX_HOME ?? path.join(home,'.codex');
   const original = provider && !fs.existsSync(native) ? path.resolve(native) : fs.realpathSync(native);
@@ -221,7 +223,7 @@ export function codexHome(bundle: string, route: string, env: NodeJS.ProcessEnv,
   const identity={profile:manifest.profile,workspace:manifest.workspace_source?.source ?? null,directory:manifest.directory,route};
   const runtime = path.join(home,'.cache/agent-farm/native-proof',hash(canonical(identity)).slice(0,24));
   fs.mkdirSync(runtime,{recursive:true,mode:0o700});
-  codexConfig(original,runtime,provider);
+  codexConfig(original,runtime,provider,rootUsesProvider);
   for (const item of ['auth.json','.credentials.json','AGENTS.md','AGENTS.override.md','rules','plugins','mcp-oauth-locks']) link(path.join(original,item),path.join(runtime,item));
   const skills = path.join(runtime,'skills'); fs.mkdirSync(skills,{recursive:true});
   const selected = path.join(bundle,route,'skills');
@@ -296,6 +298,10 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
   const telemetryConnection:Connection={type:'mcp',command:process.execPath,args:[path.join(bundle,'telemetry-mcp.mjs'),JSON.stringify({directory:telemetry.directory,projectDirectory:manifest.directory,scope:telemetry.agent_access?.scope??'project'})],env:telemetry.enabled?{}:{AGENT_FARM_SESSION_ID:''},env_vars:telemetry.enabled?['AGENT_FARM_SESSION_ID']:[]};
   // Hosts can opt into slash-only routing (e.g. deepseek/deepseek-v4.1-flash).
   const provider=providerConfig && (providerConfig.match!=='slash-models' || launch.model.name.includes('/')) ? providerConfig : undefined;
+  // Native codex children on slash models (e.g. a DeepSeek builder under an Astra root) route through
+  // the provider on their own; the root keeps its default provider unless it is a slash model too.
+  const providerChildren=providerConfig && agent.harness==='codex' ? Object.entries(agent.children).filter(([,r])=>manifest.nodes[r]!.mode==='native' && manifest.nodes[r]!.model.includes('/')).map(([alias])=>alias) : [];
+  const childProvider=providerChildren.length ? providerConfig : undefined;
   // Children must also inherit disabled telemetry and hosts without providers.
   envOverrides.AGENT_FARM_CONFIG_ROOT=configRoot;
   const nativeArgs=options.nativeArgs ?? [];
@@ -325,7 +331,7 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
     if (defaultHeadless) argv.push('--print','--output-format','json');
   } else {
     if (options.prepare!==false) {
-      codexHome(bundle,route,env,options.home,provider);
+      codexHome(bundle,route,env,options.home,provider ?? childProvider,Boolean(provider));
       envOverrides.CODEX_HOME=env.CODEX_HOME!;
       envOverrides.AGENT_FARM_NATIVE_CODEX_HOME=env.AGENT_FARM_NATIVE_CODEX_HOME!;
     }
@@ -334,6 +340,7 @@ export function command(bundle: string, route: string, options: LaunchOptions = 
     if (launch.model.reasoning) argv.push('-c','model_reasoning_effort='+JSON.stringify(launch.model.reasoning));
     for (const [alias,childRoute] of Object.entries(agent.children)) if (manifest.nodes[childRoute]!.mode==='native') {
       argv.push('-c',`agents.${alias}.description=${JSON.stringify(manifest.nodes[childRoute]!.description ?? alias)}`,'-c',`agents.${alias}.config_file=${JSON.stringify(path.join(directory,'native-agents',alias+'.toml'))}`);
+      if (childProvider && providerChildren.includes(alias)) argv.push('-c',`agents.${alias}.model_provider=${JSON.stringify(childProvider.name)}`);
     }
     if (launch.model.speed) argv.push('-c','service_tier='+JSON.stringify(launch.model.speed==='fast' ? 'fast' : 'default'));
     for (const [key,value] of Object.entries(agent.connections)) argv.push('-c',`mcp_servers.${connectionName(key)}=${toml(codexConnection(value))}`);
