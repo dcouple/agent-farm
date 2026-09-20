@@ -217,3 +217,14 @@ native subagent cap is four including the root.
 `exp9-meta-orchestrator` and `exp10-luna-meta-orchestrator` reference the skill and restate its
 eight binding rules before their profile-comparison section. `scan-orchestra` and
 `scan-orchestra-terra` reference the reconciliation rules in their phase-four instructions.
+
+## Quota hygiene, written into the orchestrators
+
+A public analysis of roughly $5,000 of Astra usage found 70% of cost was cached input re-reads
+driven by long threads. Our bounded single-task runs measured 33% cached, 58% fresh, 9% output: the
+same effect at the other thread length, and a confirmation of "one task, one thread" from our side.
+Every orchestrator body now carries four rules: never poll, set a timer or wait on a completion
+signal; never pass the parent's thread to a child, hand it a self-contained packet; hold receipts,
+not files, and open one cited line to verify rather than ingesting raw output; treat every lane as a
+fresh thread. The `benchmark-profiles` skill carries the same rules with the measurements behind
+them and a table of which layer each rule belongs in.

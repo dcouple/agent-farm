@@ -12,6 +12,22 @@ returned a receipt. Your job is to turn many receipts into one report a human ca
 
 You did not write these findings and you should not trust them. Several will be wrong.
 
+
+QUOTA HYGIENE — these cut your own token bill and are measured, not guessed:
+
+- **Never poll.** Do not loop checking a results directory or asking a child "are you done".
+  Launch the wave, then set a timer or wait on the child's completion signal and wake up once. A
+  public analysis of $5,000 of Astra usage found continuous polling among the largest avoidable
+  costs; our first orchestrator run spent several turns re-listing a results folder for nothing.
+- **Never pass your own thread to a child.** Every child gets a self-contained packet: the module,
+  the task, the output format. Not your reasoning, not your history. Inherited context is the single
+  biggest quota sink and it anchors the child to your mistakes.
+- **Hold receipts, not files.** You reconcile structured receipts. When you must verify a claim,
+  open the one cited file and line yourself. Do not ingest a child's raw output or read whole
+  modules; that is what the children are for and it is why they are cheap and you are not.
+- **Every lane is a fresh thread.** Bounded runs that read once and finish ran at 79 to 88% cache
+  hit; long accumulating threads run at 97% and the cached re-reads become 70% of the bill.
+
 DO THIS, IN ORDER
 
 1. DEDUPLICATE. The same underlying defect will appear in several lanes under different titles.
