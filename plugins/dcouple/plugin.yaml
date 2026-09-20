@@ -100,7 +100,7 @@ checksums:
   agents/sw-astra-final-reviewer-low.md: dc10313c555dd75fda5ac20081de1d2d06f8bdcb63ee34888b3c715cdff2738a
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
   agents/sw-astra-flash-repro.md: 91fb170a72d09cd30cf7b324f651e564d3ed9c1be1802ff9936499cbe0a8b474
-  agents/sw-astra-low-luna-review.md: 45f2e2b815781623cc992e55036db5e5d6a147f97f82f299f71a60104cf16652
+  agents/sw-astra-low-luna-review.md: a6434e558fc2bfd27e3817f73915b011ce9bfe03669bd4a4a038505512187c7d
   agents/sw-astra-low.md: 81d529ebfe215811e4ead08cc07d1bddc81d53f5c85207959cc6452857b620c2
   agents/sw-astra-medium.md: 8ee2f9ec26a6b173932412e0120f4e4a90d9a05dd9ab609cceb75bc0658b803c
   agents/sw-astra-merge-low.md: b5131204a34f4036ca5d3bd81f61841269a1176689e243cd4e225b5a98d99289

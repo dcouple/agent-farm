@@ -3,17 +3,9 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: low
-skills:
-  - implementer
-  - create-ticket
-  - prepare-pr
-  - review
-  - cold-read
-  - investigate
-  - codebase-explorer
+skills: []
 description: "Astra+Luna sweep, reversed: Astra LOW writes (the fewest tokens and fastest of anything measured), Luna xhigh reviews once with the time-bounded body. Hypothesis: the fastest sub path with a cheap independent review costs fewer Astra tokens than Astra medium alone and catches what Astra generic review misses. (vs Astra alone $4.42 / 2.8M tokens: result pending)"
 subagents:
-    mode: native
   final-reviewer:
     agent: sw-luna-final-reviewer
     mode: native
