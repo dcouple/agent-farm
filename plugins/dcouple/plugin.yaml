@@ -42,6 +42,7 @@ checksums:
   agents/fx-glm-claude-raw.md: ac5b6b063eb0db4c750a3da211642f62bd69e83d5705a50ae2f816b879dd5fad
   agents/fx-glm-verify-skilled.md: ad41b036a31a5669f01ec8f2e04b99d149bb5bd540d382f3e0cbe8a51da14be3
   agents/fx-glm-verify.md: 12ad5edbc1d964220d6f179fb7ec1e3659f02f3f325ca649ea621e0342d382a9
+  agents/fx-luna-verify.md: f64e09a1aea36247824ff39a55e84e1262737cd84d2f3f7a894a9f22f48b9e36
   agents/glm-orch-glm.md: c9c13afb357f4fda406cbcd2d34c2bf6d86d34a4be67c8ccc0b434b2dde74d23
   agents/hx-deepseek-claude.md: f3a74c7d3676295690c4e2d60d656533d729bc32b34dfbf1c8dab6dcb8202fd4
   agents/hx-deepseek-timebound.md: 48de53b623b6956b8757fb15d1158207d4e3385eee76ca7666c16440de829ea8
@@ -88,10 +89,14 @@ checksums:
   agents/scan-terra-worker.md: c1e6622c24ef74bedefedcf9d44c61009eb630d5522ea0a43c8c1cd75bfc72d0
   agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
+  agents/sw-astra-advisor-low.md: c3c43ef71f11485349c5a95d6a9f23bf82e0cbd858ba52088f3e6d3a053a1524
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
   agents/sw-astra-brief-flash.md: 10c65b5410539fd25da93f9acd3dc4e78f57a83d36f251405694c003b75c51e0
   agents/sw-astra-brief-glm.md: 6bf710e35d43901f4efe9d7b86e0990d0827af1c867c0c44ea21c2e9cb6c129a
+  agents/sw-astra-brief-luna.md: 6be924f907e5d22d12e97e8d16cedab29f280f8005702393ca17fca16058beea
+  agents/sw-astra-final-reviewer-low.md: dc10313c555dd75fda5ac20081de1d2d06f8bdcb63ee34888b3c715cdff2738a
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
+  agents/sw-astra-low-luna-review.md: 45f2e2b815781623cc992e55036db5e5d6a147f97f82f299f71a60104cf16652
   agents/sw-astra-low.md: 81d529ebfe215811e4ead08cc07d1bddc81d53f5c85207959cc6452857b620c2
   agents/sw-astra-medium.md: 8ee2f9ec26a6b173932412e0120f4e4a90d9a05dd9ab609cceb75bc0658b803c
   agents/sw-astra-merge-low.md: b5131204a34f4036ca5d3bd81f61841269a1176689e243cd4e225b5a98d99289
@@ -101,7 +106,9 @@ checksums:
   agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
   agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
   agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
+  agents/sw-luna-advised-bounded.md: 3dbce3f6f226fcd0d4ffe21da650796edf3342e36aa5f0bca76c544e6b44aba8
   agents/sw-luna-astra-loop.md: 8cb45150010b6e34865c98bb0b4056fcf8db9ae8474a15b453836ccb28eef60a
+  agents/sw-luna-final-reviewer.md: a4bc8cf0609a581a29649f5ea5cf044f566c2f858da958c05ba843f18ad34623
   agents/sw-luna-high.md: 123d4e0a36005a6d86a18c08442cb2a195f9e219bb31ff9021e50b34e812c829
   agents/sw-luna-implementer.md: 227e26c80ec7ad547862868fd1ba0b93d405a4438d2c858c742bc35532c610a4
   agents/sw-luna-max-worker.md: a2727228f9ee4ef6a42d1fdad40c178710a1139fec1ebff874dca3ff31a84f95
@@ -143,6 +150,7 @@ checksums:
   profiles/fx-glm-claude-raw.yaml: 7c388fb50e0a576b2f6ca12e1d2a0747b4dbb44b95bb6d449b951ddef204f04d
   profiles/fx-glm-verify-skilled.yaml: 330312751803fd49ce88c77c16bfcc21d30b08c861840416d6516cd02065b939
   profiles/fx-glm-verify.yaml: d7eb139c8176d3d157518642a5ec41c60a5acb0eddc5cec6f9530c7c0b09c792
+  profiles/fx-luna-verify.yaml: 91fab33b8400fd5b55c673936cee683883e7f45fdbbcf59c67d5d1c9046cc9ac
   profiles/glm-orch-glm.yaml: 60c8be865bc52017a915f2043b690f973eefef9c3cb4f6a26d4e654e7b934531
   profiles/hx-deepseek-claude.yaml: ada8deb9ea4ffe648ef01aacca9a11ceff3ecf118d71658ff60e3f7155a9d8ea
   profiles/hx-deepseek-timebound.yaml: 1ab2e7a32d10eecd7827d2b441a9e20738937c88bd138a1cd4476212e436e6b9
@@ -179,8 +187,12 @@ checksums:
   profiles/scan-reconciler.yaml: 9e833e1b4ad6ec3a993b01329f3deef241ffbe64b56429f9fff587f4a87a7cdd
   profiles/scan-terra-worker.yaml: 4f12736a1c4510be52b6a4ba1d5d51b85582a439eb6f289a389f31466a7f88f7
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
+  profiles/sw-astra-advisor-low.yaml: d92b71f221366b68d8833a2affbe52e1abc22cda9f202a86bcdfb930ec0b4bb1
   profiles/sw-astra-brief-flash.yaml: 728b079e67422cca73523b77cb5d03d82270d0a269639d311aa136698fc1c7e9
   profiles/sw-astra-brief-glm.yaml: fb0c0a33c7adbaccaaef8205c60a62116a8af25aea357da5ee52ed5bf2082f38
+  profiles/sw-astra-brief-luna.yaml: 6d70abe8348bd779705483600c8b691ae40d093c76b7f888f846a5789eb5ac3b
+  profiles/sw-astra-final-reviewer-low.yaml: 75084f759788f09f25f8d6123dec644b305fb7dbef0d1a56e37e808bb2e06d55
+  profiles/sw-astra-low-luna-review.yaml: 8e791c7d53a1b5b5ea6be32b63737af3d528736cc3a7b533a0c276ceb8a3d964
   profiles/sw-astra-low.yaml: 53d4356c1301a2a5547e5fe87e81235a67690cc08027552499efa4560f80433e
   profiles/sw-astra-medium.yaml: e64a9e0c7d4317c575d8f20b75ec6968666cdd04894681146717dd0d6542b2d2
   profiles/sw-astra-merge-low.yaml: 9dfa7e730c06482451b895b18663067963c57e67c7b45deb0ac29fc8da4b936c
@@ -190,7 +202,9 @@ checksums:
   profiles/sw-fast-implementer.yaml: 7ab3c22a35e50049d0fe3f9b1cbebcc87cd98d14e144478d29916445d0883907
   profiles/sw-flash-implementer.yaml: a6b9109ab2369d6de273a51d34ecb7b235489d2e2ef21f41e616870950f09b23
   profiles/sw-frontier-planner.yaml: a5a90ea00f4de7c4206fbca861a9870e3df8091441f7fb6b620b30fdb7413fb4
+  profiles/sw-luna-advised-bounded.yaml: 9b0772d4a33152c312d70b9c411842053e28e600ac670efda6bcb16638601939
   profiles/sw-luna-astra-loop.yaml: b957dc799c88e82feaa6afbdcd1fd414c49c2f324768e16b733faf0fc9644869
+  profiles/sw-luna-final-reviewer.yaml: 083094d96d14196137a237c54b4f5a4cd15542ef2e250aa9e1df7c901ece40d9
   profiles/sw-luna-high.yaml: 00229105f7f651960fe837cce6b83ef553e82c50b9dea2af9a857e41075585c7
   profiles/sw-luna-implementer.yaml: 3b05436e88badc0704bca01535746900ac3d4527bae62001b716ab3d07e1a29c
   profiles/sw-luna-max-worker.yaml: 819dff09dc26cdb86995fd83e2f0121cd1650539588b2931a328b65fe3d779b1
@@ -211,6 +225,7 @@ checksums:
   profiles/tri-c-glm-write.yaml: b96ee42a48e98540ac0e64bbf58eb1e4836138aed509f4f69507953b5c7b9bb6
   skills/astra-flash-orchestration/SKILL.md: 09f5044991623b7c214ab1e9057d51b2937a7de71c2f49deffafe7509986cb66
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
+  skills/bounded-advisor/SKILL.md: 1cfbfd285323cc833d8414bf52e9f49736425f4be6005b96e7b46ea30f544197
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
   skills/codex-queue-wait/SKILL.md: d97bdc088651da1faf49c3368ad5d224d547285bf7f005247cb7aa6e847d3735
   skills/codex-queue-wait/scripts/notify.sh: 72b1e25ace739b5ed5a20c8fc6f772d2ffdc5e51ef04e5501759bbfc56582ad1
