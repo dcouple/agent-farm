@@ -93,7 +93,9 @@ checksums:
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
   agents/sw-astra-brief-flash.md: 10c65b5410539fd25da93f9acd3dc4e78f57a83d36f251405694c003b75c51e0
   agents/sw-astra-brief-glm.md: 6bf710e35d43901f4efe9d7b86e0990d0827af1c867c0c44ea21c2e9cb6c129a
+  agents/sw-astra-brief-luna-high.md: 4c2a51bf01e3a077b92f6017ca1cd7a9cabf50d748135b2106eb6984fbe231ba
   agents/sw-astra-brief-luna.md: 6be924f907e5d22d12e97e8d16cedab29f280f8005702393ca17fca16058beea
+  agents/sw-astra-brief-only-luna.md: 3231d1cf75e42b0d2258a22e95eb31bee2d61cb889adb3576cfb2b1ca0e9d734
   agents/sw-astra-final-reviewer-low.md: dc10313c555dd75fda5ac20081de1d2d06f8bdcb63ee34888b3c715cdff2738a
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
   agents/sw-astra-low-luna-review.md: 45f2e2b815781623cc992e55036db5e5d6a147f97f82f299f71a60104cf16652
@@ -106,8 +108,10 @@ checksums:
   agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
   agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
   agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
+  agents/sw-luna-advised-1call.md: 136b5cec6318768088ccffa67202987a3f28152e9576d3a7ea22f086e6fffcea
   agents/sw-luna-advised-bounded.md: 3dbce3f6f226fcd0d4ffe21da650796edf3342e36aa5f0bca76c544e6b44aba8
   agents/sw-luna-astra-loop.md: 8cb45150010b6e34865c98bb0b4056fcf8db9ae8474a15b453836ccb28eef60a
+  agents/sw-luna-astra-reconcile.md: 561a82c6458d11e5a72bbd2c706150e48f5c41f00cb3f8931115ff02a4320857
   agents/sw-luna-final-reviewer.md: a4bc8cf0609a581a29649f5ea5cf044f566c2f858da958c05ba843f18ad34623
   agents/sw-luna-high.md: 123d4e0a36005a6d86a18c08442cb2a195f9e219bb31ff9021e50b34e812c829
   agents/sw-luna-implementer.md: 227e26c80ec7ad547862868fd1ba0b93d405a4438d2c858c742bc35532c610a4
@@ -190,7 +194,9 @@ checksums:
   profiles/sw-astra-advisor-low.yaml: d92b71f221366b68d8833a2affbe52e1abc22cda9f202a86bcdfb930ec0b4bb1
   profiles/sw-astra-brief-flash.yaml: 728b079e67422cca73523b77cb5d03d82270d0a269639d311aa136698fc1c7e9
   profiles/sw-astra-brief-glm.yaml: fb0c0a33c7adbaccaaef8205c60a62116a8af25aea357da5ee52ed5bf2082f38
+  profiles/sw-astra-brief-luna-high.yaml: fce4b55aa9bd592d9e81b1b37ff23cadcad340d109e06630b27e70a5a64d8c53
   profiles/sw-astra-brief-luna.yaml: 6d70abe8348bd779705483600c8b691ae40d093c76b7f888f846a5789eb5ac3b
+  profiles/sw-astra-brief-only-luna.yaml: 60bc702e93797eb9978d037f38889ca027348577bc4b93af8831c456c8d30fe2
   profiles/sw-astra-final-reviewer-low.yaml: 75084f759788f09f25f8d6123dec644b305fb7dbef0d1a56e37e808bb2e06d55
   profiles/sw-astra-low-luna-review.yaml: 8e791c7d53a1b5b5ea6be32b63737af3d528736cc3a7b533a0c276ceb8a3d964
   profiles/sw-astra-low.yaml: 53d4356c1301a2a5547e5fe87e81235a67690cc08027552499efa4560f80433e
@@ -202,8 +208,10 @@ checksums:
   profiles/sw-fast-implementer.yaml: 7ab3c22a35e50049d0fe3f9b1cbebcc87cd98d14e144478d29916445d0883907
   profiles/sw-flash-implementer.yaml: a6b9109ab2369d6de273a51d34ecb7b235489d2e2ef21f41e616870950f09b23
   profiles/sw-frontier-planner.yaml: a5a90ea00f4de7c4206fbca861a9870e3df8091441f7fb6b620b30fdb7413fb4
+  profiles/sw-luna-advised-1call.yaml: 4df69bb761d8ffd671aed4a7c651c4d8e0a9605c71bbb30b8879c68ada047ccc
   profiles/sw-luna-advised-bounded.yaml: 9b0772d4a33152c312d70b9c411842053e28e600ac670efda6bcb16638601939
   profiles/sw-luna-astra-loop.yaml: b957dc799c88e82feaa6afbdcd1fd414c49c2f324768e16b733faf0fc9644869
+  profiles/sw-luna-astra-reconcile.yaml: 1f41c9bef608030869c0c2416124c927097f4f687b6a0367ef07f0dc9299e51c
   profiles/sw-luna-final-reviewer.yaml: 083094d96d14196137a237c54b4f5a4cd15542ef2e250aa9e1df7c901ece40d9
   profiles/sw-luna-high.yaml: 00229105f7f651960fe837cce6b83ef553e82c50b9dea2af9a857e41075585c7
   profiles/sw-luna-implementer.yaml: 3b05436e88badc0704bca01535746900ac3d4527bae62001b716ab3d07e1a29c
