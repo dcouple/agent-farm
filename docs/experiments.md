@@ -163,3 +163,43 @@ Two cautions:
 2. **Reviewers miss what generated tests catch.** Zero of five reviewers noticed a change that
    declared a command 68 times without wiring it into help text, which its own contract test catches
    deterministically. Run both.
+
+## Scan and swarm profiles (`sweep-`, `scan-`)
+
+Built to point cheap models at existing code rather than at a change. Two patterns, and the
+distinction between them is the most important operational finding of the study.
+
+**Native subagents are capped at four including the root.** `scan-orchestra` and
+`scan-orchestra-terra` use native delegation and therefore run at most three scanners at once no
+matter what `agents.max_threads` is set to. Raising that key from 6 to 16 changed nothing. Use these
+only for scans of about four modules or fewer.
+
+**The process-launcher pattern has no such cap.** Run each lane as its own `codex exec` process
+using `sweep-bugs-flash`, `sweep-sec-flash`, `sweep-bugs-terra` or the `scan-*-worker` profiles,
+then fold the receipts with `scan-reconciler`. On identical modules this ran ten lanes concurrently
+and finished 14 modules in 7.7 minutes where the native orchestrator took 25.7 minutes and produced
+almost no report.
+
+- `sweep-sec-flash`: DeepSeek Flash, security lenses in priority order, tenant boundaries first. About
+  25 cents per module. Its findings were the only ones in the study independently confirmed as real
+  defects in production code, and both of its passes found both and ranked them identically.
+- `sweep-bugs-flash`, `sweep-bugs-terra`, `scan-luna-worker`, `scan-terra-worker`: general defect
+  hunts. Terra is four to seven times faster on identical modules; DeepSeek finds more where defects
+  exist but spent 35 minutes confirming a nine-file module was clean. Use Terra for the bulk and
+  DeepSeek for high-consequence modules.
+- `scan-reconciler`: Astra medium. The stronger parent that folds many receipts into one report and
+  **verifies rather than aggregates**: it opens the cited code for every load-bearing claim. In
+  testing it rejected 9% of lane findings, including one that trusted a doc comment over the vendored
+  implementation and one that mistook a deliberately built feature for an authorisation hole. Its
+  best output is named defect classes, not the defect list.
+
+All lanes return a structured receipt with a `CONFIDENCE: CONFIRMED | UNCERTAIN` field. The
+reconciler is told to treat that field as a hint and nothing more.
+
+**Two profile changes made from the review findings.** `rv-deepseek-claude` now carries the
+time-bounded, scope-first instruction as its default body, because that configuration found 5 of 5
+injected defects for about 3 cents in under 4 minutes across three validation runs. The `fx-` fixers
+now verify each finding against the code before fixing it and report `REJECTED` findings with
+reasons, because a fixer that accepted five findings of which three were false silently "fixed" all
+five, while one that checked first pushed back on the three. The `rvs-*-skilled` profiles are kept
+only as negative-result controls: loading review skills made every model worse or equal.
