@@ -36,6 +36,7 @@ checksums:
   agents/exp8-glm-auditor.md: ba90ba993a0d16fd5ac0c5c4bf43d9bb31762cbe75ff1ad74862e19e946b5d9f
   agents/exp8-glm-deepseek-loop.md: 4649d55181feb017d61100660bb520479dd6ce8c1174c864a81c541f756e7268
   agents/exp9-meta-orchestrator.md: 0ccaa88fc3b594c2ffd3e05d28ebb8fc21879dbeb083b99e7ab616da9dd92e5e
+  agents/flash-builder-router.md: 8ee5f8c2c3c06cd1865df8136cec4005834c98b36b6d556d450831220cbdf99a
   agents/flash-builder.md: fea3d893f066917f9b65d9a3399f22d8f8e5169298e70efb28c93cc46aaf3db5
   agents/fx-deepseek-claude-raw.md: 34bf5125a9dc9407f8fdacc5e60a1d430f33f566f1a66cf81a68ad893c54d14e
   agents/fx-deepseek-verify-skilled.md: c991dab63dcb84e762fe00d00e86204e7b27a1e1f4b8a6a1d03a03176b44ecff
@@ -99,6 +100,7 @@ checksums:
   agents/sw-astra-brief-only-luna.md: 3231d1cf75e42b0d2258a22e95eb31bee2d61cb889adb3576cfb2b1ca0e9d734
   agents/sw-astra-final-reviewer-low.md: dc10313c555dd75fda5ac20081de1d2d06f8bdcb63ee34888b3c715cdff2738a
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
+  agents/sw-astra-flash-repro-sub.md: 8b04ca86ea70260e8d0161c24a35c321183fd3153746ab38d91be264f10e142f
   agents/sw-astra-flash-repro.md: 91fb170a72d09cd30cf7b324f651e564d3ed9c1be1802ff9936499cbe0a8b474
   agents/sw-astra-low-luna-review.md: a6434e558fc2bfd27e3817f73915b011ce9bfe03669bd4a4a038505512187c7d
   agents/sw-astra-low.md: 81d529ebfe215811e4ead08cc07d1bddc81d53f5c85207959cc6452857b620c2
@@ -150,6 +152,7 @@ checksums:
   profiles/exp7-astra-manager-loop.yaml: c1ffbae5f4a5d2b4930fa0681bc16abfa8ecd22be77d8e8e6e791e1ebbab3bd3
   profiles/exp8-glm-deepseek-loop.yaml: ed8c9a5146ead8ac7dca9990cf2a31665ebda461e1e9fc0e7aefb5f1abc2c55f
   profiles/exp9-meta-orchestrator.yaml: c3e3617afb58b7290abb93923fe5041dae7206531732e9a0c14ede882978d4bf
+  profiles/flash-builder-router.yaml: cad3136235cac6df164bbba89e9775d32f913a2891a7fd344e570d5472ecccb4
   profiles/flash-builder.yaml: cbf3b4238602df2f0115414472c050eef1a7149d23a1ca0fb56020397c49daad
   profiles/fx-deepseek-claude-raw.yaml: cef9843d4d659b30adec72cf2b3c8219b2efd79901c4d9179e76d2f7791fda2e
   profiles/fx-deepseek-verify-skilled.yaml: a4740871d03fb5a3e5fdcb5c51f4932c84bd960d8bdc68cadb36c9c15db036f0
@@ -201,6 +204,7 @@ checksums:
   profiles/sw-astra-brief-luna.yaml: 6d70abe8348bd779705483600c8b691ae40d093c76b7f888f846a5789eb5ac3b
   profiles/sw-astra-brief-only-luna.yaml: 60bc702e93797eb9978d037f38889ca027348577bc4b93af8831c456c8d30fe2
   profiles/sw-astra-final-reviewer-low.yaml: 75084f759788f09f25f8d6123dec644b305fb7dbef0d1a56e37e808bb2e06d55
+  profiles/sw-astra-flash-repro-sub.yaml: 578ff2842f03310ff9aa8b07e0fced3e51df8858c8160108fe64a2e88b927dd5
   profiles/sw-astra-flash-repro.yaml: 233215de3551ba27109a2f32fcd1f28cbf0bb4adbe068f383fdef41e059373cc
   profiles/sw-astra-low-luna-review.yaml: 8e791c7d53a1b5b5ea6be32b63737af3d528736cc3a7b533a0c276ceb8a3d964
   profiles/sw-astra-low.yaml: 53d4356c1301a2a5547e5fe87e81235a67690cc08027552499efa4560f80433e
