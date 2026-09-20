@@ -6,9 +6,9 @@ Role-named profiles that hand work to each other through documents, not conversa
 
 ## What is in this folder
 
-- `profiles/`: `planner`, `bug-reporter`, `implementer`, `implementer-fast` (a preset of `implementer`), `one-shot`, `free-range`, `free-range-claude`, `orchestrator`
+- `profiles/`: `planner`, `planner-codex`, `bug-reporter`, `implementer`, `implementer-fast` (a preset of `implementer`), `one-shot`, `free-range`, `free-range-claude`, `orchestrator`
 - `agents/`: one per profile except `implementer-fast`, plus the children `socrates`, `investigator`, `researcher`, `plan-reviewer`, `mockup-artist`, `worker`, `advisor`, `qa`, `reviewer`
-- `instructions/`: `standing-rules.md`, `implementer-identity.md`, `planner-documents.md`
+- `instructions/`: `standing-rules.md`, `implementer-identity.md`, `planner-documents.md`, `planner-identity.md`
 - `skills/`: sixteen, each bound to an agent that calls it
 
 | Skill | Used by | For |
@@ -39,6 +39,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | Profile | Harness and model | Job | Stops when |
 | --- | --- | --- | --- |
 | `planner` | Claude, Fable 5.1 high | Discuss and explain by default. Brief, options, spike, and plan only when asked. Never writes code. May hand a trivial task straight to the implementer, with your yes | Every work package has observable checks and leaves no decision open |
+| `planner-codex` | Codex, Astra high | The same planner on Codex: same skills and the same `planner-identity.md`, so the two can be compared on the same problem. Its children run on their own Codex defaults, `socrates` runs on Astra, and it draws mock-up images itself, so it has no `mockup-artist` | Same |
 | `bug-reporter` | Codex, Sol high | Reproduce, write the report, choose a route | The report is filed. No fix is proposed |
 | `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa once, two independent reviewers once, clean up, open a draft PR | Checks pass and review is clean. Or `blocked` (something needed is missing), or `failed` (could not reach a verified, reviewed state). It never loops |
 | `implementer-fast` | Codex, Astra medium, fast tier | A profile preset, not a second agent: `implementer` with a saved model override and `priority: speed` | Same |
@@ -83,11 +84,11 @@ Children are not profiles. Each fires at one defined moment.
 
 | Child | Bound to | Fires when | Model |
 | --- | --- | --- | --- |
-| `socrates` | planner | Once, when the person is ready to pick an option. Argues for less | Fable 5.1 high |
-| `investigator` | planner, bug-reporter | One evidence question, with a fresh context | Sonnet 5 under planner. Luna max under bug-reporter |
-| `researcher` | planner | A question the codebase cannot answer | Sonnet 5 |
-| `plan-reviewer` | planner | Once, on the finished PLAN.md: what would an implementer still have to decide? | Sonnet 5 |
-| `mockup-artist` | planner | A separate headless Codex run, when `mockup` wants generated images. Given the scope, screenshot paths, and a folder. Returns image files | Sol medium |
+| `socrates` | planner, planner-codex | Once, when the person is ready to pick an option. Argues for less | Fable 5.1 high. Astra high under planner-codex |
+| `investigator` | planner, planner-codex, bug-reporter | One evidence question, with a fresh context | Sonnet 5 under planner. Luna max elsewhere |
+| `researcher` | planner, planner-codex | A question the codebase cannot answer | Sonnet 5 under planner. Luna max under planner-codex |
+| `plan-reviewer` | planner | Once, on the finished PLAN.md: what would an implementer still have to decide? | Sonnet 5 under planner. Luna max under planner-codex |
+| `mockup-artist` | planner (not `planner-codex`) | A separate headless Codex run, when `mockup` wants generated images. Given the scope, screenshot paths, and a folder. Returns image files | Sol medium |
 | `implementer` | planner | A separate headless run, only for a trivial task you approved | its own |
 | `worker` | implementer | A package the plan marks `economy` | Luna max |
 | `advisor` | implementer, orchestrator | The caller is stuck, about to deviate, or about to declare risky work done | Astra high |

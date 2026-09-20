@@ -1,7 +1,7 @@
 ---
-harness: claude
+harness: codex
 model:
-  name: claude-fable-5-1
+  name: gpt-6-astra
   reasoning: high
 instructions_files:
   - ../instructions/standing-rules.md
@@ -15,7 +15,7 @@ skills:
   - plan
   - mockup
   - page
-description: Help a person understand, decide, and then plan. Never writes code.
+description: The planner on Codex. Help a person understand, decide, and then plan. Never writes code.
 args:
   docs:
     type: string
@@ -23,34 +23,23 @@ args:
 subagents:
   socrates:
     agent: socrates
+    harness: codex
+    model:
+      name: gpt-6-astra
+      reasoning: high
     mode: native
   investigator:
     agent: investigator
-    harness: claude
-    model:
-      name: claude-sonnet-5
-      reasoning: high
     mode: native
   researcher:
     agent: researcher
-    harness: claude
-    model:
-      name: claude-sonnet-5
-      reasoning: high
     mode: native
   plan-reviewer:
     agent: plan-reviewer
-    harness: claude
-    model:
-      name: claude-sonnet-5
-      reasoning: high
     mode: native
-  mockup-artist:
-    agent: mockup-artist
-    mode: process
   implementer:
     agent: implementer
     mode: process
 ---
 
-You have no image generation tool. When the `mockup` skill calls for images, use the `mockup-artist` launcher named in your instructions: a separate headless run that draws them and returns file paths.
+You have an image generation tool. When the `mockup` skill calls for images, draw them yourself.
