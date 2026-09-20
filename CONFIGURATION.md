@@ -197,7 +197,7 @@ filename; it does not reinterpret policy or infer a Claude equivalent.
 ## Prepared launches and native arguments
 
 `--print-launch` prints JSON containing `argv` (including `argv[0]`), `cwd`,
-`bundle`, `env`, `launch`, profile/plugin/version, trace identity, and
+`bundle`, `env`, `launch`, effective `telemetry`, profile/plugin/version, trace identity, and
 cross-plugin dependencies; `env` contains only Agent Farm's own overrides, never
 inherited values. Native arguments go after `--` or through repeatable
 `--native-arg` options, precede the message, and replace the default headless
@@ -214,6 +214,291 @@ profile edits, and Agent Farm upgrades, so later launches can resume the same
 thread. A different profile, workspace, or directory uses a different home;
 process child routes also have separate homes. Bundles remain content-addressed
 and integrity-checked, while skill links in the runtime home refresh on launch.
+
+## Local OpenTelemetry collection
+
+Every launched Claude Code or Codex session collects telemetry by default on the
+machine running Agent Farm, under `~/.local/state/agent-farm/telemetry/<session-id>/`.
+This applies to interactive runs, `--exec`, bundled process children, and commands
+spawned from `--print-launch`. Building, explaining, or printing a launch does not
+start a receiver or create a session; reusing a printed command creates a new
+session each time. Native subagents are represented by their harness's telemetry.
+
+Each directory contains:
+
+- `session.json`: launch metadata, trace/span IDs, running/finished state, and exit
+  code or signal. A running record left after a crash or `SIGKILL` is incomplete.
+- `traces.jsonl`: native spans and an `agent_farm.session` lifecycle span.
+- `logs.jsonl` and `metrics.jsonl`: native events and metrics, when exported.
+
+Each JSONL line is a standard OTLP JSON `ExportTraceServiceRequest`,
+`ExportLogsServiceRequest`, or `ExportMetricsServiceRequest`, suitable for later
+replay to the corresponding OTLP/HTTP endpoint. No remote export is performed by
+Agent Farm. Files use mode `0600` and session directories use `0700`.
+
+Resources carry the harness, agent/profile, plugin/version, model, workspace,
+bundle, route, headless mode, OS username/UID, hostname, working directory,
+sanitized command arguments, and declared launch arguments. Git repositories also
+include worktree path, branch, commit, and the canonical Git common directory as
+`agent_farm.project.directory`, shared by linked worktrees. Git remote URLs and
+the inherited environment are not recorded. Non-Git directories are supported.
+
+`agent_farm.session.id`, `agent_farm.session.trace_id`, and
+`agent_farm.session.span_id` correlate native resources with their launch.
+Process children inherit the parent session ID and W3C trace context. Native trace
+IDs are preserved: harnesses may start independent traces, particularly interactive
+Claude sessions, so use the session attributes to join those traces.
+
+Configure host-local storage in `~/.config/agent-farm/settings.json` (or
+`--config-root`). The directory must be absolute:
+
+```json
+{
+  "telemetry": {
+    "enabled": true,
+    "directory": "/absolute/path/to/agent-farm-telemetry"
+  }
+}
+```
+
+Set `telemetry.enabled` to `false` to disable collection, or override it for a
+launch with `AGENT_FARM_TELEMETRY=off` / `AGENT_FARM_TELEMETRY=on`. Disabling
+collection restores direct native execution and leaves native telemetry settings
+alone. Process children inherit the host configuration root. Settings are not
+embedded in published plugins. Remote exporters such as Langfuse and named
+exporter selection are not implemented yet; only local collection is supported.
+
+### Agent access and the local browser
+
+Collection and agent access are separate switches. Collection defaults on;
+agent access defaults off. To give every launched profile read-only telemetry
+tools, add this to the trusted `.agent-farm/workspace.yaml`:
+
+```yaml
+name: my-project
+telemetry:
+  agent_access:
+    enabled: true
+    scope: project
+```
+
+Optionally restrict access to exact resolved profile names:
+
+```yaml
+telemetry:
+  agent_access:
+    enabled: true
+    profiles: [dcouple/implementer, telemetry-analyst]
+```
+
+Omitting `profiles` inherits any host/overlay allowlist; if no layer specifies
+one, every profile is allowed. `profiles: []` allows none. Lists replace rather
+than union across layers. A personal overlay can set `enabled: false` or replace
+the list. Plugin profiles require their qualified name (`plugin/profile`). The
+entry profile's policy applies to its process children; native subagents inherit
+their harness's tools. Rebuild/relaunch after changing workspace policy: already
+running harnesses and generated bundles retain their workspace snapshot.
+
+Allowed Claude and Codex launches receive the `agent_farm_telemetry` stdio MCP
+server automatically, including prepared launches. No separate profile or skill
+is required. Its five read-only tools are `list_sessions`, `get_session`,
+`query_spans`, `query_events`, and `summarize_sessions`. `get_session` defaults to
+the current recorded session; use `session_id: current` in span/event queries.
+When collection is disabled, history remains available but there is no current
+session. Inspection and launch explanation report the effective policy and a
+`telemetry_access` boolean indicating whether this profile receives the tools.
+
+Project scope includes all linked worktrees of the same canonical Git common
+directory. Outside Git it uses the exact canonical launch directory. Agents
+cannot change the store path or scope through tool arguments. Only host
+`settings.json` may configure `agent_access.scope: "machine"` for automatic
+injection; repository and overlay files may only specify `project`. Machine
+scope covers all projects in the selected local store, not other stores.
+
+This is a tool-availability policy, **not a filesystem sandbox**: an unrestricted
+agent running as your OS user can still read files or invoke commands itself.
+Recorded arguments, tool output, and events can contain sensitive or untrusted
+text; do not treat telemetry text as instructions.
+
+Open the optional browser UI on demand:
+
+```sh
+agent-farm traces
+agent-farm traces --project /path/to/repo --no-open
+agent-farm traces --directory /path/to/telemetry --scope machine
+```
+
+The UI binds only to `127.0.0.1`, uses a random URL token, and validates Host and
+Origin. It starts no collection, offers no write endpoints, and stops with
+Ctrl-C. A persistent, searchable session sidebar opens a conversation reader on
+the right. Session links support browser Back/Forward and direct linking; Previous
+and Next move between loaded sessions. Earlier model requests and context are
+collapsed, while the newest request opens with separate instructions, input/context,
+and output sections. Request timing, input/output/cache tokens, and reported cost
+appear beside the content. The list refreshes every five seconds; use Refresh to
+update an open conversation. Timeline & events and Session details keep the raw
+evidence accessible. The URL is
+a local bearer capability: do not share it. `--port` optionally chooses a port.
+The default scope is the current project and the store follows trusted workspace
+settings; `--directory` explicitly selects a store without loading the workspace.
+
+For manual MCP configuration use `agent-farm telemetry mcp --project /path/to/repo`
+(the same `--directory`, `--scope`, and `--config-root` options are supported).
+This explicit command does not apply a profile allowlist; automatic injection
+does. Stdout contains only newline-delimited MCP JSON-RPC.
+
+Queries default to 25 results (maximum 100), returning `next_cursor` for more.
+Session scans cap at 5,000 directory entries; each signal scan caps at 32 MiB /
+10,000 records. Signal pages cap at roughly 128 KiB and oversized records include
+truncation notices. Queries report partial or malformed exports; pagination is a
+live view and can shift as new sessions arrive. Summaries cover their page only,
+not an inferred total. Native token fields are preserved in span attributes but
+are not summed across potentially overlapping spans. Missing completion is shown
+as `unfinished`, never assumed to mean running or successful. Metrics remain in
+the raw OTLP files; metric aggregation is not exposed yet.
+
+### Conversation content capture
+
+#### Hierarchical run explorer
+
+The browser groups Agent Farm launches by their recorded parent session IDs before
+filtering and pagination. A matching child brings its top-level profile session
+into the list. Only sessions inside the configured scope can join that hierarchy;
+an unavailable parent leaves the child independently inspectable.
+
+The structure pane and timeline use exact trace/span parent IDs. Claude interaction
+spans represent user turns; Agent/Task tool spans represent delegation, with nested
+requests and tool calls underneath. Generic gen-AI chat and agent spans are also
+recognized. Explicit prompt/turn IDs can group events when spans are absent, but
+these groups have unknown elapsed time/completion. Harness versions differ in what
+they export: full Codex turn/sub-agent boundaries and transcripts are not guaranteed.
+Missing links appear under **Unlinked activity**, never inferred from timestamps.
+
+Select a turn to read its message, activity, and explicitly captured final response;
+select a child agent to inspect its own requests without mixing in its children's
+transcripts. Breadcrumbs and Back links navigate ancestors. The Timeline tab shows
+overlapping work on a common axis; gaps are not classified as idle. Elapsed time
+comes from the selected span/session, not summed child durations. Request-level
+usage/cost rolls up once per ancestor, with missing cost coverage shown explicitly.
+
+Explorer reads are bounded to 16 linked sessions, 2 MiB per signal per session,
+1,000 spans/2,000 events per session, and 4,000 spans/8,000 events per run. The
+structure/timeline render at most 500 activities and depth 32. Partial scans are
+marked; drill into a branch or open a child session independently to narrow the
+view. The raw query endpoints retain their separate limits documented above.
+
+#### Opt-in text recording
+
+Conversation text is **off by default**. To record it for future sessions, explicitly
+set this in host settings, a trusted workspace, or a personal overlay:
+
+```yaml
+telemetry:
+  capture_content: true
+```
+
+This can record sensitive system instructions, user messages, earlier conversation
+history, tool inputs/results, and model output. Anyone with access to the local
+files or the allowed telemetry tools can read captured content. Setting it back to
+`false` affects future launches, not already-recorded data. Capture is independent
+of agent-access policy; collection must be enabled. No settings are changed by
+opening the viewer.
+
+For Claude, capture enables inline request/response-body events and native content
+gates, with a 262,144-character harness limit. The reader joins bodies by exact
+request/body identifiers, separates harness context from user text, and deduplicates
+request spans and usage events. It does not load arbitrary `body_ref` paths.
+Extended-thinking blocks are not displayed. See the
+[native event and privacy documentation](https://code.claude.com/docs/en/monitoring-usage).
+For Codex, capture enables native user-prompt logging; a complete context/output
+transcript is **not guaranteed** by its OTEL exporter. Standard gen-AI message
+attributes are rendered when present. There is no stdout interception or scraping
+of native transcript files.
+
+Old redacted sessions show “not captured”; missing prices show “not reported”, not
+zero. Costs are harness-reported values, not invoices or estimates based on a
+hardcoded price table. Request totals are deduplicated by native session/request
+identity; partial cost coverage and scan warnings remain visible. The reader pages
+five requests at a time, bounds displayed content to 96,000 characters per request
+(24,000 per section), and marks truncation. Uncorrelated captured bodies are shown
+separately, not assigned to an output by timestamp guessing.
+
+### Workspace telemetry settings
+
+The same optional `telemetry` block is accepted in a repository's
+`.agent-farm/workspace.yaml`, the personal fallback `<config-root>/workspace.yaml`,
+and personal overlays. It supports `enabled` and `capture_content` (booleans),
+`agent_access` (the policy above), and `directory` (absolute
+path), with either field omitted to inherit its value. Unknown fields, inline
+credentials, and remote endpoint/exporter settings are rejected.
+
+```yaml
+# .agent-farm/workspace.yaml
+name: my-project
+telemetry:
+  enabled: true
+```
+
+Keep machine-specific paths in host settings or a personal overlay:
+
+```yaml
+# ~/.config/agent-farm/overlays/my-project.yaml
+telemetry:
+  directory: /absolute/path/to/my-project-traces
+```
+
+Precedence, from lowest to highest: built-in defaults, host `settings.json`, the
+selected workspace, its personal overlay, then `AGENT_FARM_TELEMETRY` for the
+on/off switch. Telemetry merges field by field; an empty block inherits everything.
+The fallback workspace is selected only when there is no repository workspace
+file, and never receives an overlay. `--no-workspace` skips workspace telemetry
+but still uses host defaults and the environment override.
+
+Repository telemetry appears in the trust review and telemetry-only changes
+require approval just like other workspace changes. `workspace show` reports the
+merged workspace fields and provenance; `inspect`, `--explain`, and
+`--print-launch` report the effective `telemetry` values without starting collection.
+
+The resolved workspace telemetry is saved as `workspace_telemetry` in the bundle
+manifest. Process children use that snapshot rather than rediscovering the
+workspace or rereading its overlay. A new launch rebuilds when workspace or
+overlay telemetry changes; old repository bundles still fail if their approved
+workspace bytes change or approval is revoked. Host defaults and the environment
+override remain runtime inputs to each dispatch. Already printed commands retain
+the effective settings they were prepared with.
+
+Workspace telemetry affects sessions launched through Agent Farm. Global
+workspace installation continues to install only connections and instructions;
+it does not change telemetry for native CLI sessions launched independently.
+
+### Collection lifecycle and privacy
+
+With collection enabled, a supervisor inherits the terminal and streams, launches
+the harness, forwards termination signals, and preserves its exit status. The
+harness has a separate PID. A per-session HTTP receiver binds only to `127.0.0.1`
+on an ephemeral port with an unguessable URL path; it accepts OTLP/HTTP JSON, with
+an 8 MiB request limit. Local storage/listener failures warn without preventing
+the harness from running. Completed exports are saved as they arrive, and shutdown
+allows up to one second for in-flight requests after the harness exits.
+
+Agent Farm configures [Codex's OTLP exporters](https://developers.openai.com/codex/config-reference/)
+and [Claude Code's telemetry and beta tracing](https://code.claude.com/docs/en/monitoring-usage)
+for this receiver. Native detail depends on the installed harness version and its
+policy; older versions may emit only logs/metrics, and managed Claude settings can
+override telemetry configuration. The lifecycle span is independent of native
+telemetry support. The adapters avoid editing native config files. Explicit native
+Codex telemetry overrides are superseded while collection
+is enabled; inherited OTLP destinations/headers are cleared in the child.
+
+Prompt/instruction text and arbitrary native argument values are omitted from
+launch telemetry. Declared arguments with secret- or content-related names are
+redacted; other declared values are recorded, so do not put secrets in innocently
+named arguments. Native prompt/tool-content logging is disabled by default, but received
+native events can still contain sensitive metadata such as tool errors and paths.
+The collector preserves those payloads rather than claiming full content
+sanitization. Opt-in `capture_content` includes native conversation payloads as
+described above; stdout/stderr are never intercepted. There is no automatic
+retention policy yet; remove completed session directories when no longer needed.
 
 ## Host provider target
 
@@ -330,7 +615,9 @@ connections:
     env_vars: [CLOUD_TOKEN]
 ```
 
-Only `name`, `connections`, and `instructions` are accepted. `name` is required
+Only `name`, `connections`, `instructions`, and `telemetry` are accepted. The
+optional [telemetry block](#workspace-telemetry-settings) configures local collection.
+`name` is required
 and uses the configuration-name rule: a lowercase letter followed by up to 63
 lowercase letters, digits, underscores, or hyphens. Instructions must be text.
 Agent Farm never writes this file. Repository `AGENTS.md`, `CLAUDE.md`, and
@@ -360,7 +647,7 @@ repository are refused.
 ### Personal overlays
 
 Put personal settings in `<config-root>/overlays/<name>.yaml`, where `name` is
-from the repository file. The overlay accepts `connections` and `instructions`,
+from the repository file. The overlay accepts `connections`, `instructions`, and `telemetry`,
 without a `name` field, and needs no approval. It stays available across worktrees
 because it lives outside the repository.
 
@@ -378,7 +665,8 @@ Connections merge field by field: `env` merges by key with the overlay winning;
 value. Overlay-only connections are added. Overlay instructions follow shared
 instructions. For example, shared `env: {PROJECT: team, ACCOUNT: shared}` plus
 overlay `env: {ACCOUNT: personal}` yields `{PROJECT: team, ACCOUNT: personal}`.
-The complete result must pass connection validation, including no overlap between
+Telemetry merges field by field with overlay values winning, and reports
+per-field provenance. The complete result must pass connection validation, including no overlap between
 `env` and `env_vars`. Different definitions in an agent's own connections still
 produce a conflict.
 

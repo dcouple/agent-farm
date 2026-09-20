@@ -55,15 +55,15 @@ export function namespaces(root:string,additionalRoot?:string):Namespace[] {
   return result;
 }
 
-export interface HostSettings {default_plugin?:string;provider?:unknown}
+export interface HostSettings {default_plugin?:string;provider?:unknown;telemetry?:unknown}
 export function loadHostSettings(root:string):HostSettings {
   const file=path.join(root,'settings.json');
   if(!fs.existsSync(file))return {};
   let value:unknown;
   try{value=JSON.parse(fs.readFileSync(file,'utf8'));}catch{throw new Error('Host settings must be valid JSON');}
   if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Host settings must be a JSON object');
-  const settings=value as Record<string,unknown>,extra=Object.keys(settings).filter(k=>!['provider','default_plugin'].includes(k));
-  if(extra.length)throw new Error(`Host settings support only provider and default_plugin (unsupported: ${extra.join(', ')})`);
+  const settings=value as Record<string,unknown>,extra=Object.keys(settings).filter(k=>!['provider','default_plugin','telemetry'].includes(k));
+  if(extra.length)throw new Error(`Host settings support only provider, default_plugin, and telemetry (unsupported: ${extra.join(', ')})`);
   if(settings.default_plugin!==undefined)configurationName(settings.default_plugin,'default plugin');
   return settings as HostSettings;
 }

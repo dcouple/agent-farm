@@ -39,6 +39,9 @@ if (rawArgs[0] === 'doctor' && rawArgs.length === 1) {
 }
 
 try {
+  if(rawArgs[0]==='traces'||rawArgs[0]==='telemetry'){
+    await (await import('./telemetry-cli.js')).telemetryCommand(rawArgs);
+  }else{
   const {values,tokens}=parseArgs({args:rawArgs,allowPositionals:true,strict:true,tokens:true,options:{
     'config-root':{type:'string',default:path.join(os.homedir(),'.config/agent-farm')},
     save:{type:'string'},model:{type:'string'},reasoning:{type:'string'},speed:{type:'string'},arg:{type:'string',multiple:true},harness:{type:'string'},'no-workspace':{type:'boolean'},yes:{type:'boolean'},directory:{type:'string',default:process.cwd()},'base-url':{type:'string'},'api-key-env':{type:'string'},
@@ -213,5 +216,6 @@ try {
       if (nativeArgs.length) args.push('--',...nativeArgs);
       run(bundle,'main',args,undefined,path.resolve(values['config-root']!));
     }
+  }
   }
 } catch (error) { console.error('error:',error instanceof Error ? error.message : error); process.exitCode=1; }

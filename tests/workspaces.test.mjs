@@ -37,9 +37,26 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {resolveWorkspace,resolveInteractiveWorkspace,trustWorkspace,untrustWorkspace,showWorkspace,noWorkspace} from '../dist/workspaces.js';
 import {build} from '../dist/compiler.js';
-import {command} from '../dist/runtime.js';
+import {command,resolveTelemetry} from '../dist/runtime.js';
 import {loginCommand} from '../dist/mcp-auth.js';
 import {loadWorkspace,unloadWorkspace} from '../dist/user-workspaces.js';
+test('workspace agent access merges nested policy and applies entry profile to process children',async t=>{
+ const f=project(t);
+ f.put('repo/.agent-farm/workspace.yaml',shared+'telemetry:\n  enabled: false\n  agent_access:\n    enabled: true\n    profiles: [main]\n');
+ const overlay=f.put('config/overlays/project.yaml','telemetry:\n  agent_access:\n    scope: project\n');
+ await trustWorkspace(f.repo,{confirm:async()=>true});
+ let workspace=resolveWorkspace(f.root,{directory:f.repo});
+ assert.deepEqual(workspace.telemetry.agent_access,{enabled:true,profiles:['main'],scope:'project'});
+ assert.equal(workspace.provenance['telemetry.agent_access.scope'],`overlay:${overlay}`);
+ const bundle=build(f.root,'main',f.repo),env={...process.env,AGENT_FARM_TELEMETRY:'off'};
+ for(const route of ['main','main/children/child'])assert.ok(command(bundle,route,{configRoot:f.root,home:f.home,env}).argv.join(' ').includes('telemetry-mcp.mjs'));
+ f.put('config/overlays/project.yaml','telemetry:\n  agent_access:\n    profiles: []\n');
+ workspace=resolveWorkspace(f.root,{directory:f.repo});assert.deepEqual(workspace.telemetry.agent_access,{enabled:true,profiles:[]});
+ const denied=build(f.root,'main',f.repo);for(const route of ['main','main/children/child'])assert.ok(!command(denied,route,{configRoot:f.root,home:f.home,env}).argv.join(' ').includes('telemetry-mcp.mjs'));
+ // Existing bundles retain the approved workspace snapshot.
+ assert.ok(command(bundle,'main',{configRoot:f.root,home:f.home,env}).argv.join(' ').includes('telemetry-mcp.mjs'));
+ f.put('config/overlays/project.yaml','telemetry:\n  agent_access:\n    scope: machine\n');assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/host settings/);
+});
 const cli=fileURLToPath(new URL('../dist/cli.js',import.meta.url));
 const shared=`name: project
 instructions: Shared project instructions.
@@ -178,4 +195,77 @@ test('formatting-only changes require approval and explain why the content summa
  const f=project(t);await trustWorkspace(f.repo,{confirm:async()=>true});fs.appendFileSync(f.file,'\n# comment');
  assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/Untrusted/);
  let summary;await trustWorkspace(f.repo,{confirm:async value=>{summary=value;return false;}});assert.match(summary,/formatting, comments/);
+});
+
+test('telemetry uses the same strict partial schema in repository, fallback and overlay files',()=>{
+ for(const kind of ['repository','user','overlay']){
+  const prefix=kind==='repository'?'name: project\n':'';
+  for(const value of [null,[],false,{enabled:'false'},{directory:'relative'},{directory:'/bad\0path'},{endpoint:'https://example.com'},{headers:{Authorization:'secret'}}]){
+   assert.throws(()=>workspaceDocument(prefix+'telemetry: '+JSON.stringify(value),'workspace.yaml',kind),/workspace.yaml: Telemetry supports/);
+  }
+  for(const value of [{},{enabled:false},{directory:'/tmp/telemetry'}]){
+   const parsed=validateWorkspace(workspaceDocument(prefix+'telemetry: '+JSON.stringify(value),'workspace.yaml',kind),'workspace.yaml');
+   assert.deepEqual(parsed.telemetry,value);
+  }
+ }
+});
+
+test('personal fallback telemetry merges with host defaults, environment wins, and no-workspace keeps host settings',t=>{
+ const f=project(t),hostDirectory=path.join(f.base,'host-traces');
+ f.put('config/settings.json',JSON.stringify({telemetry:{enabled:false,directory:hostDirectory}}));
+ f.put('config/workspace.yaml','name: project\ntelemetry: {enabled: true}');
+ f.put('config/overlays/project.yaml','telemetry: {enabled: false}');
+ const fallback=resolveWorkspace(f.root,{directory:f.base});
+ assert.deepEqual(resolveTelemetry(f.root,fallback.telemetry,{},f.home),{enabled:true,directory:hostDirectory});
+ assert.equal(fallback.provenance['telemetry.enabled'],`user:${f.root}/workspace.yaml`);
+ assert.equal(resolveTelemetry(f.root,fallback.telemetry,{AGENT_FARM_TELEMETRY:'off'},f.home).enabled,false);
+ const none=resolveWorkspace(f.root,{directory:f.base,noWorkspace:true});
+ assert.deepEqual(resolveTelemetry(f.root,none.telemetry,{},f.home),{enabled:false,directory:hostDirectory});
+ assert.equal(resolveTelemetry(f.root,none.telemetry,{AGENT_FARM_TELEMETRY:'on'},f.home).enabled,true);
+ assert.throws(()=>resolveTelemetry(f.root,undefined,{AGENT_FARM_TELEMETRY:'yes'},f.home),/must be on or off/);
+});
+
+test('workspace telemetry appears in trust review, merges fieldwise with overlays, and is inspectable',async t=>{
+ const f=project(t),sharedDirectory=path.join(f.base,'shared-traces'),personalDirectory=path.join(f.base,'personal-traces');
+ f.put('repo/.agent-farm/workspace.yaml',shared+'telemetry: '+JSON.stringify({enabled:false,directory:sharedDirectory})+'\n');
+ const overlay=f.put('config/overlays/project.yaml','telemetry: '+JSON.stringify({directory:personalDirectory}));
+ const preview=showWorkspace(f.root,{directory:f.repo});
+ assert.deepEqual(preview.telemetry,{enabled:false,directory:personalDirectory});
+ assert.equal(preview.provenance['telemetry.enabled'],`repository:${f.file}`);
+ assert.equal(preview.provenance['telemetry.directory'],`overlay:${overlay}`);
+ assert.deepEqual(preview.provenance.telemetry,[`repository:${f.file}`,`overlay:${overlay}`]);
+ const untrusted=f.run(['run','main','--print-launch']);assert.equal(untrusted.status,1);assert.match(untrusted.stderr,/Untrusted/);
+ let summary;await trustWorkspace(f.repo,{confirm:async value=>{summary=value;return true;}});
+ assert.match(summary,/telemetry settings/);assert.ok(summary.includes(sharedDirectory));assert.ok(summary.includes('"enabled": false'));
+ for(const args of [['inspect','main'],['run','main','--explain'],['run','main','--print-launch']]){
+  const r=f.run(args);assert.equal(r.status,0,r.stderr);const result=JSON.parse(r.stdout);
+  assert.deepEqual(result.telemetry,{enabled:false,directory:personalDirectory});
+  if(result.argv)assert.equal(result.argv[0],'claude');
+ }
+ assert.equal(fs.existsSync(personalDirectory),false);
+ f.put('config/overlays/project.yaml','instructions: personal only');
+ assert.deepEqual(resolveWorkspace(f.root,{directory:f.repo}).telemetry,{enabled:false,directory:sharedDirectory});
+ f.put('repo/.agent-farm/workspace.yaml',shared+'telemetry: '+JSON.stringify({enabled:true,directory:sharedDirectory})+'\n');
+ await trustWorkspace(f.repo,{confirm:async value=>{summary=value;return false;}});
+ assert.match(summary,/telemetry.enabled/);assert.throws(()=>resolveWorkspace(f.root,{directory:f.repo}),/Untrusted/);
+});
+
+test('process dispatch retains workspace telemetry snapshot and rejects changed or revoked repository approval',async t=>{
+ const f=project(t),directory=path.join(f.base,'original-traces');
+ f.put('repo/.agent-farm/workspace.yaml',shared+'telemetry: {enabled: true}\n');
+ await trustWorkspace(f.repo,{confirm:async()=>true});
+ f.put('config/settings.json',JSON.stringify({telemetry:{enabled:false}}));
+ const overlay=f.put('config/overlays/project.yaml','telemetry: '+JSON.stringify({directory}));
+ const printed=f.run(['run','main','--print-launch']);assert.equal(printed.status,0,printed.stderr);
+ const parent=JSON.parse(printed.stdout),manifest=JSON.parse(fs.readFileSync(path.join(parent.bundle,'manifest.json')));
+ assert.deepEqual(manifest.workspace_telemetry,{enabled:true,directory});
+ fs.writeFileSync(overlay,'telemetry: '+JSON.stringify({enabled:false,directory:path.join(f.base,'new-traces')}));
+ const dispatch=path.join(parent.bundle,'main/dispatch/child');
+ const child=()=>spawnSync(dispatch,['--print-launch'],{cwd:f.base,env:{...process.env,...parent.env,HOME:f.home},encoding:'utf8'});
+ let result=child();assert.equal(result.status,0,result.stderr);assert.deepEqual(JSON.parse(result.stdout).telemetry,parent.telemetry);
+ const rebuilt=f.run(['run','main','--print-launch']);assert.equal(rebuilt.status,0,rebuilt.stderr);
+ assert.notEqual(JSON.parse(rebuilt.stdout).bundle,parent.bundle);assert.equal(JSON.parse(rebuilt.stdout).telemetry.enabled,false);
+ fs.appendFileSync(f.file,'\n# Changed workspace bytes\n');result=child();assert.equal(result.status,1);assert.match(result.stderr,/Untrusted/);
+ await trustWorkspace(f.repo,{confirm:async()=>true});result=child();assert.equal(result.status,1,'old snapshot must not become trusted after approving different bytes');
+ untrustWorkspace(f.repo);assert.equal(f.run(['run','main','--print-launch']).status,1);
 });

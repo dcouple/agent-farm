@@ -12,6 +12,22 @@ for every conversation.
 Pick a setup, point it at a repo, and Agent Farm opens your native Claude Code
 or Codex terminal with that configuration loaded.
 
+Run `agent-farm traces` for a compact profile-session list and hierarchical run
+explorer: user turns, nested sub-agents, a shared-time-axis timeline, and breadcrumb
+drill-down. The reader includes collapsible instructions/context, outputs, token
+usage, and reported cost. Missing parent links or turn boundaries stay explicit.
+Conversation text requires explicit `telemetry.capture_content: true` for new
+sessions; it is off by default because it can contain sensitive data. To expose read-only
+telemetry tools to launched agents, opt in with workspace
+`telemetry.agent_access.enabled: true`; optionally restrict `profiles` to an
+allowlist. See [agent access and UI settings](CONFIGURATION.md#agent-access-and-the-local-browser).
+
+Sessions automatically collect local OpenTelemetry traces, events, and metrics,
+including launch arguments, user, model, and Git worktree metadata. Data stays in
+`~/.local/state/agent-farm/telemetry/`. See [collection settings and coverage](CONFIGURATION.md#local-opentelemetry-collection)
+for storage, privacy, and opt-out details. Local collection can be configured per
+project in `.agent-farm/workspace.yaml`, with personal overlay overrides.
+
 Think of each setup as a desk prepared for a job. For SEO, you might lay out site
 references, search tools, and a skill that walks through researching and improving
 a page. For presentations, you bring brand guidelines, slide tools, and a workflow

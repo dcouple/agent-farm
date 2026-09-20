@@ -25,7 +25,9 @@ function fixture(t,harness='codex') {
  fs.writeFileSync(path.join(home,'.codex/config.toml'),'');
  const script=`#!${process.execPath}\nconst fs=require('node:fs');fs.writeFileSync(process.env.RECORD,JSON.stringify({args:process.argv.slice(2),cwd:process.cwd(),home:process.env.CODEX_HOME,key:process.env.LINEAR_API_KEY}));process.stdout.write(${JSON.stringify(stdout)});process.stderr.write(${JSON.stringify(stderr)});process.exit(7);\n`;
  for(const name of ['codex','claude'])fs.writeFileSync(path.join(bin,name),script,{mode:0o755});
- const env={...process.env,HOME:home,CODEX_HOME:path.join(home,'.codex'),AGENT_FARM_NATIVE_CODEX_HOME:path.join(home,'.codex'),PATH:bin+path.delimiter+process.env.PATH,RECORD:record,LINEAR_API_KEY:'LINEAR-SECRET-FIXTURE',CLIPROXY_API_KEY:'PROXY-SECRET-FIXTURE',GH_TOKEN:'GITHUB-SECRET-FIXTURE'};
+ // These regression cases exercise the original exec path. telemetry.test.mjs
+ // exercises the default supervised path, including providers and dispatch.
+ const env={...process.env,AGENT_FARM_TELEMETRY:'off',AGENT_FARM_CONFIG_ROOT:root,HOME:home,CODEX_HOME:path.join(home,'.codex'),AGENT_FARM_NATIVE_CODEX_HOME:path.join(home,'.codex'),PATH:bin+path.delimiter+process.env.PATH,RECORD:record,LINEAR_API_KEY:'LINEAR-SECRET-FIXTURE',CLIPROXY_API_KEY:'PROXY-SECRET-FIXTURE',GH_TOKEN:'GITHUB-SECRET-FIXTURE'};
  const invoke=(args,profile='planner')=>spawnSync(process.execPath,[cli,'run',profile,'--config-root',root,'--directory',target,...args],{env,encoding:'utf8'});
  return {base,root,target,home,bin,record,env,invoke};
 }
@@ -34,7 +36,8 @@ test('print-launch prepares Codex bundle and home exactly as exec, without launc
  const f=fixture(t),result=f.invoke(['--print-launch']);
  assert.equal(result.status,0,result.stderr);assert.equal(result.stderr,'');
  const launch=JSON.parse(result.stdout);
- assert.deepEqual(Object.keys(launch).sort(),['argv','bundle','cross_plugin_dependencies','cwd','env','launch','profile','trace_identity','workspace_source']);
+ assert.deepEqual(Object.keys(launch).sort(),['argv','bundle','cross_plugin_dependencies','cwd','env','launch','profile','telemetry','telemetry_access','trace_identity','workspace_source']);
+ assert.equal(launch.telemetry_access,false);
  assert.equal(launch.trace_identity,'local/planner@local');
  assert.equal(launch.cwd,f.target);assert.ok(fs.statSync(launch.bundle).isDirectory());
  assert.ok(fs.statSync(launch.env.CODEX_HOME).isDirectory());
@@ -135,7 +138,7 @@ test('resume identity survives profile retargeting and compiler/runtime upgrades
  const installation=path.join(f.base,'upgrade');fs.mkdirSync(installation);
  fs.writeFileSync(path.join(installation,'package.json'),'{"type":"module"}');
  fs.symlinkSync(fileURLToPath(new URL('../node_modules',import.meta.url)),path.join(installation,'node_modules'));
- for(const name of ['compiler.js','runtime.js','skill-layout.js','config.js','connections.js','workspaces.js']) {
+ for(const name of ['compiler.js','runtime.js','telemetry.js','telemetry-query.js','telemetry-mcp.js','telemetry-conversation.js','telemetry-hierarchy.js','skill-layout.js','config.js','connections.js','workspaces.js']) {
   fs.copyFileSync(fileURLToPath(new URL('../dist/'+name,import.meta.url)),path.join(installation,name));
  }
  for(const name of ['compiler.js','runtime.js'])fs.appendFileSync(path.join(installation,name),'\n// Upgrade fixture\n');
@@ -316,7 +319,7 @@ test('Codex provider configuration routes the profile without copying native con
  fs.unlinkSync(path.join(f.root,'settings.json'));assert.equal(loadProvider(f.root),undefined);
  const restored=f.invoke(['--print-launch'],'implementer');assert.equal(restored.status,0,restored.stderr);
  assert.equal(fs.realpathSync(config),native);assert.equal(fs.readFileSync(config,'utf8'),nativeText);
- assert.deepEqual(Object.keys(JSON.parse(restored.stdout).env).sort(),['AGENT_FARM_NATIVE_CODEX_HOME','CODEX_HOME']);
+ assert.deepEqual(Object.keys(JSON.parse(restored.stdout).env).sort(),['AGENT_FARM_CONFIG_ROOT','AGENT_FARM_NATIVE_CODEX_HOME','CODEX_HOME']);
  configureProvider(f);
  const again=f.invoke(['--print-launch'],'implementer');assert.equal(again.status,0,again.stderr);
  assert.equal(fs.lstatSync(config).isSymbolicLink(),false);assert.equal(fs.readFileSync(native,'utf8'),nativeText);
@@ -396,7 +399,7 @@ test('Claude passthrough keeps strict MCP and caller streaming, resume, hooks an
  const native=['-p','--output-format','stream-json','--verbose','--resume','session id','--settings','hooks with spaces.json','--max-turns','3','--max-budget-usd','2'];
  const result=f.invoke(['--print-launch','--message',message,'--',...native]);
  assert.equal(result.status,0,result.stderr);const launch=JSON.parse(result.stdout);
- assert.deepEqual(launch.env,{});assert.ok(launch.argv.includes('--strict-mcp-config'));
+ assert.deepEqual(launch.env,{AGENT_FARM_CONFIG_ROOT:f.root});assert.ok(launch.argv.includes('--strict-mcp-config'));
  assert.deepEqual(launch.argv.slice(-native.length-2),[...native,'--',message]);
  assert.equal(launch.argv.filter(a=>a==='--output-format').length,1);assert.equal(launch.argv.includes('--print'),false);
  assert.equal(fs.existsSync(f.record),false);

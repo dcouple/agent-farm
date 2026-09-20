@@ -1,6 +1,6 @@
 import os from 'node:os';
 import {execFileSync} from 'node:child_process';
-import {hash,assertWorkspaceTrust,trustFile,type WorkspaceMetadata} from './runtime.js';
+import {hash,assertWorkspaceTrust,trustFile,validateTelemetry,mergeTelemetry,type TelemetrySettings,type WorkspaceMetadata} from './runtime.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {parseDocument} from 'yaml';
@@ -9,7 +9,7 @@ import {connections} from './connections.js';
 import type {Connection} from './runtime.js';
 
 export interface Repository { root:string; common:string }
-export interface WorkspaceData {name?:string; instructions:string; connections:Record<string,Connection>}
+export interface WorkspaceData {name?:string; instructions:string; connections:Record<string,Connection>;telemetry?:TelemetrySettings}
 export function repository(directory:string):Repository|undefined {
   let root=fs.realpathSync(directory);
   if(!fs.statSync(root).isDirectory())throw new Error(`Launch directory is not a directory: ${directory}`);
@@ -52,11 +52,12 @@ export function workspaceDocument(content:string,file:string,kind:'repository'|'
     const doc=parseDocument(content,{uniqueKeys:true});
     if(doc.errors.length)throw new Error(doc.errors.map(e=>e.message).join('; '));
     const data=mapping(doc.toJS({maxAliasCount:100}));
-    const allowed=kind==='overlay'?['connections','instructions']:['name','connections','instructions'];
+    const allowed=kind==='overlay'?['connections','instructions','telemetry']:['name','connections','instructions','telemetry'];
     for(const key of Object.keys(data))if(!allowed.includes(key))throw new Error(`Unsupported workspace field: ${key}`);
     if(kind==='repository'||data.name!==undefined)configurationName(data.name,'workspace name');
     if(data.instructions!==undefined&&typeof data.instructions!=='string')throw new Error('Workspace instructions must be text');
     if(data.connections!==undefined)mapping(data.connections);
+    validateTelemetry(data.telemetry);
     return data;
   }catch(e){throw new Error(`${file}: ${(e as Error).message}`);}
 }
@@ -65,7 +66,9 @@ export function validateWorkspace(data:Record<string,unknown>,file:string):Works
   for(const [key,value] of Object.entries(mapping(data.connections??{}))){
     try{Object.assign(result,connections({[key]:value}));}catch(e){throw new Error(`${file}: connection ${key}: ${(e as Error).message}`);}
   }
-  return {name:data.name as string|undefined,instructions:data.instructions as string??'',connections:result};
+  let telemetry:TelemetrySettings|undefined;
+  try{telemetry=validateTelemetry(data.telemetry);}catch(e){throw new Error(`${file}: ${(e as Error).message}`);}
+  return {name:data.name as string|undefined,instructions:data.instructions as string??'',connections:result,...(telemetry===undefined?{}:{telemetry})};
 }
 
 export interface WorkspaceOptions {directory?:string;noWorkspace?:boolean;home?:string}
@@ -78,6 +81,12 @@ function readOptional(file:string):string|undefined {
 }
 function provenance(data:Record<string,unknown>,source:string,result:Record<string,string|string[]>){
   if(data.instructions!==undefined)result.instructions=source;
+  if(data.telemetry!==undefined){
+    result.telemetry=source;
+    for(const key of Object.keys(mapping(data.telemetry)))result[`telemetry.${key}`]=source;
+    const access=mapping(data.telemetry).agent_access;
+    if(access!==undefined)for(const key of Object.keys(mapping(access)))result[`telemetry.agent_access.${key}`]=source;
+  }
   for(const [key,input] of Object.entries(mapping(data.connections??{}))){
     result[`connections.${key}`]=source;
     for(const [field,value] of Object.entries(mapping(input))){
@@ -106,8 +115,11 @@ export function applyOverlay(shared:WorkspaceData,content:string,file:string,sou
       merged[key]=next;
       } catch(e){throw new Error(`connection ${key}: ${(e as Error).message}`);}
     }
-    const result=validateWorkspace({name:shared.name,connections:merged,instructions:[shared.instructions,data.instructions].filter(Boolean).join('\n\n')},file);
+    const telemetry=mergeTelemetry(shared.telemetry,validateTelemetry(data.telemetry));
+    const result=validateWorkspace({name:shared.name,connections:merged,instructions:[shared.instructions,data.instructions].filter(Boolean).join('\n\n'),telemetry},file);
     const previous={...sources};provenance(data,`overlay:${file}`,sources);
+    if(data.telemetry!==undefined&&shared.telemetry!==undefined)sources.telemetry=[String(previous.telemetry),`overlay:${file}`];
+    if(shared.telemetry?.agent_access!==undefined&&validateTelemetry(data.telemetry)?.agent_access!==undefined)sources['telemetry.agent_access']=[String(previous['telemetry.agent_access']),`overlay:${file}`];
     for(const key of Object.keys(mapping(data.connections??{})))if(shared.connections[key])sources[`connections.${key}`]=[String(previous[`connections.${key}`]),`overlay:${file}`];
     for(const [key,input] of Object.entries(mapping(data.connections??{}))){
       const patch=mapping(input),base=shared.connections[key];
@@ -148,7 +160,7 @@ export function resolveWorkspace(root:string,options:WorkspaceOptions={}):Resolv
   return {...data,metadata:{source,trust:'personal'},provenance:sources};
 }
 function redacted(data:WorkspaceData){
-  return {name:data.name,connections:Object.fromEntries(Object.entries(data.connections).map(([name,value])=>[name,'url' in value?value:{...value,env:Object.keys(value.env)}])),instructions:data.instructions};
+  return {name:data.name,connections:Object.fromEntries(Object.entries(data.connections).map(([name,value])=>[name,'url' in value?value:{...value,env:Object.keys(value.env)}])),instructions:data.instructions,...(data.telemetry===undefined?{}:{telemetry:data.telemetry})};
 }
 function changedFields(before:unknown,after:unknown,prefix=''):string[]{
   if(JSON.stringify(before)===JSON.stringify(after))return [];
@@ -167,7 +179,7 @@ export function trustSummary(item:Candidate,home?:string):string {
       changes=(fields.length?'Changed fields (environment values hidden): '+fields.join(', '):'Only file formatting, comments, or equivalent YAML representation changed.')+'\nPreviously approved:\n'+JSON.stringify(redacted(before),null,2)+'\n';
     }
   }
-  return `Repository workspace: ${item.file}\nGit common directory: ${item.repo.common}\n${changes}Approve these connections and full instructions:\n${JSON.stringify(redacted(item.data),null,2)}`;
+  return `Repository workspace: ${item.file}\nGit common directory: ${item.repo.common}\n${changes}Approve these connections, telemetry settings, and full instructions:\n${JSON.stringify(redacted(item.data),null,2)}`;
 }
 function saveJson(file:string,value:unknown){
   fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});

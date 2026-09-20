@@ -15,13 +15,15 @@ export interface Command {
 }
 
 export const commands: Command[] = [
+  {name:'traces',usage:'agent-farm traces [--project DIR] [--directory STORE] [--scope project|machine] [--no-open] [--port PORT]',group:'inspect',description:'Open a local read-only telemetry browser. Defaults to the current project; --directory selects the telemetry store.'},
+  {name:'telemetry',usage:'agent-farm telemetry mcp [--project DIR] [--directory STORE] [--scope project|machine]',group:'inspect',description:'Serve read-only telemetry tools over stdio MCP. Launched profiles receive this automatically when workspace agent access permits it.'},
   {
     name: 'run',
     usage: 'agent-farm run [PLUGIN/]NAME [options] [-- native arguments...]',
     group: 'launch',
     description: 'Launch a profile in the native Claude Code or Codex terminal.',
     flags: [
-      {name: 'no-workspace', description: 'Launch without workspace connections or instructions', type: 'boolean'},
+      {name: 'no-workspace', description: 'Skip workspace connections, instructions, and telemetry overrides; host telemetry defaults still apply', type: 'boolean'},
       {name: 'directory', description: 'Repository to open', type: 'string', default: 'cwd'},
       {name: 'message', description: 'Send an initial message after launch', type: 'string'},
       {name: 'model', description: 'Override the entry agent model for this launch', type: 'string'},
@@ -149,7 +151,7 @@ export const commands: Command[] = [
     name: 'workspace '+operation,
     usage: 'agent-farm workspace '+operation+(operation==='loaded'?'':' [--directory PATH]')+(operation==='trust'?' [--yes]':['load','unload'].includes(operation)?' --harness claude|codex':''),
     group: 'configure' as const,
-    description: ({trust:'Review and approve the repository workspace; approval is shared by linked worktrees.',untrust:'Revoke all workspace approvals for this repository.',show:'Show workspace connections, instructions, field provenance, and trust state.',load:'Mount the resolved workspace in a native harness configuration.',unload:'Remove only the owned workspace connections and instructions.',loaded:'List mounted workspaces.'} as Record<string,string>)[operation]!,
+    description: ({trust:'Review and approve the repository workspace; approval is shared by linked worktrees.',untrust:'Revoke all workspace approvals for this repository.',show:'Show workspace connections, instructions, telemetry settings, field provenance, and trust state.',load:'Mount workspace connections and instructions in a native harness configuration; telemetry applies only to Agent Farm launches.',unload:'Remove only the owned workspace connections and instructions.',loaded:'List mounted workspaces.'} as Record<string,string>)[operation]!,
   })),
   {
     name: 'provider set',
