@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: low
 skills: []
-description: "Astra+Luna sweep, reversed: Astra LOW writes (RESULT 2026-09-20: 2 of 2 pass in 12 and 10 min; root 3.67M and 2.88M Astra tokens plus a reviewer child of 0.73M and 1.43M. Fastest path measured, but more Astra tokens than Astra low alone (2.5M))"
+description: "Astra+Luna sweep, reversed: Astra LOW writes (RESULT 2026-09-20: 2 of 2 pass in 12 and 10 min, root 3.67M / 2.88M Astra tokens; the final-reviewer child ran as gpt-6-astra despite the TOML pinning Luna, so this measured Astra low writing and Astra low reviewing. Native-child model must be verified from the child session's turn_context)"
 subagents:
   final-reviewer:
     agent: sw-luna-final-reviewer

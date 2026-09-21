@@ -5,7 +5,7 @@ model:
   reasoning: medium
 skills:
   - astra-flash-orchestrator-upstream
-description: "BASELINE REPRODUCTION of ethanplusai/astra-flash-orchestrator: Astra root with the package's managed policy and vendored skill, DeepSeek V4.1 Flash as the native astra_flash_builder child with the package's worker instructions. Both routed through OpenRouter under an isolated config root (RESULT 2026-09-20: passed every gate, but 3.7M Astra input tokens (Astra alone 2.5 to 2.8M), 117 min wall (Astra alone 10), root made 117 wait calls on its child; child read 36M tokens (~$0.42). The 98% did not reproduce on this task: codex's native wait returns on a timer and each return re-reads the root context)"
+description: "BASELINE REPRODUCTION of ethanplusai/astra-flash-orchestrator: Astra root with the package's managed policy and vendored skill, DeepSeek V4.1 Flash as the native astra_flash_builder child with the package's worker instructions. Both routed through OpenRouter under an isolated config root (RESULT 2026-09-20: passed every gate in 117 min, but the astra_flash_builder child ran as openai/gpt-6-astra (36M input tokens) despite the TOML pinning deepseek/deepseek-v4.1-flash; the root made 117 wait calls on it. Retracted as a test of the package; use sw-astra-flash-repro-sub via Codex Router, whose child is verified to run as Flash)"
 subagents:
   astra_flash_builder:
     agent: flash-builder
