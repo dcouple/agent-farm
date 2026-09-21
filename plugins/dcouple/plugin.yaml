@@ -83,6 +83,7 @@ checksums:
   agents/rv-glm-medium.md: 413483c9470220f1a98430e0fddc47f335eed1dd4741f301d251a75f9559f958
   agents/rv-glm-targeted.md: 298e9ed8cc2d86a465d6b6419422f59a1f2b1522fbcb8f411d0774fb0e400677
   agents/rv-glm-timebound.md: da127b405f4bba8ba3ab166f5e442053de2ec7e8ed40720a1a7061c5cf5fdf71
+  agents/rv-luna-timebound.md: e4c1e6f691ccf6546917eb1e01c774d3022610359d7392f2c52695e4d0a53e8c
   agents/rv-luna-max.md: e2fb07e62ee210a71020a89cf48022eaa8ec7d1ec9b7ffaf4c8c7c6f1d4a5ba3
   agents/rv-terra-high.md: 86bdd878ecccb9d39ccb0fc24ff3dc94a2cc4ad8d2909b2e19ab476959ec53ab
   agents/rvs-deepseek-skilled.md: 19c2d66b760cfcb1e49f155d6676545bc5aff434a3b72862052f52973abee974
@@ -115,6 +116,7 @@ checksums:
   agents/sw-astra-medium.md: 37db98af765ccaaf8299ec0eb8a2b25509be4b47c70bd09513b720952888be9d
   agents/sw-astra-merge-low.md: 83d509690cde680e0562de25706f53237d0d26db0d2345a056876241eb6632b7
   agents/sw-astra-orch-luna.md: cc4feac9995a835054b6baf3ff865fcd0d7d9f86a181e0e77cf296c9aaa79c5d
+  agents/sw-astra-self-build.md: 2bbbb155918c1114d9df55e07adad8f909c4fa44a6b76770c3218f00bb5514ee
   agents/sw-baseline-raw.md: 047ef22a3174be2aa7f2f255b5ce429f46c83e59b8c95e636ff525756df34b67
   agents/sw-deepseek-astra-loop.md: aa13fa2e664afc0ea846e298635c0362c4fdbcf7ccb2f9cbca0af4270cb85e34
   agents/sw-fast-implementer.md: c0a76aec62565f3f619b6ac02d33d6a12247451de717efc02560b9c39f70a765
@@ -198,6 +200,7 @@ checksums:
   profiles/rv-glm-medium.yaml: 1b05f8c6e010dde0621d14a829cc978a1868ac24917094dc3c38b723fcd6c547
   profiles/rv-glm-targeted.yaml: 7048c3389c3367e2c31418e9a2cb9afe133e0d8a575bffbfa8808f57cc113491
   profiles/rv-glm-timebound.yaml: e12a00e4003426789accb03363a271cd0442aced3191cb35a7464b0262f497b7
+  profiles/rv-luna-timebound.yaml: 91188d0c69623601cf67d486541e1b5fbc29d8c413ae6407366a318a00929218
   profiles/rv-luna-max.yaml: 5e32e7bd0dc8c1cc196fca22839c9e42e5efaae9e69198a396cc4e75f8971c42
   profiles/rv-terra-high.yaml: e8faf139ec877b00f0c6fe063e7ddd8f0266984b5959f5474410dae66290b228
   profiles/rvs-deepseek-skilled.yaml: 14be774b771334ffcedd81fa23321c3045151716dd8533b1228117fe4776eaa4
@@ -227,6 +230,7 @@ checksums:
   profiles/sw-astra-medium.yaml: e64a9e0c7d4317c575d8f20b75ec6968666cdd04894681146717dd0d6542b2d2
   profiles/sw-astra-merge-low.yaml: 9dfa7e730c06482451b895b18663067963c57e67c7b45deb0ac29fc8da4b936c
   profiles/sw-astra-orch-luna.yaml: a2e0618e4d35b9c8d8acf4f84b5205e94d173f979d210cc2395b93888da073d7
+  profiles/sw-astra-self-build.yaml: 97d02d79f093a3858efc68ebe29c5643aebe968a881654606d01d462d27300b5
   profiles/sw-baseline-raw.yaml: 92fd14cff370d2a36a9f4e297b2001e65a62cbd5a347d9dd5a199b5c5f272b68
   profiles/sw-deepseek-astra-loop.yaml: c9817ee3b3e2fa27aacf1e6c3f5c08880d8e180843da9d3d53acfef0c0ad90bd
   profiles/sw-fast-implementer.yaml: 7ab3c22a35e50049d0fe3f9b1cbebcc87cd98d14e144478d29916445d0883907
