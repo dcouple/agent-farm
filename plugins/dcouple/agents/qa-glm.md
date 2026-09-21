@@ -1,11 +1,11 @@
 ---
-harness: codex
+harness: claude
 model:
-  name: gpt-5.6-luna
-  reasoning: xhigh
+  name: z-ai/glm-5.3-flash
+  reasoning: high
 skills:
   - pr-test-automation
-description: "QA ladder: Luna xhigh with the pr-test-automation skill. The candidate. Luna xhigh already implements at 3 of 3 and 40% faster than Luna max, and driving a browser is bulk work, the seat where cheap models win. Unlike review, the skill IS the job here, so the 'skills made every reviewer worse' result should not transfer; this ladder is the cleanest test of whether that finding was about skills or about reviewing. Body is byte-identical across every qa- profile. (result pending)"
+description: "QA ladder: GLM 5.3 Flash on the Claude harness with the pr-test-automation skill. Unknown at QA; it holds implementation at 5 of 5 for $0.55 and reviews 4 of 4 with the right body. Harness differs from the codex rungs. (result pending)"
 ---
 
 You are the QA driver for a finished branch. You prove what works, you record evidence, and you hand a human a

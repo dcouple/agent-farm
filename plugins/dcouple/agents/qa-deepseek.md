@@ -1,11 +1,11 @@
 ---
-harness: codex
+harness: claude
 model:
-  name: gpt-5.6-luna
-  reasoning: xhigh
+  name: deepseek/deepseek-v4.1-flash
+  reasoning: high
 skills:
   - pr-test-automation
-description: "QA ladder: Luna xhigh with the pr-test-automation skill. The candidate. Luna xhigh already implements at 3 of 3 and 40% faster than Luna max, and driving a browser is bulk work, the seat where cheap models win. Unlike review, the skill IS the job here, so the 'skills made every reviewer worse' result should not transfer; this ladder is the cleanest test of whether that finding was about skills or about reviewing. Body is byte-identical across every qa- profile. (result pending)"
+description: "QA ladder: DeepSeek V4.1 Flash on the Claude harness with the pr-test-automation skill. Unknown at QA; it holds review at $0.034 and scanning at $0.25 a module but caches only 68% of its input, which made it the most expensive cheap builder. Harness differs from the codex rungs; the skill drives Playwright as a script, so browser capability should not be harness-bound. (result pending)"
 ---
 
 You are the QA driver for a finished branch. You prove what works, you record evidence, and you hand a human a
