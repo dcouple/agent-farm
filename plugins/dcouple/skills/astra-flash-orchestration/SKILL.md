@@ -46,3 +46,25 @@ headline, since that is the quota the subscription meters.
 ## Never fork
 
 Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.
+
+## Borrowed from the upstream package, because ours lacked them
+
+**Two review lenses, one pass.** Lens 1, specification compliance: map every acceptance criterion to code, a test or
+observed behaviour; check names, types, failure and boundary cases, non-goals; detect placeholders and invented
+requirements; confirm tests exercise the behaviour, not a stub. Lens 2, quality and risk: logic defects, data flow,
+authorisation, concurrency, error handling, brittle mocks, weakened types, unwanted dependency or config changes.
+Both lenses in the one batched review; findings go back in one correction request; one correction cycle by default.
+
+**The builder's report contract.** STATUS (ready_for_review | blocked | failed); workspace and baseline; changed paths
+and behaviour; each verification command with exit status and salient result; outstanding risks; decisions that need
+the planner; the resume checkpoint if unfinished. The builder never accepts its own work. Green gates are a claim, not
+acceptance: on 2026-09-20 both brief-* trees passed all six contract commands and each still carried a contract HIGH
+that the review found.
+
+**Two writers at most**, and only with independent scopes and genuinely separate workspaces; shared types, lockfiles,
+routes, migrations and generated outputs are contention points and are serialised.
+
+What we keep that upstream lacks: end the turn and be resumed (native wait cost the package shape 1.62M Astra tokens
+against our 511k to 711k on the same task), never fork (`fork_turns: "none"`), builders on the Claude harness
+(DeepSeek, GLM) or Luna xhigh with the time-bounded discipline body, and a verify-first fixer that refuses false
+findings.

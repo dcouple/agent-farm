@@ -239,8 +239,12 @@ checksums:
   profiles/tri-a-deepseek-write.yaml: 4a2e879e6c0182216d19723c80f751fa6d979c315bc43e0273e666d8513fb86e
   profiles/tri-b-luna-write.yaml: be988a40a3bfd9fe879a0c463a7895724ed35c6c8b13395bbab77c2f4df07562
   profiles/tri-c-glm-write.yaml: b96ee42a48e98540ac0e64bbf58eb1e4836138aed509f4f69507953b5c7b9bb6
-  skills/astra-flash-orchestration/SKILL.md: 56c55073474569cb00dc819e1c148bcb779961e03c90257b1325566e4847a790
-  skills/astra-flash-orchestrator-upstream/SKILL.md: 2af9bdd830978cbb93c1df509d91d9fc5ddfa1992b12c43e869ae654fbd47eae
+  skills/astra-flash-orchestration/SKILL.md: 76d6915b1dc37c9f6b37008c85f5c1114851685e145a50fdfc7624252fe2d0f6
+  skills/astra-flash-orchestrator-upstream/SKILL.md: e3bb44e8752da9934aca035b9ffe8dee5744f7469d3e9cf29b30a9574d6e48b6
+  skills/astra-flash-orchestrator-upstream/references/execution.md: 311c2781200b3f8f9c16a281f96b8acf593ffcf8123ba60279ea1b8ab150dce6
+  skills/astra-flash-orchestrator-upstream/references/planning.md: a26012a139428159d1e38dd27f09fdeec5490de52693abd575095ece540c16b7
+  skills/astra-flash-orchestrator-upstream/references/review.md: 9ae1a6521b5148db5172bd4e31cd959629b61841bd8bee59a4ff9adb6b903da2
+  skills/astra-flash-orchestrator-upstream/references/routing.md: 0ddc2caf17d1ae80545048ae83ac394e94347a6160e7664a789cfa33ed9f6bf5
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
   skills/bounded-advisor/SKILL.md: e8aca7707b741c965ae1055d18601a93c11995e6615e671ac3870c4e13b426a5
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
