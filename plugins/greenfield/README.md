@@ -22,7 +22,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `page` | planner, orchestrator | House standard for every HTML page written for a person |
 | `bug-intake` | bug-reporter | Reproduce, rank hypotheses, write the report, choose a route |
 | `work-packages` | implementer | The cycle up to the pull request: intake, preflight, who builds each package, verification |
-| `final-review` | implementer, one-shot | Two independent reviewers once, one fix round, one follow-up, clean-up. Stops failed instead of looping |
+| `final-review` | implementer, one-shot | One independent reviewer once (two for a dual review), one fix round, one follow-up, clean-up. Stops failed instead of looping |
 | `build-package` | implementer, worker | Implement one package from its handoff card |
 | `open-pr` | implementer, one-shot | Commit, push, and open a draft pull request that teaches the change |
 | `verify-app` | qa | Drive the running application and return a verdict with evidence |
