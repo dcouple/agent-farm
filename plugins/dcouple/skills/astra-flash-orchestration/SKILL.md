@@ -43,6 +43,21 @@ Astra tokens per phase (should be two short turns), builder cost, wall time, and
 task's gates; compare with Astra alone on the same task. Report the Astra-token reduction as the
 headline, since that is the quota the subscription meters.
 
+Never quote a harness's own cost line for a proxied model. The Claude harness prices DeepSeek and GLM at
+its default card (a $0.20 build printed as $15.20 on 2026-09-20). Report token counts from the receipt;
+the reader prices them at the model's published rates. Report cached and uncached input separately: on
+the same task the Luna arm read 33% fewer Astra tokens than the Flash arm and cost 14% more in Astra
+dollars because its cache share was 70% against 89%.
+
+Measured whole cycles on the Pane task, 2026-09-20 (brief, build, review, fix, accept): Flash builder
+807k Astra tokens (−71%), $2.19 all-in (−50%), ~45 min; Luna xhigh builder 543k (−81%), $2.96 (−33%),
+~33 min. Astra alone: 2.8M, $4.42, 10 min. The accept-after-fix resume cost Astra 32k to 96k tokens.
+
+## Where lanes write
+Every lane, builder or fixer, writes its receipt into its own directory `<receipts>/<lane>/` and ends by
+writing `<receipts>/<lane>/meta.json`. The waiter counts `<receipts>/*/meta.json`; a fix job that wrote
+`meta.json` one level up stalled the parent for 31 minutes on 2026-09-20.
+
 ## Never fork
 
 Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.
