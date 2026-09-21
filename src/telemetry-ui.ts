@@ -1,7 +1,7 @@
 import http from 'node:http';
 import {randomBytes} from 'node:crypto';
 import {TelemetryStore,type QueryOptions} from './telemetry-query.js';
-import {telemetryPage,telemetryBrowser,groupSessionsByWorktree} from './telemetry-ui-page.js';
+import {telemetryPage,telemetryBrowser,groupSessionsByWorktree,agentTimelineRows} from './telemetry-ui-page.js';
 import {uiPage,managementBrowser} from './ui-page.js';
 import {ProfileManager} from './profile-manager.js';
 
@@ -33,7 +33,7 @@ export async function startTelemetryUI(options:QueryOptions,port=0,management?:{
       }catch(e){send(400,{error:(e as Error).message});}return;
     }
     if(req.method!=='GET'){send(405,{error:'Read only'});return;}
-    if(route===''||route==='app.js'){res.writeHead(200,{'Content-Type':route?'text/javascript; charset=utf-8':'text/html; charset=utf-8'});res.end(route?'('+telemetryBrowser.toString()+')('+groupSessionsByWorktree.toString()+');'+(profiles?'('+managementBrowser.toString()+')();':''):profiles?uiPage:telemetryPage);return;}
+    if(route===''||route==='app.js'){res.writeHead(200,{'Content-Type':route?'text/javascript; charset=utf-8':'text/html; charset=utf-8'});res.end(route?'('+telemetryBrowser.toString()+')('+groupSessionsByWorktree.toString()+','+agentTimelineRows.toString()+');'+(profiles?'('+managementBrowser.toString()+')();':''):profiles?uiPage:telemetryPage);return;}
     if(!route.startsWith('api/')){send(404,{error:'Not found'});return;}
     try{const args=JSON.parse(url.searchParams.get('args')??'{}');send(200,route==='api/explorer'?await store.explorer(args):route==='api/runs'?await store.runs(args):route==='api/conversation'?await store.conversation(args):await store.query(route.slice(4),args));}catch(e){send(400,{error:(e as Error).message});}
   });

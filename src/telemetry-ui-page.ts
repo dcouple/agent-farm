@@ -7,9 +7,11 @@ export const telemetryPage=String.raw`<!doctype html>
 .reader{margin:0 auto;align-self:start}.reader .detail-heading{flex-wrap:wrap}.activity-track small{font-size:10px}.structure summary{padding:3px 0}
 .worktree-group{margin-bottom:8px}.worktree-group>summary{cursor:pointer;padding:9px 5px;font-size:12px;font-weight:650;display:flex;align-items:center;gap:6px}.worktree-group>summary:before{content:'›';color:var(--muted)}.worktree-group[open]>summary:before{transform:rotate(90deg)}.worktree-group>summary::-webkit-details-marker{display:none}.worktree-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.worktree-count{font-size:10px;color:var(--muted);background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:0 5px}.worktree-path{font-size:10px;color:var(--muted);padding:0 8px 7px;overflow-wrap:anywhere}.worktree-sessions{margin-left:8px;border-left:1px solid var(--line);padding-left:4px}.session-profile{display:inline-block;font-size:10px;padding:1px 5px;border:1px solid var(--line);border-radius:4px;background:var(--accent);margin:4px 0 1px;max-width:100%;overflow-wrap:anywhere}
 .explorer-layout.timeline-layout{display:block}.timeline-layout .reader{max-width:none}.trace-waterfall .activity-row{grid-template-columns:minmax(180px,25%) minmax(180px,1fr) 72px;min-height:52px;gap:16px}.trace-waterfall .activity-track{height:32px;background:repeating-linear-gradient(to right,var(--wash) 0,var(--wash) calc(25% - 1px),var(--line) calc(25% - 1px),var(--line) 25%)}.trace-waterfall .activity-bar{height:16px;top:8px;border-radius:4px}.trace-waterfall .activity-row small{display:block;font-size:10px}.timeline-axis{background:var(--wash);font-size:11px;font-weight:600;color:var(--muted)}.timeline-ticks{display:flex;justify-content:space-between;font:10px ui-monospace,monospace}.tabs{flex-wrap:wrap}@media(max-width:800px){.trace-waterfall{overflow-x:auto}.trace-waterfall .activity-row{min-width:550px}}
+.agent-timeline{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:20px}.agent-timeline-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.agent-timeline h2{margin:0;font-size:17px}.agent-timeline p{font-size:12px}.agent-legend{display:flex;flex-wrap:wrap;gap:20px;margin:20px 0;font-size:11px;color:var(--muted)}.agent-legend span:before{content:'';display:inline-block;width:14px;height:7px;border-radius:3px;background:#498bc9;margin-right:6px}.agent-legend .legend-agent:before{background:#9b83cf}.agent-legend .legend-failed:before{background:#bd6556}.agent-timeline .activity-bar.session{background:#498bc9}.agent-run{border-bottom:1px solid var(--line)}.agent-run:last-child{border-bottom:0}.agent-run>summary{cursor:pointer;list-style:none;border-bottom:0}.agent-run>summary::-webkit-details-marker{display:none}.agent-run>summary:hover{background:var(--wash)}.agent-run-name{position:relative;padding-right:10px}.agent-run-name:after{content:'›';position:absolute;right:0;top:0;color:var(--muted)}.agent-run[open] .agent-run-name:after{transform:rotate(90deg)}.agent-runtime{font:11px ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right}.agent-run-body{padding:16px 22px;border-top:1px solid var(--line);background:var(--wash)}.agent-tool{display:flex;justify-content:space-between;gap:20px;padding:8px 0;font-size:12px;border-top:1px solid var(--line)}.timeline-note{color:var(--muted);margin:16px 0 0}.agent-timeline .trace-waterfall .activity-row{min-height:64px}.agent-timeline .timeline-axis{min-height:42px!important}
+.project-filter{display:block;font-size:11px;font-weight:600;margin-bottom:4px}.project-filter select{display:block;width:100%;margin-top:4px;font-size:12px}.project-scope{font-size:10px;color:var(--muted);margin:4px 0 12px}.conversation-feed{max-width:850px;margin:24px auto}.chat-message{border:1px solid var(--line);border-radius:12px;margin:18px 0;padding:18px 20px;background:var(--paper)}.chat-message.user{background:#edf5ef;margin-left:40px}.chat-message.assistant{margin-right:40px}.chat-heading{display:flex;justify-content:space-between;gap:16px}.chat-heading small{font-size:11px}.chat-message .document{padding:4px 0 0}.chat-activity{max-width:850px;margin:16px auto;color:var(--muted);font-size:12px}.chat-activity>summary{cursor:pointer;padding:10px 0}.chat-activity .turn{color:var(--ink)}@media(max-width:680px){.chat-message.user{margin-left:12px}.chat-message.assistant{margin-right:12px}}
 </style></head><body>
 <header class="topbar"><div class="brand"><span class="logo" aria-hidden="true">▦</span>Agent Farm <span style="font-weight:400;color:#91ad9b">/</span> <span style="font-weight:400">Sessions</span></div><small>LOCAL TELEMETRY · READ ONLY</small></header>
-<div class="shell"><aside class="sidebar" aria-label="Session navigation"><div class="sidebar-head"><h1>Sessions</h1><form id="filters"><input class="search" id="search" placeholder="Search loaded sessions…" aria-label="Search loaded sessions"><div class="filter-row"><select name="harness" aria-label="Harness"><option value="">All harnesses</option><option>claude</option><option>codex</option></select><select name="status" aria-label="Outcome"><option value="">All outcomes</option><option>success</option><option>failed</option><option>unfinished</option></select></div><details class="filter-extra"><summary>More filters</summary><input name="profile" placeholder="Exact profile" aria-label="Exact profile"><input name="project" placeholder="Project contains" aria-label="Project contains"><label>From (UTC)<input name="from" type="date"></label><label>Through (UTC)<input name="to" type="date"></label></details><button class="filter-submit">Apply filters</button></form><p id="list-status" class="list-status" role="status">Loading sessions…</p></div><nav id="sessions" class="session-list" aria-label="Recorded sessions"></nav><button id="more" class="list-more" hidden>Load more sessions</button></aside><main id="detail" class="detail"><div class="empty"><h2>Your sessions, one conversation at a time.</h2><p>Select a run to explore its context, output, and usage.</p></div></main></div><div id="status" role="status"></div><script src="app.js"></script></body></html>`;
+<div class="shell"><aside class="sidebar" aria-label="Session navigation"><div class="sidebar-head"><h1>Sessions</h1><form id="filters"><label class="project-filter">Project<select id="project-filter" name="project_id" aria-label="Project"><option value="">All projects</option></select></label><p id="project-scope" class="project-scope"></p><input class="search" id="search" placeholder="Search loaded sessions…" aria-label="Search loaded sessions"><div class="filter-row"><select name="harness" aria-label="Harness"><option value="">All harnesses</option><option>claude</option><option>codex</option></select><select name="status" aria-label="Outcome"><option value="">All outcomes</option><option>success</option><option>failed</option><option>unfinished</option></select></div><details class="filter-extra"><summary>More filters</summary><input name="profile" placeholder="Exact profile" aria-label="Exact profile"><input name="project" placeholder="Project contains" aria-label="Project contains"><label>From (UTC)<input name="from" type="date"></label><label>Through (UTC)<input name="to" type="date"></label></details><button class="filter-submit">Apply filters</button></form><p id="list-status" class="list-status" role="status">Loading sessions…</p></div><nav id="sessions" class="session-list" aria-label="Recorded sessions"></nav><button id="more" class="list-more" hidden>Load more sessions</button></aside><main id="detail" class="detail"><div class="empty"><h2>Your sessions, one conversation at a time.</h2><p>Select a run to explore its context, output, and usage.</p></div></main></div><div id="status" role="status"></div><script src="app.js"></script></body></html>`;
 
 /** Preserve newest-first input order, grouping by full path rather than basename. */
 export function groupSessionsByWorktree<T extends {worktree?:unknown;project?:unknown}>(sessions:T[]){
@@ -18,8 +20,26 @@ export function groupSessionsByWorktree<T extends {worktree?:unknown;project?:un
   return [...groups.values()];
 }
 
+/** Flatten structural spans while retaining explicit agent ownership. */
+export function agentTimelineRows(nodes:Record<string,any>[],rootId:string){
+  type Row={node:Record<string,any>;depth:number;unlinked:boolean;tools:Record<string,any>[]};
+  const children=new Map<string,Record<string,any>[]>();
+  for(const node of nodes){const key=node.parent_id??'';children.set(key,[...(children.get(key)??[]),node]);}
+  const rows:Row[]=[],seen=new Set<string>();
+  const visit=(node:Record<string,any>,owner:Row|undefined,depth:number,unlinked=false)=>{
+    if(seen.has(node.id))return;seen.add(node.id);
+    if(node.kind==='unlinked')unlinked=true;
+    if(node.kind==='agent'||node.kind==='session'){
+      owner={node,depth,unlinked,tools:[]};rows.push(owner);depth++;unlinked=false;
+    }else if(node.kind==='tool'&&owner&&!unlinked)owner.tools.push(node);
+    for(const child of children.get(node.id)??[])visit(child,owner,depth,unlinked);
+  };
+  const root=nodes.find(node=>node.id===rootId);if(root)visit(root,undefined,0);
+  return rows;
+}
+
 // Serialized after TypeScript compilation; helper is explicitly injected by the server.
-export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
+export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree,timelineRows=agentTimelineRows){
   type Data=Record<string,any>;
   const $=(id:string)=>document.getElementById(id)!;
   let sessions:Data[]=[],selected='',cursor:string|null=null,filters:Data={},loading=false,generation=0,tab='timeline';
@@ -44,7 +64,6 @@ export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
     for(const group of groupWorktrees(matching)){
       const box=el('details','',list,'worktree-group') as HTMLDetailsElement;box.open=search.length>0||(worktreeExpanded.get(group.path)??true);
       const summary=el('summary','',box);summary.title=group.path||'No worktree was recorded';el('span',group.label,summary,'worktree-name');el('small',String(group.sessions.length),summary,'worktree-count');
-      el('div',group.path||'No path recorded',box,'worktree-path');
       box.ontoggle=()=>{if(box.isConnected&&!search)worktreeExpanded.set(group.path,box.open);};
       const items=el('div','',box,'worktree-sessions');
       for(const s of group.sessions){
@@ -65,9 +84,15 @@ export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
     try{
       const data=await query('runs',{...filters,limit:50,...(append&&cursor?{cursor}:{})}),before=JSON.stringify(sessions);
       if(append){const ids=new Set(sessions.map(s=>s.id));sessions.push(...data.items.filter((s:Data)=>!ids.has(s.id)));}else sessions=data.items;
+      const projectSelect=$('project-filter') as HTMLSelectElement,projectValue=projectSelect.value;projectSelect.replaceChildren();const allOption=el('option','All projects',projectSelect) as HTMLOptionElement;allOption.value='';for(const project of data.projects??[]){const option=el('option',project.label,projectSelect) as HTMLOptionElement;option.value=project.id;option.title=project.id;}projectSelect.value=projectValue;projectSelect.title=projectValue;
+      $('project-scope').textContent=data.scope==='project'?'Current repository · includes its worktrees':'Projects from recorded sessions';
       cursor=data.next_cursor;($('more') as HTMLButtonElement).hidden=!cursor;
       $('list-status').textContent=data.total_matching+' profile session'+(data.total_matching===1?'':'s')+(data.partial?' · partial scan':'')+(data.warnings.length?' · '+data.warnings.join(' '):'');if(!quiet||before!==JSON.stringify(sessions))renderList();
-      if(!selectedHash()&&new URLSearchParams(location.hash.slice(1)).get('view')!=='profiles'&&sessions[0]){history.replaceState(null,'','#session='+sessions[0].id);await loadDetail(sessions[0].id);}
+      if(new URLSearchParams(location.hash.slice(1)).get('view')!=='profiles'){
+        const selectionFilteredOut=!quiet&&!append&&selectedHash()&&!sessions.some(s=>s.id===selectedHash());
+        if((!selectedHash()||selectionFilteredOut)&&sessions[0]){history.replaceState(null,'','#session='+sessions[0].id);await loadDetail(sessions[0].id);}
+        else if(selectionFilteredOut){generation++;selected='';explorerData=undefined;history.replaceState(null,'',location.pathname);$('detail').replaceChildren();el('p','No sessions match these filters.',$('detail'),'empty');}
+      }
     }catch(e){error(e);}finally{loading=false;}
   }
   function documentText(text:string,parent:HTMLElement){
@@ -124,7 +149,7 @@ export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
   }
   function activityLink(n:Data,parent:HTMLElement,title=n.name,cls='tree-link'){
     const link=el('a',title,parent,cls) as HTMLAnchorElement;
-    link.href='#'+new URLSearchParams({session:selected,node:n.id}).toString();link.setAttribute('aria-current',String(explorerData?.node.id===n.id));link.onclick=()=>{if(['agent','tool','request'].includes(n.kind))tab='conversation';else if(n.kind==='session')tab='timeline';};return link;
+    link.href='#'+new URLSearchParams({session:selected,node:n.id}).toString();link.setAttribute('aria-current',String(explorerData?.node.id===n.id));link.onclick=()=>{if(['tool','request','activity','unlinked'].includes(n.kind))tab='inspect';else if(['agent','turn'].includes(n.kind))tab='conversation';else if(n.kind==='session')tab='timeline';};return link;
   }
   function ancestry(data:Data){const list:Data[]=[],seen=new Set<string>();let n=data.node;while(n&&!seen.has(n.id)){seen.add(n.id);list.unshift(n);n=data.nodes.find((p:Data)=>p.id===n.parent_id);}return list;}
   function activityRows(parent:HTMLElement,data:Data,all=false){
@@ -146,9 +171,57 @@ export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
     }
     if(rows.length>=500)el('p','Showing up to 500 activities. Drill into a branch to narrow the view.',parent,'notice');
   }
+  function renderAgentTimeline(parent:HTMLElement,data:Data){
+    const rows=timelineRows(data.nodes,data.node.id),start=Date.parse(data.node.started_at),total=data.node.duration_ms;
+    const card=el('section','',parent,'agent-timeline');
+    const heading=el('div','',card,'agent-timeline-heading');el('h2','Agent runtimes',heading);el('span',rows.length+' recorded agent'+(rows.length===1?'':'s'),heading,'muted');
+    el('p','One row per agent. Bars share the same clock; expand a row to inspect its tool calls.',card,'muted');
+    const legend=el('div','',card,'agent-legend');for(const [cls,title] of [['session','Main / linked session'],['agent','Sub-agent'],['failed','Failed']])el('span',title!,legend,'legend-'+cls);
+    const list=el('div','',card,'activity-list trace-waterfall');
+    const axis=el('div','',list,'activity-row timeline-axis');el('span','Agent',axis);const ticks=el('div','',axis,'timeline-ticks');for(let i=0;i<=4;i++)el('span',typeof total==='number'?duration(total*i/4):'—',ticks);el('span','Runtime',axis);
+    for(const {node,depth,unlinked,tools} of rows){
+      const box=el('details','',list,'agent-run') as HTMLDetailsElement;
+      const row=el('summary','',box,'activity-row'),name=el('div','',row,'agent-run-name');name.style.paddingLeft=Math.min(depth,6)*12+'px';
+      el('strong',(depth===0?'Main agent · ':'')+node.name,name);
+      el('small',node.status+(unlinked?' · parent not recorded':'')+' · '+tools.length+' tool call'+(tools.length===1?'':'s'),name,'muted');
+      const track=el('div','',row,'activity-track'),offset=Date.parse(node.started_at)-start;
+      if(Number.isFinite(offset)&&Number.isFinite(total)&&total>0&&typeof node.duration_ms==='number'){
+        const bar=el('span','',track,'activity-bar '+node.kind+(node.status==='failed'?' failed':''));const left=Math.max(0,Math.min(100,100*offset/total));bar.style.left=left+'%';bar.style.width=Math.max(0,Math.min(100-left,100*node.duration_ms/total))+'%';bar.title=date(node.started_at)+' · '+duration(node.duration_ms);
+      }else el('small','Timing unavailable',track,'muted');
+      el('span',duration(node.duration_ms),row,'agent-runtime');
+      const body=el('div','',box,'agent-run-body');
+      activityLink(node,body,'Open conversation & requests →','back-link').onclick=()=>{tab='conversation';if(explorerData?.node.id===node.id)renderDetail(generation);};
+      if(!tools.length)el('p','No tool calls explicitly linked to this agent were recorded.',body,'muted');
+      for(const tool of tools){const item=el('div','',body,'agent-tool');activityLink(tool,item,tool.name,'');el('span',tool.status+' · '+duration(tool.duration_ms),item,'muted');}
+    }
+    if(!rows.length)el('p','No agents recorded for this selection.',card,'missing');
+    el('p','Recorded elapsed time, including waits. Overlapping agent runtimes are not added. Missing telemetry and gaps are not classified as idle.',card,'timeline-note');
+  }
+  function renderConversation(parent:HTMLElement,data:Data,token:number){
+    el('p','User messages and agent replies. Tool calls and request details are collapsed below each group of messages.',parent,'muted');
+    const feed=el('div','',parent,'conversation-feed');
+    const append=(page:Data)=>{
+      for(const message of page.messages??[]){
+        const card=el('article','',feed,'chat-message '+message.role),head=el('div','',card,'chat-heading');
+        el('strong',message.role==='user'?'You':'Agent',head);if(message.started_at)el('small',date(message.started_at),head,'muted');
+        documentText(message.text,card);if(message.truncated)el('p','This message was truncated in the recording.',card,'notice');
+      }
+      if(page.requests.length){const details=el('details','',feed,'chat-activity');el('summary','Tool calls & request details · '+page.requests.length+' recorded requests',details);page.requests.forEach((r:Data,i:number)=>renderTurn(r,i,details,false));}
+    };
+    append(data);
+    if(!data.total_requests){
+      if(data.prompt){const card=el('article','',feed,'chat-message user');el('strong','You',card);documentText(data.prompt,card);}
+      el('p','No conversation text was captured for this selection. Message capture must be enabled when the session runs.',feed,'missing');
+    }else if(!data.messages?.length)el('p','No user or agent message text is available in this group. You can inspect the recorded activity or load more.',feed,'missing');
+    const tools=el('details','',parent,'chat-activity');el('summary','Recorded tools & sub-agents',tools);activityRows(tools,data,true);
+    let next=data.next_cursor;const more=button('Load more conversation',parent,async()=>{more.disabled=true;try{
+      const page=await query('explorer',{session_id:selected,node_id:data.node.id,cursor:next,limit:5});
+      if(token!==generation||tab!=='conversation'||!feed.isConnected)return;append(page);next=page.next_cursor;more.hidden=!next;
+    }catch(e){error(e);}finally{more.disabled=false;}});more.hidden=!next;
+  }
   function renderDetail(token:number){
     if(!explorerData)return;const data=explorerData,n=data.node,s=data.session??{},root=$('detail');root.replaceChildren();
-    const layout=el('div','',root,'explorer-layout'+(['timeline','events'].includes(tab)?' timeline-layout':'')),tree=el('nav','',layout,'structure');tree.hidden=['timeline','events'].includes(tab);tree.setAttribute('aria-label','Session structure');el('h2','Session structure',tree);
+    const layout=el('div','',root,'explorer-layout'+(['timeline','conversation','events'].includes(tab)?' timeline-layout':'')),tree=el('nav','',layout,'structure');tree.hidden=['timeline','conversation','events'].includes(tab);tree.setAttribute('aria-label','Session structure');el('h2','Session structure',tree);
     const ancestors=ancestry(data),expanded=new Set(ancestors.map(a=>a.id)),children=new Map<string,Data[]>();for(const row of data.nodes){const key=row.parent_id??'';children.set(key,[...(children.get(key)??[]),row]);}
     let count=0;const draw=(row:Data,parent:HTMLElement,depth=0)=>{if(depth>32||count++>=500)return;const link=activityLink(row,parent);el('small',row.kind+' · '+duration(row.duration_ms),link);const nested=children.get(row.id)??[];if(nested.length){const box=el('details','',parent) as HTMLDetailsElement;box.open=expanded.has(row.id);el('summary',nested.length+' activities',box);for(const child of nested)draw(child,box,depth+1);}};
     for(const row of data.nodes.filter((r:Data)=>!r.parent_id))draw(row,tree);if(count>=500)el('small','Tree limited to 500 activities.',tree);
@@ -156,11 +229,12 @@ export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
     if(ancestors.length>1)activityLink(ancestors[ancestors.length-2]!,inner,'← Back to '+ancestors[ancestors.length-2]!.name,'back-link');
     const heading=el('div','',inner,'detail-heading');const titles=el('div','',heading);el('div',n.kind==='session'?'PROFILE SESSION':n.kind.toUpperCase(),titles,'eyebrow');el('h1',n.name,titles);const actions=el('div','',heading,'actions');const index=sessions.findIndex(row=>row.id===selected);button('← Previous run',actions,()=>choose(sessions[index-1]!.id)).disabled=index<=0;button('Next run →',actions,()=>choose(sessions[index+1]!.id)).disabled=index<0||index>=sessions.length-1;button('Refresh',actions,()=>loadDetail(selected));
     const sub=el('div','',inner,'subheading');el('span',n.status,sub,'badge '+n.status);el('span',(s.harness??'Agent')+' · '+(s.user??'Unknown user')+' · '+date(n.started_at),sub);el('div',s.worktree??'',inner,'subheading');
-    const stats=el('div','',inner,'stats');for(const [title,value,note] of [['Elapsed',duration(n.duration_ms),'Wall time, not summed agent time'],['Model requests',number(n.requests),'Including linked descendants'],['Output tokens',number(n.output_tokens),'Input: '+number(n.input_tokens)],['Reported cost',money(n.cost_usd),n.cost_coverage+'/'+n.requests+' requests report cost']]){const stat=el('div','',stats,'stat');el('span',title!,stat,'stat-label');el('span',value!,stat,'stat-value');el('small',note!,stat,'stat-note');}
+    const stats=el('div','',inner,'stats');for(const [title,value,note] of [['Elapsed',duration(n.duration_ms),'Wall time, not summed agent time'],['Agents',number(timelineRows(data.nodes,n.id).length),'Main agent and recorded sub-agents'],['Output tokens',number(n.output_tokens),'Input: '+number(n.input_tokens)],['Reported cost',money(n.cost_usd),n.cost_coverage+'/'+n.requests+' requests report cost']]){const stat=el('div','',stats,'stat');el('span',title!,stat,'stat-label');el('span',value!,stat,'stat-value');el('small',note!,stat,'stat-note');}
     if(data.partial||data.warnings.length)el('p',[data.partial?'Partial telemetry.':'',...data.warnings].join(' '),inner,'notice');
-    const tabs=el('div','',inner,'tabs');for(const [id,title] of [['timeline','Timeline'],['conversation','Turn reader'],['events','Timeline & events'],['metadata','Details & raw data']]){const b=button(title!,tabs,()=>{tab=id!;renderDetail(token);});b.className='tab';b.setAttribute('aria-pressed',String(tab===id));if(tab===id)b.setAttribute('aria-selected','true');}
+    const tabs=el('div','',inner,'tabs');for(const [id,title] of [['timeline','Agents'],['conversation','Conversation'],['inspect','Activity details'],['events','Raw events'],['metadata','Details & raw data']]){const b=button(title!,tabs,()=>{tab=id!;renderDetail(token);});b.className='tab';b.setAttribute('aria-pressed',String(tab===id));if(tab===id)b.setAttribute('aria-selected','true');}
     const panel=el('div','',inner);
-    if(tab==='timeline'){el('p','Recorded parent/child relationships on a shared time axis. Gaps are not classified as idle.',panel,'muted');activityRows(panel,data,true);return;}
+    if(tab==='timeline'){renderAgentTimeline(panel,data);return;}
+    if(tab==='conversation'){renderConversation(panel,data,token);return;}
     if(tab==='events'){el('p','Native spans and events. Bars compare recorded durations within each loaded page; they do not indicate start offsets.',panel,'muted');void renderRaw(panel,token);return;}
     if(tab==='metadata'){const meta=el('dl','',panel,'metadata');for(const [key,value] of Object.entries({...s,...n})){el('dt',key.replaceAll('_',' '),meta);el('dd',String(value??'Not recorded'),meta);}const attributes=el('details','',panel,'raw-details');el('summary','Selected activity attributes',attributes);el('pre',JSON.stringify(data.attributes,null,2),attributes,'raw');if(n.kind==='session'&&n.session_id!==selected){const link=el('a','Open child session independently',panel) as HTMLAnchorElement;link.href='#session='+encodeURIComponent(n.session_id);}button('Open session raw events',panel,()=>{const raw=el('div','',panel);void renderRaw(raw,token);});return;}
     if(n.kind==='session'){
@@ -174,7 +248,7 @@ export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
       if(n.kind==='turn'){label('03','Final response',panel);if(data.final_output.length)for(const output of data.final_output)section(output,panel,true);else el('div','A final response was not explicitly captured. Inspect individual requests below.',panel,'missing');}
     }
     const requestBox=el('details','',panel,'raw-details') as HTMLDetailsElement;requestBox.open=['request','agent','tool'].includes(n.kind);el('summary','Instructions, context & model requests · '+data.total_requests,requestBox);const list=el('div','',requestBox);data.requests.forEach((r:Data,i:number)=>renderTurn(r,i,list,data.requests.length===1));let next=data.next_cursor;
-    const more=button('Load more requests',requestBox,async()=>{more.disabled=true;try{const page=await query('explorer',{session_id:selected,node_id:n.id,cursor:next,limit:5});if(token!==generation||tab!=='conversation')return;page.requests.forEach((r:Data,i:number)=>renderTurn(r,Number(next)+i,list,false));next=page.next_cursor;more.hidden=!next;}catch(e){error(e);}finally{more.disabled=false;}});more.hidden=!next;
+    const more=button('Load more requests',requestBox,async()=>{more.disabled=true;try{const page=await query('explorer',{session_id:selected,node_id:n.id,cursor:next,limit:5});if(token!==generation||tab!=='inspect')return;page.requests.forEach((r:Data,i:number)=>renderTurn(r,Number(next)+i,list,false));next=page.next_cursor;more.hidden=!next;}catch(e){error(e);}finally{more.disabled=false;}});more.hidden=!next;
     if(!data.total_requests)el('p','No correlated model content. Content capture is opt-in; missing text does not imply no work occurred.',requestBox,'missing');
   }
   async function loadDetail(id:string){
@@ -185,6 +259,7 @@ export function telemetryBrowser(groupWorktrees=groupSessionsByWorktree){
     }catch(e){if(token===generation){$('detail').replaceChildren();el('div','This session could not be loaded. Choose another session or refresh.', $('detail'),'empty');error(e);}}
   }
   $('filters').onsubmit=e=>{e.preventDefault();filters=Object.fromEntries([...new FormData(e.currentTarget as HTMLFormElement)].filter(([,value])=>value));if(filters.to)filters.to+='T23:59:59.999Z';void loadSessions();};
+  $('project-filter').onchange=()=>{const value=($('project-filter') as HTMLSelectElement).value;filters={...filters,project_id:value||undefined};void loadSessions();};
   $('search').oninput=renderList;$('more').onclick=()=>loadSessions(true);
   window.addEventListener('hashchange',()=>{const id=selectedHash();if(id)void loadDetail(id);});
   void loadSessions();if(selectedHash())void loadDetail(selectedHash());

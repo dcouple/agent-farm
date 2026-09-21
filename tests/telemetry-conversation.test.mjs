@@ -43,3 +43,21 @@ test('large histories preserve the latest user message and reserve space for out
  const result=normalizeConversation([],[event('api_request_body',{request_body_id:'body',body:JSON.stringify(request)}),event('api_response_body',{request_id:'request',request_body_id:'body',body:JSON.stringify({content:[{type:'thinking',thinking:'not displayed'},{type:'text',text:'Actual answer'}]})})]);
  assert.equal(result.turns[0].input.at(-1).text,'Latest question');assert.equal(result.turns[0].output[0].text,'Actual answer');assert.ok(result.turns[0].warnings.length);assert.ok(JSON.stringify(result.turns[0]).length<100000);
 });
+
+test('conversation separates tools from user and assistant prose across both response formats',async()=>{
+ const {conversationMessages}=await import('../dist/telemetry-conversation.js');
+ const messages=[{role:'user',content:'Find the bug'},{role:'assistant',content:[{type:'tool_use',name:'read',input:{path:'app.ts'}}]},{role:'user',content:[{type:'tool_result',tool_use_id:'read-1',content:'source code'}]}];
+ const result=normalizeConversation([], [event('api_request_body',{request_body_id:'b',body:JSON.stringify({messages})}),event('api_response_body',{request_id:'r',request_body_id:'b',body:JSON.stringify({content:[{type:'text',text:'I found it.'},{type:'tool_use',name:'edit',input:{code:'fix'}},{type:'thinking',thinking:'private'}]})})]);
+ assert.deepEqual(result.turns[0].input.map(s=>s.role),['user','tool','tool']);
+ assert.deepEqual(result.turns[0].output.map(s=>s.role),['assistant','tool']);
+ assert.deepEqual(conversationMessages(result.turns).flat().map(s=>s.text),['Find the bug','I found it.']);
+ const generic=normalizeConversation([{name:'chat',attributes:{'gen_ai.operation.name':'chat','gen_ai.output.messages':JSON.stringify([{role:'assistant',content:'Checking.',tool_calls:[{type:'function',function:{name:'read',arguments:'{}'}}]},{type:'function_call',name:'exec',arguments:'{}'},{type:'message',role:'assistant',content:[{type:'output_text',text:'Done.'}]}])}}],[]);
+ assert.deepEqual(conversationMessages(generic.turns).flat().map(s=>s.text),['Checking.','Done.']);
+});
+
+test('conversation omits replayed prompts across request pages but preserves new explicit turns',async()=>{
+ const {conversationMessages}=await import('../dist/telemetry-conversation.js');
+ const base={input:[{role:'user',text:'Try again',truncated:false}],output:[],native_session:'main',prompt_id:'first'};
+ const pages=conversationMessages([base,{...base,output:[{role:'assistant',text:'Done',truncated:false}]},{...base,prompt_id:'second'}]);
+ assert.deepEqual(pages.map(p=>p.map(m=>m.text)),[['Try again'],['Done'],['Try again']]);
+});
