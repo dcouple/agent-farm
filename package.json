@@ -6,7 +6,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dcouple/agent-farm.git"
+    "url": "https://github.com/greenfield-inc/agent-farm.git"
   },
   "type": "module",
   "packageManager": "pnpm@11.8.0",
