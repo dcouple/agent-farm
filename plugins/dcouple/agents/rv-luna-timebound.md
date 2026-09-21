@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: xhigh
 skills: []
-description: "Hypothesis: does a cheap subscription model with the exact time-bounded, scope-first reviewer body reach the 4 of 4 that DeepSeek, GLM and Astra reached with it, so the subscription can review without spending Astra? Reviewer lane: Luna xhigh with rv-astra-timebound's body, unchanged. Built as the review seat for the Astra-builds-cheap-reviews arm on #364. (RESULT 2026-09-21: on the Astra-built #364 diff, FINDINGS NONE in 9 min for $0.15, clearing dispatch auth, org scoping of the five signal reads, the Stripe re-read and the ledger transaction with file and line; not yet run on the injected fixture, so its recall is unmeasured)"
+description: "Hypothesis: does a cheap subscription model with the exact time-bounded, scope-first reviewer body reach the 4 of 4 that DeepSeek, GLM and Astra reached with it, so the subscription can review without spending Astra? Reviewer lane: Luna xhigh with rv-astra-timebound's body, unchanged. Built as the review seat for the Astra-builds-cheap-reviews arm on #364. (RESULT 2026-09-21: on the Astra-built #364 diff, FINDINGS NONE in 9 min for $0.15, clearing dispatch auth, org scoping of the five signal reads, the Stripe re-read and the ledger transaction with file and line; an Astra audit of the same diff then found a HIGH with a reproducer, so on this one run the body did not carry Luna to Astra's recall; not yet run on the injected fixture)"
 ---
 
 
