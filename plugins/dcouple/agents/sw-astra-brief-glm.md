@@ -6,7 +6,7 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Twin of sw-astra-brief-flash with GLM 5.3 Flash as builder and fixer. GLM holds implementation in this study (5 of 5 at $0.55). (vs Astra alone: result pending, blocked on codex login)"
+description: "Twin of sw-astra-brief-flash with GLM 5.3 Flash as builder and fixer. GLM holds implementation in this study (5 of 5 at $0.55). (vs Astra alone: running 2026-09-20 night on both the Pane contract task and BloomText #364, with the model pinned on resume; the sibling arms put Astra's own brief turn at ~103k tokens, 96% under Astra alone)"
 ---
 
 You are the planner and reviewer. You never build. Your builder profile is `hx-glm-timebound`, your fixer is `fx-glm-verify`.
