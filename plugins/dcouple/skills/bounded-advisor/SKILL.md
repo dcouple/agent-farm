@@ -38,3 +38,7 @@ change the answer.
 
 Number of advisor calls (must be ≤ 2), the two questions asked, and whether either answer changed the
 code. That is the whole point of the profile; a run that cannot state it is not measurable.
+
+## Never fork
+
+Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.

@@ -5,10 +5,10 @@ source:
   repository: https://github.com/dcouple/skills
   commit: c7ae5b0bffc37de831c4149cc635a444877e31ad
 checksums:
-  agents/astra-discuss.md: 3652889044b8bb77611bd6d911a00a9652d74bc86276df964406f11f53e4b892
-  agents/astra-implementer-high.md: 782487e44a581f162981e4497be9a03cbd345b94c316948e51f55b7b43b9475c
+  agents/astra-discuss.md: 89ee1385855be43ee93b7b6d0b1005148b4c054d1e14635efd8eb99e8e34f3e5
+  agents/astra-implementer-high.md: d11038af5b251d343e6c144d78004074cc82ef1ae673ac9b39a042ef3f4b35c7
   agents/astra-researcher-reader.md: df47010281e0509e95b70c552079a7d5077402d734ebb1b98548f5dcec3744b6
-  agents/astra-researcher.md: 225b9ceea551ff9c6179484b273cfdc4ab646670a9abd8aad27f12a9c88e4013
+  agents/astra-researcher.md: 537692781a7843787d3c565e56bac56085935876c49c33beb848a3a95ab45333
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764
@@ -16,26 +16,26 @@ checksums:
   agents/ds-orch-ds.md: ed0e3b5026af22c56ec04f6eaf364dc3598d15f60a05d9ebbe40b896e6f6c56f
   agents/exp1-luna-xhigh-reviewer.md: 4822cd74d11510e5f94ff9e28a85e3ef1f142c353d4fee7f0b9f6796a595d55b
   agents/exp1-luna-xhigh-worker.md: 78de8c0a9c416275d0468234bd9c13eed00ef66cf7e0bb914d5e8ae302615901
-  agents/exp1-luna-xhigh.md: 0189e9996433287f4cb6de2c29aade56eb39714f9e9030dc16dd35049fa7df21
-  agents/exp10-luna-meta-orchestrator.md: 66c767e12ae160d4092f9384c38df182515a85722ccdebb943e8c5de8b6f26d2
+  agents/exp1-luna-xhigh.md: 1504187996793324376fa066aafcb56008b3cf05d464e08ab93e093ef3c8d6a3
+  agents/exp10-luna-meta-orchestrator.md: 45117e2b79f3a7c391151f1a16b8242d826b477d2cffa343946674671b59bd6a
   agents/exp2-deepseek-flash-reviewer.md: 10fc8f2af6c2286bbef0488ebb2f8ba3ed8a5351a998a18651f1e494d82d32df
   agents/exp2-deepseek-flash-worker.md: 220aacca3f2748c79df9b5524e1560a01192b1c82f3edc2517cf97e60e2c0465
-  agents/exp2-deepseek-flash.md: a453d18b7f63e3e4ccecb3e97d2b2ab5a14609ddb914ab5ab85df32c7a0166a4
+  agents/exp2-deepseek-flash.md: ae9912cf930bca8e95622a9cc2d1766fd03a641a7b32a29c808871e66f631618
   agents/exp3-glm-flash-reviewer.md: c2ca9f9cd03fc7942acc13efa078272c6bdb69cc7d49efca352f399ce5fed47c
   agents/exp3-glm-flash-worker.md: 34f01a055ec2757bdbf193a64c6b7469c096c1b66e3dfb2b30b9f31ff78d751c
-  agents/exp3-glm-flash.md: 5a39b2bd5f9c746058c81e3d4eb444f09243e9287f5c66dd33682c330dc215ae
-  agents/exp4-luna-deepseek-split.md: 60db5db20230268adb92b6435cb0d688d19dcf36dfc5937f065534fb8ce1db91
-  agents/exp5-deepseek-luna-split.md: 1dd8fe8e8b79cbe1b1a6465f1ddc00c4cffe5a79c2ba6e18d5bfbaa861d7330c
+  agents/exp3-glm-flash.md: c0fd127c3089a9706bc32eff10e5ef58e0f9feaf06a02446f8e7a815f3cce97b
+  agents/exp4-luna-deepseek-split.md: 5b2492efa551f1220577b6c9ac917d12b79a6f8971d144a0d05bf4fa5da23ac8
+  agents/exp5-deepseek-luna-split.md: 37d6331df7c52cce69c3f03951440c3896c449c8505e7d5dd37f3ce7e0d3354e
   agents/exp6-fable-critic.md: 813e1f0479fd113c0c0cb97b232880d2e206f76f36cf08ee1313413fb64a66c2
-  agents/exp6-fable-gauntlet.md: bbadfdbea86a57d2381190a0408c97d7c4bfbfeb0a6ddb6deb8630c3a88556a4
+  agents/exp6-fable-gauntlet.md: 15af25cad49e3962a9dda457974af874ed65cfcac98d5c5efcfc685b858cbb54
   agents/exp6-fable-implementer.md: 4785a1fda7dac328e43871cf65e4ad726c8697c21382ae3fb0fde19961f99abf
   agents/exp7-astra-implementer.md: d7d472e024bd0e869cdde0156d6bed01b239c7b4c41b4e41ab948ed0ba7f3a31
-  agents/exp7-astra-manager-loop.md: f5f9b8e56873dffef2132dec63523013b6b11c61cacb4b04ef61415255a82c5d
+  agents/exp7-astra-manager-loop.md: 9e0496d621c5b89a729d6699d76525bf66403755365de392f7bfabb82e1681a7
   agents/exp7-astra-reviewer.md: 25e183e9c435d44011b9a289720dfcae79f7070afedb239c9227f9b616e5a12a
   agents/exp8-deepseek-builder.md: fc90d8acaefd6947d2ab858c74ecdc9c1a7fa65672e7ee5e766401c8df760bf0
   agents/exp8-glm-auditor.md: ba90ba993a0d16fd5ac0c5c4bf43d9bb31762cbe75ff1ad74862e19e946b5d9f
-  agents/exp8-glm-deepseek-loop.md: 4649d55181feb017d61100660bb520479dd6ce8c1174c864a81c541f756e7268
-  agents/exp9-meta-orchestrator.md: 0ccaa88fc3b594c2ffd3e05d28ebb8fc21879dbeb083b99e7ab616da9dd92e5e
+  agents/exp8-glm-deepseek-loop.md: a28cf5883126c5a1dfd9c1bae9c0313b766cc4e2323efe829b5d4016fcc398ea
+  agents/exp9-meta-orchestrator.md: 5e36e1e0a6dc8126b1c76a96a553387fb40313b51fdc5e5344b3985fbcfef58a
   agents/flash-builder-router.md: 8ee5f8c2c3c06cd1865df8136cec4005834c98b36b6d556d450831220cbdf99a
   agents/flash-builder.md: fea3d893f066917f9b65d9a3399f22d8f8e5169298e70efb28c93cc46aaf3db5
   agents/fx-deepseek-claude-raw.md: 34bf5125a9dc9407f8fdacc5e60a1d430f33f566f1a66cf81a68ad893c54d14e
@@ -51,12 +51,12 @@ checksums:
   agents/hx-glm-claude.md: fd3b8741b8d5ddeb32cc6fdc845841ee7a09988d4758f3657dbdae93afa083f2
   agents/hx-glm-timebound.md: c4cb07df8899379c8798ffde7e2403b1b8d82e39f7147337bb911b3661fd1d73
   agents/implementation-reviewer.md: 6dd4e83019c90b58da949a85cff7896203e6bce93905bd4a1fd676e87dad6add
-  agents/implementer.md: af8b9cdb1f1efe3b5892bde3b052e56200c29f217975ee3d20f601b4ac1653f5
+  agents/implementer.md: 3fbc817e02fe3a60bd8f0d19b14f82dbd7a5dd8b452a8bf7dc07cee3480b788e
   agents/integration-reviewer.md: d0e9728efcee1a803d3be09625c400861fd20671b5c8160ab816bf988b5ecd0c
   agents/intent-reviewer.md: f845dccef62d4e4532c4e688a2c90557a980b53c74c1b6f3bbd425e918e8466b
-  agents/parsa.md: cd92130c3ca6b4fa0f5284740fbaf5e5d201f8e84c38fd3e1aeb73b9c46d69c9
+  agents/parsa.md: 466c89c2b70b4d1ff2e54856f9a6c1e5f3fbbcfbf561850d22f1064a5bc6ec96
   agents/plan-reviewer.md: ee551be6ce08029354a024714cfc52cc6825f611f72c2c8abf33cdb91c25cc14
-  agents/planner.md: 4468323124b669ccf80b240cd7d40976910477903d7689fb60d2baed306b6cdc
+  agents/planner.md: 5aa9bb961d134df4775913b35c833e4f715737f7d49e7c7b60052a779fbc3ac2
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
   agents/pr-reviewer.md: fd0b0660602e2503ff1f092d8f2bf7c61adc034d987f44c08988ffce60642643
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
@@ -83,46 +83,46 @@ checksums:
   agents/rvs-luna-skilled.md: 37dd73151e7277c9427f566dcb291d35fd9ac4c79e3184a7deb0ee5ab4eafb08
   agents/rvs-terra-skilled.md: f65a3e25e7518a1e9071575abd83127847b71ea25a63ae6d69206943d0fe5d9b
   agents/scan-luna-worker.md: e6ee14013ec87384a247d01a0589c8b8e1480b9fb8700ee0650f866adbe93dcb
-  agents/scan-orchestra-terra.md: e08ca8960c06e4af30e1d87595a333de4d7dd0997c4e577a4e8bd52330e3892a
-  agents/scan-orchestra.md: 59ad3de7ea94d5f4d91bc366db409527a2fef42c89cf1db7db92a7e697918fa5
-  agents/scan-reconciler-deepseek.md: 4e9788604487036de4d5f652c3d09a1b734eeaa554a321d5172c543ca8820268
-  agents/scan-reconciler-glm.md: 98466b10c7be9268292e68734a3e9d93336a903f663c9baf60a5876112d157b4
-  agents/scan-reconciler.md: 1de7f4c3faf438e4d0022862b36bc5a68a4284dd85a72651b3951517f43cf5da
+  agents/scan-orchestra-terra.md: 38a19e3ec3b8e4b68c0ba816e2baef505eab6a59c1008561567deb30918df737
+  agents/scan-orchestra.md: 113a71d9f98f63fc497f87e33b120b693214c89ed59b4a29784924d30bc31bd5
+  agents/scan-reconciler-deepseek.md: fa80e1aa9b83ebac9e30076108623025b365c592723e90a730bcbf43feb5a4b3
+  agents/scan-reconciler-glm.md: 85222f342c43b26b8be9f9506eb7f9cc4edd4921f3feb1ab220dfed6ca912fb1
+  agents/scan-reconciler.md: 8db63b4f66580a500ee03fcdfbdded4a85f4f72044a7a119f18323e57576e076
   agents/scan-terra-worker.md: c1e6622c24ef74bedefedcf9d44c61009eb630d5522ea0a43c8c1cd75bfc72d0
   agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
   agents/sw-astra-advisor-low.md: c3c43ef71f11485349c5a95d6a9f23bf82e0cbd858ba52088f3e6d3a053a1524
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
-  agents/sw-astra-brief-flash.md: 10c65b5410539fd25da93f9acd3dc4e78f57a83d36f251405694c003b75c51e0
-  agents/sw-astra-brief-glm.md: 6bf710e35d43901f4efe9d7b86e0990d0827af1c867c0c44ea21c2e9cb6c129a
-  agents/sw-astra-brief-luna-high.md: 4c2a51bf01e3a077b92f6017ca1cd7a9cabf50d748135b2106eb6984fbe231ba
-  agents/sw-astra-brief-luna.md: 6be924f907e5d22d12e97e8d16cedab29f280f8005702393ca17fca16058beea
-  agents/sw-astra-brief-only-luna.md: 3231d1cf75e42b0d2258a22e95eb31bee2d61cb889adb3576cfb2b1ca0e9d734
+  agents/sw-astra-brief-flash.md: f74f6559ed12bdb2cba8fe05d53c82e718e3f59b716d309eceb8a56d9e15cb5f
+  agents/sw-astra-brief-glm.md: f411a07dda0a914cdb15954afaacbd17abab8be9cc3e7b4b3d0d32ee0fbdf383
+  agents/sw-astra-brief-luna-high.md: 8c69444cadbf51e7b7e6806e43a379b79e6cb79eea7d03953951b661f1e3cef0
+  agents/sw-astra-brief-luna.md: 3eb878fa2fdd131b0ae52175ba18a2df782d369358a62b97a05c5157088df592
+  agents/sw-astra-brief-only-luna.md: 1cf178440f5c2bae76c864f7bcf24a97b28621eae1cbc0d77821ca341369afef
   agents/sw-astra-final-reviewer-low.md: dc10313c555dd75fda5ac20081de1d2d06f8bdcb63ee34888b3c715cdff2738a
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
-  agents/sw-astra-flash-repro-sub.md: 8b04ca86ea70260e8d0161c24a35c321183fd3153746ab38d91be264f10e142f
-  agents/sw-astra-flash-repro.md: 64b83ffa0344c2b8800c3c1a3f9ef4ddd6f161b164e2bf5f876201d089f220fd
-  agents/sw-astra-low-luna-review.md: 36fe07a5c792e3d343663193dfd497b0c685af95e7594765685952a02b488c3e
+  agents/sw-astra-flash-repro-sub.md: 29c5983999babe7db2dcc17d962fae26dcc206940c829951a5262e49aa29da1d
+  agents/sw-astra-flash-repro.md: 6e67c083e26c5f4f650dca45c8c16ad365c76d16c6a866c9cd2b9805457faf03
+  agents/sw-astra-low-luna-review.md: 396ec2d6757b17cceedb2ff7d10f82037961ef63bb37944535a6ff7c82cc149c
   agents/sw-astra-low.md: 81d529ebfe215811e4ead08cc07d1bddc81d53f5c85207959cc6452857b620c2
   agents/sw-astra-medium.md: 8ee2f9ec26a6b173932412e0120f4e4a90d9a05dd9ab609cceb75bc0658b803c
   agents/sw-astra-merge-low.md: b5131204a34f4036ca5d3bd81f61841269a1176689e243cd4e225b5a98d99289
-  agents/sw-astra-orch-luna.md: d74078df4f2287b39278810fffea6eb89b7c66a282b2c68515b1f2fd274b2811
+  agents/sw-astra-orch-luna.md: 59bcf9ce552d73a90d5760208dc91bf6c2929ed49deaab49d3dbbeb1425229c0
   agents/sw-baseline-raw.md: ae1d1a12b19140f29936dad215dd4457cf3490787bbb8aee373e4f3279bb972e
-  agents/sw-deepseek-astra-loop.md: 6735feff61426c9ba8c156e103b4e6511007ce831138e1d1e21545526d4ee7ec
-  agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
-  agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
-  agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
-  agents/sw-luna-advised-1call.md: 136b5cec6318768088ccffa67202987a3f28152e9576d3a7ea22f086e6fffcea
-  agents/sw-luna-advised-bounded.md: b389821eaf9f72e6405c60f743faf2f1aa0e4c3cfd06c355cdd29deef0e1088a
-  agents/sw-luna-astra-loop.md: 8cb45150010b6e34865c98bb0b4056fcf8db9ae8474a15b453836ccb28eef60a
-  agents/sw-luna-astra-reconcile.md: 561a82c6458d11e5a72bbd2c706150e48f5c41f00cb3f8931115ff02a4320857
+  agents/sw-deepseek-astra-loop.md: ce3abcf5340b26319cdb7af2ebdf1dd40f019fefd3d2163bcde1a2200927efea
+  agents/sw-fast-implementer.md: 535e08b0a61fa3f904c437118361f173d9511065ad55330e640ac51006618a80
+  agents/sw-flash-implementer.md: 7ef7803fac64daf5fb49e22ef991566aac04e3f275f7aa78588168531c419cdf
+  agents/sw-frontier-planner.md: 468fd01a9ef16e5894538f210cf2e613f60d03bf23d0a120c7a1498c2b9180dd
+  agents/sw-luna-advised-1call.md: 0166c007dc2af5b70d9afbada307d16af02125aaaaf8851dc4e556abeb923e46
+  agents/sw-luna-advised-bounded.md: b6156fae9d70d25a8404d599c607b44bbe2d111f81984b0b8f3b1944b1ac874a
+  agents/sw-luna-astra-loop.md: 42baa6070223382ec05a3f7f6387097eb515d90958a3b6dc09b751c937281d77
+  agents/sw-luna-astra-reconcile.md: 58b634d390b5954c3f8a2373702d10590dd6bcca2f94c3b7cc7933656732239a
   agents/sw-luna-final-reviewer.md: a4bc8cf0609a581a29649f5ea5cf044f566c2f858da958c05ba843f18ad34623
   agents/sw-luna-high.md: 123d4e0a36005a6d86a18c08442cb2a195f9e219bb31ff9021e50b34e812c829
-  agents/sw-luna-implementer.md: 227e26c80ec7ad547862868fd1ba0b93d405a4438d2c858c742bc35532c610a4
+  agents/sw-luna-implementer.md: 839719b406d44cddcce0119e060dfdccf938fca549d333c114bf976dcae7e92a
   agents/sw-luna-max-worker.md: a2727228f9ee4ef6a42d1fdad40c178710a1139fec1ebff874dca3ff31a84f95
-  agents/sw-luna-orchestra.md: 0e4de9315856f18c90bf8c7946c1595a91b2b12f1d46ab34f4f4f0f0ce4df181
+  agents/sw-luna-orchestra.md: 1c5990480608356cb5bf80dfb5d76476b9fb252cdff292acbdb43f6088868bfa
   agents/sw-luna-raw.md: f60262ea31ef3ae17f89ecd321a24aa76424afe057b9efe26d17bde75d33a030
-  agents/sw-luna-tdd-loop.md: 81715489e20a9f567bdd59c1f7ef723bb7d0f59970d51e46766cd52342f3bd75
+  agents/sw-luna-tdd-loop.md: 204e8b190df588bb86f962f6df88f31f31f77d592aa52c63067bf5b0a2a54206
   agents/sw-opus46-loop.md: 65b6f43c5b6cdd25c807cfcc6782eed60aed825ddd1856bb0ed9cd4c8bef99e1
   agents/sw-sol-high.md: bfead52b8a0bee12fbfb33f164c22021fb462299dbede3ce754116df5a6f13cb
   agents/sw-sol-max.md: 9f81d357dc106540cfb911842c7eb91b1a3f8400394702f59f774769637e367e
@@ -132,9 +132,9 @@ checksums:
   agents/sweep-bugs-terra.md: 0a6678e9c18da94f8bb859d6718ded8b98d3ade145f68b936335176643f8a840
   agents/sweep-sec-flash.md: 943c017f67df9aa3d8c1ca03e22590627991e4b3d8f6e661b27957ae0bd212a9
   agents/sweep-sec-glm.md: 05cbdb1014f35fa5d394c264c63701a779d30b7b289a557f10925ed5b22cfda9
-  agents/tri-a-deepseek-write.md: fa87565d87c0228dbc7e9767f154ef96bdc0378b67f7b16e51fe60e72478ca17
-  agents/tri-b-luna-write.md: 31c96f3d8c48f330e31e9367280171dce49eff19d52a7a97082a04b36db7a191
-  agents/tri-c-glm-write.md: 27aaef60ca541b941c7544cb7638bdc3b3c39be13aba4bd1ba7800e95c59fd6f
+  agents/tri-a-deepseek-write.md: 29f8caa432907d52afd5939f59957d2da4914ca5cdedbfe5debec9888e3f0f72
+  agents/tri-b-luna-write.md: 555066ee5a49c9fe64db3cbb79b6537136c9244dae4589595bed74fc9981dc56
+  agents/tri-c-glm-write.md: 23202b2bb0b121d290d38922c91ece6c9014d0e7a90257e5e337a11857797300
   agents/worker.md: b92adc8ea7d4a798898203eda4eb5600abf45ebce2f4786820bf339439149a96
   profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
@@ -239,12 +239,12 @@ checksums:
   profiles/tri-a-deepseek-write.yaml: 4a2e879e6c0182216d19723c80f751fa6d979c315bc43e0273e666d8513fb86e
   profiles/tri-b-luna-write.yaml: be988a40a3bfd9fe879a0c463a7895724ed35c6c8b13395bbab77c2f4df07562
   profiles/tri-c-glm-write.yaml: b96ee42a48e98540ac0e64bbf58eb1e4836138aed509f4f69507953b5c7b9bb6
-  skills/astra-flash-orchestration/SKILL.md: 09f5044991623b7c214ab1e9057d51b2937a7de71c2f49deffafe7509986cb66
-  skills/astra-flash-orchestrator-upstream/SKILL.md: 6be00402cfe4bc4c7c4e0e883ee6b4ffdcb45d6c6efa2133472f4949d1b73fa2
+  skills/astra-flash-orchestration/SKILL.md: 56c55073474569cb00dc819e1c148bcb779961e03c90257b1325566e4847a790
+  skills/astra-flash-orchestrator-upstream/SKILL.md: 2af9bdd830978cbb93c1df509d91d9fc5ddfa1992b12c43e869ae654fbd47eae
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
-  skills/bounded-advisor/SKILL.md: 1cfbfd285323cc833d8414bf52e9f49736425f4be6005b96e7b46ea30f544197
+  skills/bounded-advisor/SKILL.md: e8aca7707b741c965ae1055d18601a93c11995e6615e671ac3870c4e13b426a5
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
-  skills/codex-queue-wait/SKILL.md: 8e2c48e4097ed23e6599bdf76add1620e140855b5d139774ca8c5b360b75a259
+  skills/codex-queue-wait/SKILL.md: 327b6982e89402505b771eb2b391f5e333d762e403f5268ce1f612584a13aa6e
   skills/codex-queue-wait/scripts/notify.sh: 72b1e25ace739b5ed5a20c8fc6f772d2ffdc5e51ef04e5501759bbfc56582ad1
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/SKILL.md: d449b2f3cc05848ce6e8a03337112b8452a12b22df1ce91aa54c563377bf3285

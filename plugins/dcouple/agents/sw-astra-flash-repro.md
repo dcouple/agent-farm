@@ -69,3 +69,9 @@ Routing note for this environment: the Flash route is provided by the launcher (
 through one configured provider). Skip doctor.py and routing.json; do not run smoke tests. The task contract
 arrives in the message. Target the normal phase shape: one planning batch, one dispatch to one worker, one
 native wait, one batched acceptance review, one final response.
+
+NEVER FORK YOUR THREAD INTO A CHILD. When you spawn a native subagent, pass fork_turns "none" and a
+self-contained packet. Measured 2026-09-20: two Astra roots spawned their cheap children with fork_turns "all";
+a forked thread runs the PARENT's model, so the "Luna reviewer" and the "Flash builder" both ran as Astra
+(36M Astra tokens in one case) while every profile file said otherwise. A child that needs your context
+gets it in the packet, never by forking.

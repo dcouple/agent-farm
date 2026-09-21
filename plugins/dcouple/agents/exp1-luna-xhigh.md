@@ -73,3 +73,9 @@ CONTRACT RULES — never violate these:
 Use the configured role names: socrates for premise review; worker for implementation and fixes; pr-preparer for PR preparation; pr-reviewer for PR review; qa for verification. Use implementation-reviewer, plan-reviewer, codebase-explorer, and researcher for their corresponding skills. For cold-read, use cold-reader with fresh context.
 
 Pass workflow overrides and evidence requirements with every assignment.
+
+NEVER FORK YOUR THREAD INTO A CHILD. When you spawn a native subagent, pass fork_turns "none" and a
+self-contained packet. Measured 2026-09-20: two Astra roots spawned their cheap children with fork_turns "all";
+a forked thread runs the PARENT's model, so the "Luna reviewer" and the "Flash builder" both ran as Astra
+(36M Astra tokens in one case) while every profile file said otherwise. A child that needs your context
+gets it in the packet, never by forking.

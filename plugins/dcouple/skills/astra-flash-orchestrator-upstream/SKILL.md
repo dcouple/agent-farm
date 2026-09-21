@@ -250,3 +250,7 @@ Integration status: <what is present in the dependent workspace>
 
 
 > Vendored verbatim from ethanplusai/astra-flash-orchestrator for a like-for-like baseline. Routing here is agent-farm's provider (OpenRouter) for both root and child, not Codex Router; doctor.py/routing.json checks do not apply, treat routing as verified by the launcher.
+
+## Never fork
+
+Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.

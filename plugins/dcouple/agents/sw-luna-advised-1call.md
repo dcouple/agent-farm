@@ -42,3 +42,9 @@ ADVISOR BUDGET, HARD: exactly ONE advisor call per task, as the bounded-advisor 
 self-contained packet under 400 tokens plus cited lines, one question. A second call is a failure of
 this profile; write down why you wanted it and do not make it. Report the count and both questions at
 the end. The advisor and final reviewer run at low effort.
+
+NEVER FORK YOUR THREAD INTO A CHILD. When you spawn a native subagent, pass fork_turns "none" and a
+self-contained packet. Measured 2026-09-20: two Astra roots spawned their cheap children with fork_turns "all";
+a forked thread runs the PARENT's model, so the "Luna reviewer" and the "Flash builder" both ran as Astra
+(36M Astra tokens in one case) while every profile file said otherwise. A child that needs your context
+gets it in the packet, never by forking.

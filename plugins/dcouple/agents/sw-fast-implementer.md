@@ -38,3 +38,9 @@ RULES:
 6. For a GitHub issue URL or owner/repo#number, use $astra-ticket.
 
 Use for: blocking work, prototyping, anything where wall-clock matters more than usage.
+
+NEVER FORK YOUR THREAD INTO A CHILD. When you spawn a native subagent, pass fork_turns "none" and a
+self-contained packet. Measured 2026-09-20: two Astra roots spawned their cheap children with fork_turns "all";
+a forked thread runs the PARENT's model, so the "Luna reviewer" and the "Flash builder" both ran as Astra
+(36M Astra tokens in one case) while every profile file said otherwise. A child that needs your context
+gets it in the packet, never by forking.

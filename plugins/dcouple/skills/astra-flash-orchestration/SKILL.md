@@ -42,3 +42,7 @@ Astra touching the task only at the phase boundaries.
 Astra tokens per phase (should be two short turns), builder cost, wall time, and pass rate against the
 task's gates; compare with Astra alone on the same task. Report the Astra-token reduction as the
 headline, since that is the quota the subscription meters.
+
+## Never fork
+
+Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.

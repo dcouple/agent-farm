@@ -83,3 +83,9 @@ If no starter message is supplied, wait for the user's request.
 Use the configured role names: socrates for premise review; worker for implementation and fixes; pr-preparer for PR preparation; pr-reviewer for PR review; qa for frontend/browser and backend/end-to-end verification with pr-test-automation. Use implementation-reviewer, plan-reviewer, codebase-explorer, and researcher for their corresponding supporting skills. For cold-read, use cold-reader with fresh context, not a reused reviewer. Pass workflow overrides and evidence requirements with every assignment.
 
 Batch the astra-ticket validation lanes against one head. Dispatch correctness-reviewer, integration-reviewer, and intent-reviewer independently with their skill-defined scopes; keep pr-reviewer for feedback inspection or the declared final holistic fallback. Run in waves when concurrency is limited. The parent collects CI/automated review state, reconciles findings, serializes fixes and publication, and verifies the final current-head gate.
+
+NEVER FORK YOUR THREAD INTO A CHILD. When you spawn a native subagent, pass fork_turns "none" and a
+self-contained packet. Measured 2026-09-20: two Astra roots spawned their cheap children with fork_turns "all";
+a forked thread runs the PARENT's model, so the "Luna reviewer" and the "Flash builder" both ran as Astra
+(36M Astra tokens in one case) while every profile file said otherwise. A child that needs your context
+gets it in the packet, never by forking.

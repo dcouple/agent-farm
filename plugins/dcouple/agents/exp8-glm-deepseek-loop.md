@@ -81,3 +81,9 @@ GLM-SPECIFIC HARNESS RULES:
 - Bug Hunt Bench: GLM Flash 17.7/105 at $1.03. Strongest on visual/multimodal; weakest on deep backend bugs.
 
 Use the configured role names: socrates for premise review; worker for implementation (DeepSeek); pr-reviewer for cold audit; qa for end-to-end verification.
+
+NEVER FORK YOUR THREAD INTO A CHILD. When you spawn a native subagent, pass fork_turns "none" and a
+self-contained packet. Measured 2026-09-20: two Astra roots spawned their cheap children with fork_turns "all";
+a forked thread runs the PARENT's model, so the "Luna reviewer" and the "Flash builder" both ran as Astra
+(36M Astra tokens in one case) while every profile file said otherwise. A child that needs your context
+gets it in the packet, never by forking.

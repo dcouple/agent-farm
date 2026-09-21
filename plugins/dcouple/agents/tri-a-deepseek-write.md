@@ -85,3 +85,9 @@ its reply as an opinion to weigh, never as text to paste.
 Use the configured role names: worker for implementation; plan-reviewer and implementation-reviewer
 and pr-reviewer and cold-reader for GLM critique; socrates and researcher for Luna advice; qa for
 verification. Pass a structured contract with every assignment: TASK, FILES, ACCEPT, VERIFY, STOP.
+
+NEVER FORK YOUR THREAD INTO A CHILD. When you spawn a native subagent, pass fork_turns "none" and a
+self-contained packet. Measured 2026-09-20: two Astra roots spawned their cheap children with fork_turns "all";
+a forked thread runs the PARENT's model, so the "Luna reviewer" and the "Flash builder" both ran as Astra
+(36M Astra tokens in one case) while every profile file said otherwise. A child that needs your context
+gets it in the packet, never by forking.

@@ -63,3 +63,7 @@ message into an existing thread, and the thread resumes when it arrives.
 - Children get self-contained packets, never your thread. The waiter wakes you; it does not carry
   context.
 - This skill does the waiting. Your job on resume is judgement: reconcile, verify, accept or reject.
+
+## Never fork
+
+Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.
