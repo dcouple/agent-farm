@@ -41,9 +41,9 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `planner` | Claude, Fable 5.1 high | Discuss and explain by default. Brief, options, spike, and plan only when asked. Never writes code. May hand a trivial task straight to the implementer, with your yes | Every work package has observable checks and leaves no decision open |
 | `planner-codex` | Codex, Astra high | The same planner on Codex: same skills and the same `planner-identity.md`, so the two can be compared on the same problem. Its children run on their own Codex defaults, `socrates` runs on Astra, and it draws mock-up images itself, so it has no `mockup-artist` | Same |
 | `bug-reporter` | Codex, Sol high | Reproduce, write the report, choose a route | The report is filed. No fix is proposed |
-| `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa once, two independent reviewers once, clean up, open a draft PR | Checks pass and review is clean. Or `blocked` (something needed is missing), or `failed` (could not reach a verified, reviewed state). It never loops |
+| `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa once, one independent reviewer once (two when the plan says `Review: dual`), clean up, open a draft PR | Checks pass and review is clean. Or `blocked` (something needed is missing), or `failed` (could not reach a verified, reviewed state). It never loops |
 | `implementer-fast` | Codex, Astra medium, fast tier | A profile preset, not a second agent: `implementer` with a saved model override and `priority: speed` | Same |
-| `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model builds the whole thing its own way: no packages, no workers, no preflight. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Then the same draft pull request and two-reviewer review as `implementer`. `--arg review=none`, or telling it so, skips the review | Review is accepted and clean-up is done. Or `blocked`, or `failed` |
+| `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model builds the whole thing its own way: no packages, no workers, no preflight. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Then the same draft pull request and final review as `implementer`. `--arg review=none`, or telling it so, skips the review | Review is accepted and clean-up is done. Or `blocked`, or `failed` |
 | `free-range` | Codex, Astra medium | The raw model. No skills, no pipeline. Also the control when measuring whether skills help | You say so |
 | `free-range-claude` | Claude, Fable 5.1 high | Same, on Claude | You say so |
 | `orchestrator` | Codex, Luna medium | Launch the profiles above across worktrees, poll status files, relay questions, keep one status board. Writes no code | The run summary is written |
@@ -70,7 +70,7 @@ agent-farm run planner --config-root /path/to/agent-farm/plugins/greenfield --di
 
 ## Launch arguments
 
-`planner` and `orchestrator` declare `docs`, where documents are published. `implementer` declares `priority` (`usage`, `speed`), `review` (`none`, `final`), `parent` (a status file path), and `source`. `bug-reporter` declares `parent` and `source`. Agent Farm rejects anything else and lists what is accepted. The values reach the agent as a `LAUNCH CONTEXT` block at the end of its instructions, which `instructions/standing-rules.md` explains how to read. They are requests to the model, not switches: `review=none` asks the implementer not to call the reviewers, it does not unbind them.
+`planner` and `orchestrator` declare `docs`, where documents are published. `implementer` declares `priority` (`usage`, `speed`), `review` (`none`, `single`, `dual`), `parent` (a status file path), and `source`. `bug-reporter` declares `parent` and `source`. Agent Farm rejects anything else and lists what is accepted. The values reach the agent as a `LAUNCH CONTEXT` block at the end of its instructions, which `instructions/standing-rules.md` explains how to read. They are requests to the model, not switches: `review=none` asks the implementer not to call the reviewers, it does not unbind them. `single` is the default, and a plan whose header says `Review: dual` still gets two reviewers.
 
 `--model`, `--reasoning`, and `--speed` override the entry agent's model for one launch, which is how to A/B a different lead on the same plan:
 
@@ -93,10 +93,10 @@ Children are not profiles. Each fires at one defined moment.
 | `worker` | implementer | A package the plan marks `economy` | Luna max |
 | `advisor` | implementer, orchestrator | The caller is stuck, about to deviate, or about to declare risky work done | Astra high |
 | `qa` | implementer, bug-reporter | Once after the last package when the plan has journey or visual checks. Also to reproduce bugs that need the running app | Sol medium |
-| `reviewer` | implementer, one-shot | Once, when the feature is supposed to be finished | Astra high |
-| `second-reviewer` | implementer, one-shot | Same moment, independently, on the other vendor's model. The same `reviewer` agent file, bound as a process child on Claude | Fable 5.1 high |
+| `reviewer` | implementer, one-shot | Once, when the feature is supposed to be finished. On the other vendor's model, bound as a process child on Claude | Fable 5.1 high. Astra high is the agent file's own default |
+| `second-reviewer` | implementer, one-shot | Same moment, independently, only for a dual review: the plan says `Review: dual` or the launch says `review=dual`. The same `reviewer` agent file as a native child. Also stands in when `reviewer` cannot launch | Astra high |
 
-The planner's evidence and review children reuse the shared agent files with a model override on the binding, so they run natively on Claude. Three bindings cross harnesses and run as separate headless processes: the planner's `mockup-artist` and `implementer`, and the `second-reviewer` of `implementer` and `one-shot`.
+The planner's evidence and review children reuse the shared agent files with a model override on the binding, so they run natively on Claude. Three bindings cross harnesses and run as separate headless processes: the planner's `mockup-artist` and `implementer`, and the `reviewer` of `implementer` and `one-shot`.
 
 ## Where instructions live
 
@@ -146,9 +146,9 @@ Flow: explainer, brief, options (with spikes as needed), the person picks, plan,
 
 ## Preflight, review, and the failed state
 
-**Preflight.** Before changing code the implementer confirms the result can be verified: check commands run, the app starts and browser automation is available when there are journeys, test accounts and test-mode keys exist, the design reference opens, it can push and open a pull request, and both reviewers can launch. The planner lists what is needed under "Verification needs" in PLAN.md. Anything missing means `blocked`, and nothing is attempted.
+**Preflight.** Before changing code the implementer confirms the result can be verified: check commands run, the app starts and browser automation is available when there are journeys, test accounts and test-mode keys exist, the design reference opens, it can push and open a pull request, and the reviewer can launch. The planner lists what is needed under "Verification needs" in PLAN.md. Anything missing means `blocked`, and nothing is attempted.
 
-**Review.** Two reviewers, one per vendor, review the same commit independently and once. The must-fix list is the union of both. A finding that contradicts a locked decision is marked disputed and goes to the person. Then one fix round and one follow-up, in which each reviewer checks its own items against the fix diff. A second fix round happens only if a fix introduced something new.
+**Review.** One reviewer on the other vendor's model reviews the finished commit once. The planner writes `Review: dual` in the PLAN.md header when a mistake would be hard to undo (schema, auth, payments, production side effects), and then a second reviewer on the lead's vendor reviews the same commit independently and the must-fix list is the union of both. A finding that contradicts a locked decision is marked disputed and goes to the person. Then one fix round and one follow-up, in which a reviewer checks its own items against the fix diff. A second fix round happens only if a fix introduced something new.
 
 **Clean up.** Once the review is accepted, the implementer removes what should not outlive the merge, in one deletion-only commit: scratch scripts, throwaway tests, debug output, spike code, committed qa artifacts (saved elsewhere first), and working documents under `docs/agent/`. It touches only files this run added, keeps tests that prove the feature, re-runs the checks, and ends its report with what was removed and what was left. It is skipped in a failed state, where the leftovers are evidence.
 

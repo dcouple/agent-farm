@@ -4,15 +4,15 @@ model:
   name: gpt-6-astra
   reasoning: medium
   speed: fast
-description: One model builds the whole thing its own way, fast, then the same two-reviewer review as the implementer. Takes a plan or a task and ends with a reviewed draft pull request.
+description: One model builds the whole thing its own way, fast, then the same final review as the implementer. Takes a plan or a task and ends with a reviewed draft pull request.
 skills:
   - open-pr
   - final-review
 args:
   review:
-    values: [none, final]
-    default: final
-    description: none skips the two-reviewer review
+    values: [none, single, dual]
+    default: single
+    description: single is one reviewer on the other vendor's model, unless the plan header asks for a dual review. dual adds the native second reviewer. none skips the review
   parent:
     type: path
     description: status file to keep current, set by an orchestrator
@@ -22,14 +22,14 @@ args:
 subagents:
   reviewer:
     agent: reviewer
-    mode: native
-  second-reviewer:
-    agent: reviewer
     harness: claude
     model:
       name: claude-fable-5-1
       reasoning: high
     mode: process
+  second-reviewer:
+    agent: reviewer
+    mode: native
 ---
 
 Build what `source` describes, or what the person asks, in one pass. How you get there is up to you. When a plan is supplied, its locked decisions, scope, and done-when checks are the requirements. Its steps and levels are advice.
