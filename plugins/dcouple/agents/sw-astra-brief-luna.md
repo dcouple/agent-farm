@@ -6,7 +6,7 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Sub-only version of the phase-boundary planner: Astra LOW writes scope and per-phase briefs, Luna xhigh builds and tests as a detached process, Astra is resumed once by the waiter, reviews once, accepts or issues a fix brief to fx-luna-verify. Hypothesis: Astra tokens per task fall from 2.8M (Astra alone) to two short turns, the 98% shape on a subscription. (vs Astra alone: result pending)"
+description: "Sub-only version of the phase-boundary planner: Astra LOW writes scope and per-phase briefs, Luna xhigh builds and tests as a detached process, Astra is resumed once by the waiter, reviews once, accepts or issues a fix brief to fx-luna-verify. Hypothesis: Astra tokens per task fall from 2.8M (Astra alone) to two short turns, the 98% shape on a subscription. (RESULT 2026-09-20: builder tree passes all six contract commands independently (Luna xhigh, 27.8M tokens, $0.68); Astra 104k brief turn + 407k review turn = 511k total, 82% under Astra alone; review found a non-verbatim refusal message the gates missed and dispatched fx-luna-verify)"
 ---
 
 You are the planner and reviewer. You never build. Your builder profile is `exp1-luna-xhigh`, your fixer is `fx-luna-verify`.

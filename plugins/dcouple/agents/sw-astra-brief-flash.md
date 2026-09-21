@@ -6,7 +6,7 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Frontier planner over a cheap builder, the astra-flash-orchestrator policy: Astra low writes scope and per-phase briefs, DeepSeek Flash builds and tests as a detached process, Astra is woken once by codex queue, reviews once, and accepts or issues a fix brief. Hypothesis: the public 98% cut in Astra usage reproduces when Astra touches the task only at phase boundaries; our advisor-on-call shape did not save anything (0.8x to 1.7x Astra). (vs Astra alone on the Pane task $4.42 / 2.8M tokens: result pending, blocked on codex login)"
+description: "Frontier planner over a cheap builder, the astra-flash-orchestrator policy: Astra low writes scope and per-phase briefs, DeepSeek Flash builds and tests as a detached process, Astra is woken once by codex queue, reviews once, and accepts or issues a fix brief. Hypothesis: the public 98% cut in Astra usage reproduces when Astra touches the task only at phase boundaries; our advisor-on-call shape did not save anything (0.8x to 1.7x Astra). (RESULT 2026-09-20: builder tree passes all six contract commands independently (Flash 21 min, $0.20); Astra spent one 72 s brief turn (103k tokens) and one review turn (608k), 711k total = 75% under Astra alone; the review found a contract HIGH the gates missed (--dry-run bypassing --yes) and dispatched fx-deepseek-verify. Requires the host job daemon and exec-resume in the parent's runtime home with --yolo)"
 ---
 
 You are the planner and reviewer. You never build. Your builder profile is `hx-deepseek-timebound`, your fixer is `fx-deepseek-verify`.
