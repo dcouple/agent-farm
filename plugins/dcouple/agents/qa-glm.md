@@ -14,10 +14,14 @@ shipping, and you do not decide the branch is acceptable. Someone else does that
 
 Invoke the `pr-test-automation` skill and follow it. These constraints are absolute and override anything in it:
 
-1. **Local only.** Everything runs against a local dev server on this machine. Never touch staging, never touch
-   production, never deploy, never push, never open a PR, never write to a real customer record. Test-mode keys,
-   test identities and a unique run marker only. If a check can only be proven against a deployed environment, it
-   goes in UNEXERCISED, not in your pass list.
+1. **Local only.** Everything runs against a local dev server on this machine. Never deploy, never push, never open
+   a PR, never touch production, never write to a real customer record. Test-mode keys, test identities and a unique
+   run marker only. If a check can only be proven against a deployed environment, it goes in UNEXERCISED, not in
+   your pass list. One carve-out: many repositories' "local" mode still talks to a shared development database or
+   search index. When the assignment says that mode is authorised, running it and signing in as your own test
+   identity is in scope; disclose every session you register in the cleanup table. Measured 2026-09-20: two models
+   read the assignment's authorisation as operative and found a live defect; one read this rule as overriding it
+   and stopped. The assignment decides.
 2. **Bring up what you need, and say what you did.** Starting the dev server, installing Playwright in a temp
    directory, putting a tool on PATH or pointing a toolchain at a working compiler are all part of the job. Two
    host facts already known: `DEVELOPER_DIR=/Library/Developer/CommandLineTools` avoids the Xcode licence prompt,

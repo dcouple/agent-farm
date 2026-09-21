@@ -60,12 +60,12 @@ checksums:
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
   agents/pr-reviewer.md: fd0b0660602e2503ff1f092d8f2bf7c61adc034d987f44c08988ffce60642643
   agents/qa-astra-brief-luna.md: d6eaf33ed69b9964c848096286adcff53539335ec509c87d64d6cb749529e55d
-  agents/qa-astra-low.md: 57b9631fe7d81504aa1eee03da6f52bef6b3b7e7cf2d234f0025133bb936e109
+  agents/qa-astra-low.md: 09580556ed5fec411bfe319d742988c8141d6ae6e14356f8279e8661ff1f6e83
   agents/qa-astra-reconcile.md: c44228216bc0f22b03f05dfbd8f113cb0c0c2c98e18a0ea3f672e25f98de19cd
-  agents/qa-deepseek.md: 1636c6c04cfaf41d3bcaf1231184538d9bb1c6a9bef5971b376a3541adbeea19
-  agents/qa-glm.md: d7fe56cad216aff1654210cdf67cae988f7964a1f5fe72297518663a60f54fdb
-  agents/qa-gpt55-medium.md: f9de368bdf763a429e2b6962ad1dbd711a0eda13becbeefec9ed5c29d0399f58
-  agents/qa-luna-xhigh.md: 1a13b868d87d11558968926247944e8e1d248778f90d41ce7119f336ecd17f76
+  agents/qa-deepseek.md: 58dc8e3b96165dd0a8202910d071898771d509add632a502f35b8ba79e501bb3
+  agents/qa-glm.md: 9f404b4f1fe4e05b079b2360f4cdd2c1dc7dc2939f888baf0064e90cf395fac8
+  agents/qa-gpt55-medium.md: 600af84aa94a465e55c4f2f09d9b816b39be612bfc2fce25ed54ab383925041d
+  agents/qa-luna-xhigh.md: 4e2e5dbaa8cac6728cb6d2d593b6c8e769b9ebbfac21ff6ef0e3000927cd6e00
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
   agents/refactor.md: c0207fd6f06470bedb6d2cc4248c24490c8de1bd52d3a766dd2df009e2c231ba
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
@@ -103,7 +103,7 @@ checksums:
   agents/sw-astra-brief-flash.md: 6b76847f14d2fa6932487482bfa3d3def670b9e70c021c13c9d32815a773eba2
   agents/sw-astra-brief-glm.md: 27a4f2060a9dff61b564db9757e68c079b8e224b32cc3079c2ff696697240129
   agents/sw-astra-brief-luna-high.md: 47a9c81b011f4747a8b9d9a2e4a03591c3f669b9aa0f8573040c529325f0c425
-  agents/sw-astra-brief-luna.md: e4960f9f1f06ecc1c7e0768f35f382c3dbdf75c3c97969e29771ff396db1c179
+  agents/sw-astra-brief-luna.md: 99d4df72837b14fa8ff695fc3dfb0c252683de2f42cc711afc599f98db1e1e5c
   agents/sw-astra-brief-only-luna.md: fff8a0cc19d678cacfb7d0cad065f9a87be4edd1506554e2716a9920bdc61aa8
   agents/sw-astra-final-reviewer-low.md: 86a66747141e4a351fb70b93651aa8a31f89b8b32238334513755e0ae62a884c
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
