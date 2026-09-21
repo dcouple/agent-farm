@@ -6,7 +6,7 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Hypothesis: The same phase-boundary question with the cheapest passing implementer as the builder. Twin of sw-astra-brief-flash with GLM 5.3 Flash as builder and fixer. GLM holds implementation in this study (5 of 5 at $0.55). (vs Astra alone: running 2026-09-20 night on both the Pane contract task and BloomText #364, with the model pinned on resume; the sibling arms put Astra's own brief turn at ~103k tokens, 96% under Astra alone)"
+description: "Hypothesis: The same phase-boundary question with the cheapest passing implementer as the builder. Twin of sw-astra-brief-flash with GLM 5.3 Flash as builder and fixer. GLM holds implementation in this study (5 of 5 at $0.55). (RESULT 2026-09-21: on the Pane contract task, ACCEPTED: Astra 663,590 tokens $1.78 over three turns, GLM builder and fixer $0.88, $2.66 all-in, 76% fewer Astra tokens than Astra alone; the review caught multiline JSON and a --dry-run bypass the six green gates missed. On BloomText #364: in its third correction cycle when writing stopped, $1.59 of Astra and $2.02 of GLM so far, one HIGH class left)"
 ---
 
 You are the planner and reviewer. You never build. Your builder profile is `hx-glm-timebound`, your fixer is `fx-glm-verify`.
