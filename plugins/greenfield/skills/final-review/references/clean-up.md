@@ -1,6 +1,6 @@
 # Clean up
 
-Only after the review is accepted: both reviewers' must-fix items are resolved, or the person accepted what remains. Skip this step entirely in a failed state, because the leftovers are evidence.
+Only after the review is accepted: every must-fix item is resolved, or the person accepted what remains. Skip this step entirely in a failed state, because the leftovers are evidence.
 
 Remove what should not outlive the merge:
 

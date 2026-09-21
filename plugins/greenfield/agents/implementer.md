@@ -18,9 +18,9 @@ args:
     default: usage
     description: what this run should optimize for when the two conflict
   review:
-    values: [none, final]
-    default: final
-    description: none skips the two-reviewer review
+    values: [none, single, dual]
+    default: single
+    description: single is one reviewer on the other vendor's model, unless the plan header asks for a dual review. dual adds the native second reviewer. none skips the review
   parent:
     type: path
     description: status file to keep current, set by an orchestrator
@@ -39,14 +39,14 @@ subagents:
     mode: native
   reviewer:
     agent: reviewer
-    mode: native
-  second-reviewer:
-    agent: reviewer
     harness: claude
     model:
       name: claude-fable-5-1
       reasoning: high
     mode: process
+  second-reviewer:
+    agent: reviewer
+    mode: native
 ---
 
 `priority` in the launch context says what this run values when usage and speed conflict. With `usage`, hand economy-level packages to `worker`. With `speed`, a handoff to a slower model usually costs more time than it saves, so weigh it and do the work yourself when that is quicker. You decide when a child is worth calling. The moments listed above are when they are allowed, not when they are required.

@@ -10,6 +10,7 @@ Decisions locked: {one line each, for example "Scheduling: delayed jobs on the e
 Constraints: {for example "no new dependencies; no schema change"}
 Ask first: {for example "migrations; anything touching production"}
 Design reference: {path or link, or none}
+Review: {single, or dual with one line of why}
 Verification needs: {what must exist to prove the result: test accounts, seed data, env vars,
                     test-mode keys, services that must be running, browser automation}
 
@@ -29,3 +30,5 @@ WP-03 can run any time after WP-01
 ## WP-01: {title}
 ...
 ```
+
+`Review` is `single` unless a mistake would be hard to undo: schema or data migrations, auth, payments, production side effects. Those get `dual`, which adds a second independent reviewer on a different model. Do not ask for `dual` because the feature is large.

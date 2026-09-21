@@ -9,6 +9,7 @@ Source:           docs/agent/plans/invoice-pdf/PLAN.md#WP-04
 Decisions locked: Scheduling: delayed jobs on the existing queue
 Constraints:      no new dependencies; no schema change
 Ask first:        migrations; anything touching production
+Review:           {copied from the plan header}
 Level:            {copied from the package, with its why}
 Files allowed:    lib/pdf/invoice.ts, app/invoices/[id]/page.tsx, tests/invoices/*
 Context to read:  {copied from the package}

@@ -12,7 +12,7 @@ Run before any code changes. Cheap, read-only, a few minutes at most. The goal i
 | Design reference | The file or link in the plan opens | blocked, when the plan has `visual` checks |
 | External effects | Test-mode keys and listeners for email, payments, webhooks, analytics the plan verifies | blocked for those checks. Say which |
 | Push and pull request | `gh auth status`, push access to the branch | blocked |
-| Reviewers | `reviewer` is listed in your instructions and the `second-reviewer` launcher exists and is executable | blocked, unless `review: none` |
+| Reviewers | The `reviewer` launcher exists and is executable. For a dual review, `second-reviewer` is also listed in your instructions | blocked, unless `review: none` |
 | Verification needs | Every item the plan lists under that heading | blocked |
 
 Report preflight as a short table in your first status update: check, result, note.

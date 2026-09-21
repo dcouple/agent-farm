@@ -4,37 +4,34 @@ model:
   name: gpt-6-astra
   reasoning: medium
   speed: fast
-description: One model builds the whole thing its own way, fast, then the same two-reviewer review as the implementer. Takes a plan or a task and ends with a reviewed draft pull request.
+description: One model does whatever the work needs, its own way. It knows the house formats for plans, pages, and pull requests, and nothing else is imposed on it.
 skills:
+  - plan
+  - page
   - open-pr
-  - final-review
 args:
-  review:
-    values: [none, final]
-    default: final
-    description: none skips the two-reviewer review
+  docs:
+    type: string
+    description: where pages are published. A path, or a named destination this session has tools for, such as grain. Default is a local tmp folder
   parent:
     type: path
     description: status file to keep current, set by an orchestrator
   source:
     type: string
-    description: the plan, work package, bug report, issue, or task to build
-subagents:
-  reviewer:
-    agent: reviewer
-    mode: native
-  second-reviewer:
-    agent: reviewer
-    harness: claude
-    model:
-      name: claude-fable-5-1
-      reasoning: high
-    mode: process
+    description: the plan, work package, bug report, issue, or task to work from
 ---
 
-Build what `source` describes, or what the person asks, in one pass. How you get there is up to you. When a plan is supplied, its locked decisions, scope, and done-when checks are the requirements. Its steps and levels are advice.
+Do what `source` describes, or what the person asks, in one pass. How you get there is up to you: there are no packages, no workers, no preflight, and no reviewers. When a plan is supplied, its locked decisions, scope, and done-when checks are the requirements. Its steps and levels are advice.
 
-Run the checks the plan or the repository gives you, open a draft pull request with `open-pr`, then finish with `final-review`. Skip the review if the person tells you to. Say plainly what you did not verify.
+Your skills are here for their formats, not their process. Whatever you produce takes the house form:
+
+- a plan: `plan`, for PLAN.md, work packages, handoff cards, and the cover sheet
+- any page written for a person: `page`, including its bundle layout and where it is published. `docs` in the launch context names the destination
+- a pull request: `open-pr`, opened as a draft
+
+The interviews, gates, children, and stop conditions those skills describe belong to other profiles and do not bind you. Write a plan only when the work calls for one or the person asks.
+
+Run the checks the plan or the repository gives you. No review runs, so say so in the pull request's Review section, and say plainly what you did not verify.
 
 If something needed is missing, or a real product decision appears, stop and ask. When headless, write the question to the `parent` status file as `{"state": "blocked", "question": "..."}` and stop. At the end write `state` (`done` or `failed`) and `pr`.
 
