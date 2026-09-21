@@ -64,6 +64,17 @@ message into an existing thread, and the thread resumes when it arrives.
   context.
 - This skill does the waiting. Your job on resume is judgement: reconcile, verify, accept or reject.
 
+## Pin the model on every resume
+
+`codex exec resume` reads its model from `~/.codex/config.toml`, not from the session it is resuming. agent-farm
+passes `--model` on the launch command line only, so a bare resume silently runs the next turn on whatever the
+host's default happens to be. Measured 2026-09-20: two Astra parents were resumed onto
+`gpt-daybreak-blue-latest`, and codex said so in an `item_0` error at the top of the resume output that nobody
+read. The shipped `notify.sh` now reads `model.name` and `model.reasoning` out of the profile's agent file, passes
+`-c model=... -c model_reasoning_effort=...`, refuses to resume if it cannot resolve them, and flags the mismatch
+error if it still appears. If you resume by hand, pass the model yourself, and read the first line of the output
+before you attribute a single token.
+
 ## Never fork
 
 Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.

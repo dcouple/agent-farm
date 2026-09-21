@@ -93,10 +93,10 @@ checksums:
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
   agents/sw-astra-advisor-low.md: c3c43ef71f11485349c5a95d6a9f23bf82e0cbd858ba52088f3e6d3a053a1524
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
-  agents/sw-astra-brief-flash.md: 52b0f3e29681f7063dae336eb8f3bcb4078929954c355d81a55976e10f66f586
+  agents/sw-astra-brief-flash.md: 9f0c9d0f68468daf0e64b60d5de3b24c13ecd95117d71e5be2e7194c9459ad25
   agents/sw-astra-brief-glm.md: f411a07dda0a914cdb15954afaacbd17abab8be9cc3e7b4b3d0d32ee0fbdf383
   agents/sw-astra-brief-luna-high.md: 8c69444cadbf51e7b7e6806e43a379b79e6cb79eea7d03953951b661f1e3cef0
-  agents/sw-astra-brief-luna.md: a1d59645a88bc1606852eb1ebddfc854eaa84e2b2960f8b43a5c04b7182db4bf
+  agents/sw-astra-brief-luna.md: 455bf1ed5e850dcada5ade86cb6b7856f3c85034bc0a2d602368da6c282bb9e8
   agents/sw-astra-brief-only-luna.md: 1cf178440f5c2bae76c864f7bcf24a97b28621eae1cbc0d77821ca341369afef
   agents/sw-astra-final-reviewer-low.md: dc10313c555dd75fda5ac20081de1d2d06f8bdcb63ee34888b3c715cdff2738a
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
@@ -239,7 +239,7 @@ checksums:
   profiles/tri-a-deepseek-write.yaml: 4a2e879e6c0182216d19723c80f751fa6d979c315bc43e0273e666d8513fb86e
   profiles/tri-b-luna-write.yaml: be988a40a3bfd9fe879a0c463a7895724ed35c6c8b13395bbab77c2f4df07562
   profiles/tri-c-glm-write.yaml: b96ee42a48e98540ac0e64bbf58eb1e4836138aed509f4f69507953b5c7b9bb6
-  skills/astra-flash-orchestration/SKILL.md: 16e735505aea64bf67eecedee8efeaf6ee52013f45524e03ca18e1f291480ae0
+  skills/astra-flash-orchestration/SKILL.md: 16b9d1a86557c533618370ad2ae695c87a4ec001eae9c8c0a7b808bcfc23ea61
   skills/astra-flash-orchestrator-upstream/SKILL.md: e3bb44e8752da9934aca035b9ffe8dee5744f7469d3e9cf29b30a9574d6e48b6
   skills/astra-flash-orchestrator-upstream/references/execution.md: 311c2781200b3f8f9c16a281f96b8acf593ffcf8123ba60279ea1b8ab150dce6
   skills/astra-flash-orchestrator-upstream/references/planning.md: a26012a139428159d1e38dd27f09fdeec5490de52693abd575095ece540c16b7
@@ -248,8 +248,8 @@ checksums:
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
   skills/bounded-advisor/SKILL.md: e8aca7707b741c965ae1055d18601a93c11995e6615e671ac3870c4e13b426a5
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
-  skills/codex-queue-wait/SKILL.md: 327b6982e89402505b771eb2b391f5e333d762e403f5268ce1f612584a13aa6e
-  skills/codex-queue-wait/scripts/notify.sh: 405c9f0952f456df567250498a405d133c4392edcb8b73aa4173d4558dde9aee
+  skills/codex-queue-wait/SKILL.md: ded0e6ff1785436a3dfe0aaf6e5793b0c4de854b034493ee5b056b3798149057
+  skills/codex-queue-wait/scripts/notify.sh: 8e0acaf3e2612e84a78600e016d8417b1e25b3c580b2376389c7e4c7de2e00a9
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/SKILL.md: d449b2f3cc05848ce6e8a03337112b8452a12b22df1ce91aa54c563377bf3285
   skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b

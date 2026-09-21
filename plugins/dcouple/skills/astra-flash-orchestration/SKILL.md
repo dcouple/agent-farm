@@ -49,9 +49,17 @@ the reader prices them at the model's published rates. Report cached and uncache
 the same task the Luna arm read 33% fewer Astra tokens than the Flash arm and cost 14% more in Astra
 dollars because its cache share was 70% against 89%.
 
-Measured whole cycles on the Pane task, 2026-09-20 (brief, build, review, fix, accept): Flash builder
-807k Astra tokens (−71%), $2.19 all-in (−50%), ~45 min; Luna xhigh builder 543k (−81%), $2.96 (−33%),
-~33 min. Astra alone: 2.8M, $4.42, 10 min. The accept-after-fix resume cost Astra 32k to 96k tokens.
+Measured on the Pane task, 2026-09-20 (brief, build, review, fix, accept), with one correction: **the brief turn
+is the only turn we can attribute to Astra.** Flash arm 103,127 input + 2,052 output ($0.35); Luna arm 103,871 +
+2,010 ($0.46). Against Astra alone (2.8M tokens, $4.42) that is 96% fewer Astra tokens for the planning seat.
+The review and acceptance turns of both arms ran on the host's default model, not Astra, because `codex exec
+resume` ignores the session's model; their 696k and 434k tokens are not Astra's and are not priced. Builders
+$0.20 (DeepSeek, 21 min) and $0.68 (Luna xhigh, 27.8M tokens); fixers $0.04 and $0.06. Re-measure the review
+turn before quoting any whole-cycle number.
+
+Verify the model of every resumed turn before attributing a token to it: read the first item of
+`parent-resume.json` for a "recorded with model X but is resuming with Y" error, and the rollout's
+`thread_settings_applied` for what actually ran.
 
 ## Where lanes write
 Every lane, builder or fixer, writes its receipt into its own directory `<receipts>/<lane>/` and ends by
