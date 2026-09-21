@@ -60,7 +60,7 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
   const budget=new Map<ConversationTurn,number>();
   function section(turn:ConversationTurn,where:'instructions'|'input'|'output',role:string,title:string,value:unknown){
     if(!visible(value))return;
-    const raw=content(value),remaining=Math.min(96000-(budget.get(turn)??0),(where==='input'?48000:24000)-turn[where].reduce((n,s)=>n+s.text.length,0)),size=Math.min(24000,remaining);
+    const raw=content(value);if(!raw.trim())return;const remaining=Math.min(96000-(budget.get(turn)??0),(where==='input'?48000:24000)-turn[where].reduce((n,s)=>n+s.text.length,0)),size=Math.min(24000,remaining);
     if(size<=0){const warning=where+' content exceeds its display limit; some sections were omitted.';if(!turn.warnings.includes(warning))turn.warnings.push(warning);return;}
     if(turn[where].some(s=>s.role===role&&s.text===raw))return;
     turn[where].push({role,title,text:raw.slice(0,size),truncated:raw.length>size||raw.includes('[TRUNCATED')});budget.set(turn,(budget.get(turn)??0)+Math.min(raw.length,size));
@@ -73,15 +73,29 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
     if(messages.length>64)turn.warnings.push('Only the last 64 input messages are shown.');
     const inputStart=turn.input.length;
     for(const message of messages.slice(-64).reverse())if(object(message)){
-      const role=text(message.role)??'context',where=role==='system'||role==='developer'?'instructions':'input';
-      const blocks=Array.isArray(message.content)?message.content:[message.content??message.text];
+      const role=['function_call','function_call_output','tool_call','tool_result'].includes(message.type)?'tool':text(message.role)??'context',where=role==='system'||role==='developer'?'instructions':'input';
+      const blocks=Array.isArray(message.content)?message.content:[message.content??message.text??message];
       for(const block of [...blocks].reverse()){const isContext=object(block)&&typeof block.text==='string'&&block.text.trimStart().startsWith('<system-reminder>');
-        section(turn,where,isContext?'context':role,isContext?'Harness context (in user message)':role==='user'?'User message':role==='assistant'?'Previous assistant message':role==='tool'?'Tool result':role,object(block)?[block]:block);
+        const isTool=object(block)&&['tool_use','tool_result','function_call','function_call_output','tool_call'].includes(block.type);
+        section(turn,where,isTool?'tool':isContext?'context':role,isTool?'Tool activity':isContext?'Harness context (in user message)':role==='user'?'User message':role==='assistant'?'Previous assistant message':role==='tool'?'Tool result':role,object(block)?[block]:block);
       }
     }
     turn.input.push(...turn.input.splice(inputStart).reverse());
     if(typeof data.input==='string')section(turn,'input','user','User message',data.input);
     if(Array.isArray(data.tools))turn.tools=data.tools.slice(0,100).filter(object).map(t=>({name:String(t.name??t.function?.name??'tool').slice(0,200),description:text(t.description??t.function?.description)?.slice(0,500)}));
+  }
+  function output(turn:ConversationTurn,value:unknown){
+    if(Array.isArray(value)){for(const block of value)output(turn,block);return;}
+    if(object(value)){
+      if(['thinking','redacted_thinking','reasoning'].includes(value.type))return;
+      if(['tool_use','tool_result','function_call','function_call_output','tool_call'].includes(value.type)||value.role==='tool'){
+        section(turn,'output','tool','Tool activity',[value]);return;
+      }
+      if(Array.isArray(value.tool_calls))for(const call of value.tool_calls)section(turn,'output','tool','Tool call',call);
+      if(value.content!==undefined){output(turn,value.content);return;}
+      if(value.tool_calls)return;
+    }
+    section(turn,'output','assistant','Assistant output',object(value)?[value]:value);
   }
   // Spans define requests; logs enrich those requests instead of double-counting.
   for(const row of spans){
@@ -92,7 +106,7 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
     for(const field of ['system_prompt','user_system_prompt','gen_ai.system_instructions'])if(visible(a[field]))section(turn,'instructions','system',field==='user_system_prompt'?'User instructions':'System instructions',parse(a[field]));
     const messages=parse(a['gen_ai.input.messages']);if(Array.isArray(messages))input(turn,{messages});
     section(turn,'input','context','New context',parse(a.new_context));
-    section(turn,'output','assistant','Assistant output',parse(a['gen_ai.output.messages']??a.response));
+    output(turn,parse(a['gen_ai.output.messages']??a.response));
   }
   const ordered=[...events].sort((a,b)=>(timestamp(a)??'').localeCompare(timestamp(b)??''));
   const eventName=(row:RecordData)=>String(row.attributes?.['event.name']??row.body?.stringValue??'').replace(/^claude_code\./,'');
@@ -109,7 +123,7 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
     if(name==='api_response_body'){
       const turn=find(row)??create(row);const body=parse(a.body);const request=typeof a.request_body_id==='string'?bodies.get(key(row,a.request_body_id)):undefined;
       if(request){input(turn,request.attributes.body);usedBodies.add(request);}
-      if(object(body)){budget.set(turn,Math.max(0,(budget.get(turn)??0)-turn.output.reduce((n,s)=>n+s.text.length,0)));turn.output=[];section(turn,'output','assistant','Assistant output',body.content??body.output);usage(turn,body.usage??{});turn.finish_reason=text(body.stop_reason)??turn.finish_reason;}
+      if(object(body)){budget.set(turn,Math.max(0,(budget.get(turn)??0)-turn.output.reduce((n,s)=>n+s.text.length,0)));turn.output=[];output(turn,body.content??body.output);usage(turn,body.usage??{});turn.finish_reason=text(body.stop_reason)??turn.finish_reason;}
       else section(turn,'output','assistant','Unparsed response body',body);
       turn.sources.push('response body');if(a.body_truncated===true||a.body_truncated==='true')turn.warnings.push('The harness truncated the response body.');
       if(a.body_ref)turn.warnings.push('File-referenced bodies are not loaded by this viewer.');
@@ -134,4 +148,22 @@ export function normalizeConversation(spans:RecordData[],events:RecordData[]){
   turns.sort((a,b)=>(a.started_at??'').localeCompare(b.started_at??''));
   const requestsOnly=turns.filter(t=>t.kind==='request'),withCost=requestsOnly.filter(t=>t.cost_usd!==undefined);
   return {turns,summary:{requests:requestsOnly.length,cost_usd:withCost.length?withCost.reduce((sum,t)=>sum+t.cost_usd!,0):null,cost_coverage:withCost.length,cost_complete:requestsOnly.length>0&&withCost.length===requestsOnly.length,input_tokens:requestsOnly.some(t=>t.usage.input!==undefined)?requestsOnly.reduce((sum,t)=>sum+(t.usage.input??0),0):null,output_tokens:requestsOnly.some(t=>t.usage.output!==undefined)?requestsOnly.reduce((sum,t)=>sum+(t.usage.output??0),0):null,cache_read_tokens:requestsOnly.reduce((sum,t)=>sum+(t.usage.cache_read??0),0),cache_write_tokens:requestsOnly.reduce((sum,t)=>sum+(t.usage.cache_write??0),0)}};
+}
+
+/** New user prompts and agent replies, excluding replayed context and tool payloads. */
+export function conversationMessages(turns:ConversationTurn[]){
+  const pages:{role:string;text:string;truncated:boolean;started_at?:string}[][]=[];
+  let previousUser:string|undefined;
+  for(const turn of turns){
+    const messages:{role:string;text:string;truncated:boolean;started_at?:string}[]=[];
+    const user=turn.input.filter(s=>s.role==='user').at(-1);
+    if(user){
+      const key=JSON.stringify([turn.native_session,turn.prompt_id,user.text]);
+      if(key!==previousUser)messages.push({...user,role:'user',started_at:turn.started_at});
+      previousUser=key;
+    }
+    for(const section of turn.output)if(section.role==='assistant')messages.push({...section,started_at:turn.started_at});
+    pages.push(messages);
+  }
+  return pages;
 }

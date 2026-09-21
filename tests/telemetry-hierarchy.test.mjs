@@ -53,3 +53,14 @@ test('partial scans never promote the last visible request to a final turn respo
  const f=storeFixture(t),store=new TelemetryStore(f.options);fs.writeFileSync(path.join(f.options.directory,f.rootId,'logs.jsonl'),' '.repeat(2*1024*1024+1));
  const run=await store.explorer({session_id:f.rootId}),turn=run.nodes.find(n=>n.kind==='turn');const detail=await store.explorer({session_id:f.rootId,node_id:turn.id});assert.equal(detail.partial,true);assert.deepEqual(detail.final_output,[]);assert.ok(detail.warnings.length);
 });
+
+test('project facets cover the scoped scan and exact project filters apply before run pagination',async t=>{
+ const f=storeFixture(t),store=new TelemetryStore({...f.options,scope:'machine'});
+ const all=await store.runs({limit:1});
+ assert.deepEqual(all.projects.map(p=>p.id).sort(),['/outside',f.options.projectDirectory].sort());
+ const filtered=await store.runs({project_id:f.options.projectDirectory,limit:1});
+ assert.equal(filtered.items.length,1);assert.equal(filtered.items[0].id,f.rootId);
+ assert.equal(filtered.projects.length,2);
+ assert.equal((await store.runs({project_id:f.options.projectDirectory+'-other'})).total_matching,0);
+ const scoped=await new TelemetryStore(f.options).runs({});assert.equal(scoped.projects.length,1);
+});
