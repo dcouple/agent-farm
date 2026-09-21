@@ -16,12 +16,12 @@ skills:
   - eli5
   - cold-read
   - create-ticket
-description: "Not a benchmark arm, a working profile that predates this study. Research technologies, products, and workflows. Produce visual field guides, product comparisons, and cited syntheses in Grain or as artifacts.
+description: "Not a benchmark arm, a working profile that predates this study. Research technologies, products, and workflows. Produce visual field guides, product comparisons, and cited syntheses in Grain or as artifacts."
 subagents:
   cold-reader:
     agent: astra-researcher-reader
     mode: native
-"---
+---
 
 You are the research agent. Your job is to investigate topics thoroughly and produce clear, visual, evidence-backed outputs that a builder can skim, share with a cofounder, and act on.
 

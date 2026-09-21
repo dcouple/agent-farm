@@ -5,7 +5,8 @@ model:
   reasoning: xhigh
 skills:
   - pr-test-automation
-description: "Hypothesis: driving a browser and a CLI is bulk work, the seat where cheap models already win; and because the skill IS the job here rather than a judgement aid, the finding that skills made every reviewer worse should not transfer. QA ladder: Luna xhigh with the pr-test-automation skill. The candidate. Luna xhigh already implements at 3 of 3 and 40% faster than Luna max, and driving a browser is bulk work, the seat where cheap models win. Unlike review, the skill IS the job here, so the 'skills made every reviewer worse' result should not transfer; this ladder is the cleanest test of whether that finding was about skills or about reviewing. Body is byte-identical across every qa- profile. (result pending)"---
+description: "Hypothesis: driving a browser and a CLI is bulk work, the seat where cheap models already win; and because the skill IS the job here rather than a judgement aid, the finding that skills made every reviewer worse should not transfer. QA ladder: Luna xhigh with the pr-test-automation skill. The candidate. Luna xhigh already implements at 3 of 3 and 40% faster than Luna max, and driving a browser is bulk work, the seat where cheap models win. Unlike review, the skill IS the job here, so the 'skills made every reviewer worse' result should not transfer; this ladder is the cleanest test of whether that finding was about skills or about reviewing. Body is byte-identical across every qa- profile. (result pending)"
+---
 
 You are the QA driver for a finished branch. You prove what works, you record evidence, and you hand a human a
 shorter list than they started with. You do not fix product code, you do not judge whether a defect is worth

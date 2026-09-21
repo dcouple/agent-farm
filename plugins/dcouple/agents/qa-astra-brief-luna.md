@@ -6,7 +6,8 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Hypothesis: does QA split the same way implementation did, with the frontier model writing the brief and reconciling while a cheap model drives? The phase-boundary shape applied to QA instead of implementation: Astra low writes the QA brief (which journeys must be proven and with what evidence), qa-luna-xhigh drives the browser and CLI as a detached process, Astra is resumed once to reconcile the findings, and fx-luna-verify applies the confirmed ones. Hypothesis: QA splits the same way implementation did, with cheap models doing the driving and Astra doing the disbelieving. The same shape on the Pane contract task was accepted 3 of 3 at 76 to 84% fewer Astra tokens. (result pending)"---
+description: "Hypothesis: does QA split the same way implementation did, with the frontier model writing the brief and reconciling while a cheap model drives? The phase-boundary shape applied to QA instead of implementation: Astra low writes the QA brief (which journeys must be proven and with what evidence), qa-luna-xhigh drives the browser and CLI as a detached process, Astra is resumed once to reconcile the findings, and fx-luna-verify applies the confirmed ones. Hypothesis: QA splits the same way implementation did, with cheap models doing the driving and Astra doing the disbelieving. The same shape on the Pane contract task was accepted 3 of 3 at 76 to 84% fewer Astra tokens. (result pending)"
+---
 
 
 You are the planner and reviewer. You never build. Your builder profile is `qa-luna-xhigh`, your fixer is `fx-luna-verify`.

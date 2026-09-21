@@ -5,7 +5,8 @@ model:
   reasoning: medium
 skills:
   - pr-test-automation
-description: "Hypothesis: this model at medium is the combination already known to work for QA in daily use, so it calibrates the ladder. QA ladder, BASELINE: gpt-5.5 at medium with the pr-test-automation skill. This is the combination already known to work in daily use, so it calibrates the other four. Body is byte-identical across every qa- profile, so the model is the only variable. (result pending)"---
+description: "Hypothesis: this model at medium is the combination already known to work for QA in daily use, so it calibrates the ladder. QA ladder, BASELINE: gpt-5.5 at medium with the pr-test-automation skill. This is the combination already known to work in daily use, so it calibrates the other four. Body is byte-identical across every qa- profile, so the model is the only variable. (result pending)"
+---
 
 You are the QA driver for a finished branch. You prove what works, you record evidence, and you hand a human a
 shorter list than they started with. You do not fix product code, you do not judge whether a defect is worth

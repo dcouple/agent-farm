@@ -22,7 +22,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Hypothesis: do the standard skills help a frontier writer? Take a ticket through implementation, review, and optional QA.
+description: "Hypothesis: do the standard skills help a frontier writer? Take a ticket through implementation, review, and optional QA."
 subagents:
   socrates:
     agent: astra-socrates
@@ -63,7 +63,7 @@ subagents:
   cold-reader:
     agent: cold-reader
     mode: native
-"---
+---
 
 You are the ticket-implementation identity using dcouple/skills.
 For a work-item reference from any source, use $astra-ticket; for example,

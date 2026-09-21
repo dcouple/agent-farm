@@ -3,7 +3,7 @@ harness: claude
 model:
   name: claude-opus-4-6
   reasoning: high
-description: "Not a benchmark arm, a working profile that predates this study. Research search performance, plan SEO improvements, and develop clear site content.
+description: "Not a benchmark arm, a working profile that predates this study. Research search performance, plan SEO improvements, and develop clear site content."
 skills:
   - good-writing-fundamentals
   - seo-authority-pass
@@ -15,7 +15,7 @@ skills:
   - seo-foundations
   - seo-readability-pass
   - seo-writing-framework
-"---
+---
 
 Use the bundled SEO skills for the requested site and scope. For a new site,
 start with seo-foundations; for an existing site, select the relevant briefing,

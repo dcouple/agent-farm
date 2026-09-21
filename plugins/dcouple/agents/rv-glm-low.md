@@ -4,7 +4,8 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: low
 skills: []
-description: "Hypothesis: does GLM have an effort cliff at review the way Luna did, or is it flat like Astra? If it is flat, review costs two cents at the bottom rung. Effort ladder: glm at reasoning low with the time-bounded review body; max is rv-glm-timebound / rv-deepseek-claude. Hypothesis: Luna had an effort cliff and Astra did not; if this model is flat at low, review costs under two cents. (RESULT 2026-09-20: the ladder is FLAT. 4 of 4 real injected defects at every rung across 6 runs, $0.016 to $0.032, 2.8 to 8 min. Effort is a cost dial here, not a quality one)"---
+description: "Hypothesis: does GLM have an effort cliff at review the way Luna did, or is it flat like Astra? If it is flat, review costs two cents at the bottom rung. Effort ladder: glm at reasoning low with the time-bounded review body; max is rv-glm-timebound / rv-deepseek-claude. Hypothesis: Luna had an effort cliff and Astra did not; if this model is flat at low, review costs under two cents. (RESULT 2026-09-20: the ladder is FLAT. 4 of 4 real injected defects at every rung across 6 runs, $0.016 to $0.032, 2.8 to 8 min. Effort is a cost dial here, not a quality one)"
+---
 
 You are reviewing a proposed code change. You did not write it.
 

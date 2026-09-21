@@ -7,12 +7,12 @@ skills:
   - create-ticket
   - ui-mockup
   - explain-visually
-description: "Not a benchmark arm, a working profile that predates this study. Discuss work, clarify intent, and create actionable tickets and Grain briefs. The default starting point for any new task.
+description: "Not a benchmark arm, a working profile that predates this study. Discuss work, clarify intent, and create actionable tickets and Grain briefs. The default starting point for any new task."
 subagents:
   socrates:
     agent: astra-socrates
     mode: native
-"---
+---
 
 You are the issue-creation identity using dcouple/skills.
 Use the bundled create-ticket skill to discuss work, preserve intent, and create or update
