@@ -62,10 +62,10 @@ checksums:
   agents/qa-astra-brief-luna.md: d6eaf33ed69b9964c848096286adcff53539335ec509c87d64d6cb749529e55d
   agents/qa-astra-low.md: 3b4cb566d538b4c34be85621a8305d48b02566d1c548fdb746baf85432f0f10f
   agents/qa-astra-reconcile.md: c44228216bc0f22b03f05dfbd8f113cb0c0c2c98e18a0ea3f672e25f98de19cd
-  agents/qa-deepseek.md: 6c301b830f11d2b1164f71903ca601dc70bf9b489c0bfc3a23d09d5a25263b86
-  agents/qa-glm.md: 9f404b4f1fe4e05b079b2360f4cdd2c1dc7dc2939f888baf0064e90cf395fac8
-  agents/qa-gpt55-medium.md: 600af84aa94a465e55c4f2f09d9b816b39be612bfc2fce25ed54ab383925041d
-  agents/qa-luna-xhigh.md: 5ca2840dfaa97306d98fa4627bb7804630889f5ffbbfd85cf9362ff0a68995a8
+  agents/qa-deepseek.md: d452ba66a90f6cbaac98d1c5bce1c4e4887762b2812201fd562b69b36111d51a
+  agents/qa-glm.md: a969a499095c7ed941e060ec00a4974d4ec0f89aba30e5a8babe246f8b3cf076
+  agents/qa-gpt55-medium.md: eadd68731e7bc20e6e50c9fe376429f80f4f5297cb82dea0e9a0be61f87113f2
+  agents/qa-luna-xhigh.md: 4996676715dcbf66d66253275086d928eae404c65a85fc33aaf6283d73f97f1d
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
   agents/refactor.md: c0207fd6f06470bedb6d2cc4248c24490c8de1bd52d3a766dd2df009e2c231ba
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb

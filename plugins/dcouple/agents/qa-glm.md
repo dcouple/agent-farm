@@ -5,7 +5,7 @@ model:
   reasoning: high
 skills:
   - pr-test-automation
-description: "Hypothesis: can the cheapest passing implementer also drive a QA pass? QA ladder: GLM 5.3 Flash on the Claude harness with the pr-test-automation skill. Unknown at QA; it holds implementation at 5 of 5 for $0.55 and reviews 4 of 4 with the right body. Harness differs from the codex rungs. (result pending)"
+description: "Hypothesis: can the cheapest passing implementer also drive a QA pass? QA ladder: GLM 5.3 Flash on the Claude harness with the pr-test-automation skill. Unknown at QA; it holds implementation at 5 of 5 for $0.55 and reviews 4 of 4 with the right body. Harness differs from the codex rungs. (RESULT 2026-09-21: product-bug-found in 58 min, the slowest rung and the CHEAPEST at $0.21 (254,509 uncached + 9,187,328 cached input, 65,602 output). Found the cause independently of DeepSeek: INFORMATION_SCHEMA shows no get_started table, a Go probe shows ReadRow on a missing table returns NotFound, and sp/get_started.go:246 treats that as an empty ledger. 16-journey table including live socket-down degradation, task links verified by URL, a third improvement (bound the 30 s re-sync after a failed sync), 30 screenshots, 5 videos, tree verified byte-identical. Flagged that a parallel rung sharing the test account invalidated its session mid-run)"
 ---
 
 You are the QA driver for a finished branch. You prove what works, you record evidence, and you hand a human a
