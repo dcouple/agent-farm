@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: low
 skills: []
-description: "Astra+Luna sweep, reversed: Astra LOW writes (the fewest tokens and fastest of anything measured), Luna xhigh reviews once with the time-bounded body. Hypothesis: the fastest sub path with a cheap independent review costs fewer Astra tokens than Astra medium alone and catches what Astra generic review misses. (vs Astra alone $4.42 / 2.8M tokens: result pending)"
+description: "Astra+Luna sweep, reversed: Astra LOW writes (RESULT 2026-09-20: 2 of 2 pass in 12 and 10 min; root 3.67M and 2.88M Astra tokens plus a reviewer child of 0.73M and 1.43M. Fastest path measured, but more Astra tokens than Astra low alone (2.5M))"
 subagents:
   final-reviewer:
     agent: sw-luna-final-reviewer

@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: medium
 skills: []
-description: "Reviewer under test: Astra at medium with rv-deepseek-claude's exact time-bounded, scope-first body. Astra with a generic body scored 1 of 5 at $1.18; DeepSeek and GLM with this body score 4 of 4. Hypothesis: the instruction, not the model, is the whole effect, and Astra becomes the fastest 4-of-4 reviewer. (vs rv-astra-medium generic: result pending)"
+description: "Reviewer under test: Astra at medium with rv-deepseek-claude's exact time-bounded, scope-first body. Astra with a generic body scored 1 of 5 at $1.18; DeepSeek and GLM with this body score 4 of 4. Hypothesis: the instruction, not the model, is the whole effect, and Astra becomes the fastest 4-of-4 reviewer. (RESULT 2026-09-20: 3 of 3 runs found 4 of 4 real injections in 1.8 to 1.9 min for $0.92 to $1.08; no gain over low)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

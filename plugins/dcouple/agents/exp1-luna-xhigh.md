@@ -21,7 +21,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Experimental: Pure Luna XHigh stack. No frontier model. Cheap orchestrator + cheap workers."
+description: "Experimental: Pure Luna XHigh stack. No frontier model. Cheap orchestrator + cheap workers. (RESULT 2026-09-20: 3 of 3 on the Pane task at 849 / 1,264 / 1,330 s and 14 to 22.6M tokens, against Luna max at 1,449 s (t1) and 1,704 s (10-run mean); the setting to use for Luna)"
 subagents:
   socrates:
     agent: exp1-luna-xhigh-reviewer
