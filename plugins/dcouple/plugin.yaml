@@ -245,7 +245,7 @@ checksums:
   skills/bounded-advisor/SKILL.md: e8aca7707b741c965ae1055d18601a93c11995e6615e671ac3870c4e13b426a5
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
   skills/codex-queue-wait/SKILL.md: 327b6982e89402505b771eb2b391f5e333d762e403f5268ce1f612584a13aa6e
-  skills/codex-queue-wait/scripts/notify.sh: 72b1e25ace739b5ed5a20c8fc6f772d2ffdc5e51ef04e5501759bbfc56582ad1
+  skills/codex-queue-wait/scripts/notify.sh: 0ae9ea479cb39cb05f2ca6fa29bacbbd72851ffd399cd2645b4b229886681f0b
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/SKILL.md: d449b2f3cc05848ce6e8a03337112b8452a12b22df1ce91aa54c563377bf3285
   skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b

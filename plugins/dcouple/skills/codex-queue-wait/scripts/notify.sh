@@ -14,7 +14,16 @@ done
 PROFILE="${5:-}"
 if [ -n "$PROFILE" ]; then
   # exec-mode parent: the process ended with its turn; resume the same thread with the message.
-  agent-farm run "$PROFILE" --exec --message "$MSG" -- exec resume "$THREAD" > "$DIR/parent-resume.json" 2> "$DIR/parent-resume.err"
+  # agent-farm keys its private CODEX_HOME on the launch directory, so a resume from any other cwd looks in
+  # the wrong home ("no rollout found"). Locate the parent's runtime by its thread id and resume there,
+  # from the parent's own cwd; fall back to agent-farm's resume only if the rollout cannot be found.
+  ROLL=$(grep -l "\"id\":\"$THREAD\"" "$HOME"/.cache/agent-farm/native-proof/*/sessions/*/*/*/*.jsonl 2>/dev/null | head -1)
+  if [ -n "$ROLL" ]; then
+    RT="${ROLL%%/sessions/*}"; PCWD=$(head -c 2000 "$ROLL" | python3 -c 'import sys,json,re; m=re.search(r"\"cwd\":\"([^\"]+)\"",sys.stdin.read()); print(m.group(1) if m else ".")')
+    ( cd "$PCWD" && CODEX_HOME="$RT" codex exec resume "$THREAD" --json "$MSG" < /dev/null ) > "$DIR/parent-resume.json" 2> "$DIR/parent-resume.err"
+  else
+    agent-farm run "$PROFILE" --exec --message "$MSG" -- exec resume "$THREAD" > "$DIR/parent-resume.json" 2> "$DIR/parent-resume.err"
+  fi
 else
   codex queue --thread "$THREAD" --message "$MSG"
 fi
