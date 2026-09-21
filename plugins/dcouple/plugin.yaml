@@ -59,6 +59,9 @@ checksums:
   agents/planner.md: 5aa9bb961d134df4775913b35c833e4f715737f7d49e7c7b60052a779fbc3ac2
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
   agents/pr-reviewer.md: fd0b0660602e2503ff1f092d8f2bf7c61adc034d987f44c08988ffce60642643
+  agents/qa-astra-brief-luna.md: 023707fdcb67232895efac0f0cb0100bb7dcde7cc3f9921043000a620ea5d8a5
+  agents/qa-astra-reconcile.md: a5276eebe3206139546908298c7f5a8f96559a3dbeec81c33b9dc5eb68577ffb
+  agents/qa-luna-xhigh.md: 5c6c6a728971b4bcc64164cda182455fee1b3d343ee807297f2020314fb6e33b
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
   agents/refactor.md: c0207fd6f06470bedb6d2cc4248c24490c8de1bd52d3a766dd2df009e2c231ba
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
@@ -169,6 +172,9 @@ checksums:
   profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
   profiles/parsa.yaml: f650fdeeed28391b5463a8bc0ed8db687b92332b7218273d72efb8e193eba913
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
+  profiles/qa-astra-brief-luna.yaml: 35a273acee0b82bed2bfce62506346fccac5a604894cbe4a69f2fd73a52ed795
+  profiles/qa-astra-reconcile.yaml: b9d63fdbc0fe6e38cd8083ee0e5db3e35011d6477e12ef4c652baafeb1fcf4b6
+  profiles/qa-luna-xhigh.yaml: 460e7d604747a21f223131f4279bb0d6ddef889a84c67a60ed8274a8732426ff
   profiles/rv-astra-low.yaml: ce73d2e3f33f6b5eee32a73eb6b7d6b044ef8eb70b47b6dd1ad17bd9d8c38335
   profiles/rv-astra-medium.yaml: 98c53f0d7f855263d5da9ab9f90bc9f37234a4ab646990e8685b1548d13e0057
   profiles/rv-astra-timebound-medium.yaml: 0fe7d1794701577568e21849ef5c6e522337f4ce9a509d6435b1566120d2a231
