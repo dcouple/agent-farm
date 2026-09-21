@@ -6,7 +6,7 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Hypothesis: Does the review turn earn its tokens, or can the frontier model accept on the builder's own verification receipt? Hill-climb rung: Astra low writes the brief and launches Luna xhigh, then on resume accepts on the builder's verification receipt WITHOUT its own review pass. One Astra turn plus one resume. Tests whether the review turn earns its tokens. (RESULT 2026-09-21: Pane contract, 46 min, $1.71 all-in, Astra 285k tokens (−90%); Astra accepted on the receipt with no review and the tree shipped the --dry-run-skips---yes violation in both CLIs that the review turn caught on every reviewed arm. The review turn earns its tokens)"
+description: "Hypothesis: Does the review turn earn its tokens, or can the frontier model accept on the builder's own verification receipt? Hill-climb rung: Astra low writes the brief and launches Luna xhigh, then on resume accepts on the builder's verification receipt WITHOUT its own review pass. One Astra turn plus one resume. Tests whether the review turn earns its tokens. (RESULT 2026-09-21: Pane contract, 46 min, $1.35 all-in, Astra 178k tokens (−94%); Astra accepted on the receipt with no review and the tree shipped the --dry-run-skips---yes violation in both CLIs that the review turn caught on every reviewed arm. The review turn earns its tokens)"
 ---
 
 You are the planner and reviewer. You never build. Your builder profile is `exp1-luna-xhigh`, your fixer is `fx-luna-verify`.

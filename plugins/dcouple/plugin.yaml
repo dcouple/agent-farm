@@ -59,7 +59,7 @@ checksums:
   agents/planner.md: 78c9d42e23e35e29931b8953f2b7dee3d3b0fb1f021ab9e2b64469b4381fa71c
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
   agents/pr-reviewer.md: fd0b0660602e2503ff1f092d8f2bf7c61adc034d987f44c08988ffce60642643
-  agents/qa-astra-brief-luna.md: 59784525ca1c46e3521f6391fdbbac24be2407c3b135c127426697289a3c4293
+  agents/qa-astra-brief-luna.md: dd1e29714373987f4396e1164a20289361a17a27da70e3692330188f91c413af
   agents/qa-astra-low.md: 3b4cb566d538b4c34be85621a8305d48b02566d1c548fdb746baf85432f0f10f
   agents/qa-astra-reconcile.md: c44228216bc0f22b03f05dfbd8f113cb0c0c2c98e18a0ea3f672e25f98de19cd
   agents/qa-deepseek.md: d452ba66a90f6cbaac98d1c5bce1c4e4887762b2812201fd562b69b36111d51a
@@ -83,7 +83,7 @@ checksums:
   agents/rv-glm-medium.md: 413483c9470220f1a98430e0fddc47f335eed1dd4741f301d251a75f9559f958
   agents/rv-glm-targeted.md: 298e9ed8cc2d86a465d6b6419422f59a1f2b1522fbcb8f411d0774fb0e400677
   agents/rv-glm-timebound.md: da127b405f4bba8ba3ab166f5e442053de2ec7e8ed40720a1a7061c5cf5fdf71
-  agents/rv-luna-timebound.md: e4c1e6f691ccf6546917eb1e01c774d3022610359d7392f2c52695e4d0a53e8c
+  agents/rv-luna-timebound.md: cf58ddecbd6d4f1e968ce8c6c2ba1792412def42f806ead28d22da71f31bede5
   agents/rv-luna-max.md: e2fb07e62ee210a71020a89cf48022eaa8ec7d1ec9b7ffaf4c8c7c6f1d4a5ba3
   agents/rv-terra-high.md: 86bdd878ecccb9d39ccb0fc24ff3dc94a2cc4ad8d2909b2e19ab476959ec53ab
   agents/rvs-deepseek-skilled.md: 19c2d66b760cfcb1e49f155d6676545bc5aff434a3b72862052f52973abee974
@@ -101,12 +101,12 @@ checksums:
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
   agents/sw-astra-advisor-low.md: 8bc114deef24f4a47c45046fd3eb0fc1a86ed054885fe0ac8fad73c642563d51
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
-  agents/sw-astra-brief-astra.md: 20bbceeba9c3daba08bcd524d513acf3519e2738c749f90e965ad1b3d4cfd0f6
-  agents/sw-astra-brief-flash.md: db98d1a9dc3351aa77e9e947443b8641bd3b78a7050c1dba9e8cdffa38955eb7
-  agents/sw-astra-brief-glm.md: 72258f7f0783f68489387303a48e07853f030e598afef2010f64a01690c28473
-  agents/sw-astra-brief-luna-high.md: ac99ed06a55f9966654db7bd0eef03810f502c025336a9d475d5ed88c4bed2f4
+  agents/sw-astra-brief-astra.md: 1988b1f8687b5aed0c6aca363dca4471ae5481c4c99db7e80494587cebc46b71
+  agents/sw-astra-brief-flash.md: ad78eec4e688f06aebb6aec13aa221284e88eec29756d500279d1a4cccadd1f5
+  agents/sw-astra-brief-glm.md: 54a2eeb8b15e43ad41cf01d7085949cfb6e45943a46240a3500ace0753edac8d
+  agents/sw-astra-brief-luna-high.md: 5881a00935ccee114cd7e46003b17e1cdf3d0d4efa3e7a7494a9b7c1cb65029b
   agents/sw-astra-brief-luna.md: 99d4df72837b14fa8ff695fc3dfb0c252683de2f42cc711afc599f98db1e1e5c
-  agents/sw-astra-brief-only-luna.md: 3baf591c77c34a326db17cb37df0c4baa90222d32369e832f035566e28dbd2ff
+  agents/sw-astra-brief-only-luna.md: 05b6f9b2c42374e8c79eff8d50232cd8e2b576615ed028387d4c2b63f43d0366
   agents/sw-astra-final-reviewer-low.md: 86a66747141e4a351fb70b93651aa8a31f89b8b32238334513755e0ae62a884c
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
   agents/sw-astra-flash-repro-sub.md: d421a3d828357c622ac26e1d63b94d0cbfef078a3a9a540093df8bf0a2d40358
@@ -116,7 +116,7 @@ checksums:
   agents/sw-astra-medium.md: 37db98af765ccaaf8299ec0eb8a2b25509be4b47c70bd09513b720952888be9d
   agents/sw-astra-merge-low.md: 83d509690cde680e0562de25706f53237d0d26db0d2345a056876241eb6632b7
   agents/sw-astra-orch-luna.md: cc4feac9995a835054b6baf3ff865fcd0d7d9f86a181e0e77cf296c9aaa79c5d
-  agents/sw-astra-self-build.md: 2bbbb155918c1114d9df55e07adad8f909c4fa44a6b76770c3218f00bb5514ee
+  agents/sw-astra-self-build.md: e943579bd1b3052afc5b370948e8d2a0ee3c3b3ae6cf5cd3cc80ba4554760152
   agents/sw-baseline-raw.md: 047ef22a3174be2aa7f2f255b5ce429f46c83e59b8c95e636ff525756df34b67
   agents/sw-deepseek-astra-loop.md: aa13fa2e664afc0ea846e298635c0362c4fdbcf7ccb2f9cbca0af4270cb85e34
   agents/sw-fast-implementer.md: c0a76aec62565f3f619b6ac02d33d6a12247451de717efc02560b9c39f70a765
