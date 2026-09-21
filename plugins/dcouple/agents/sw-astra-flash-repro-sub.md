@@ -5,7 +5,7 @@ model:
   reasoning: medium
 skills:
   - astra-flash-orchestrator-upstream
-description: "BASELINE REPRODUCTION of ethanplusai/astra-flash-orchestrator ON THE SUBSCRIPTION: Astra root on the ChatGPT login, DeepSeek V4.1 Flash as the native astra_flash_builder child routed through Codex Router (openrouter/deepseek-v4.1-flash), the package's policy, worker instructions and skill vendored verbatim. Metric: Astra tokens per task vs Astra alone 2.8M. (result pending) (RESULT 2026-09-20 (never-fork, plain shell, Codex Router): child verified openrouter/deepseek-v4.1-flash (22.5M tokens, $0.29); root Astra 1.62M input tokens against Astra alone's 2.5 to 2.8M, ~40% cut not 98%, 42 min, 18 files; worker reports six checks and 49 new tests green, independent verification pending. Native wait keeps the root re-reading its context; the job-daemon shape (sw-astra-brief-*) reaches 75 to 82%)"
+description: "BASELINE REPRODUCTION of ethanplusai/astra-flash-orchestrator ON THE SUBSCRIPTION: Astra root on the ChatGPT login, DeepSeek V4.1 Flash as the native astra_flash_builder child routed through Codex Router (openrouter/deepseek-v4.1-flash), the package's policy, worker instructions and skill vendored verbatim. Metric: Astra tokens per task vs Astra alone 2.8M. (result pending) (RESULT 2026-09-20 (never-fork, plain shell, Codex Router): child verified openrouter/deepseek-v4.1-flash (22.5M tokens, $0.29); root Astra 1.62M input tokens against Astra alone's 2.5 to 2.8M, ~40% cut not 98%, 42 min, 18 files; all six contract commands pass independently (vitest 98 of 98) plus 49 new tests. Native wait keeps the root re-reading its context; the job-daemon shape (sw-astra-brief-*) reaches 75 to 82%)"
 subagents:
   astra_flash_builder:
     agent: flash-builder-router
