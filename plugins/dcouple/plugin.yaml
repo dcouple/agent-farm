@@ -100,6 +100,7 @@ checksums:
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
   agents/sw-astra-advisor-low.md: 8bc114deef24f4a47c45046fd3eb0fc1a86ed054885fe0ac8fad73c642563d51
   agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
+  agents/sw-astra-brief-astra.md: 4f1739b9240b70d8cd7d517806349ec4f2c7f1fe880b4fa92e0b9dfd35793ca2
   agents/sw-astra-brief-flash.md: 6b76847f14d2fa6932487482bfa3d3def670b9e70c021c13c9d32815a773eba2
   agents/sw-astra-brief-glm.md: d265f2c11a6356c9b5b0ea967d8ec5e9100646a5375eddcb50cf130374369c99
   agents/sw-astra-brief-luna-high.md: 47a9c81b011f4747a8b9d9a2e4a03591c3f669b9aa0f8573040c529325f0c425
@@ -212,6 +213,7 @@ checksums:
   profiles/scan-terra-worker.yaml: 4f12736a1c4510be52b6a4ba1d5d51b85582a439eb6f289a389f31466a7f88f7
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   profiles/sw-astra-advisor-low.yaml: d92b71f221366b68d8833a2affbe52e1abc22cda9f202a86bcdfb930ec0b4bb1
+  profiles/sw-astra-brief-astra.yaml: 6474e5382f6ed672bbfb744ecb576a02be6a71248c284cb69141a69044488071
   profiles/sw-astra-brief-flash.yaml: 728b079e67422cca73523b77cb5d03d82270d0a269639d311aa136698fc1c7e9
   profiles/sw-astra-brief-glm.yaml: fb0c0a33c7adbaccaaef8205c60a62116a8af25aea357da5ee52ed5bf2082f38
   profiles/sw-astra-brief-luna-high.yaml: fce4b55aa9bd592d9e81b1b37ff23cadcad340d109e06630b27e70a5a64d8c53
