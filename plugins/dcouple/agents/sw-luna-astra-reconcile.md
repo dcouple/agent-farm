@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: xhigh
 skills: []
-description: "Hypothesis: Does a single end-of-task frontier review buy anything over the bare cheap writer? Hill-climb rung: Luna xhigh writes alone; Astra low reviews the finished diff once as final reviewer, Luna applies proven findings. Zero advisor calls. Tests whether a single end-of-task Astra turn buys anything over sw-luna-raw. (vs Astra alone 2.8M tokens: result pending)"
+description: "Hypothesis: Does a single end-of-task frontier review buy anything over the bare cheap writer? Hill-climb rung: Luna xhigh writes alone; Astra low reviews the finished diff once as final reviewer, Luna applies proven findings. Zero advisor calls. Tests whether a single end-of-task Astra turn buys anything over sw-luna-raw. (RESULT 2026-09-21: Pane contract, 36 min, $1.31 all-in: Luna $0.46 + one Astra-low final-reviewer child $0.85 (326k tokens, −88% vs Astra alone); the review found the permanent-panel guard bug, Luna accepted it with a regression test; gates verified by hand. The cheapest accepted frontier-in-the-loop cycle of the study)"
 subagents:
   final-reviewer:
     agent: sw-astra-final-reviewer-low

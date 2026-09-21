@@ -105,7 +105,7 @@ checksums:
   agents/sw-astra-brief-glm.md: d265f2c11a6356c9b5b0ea967d8ec5e9100646a5375eddcb50cf130374369c99
   agents/sw-astra-brief-luna-high.md: 47a9c81b011f4747a8b9d9a2e4a03591c3f669b9aa0f8573040c529325f0c425
   agents/sw-astra-brief-luna.md: 99d4df72837b14fa8ff695fc3dfb0c252683de2f42cc711afc599f98db1e1e5c
-  agents/sw-astra-brief-only-luna.md: fff8a0cc19d678cacfb7d0cad065f9a87be4edd1506554e2716a9920bdc61aa8
+  agents/sw-astra-brief-only-luna.md: 3baf591c77c34a326db17cb37df0c4baa90222d32369e832f035566e28dbd2ff
   agents/sw-astra-final-reviewer-low.md: 86a66747141e4a351fb70b93651aa8a31f89b8b32238334513755e0ae62a884c
   agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
   agents/sw-astra-flash-repro-sub.md: d421a3d828357c622ac26e1d63b94d0cbfef078a3a9a540093df8bf0a2d40358
@@ -123,7 +123,7 @@ checksums:
   agents/sw-luna-advised-1call.md: 2ee0f82cc4f8aa098ea59b4558ee39a68053ce04a8ef576fc0d773c7cca45e43
   agents/sw-luna-advised-bounded.md: a1a0f5d8bf7405075a68de6c1a6d9e5db51c178fe1c5db00738e787396e1fc57
   agents/sw-luna-astra-loop.md: 473146ac9a78b65bb506798cb5434111513a9e5303e8154982b9256978c7dc34
-  agents/sw-luna-astra-reconcile.md: feed7039638e610c2ed0532a483e84d5c398ec3154c872a619acd36e9097bebc
+  agents/sw-luna-astra-reconcile.md: 9ccb5f223e65142e2058ecaaa6b16ea3859d531f2ab32b6a8a263b5d0c98ea1e
   agents/sw-luna-final-reviewer.md: 4fea9f95b069e10af47ec5449cd18eb47767ffa5ce718fb8e9ac4de4df5643b5
   agents/sw-luna-high.md: e0da4acf1bd6920391008d60b4c22c6b8297956bfd13e1eb69a84da0288fcb12
   agents/sw-luna-implementer.md: cb0c7631e0d740437d7b289a80fac640c930831ab6ff3f50abf0cfbd118a5eab
