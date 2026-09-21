@@ -62,7 +62,7 @@ checksums:
   agents/qa-astra-brief-luna.md: d6eaf33ed69b9964c848096286adcff53539335ec509c87d64d6cb749529e55d
   agents/qa-astra-low.md: 09580556ed5fec411bfe319d742988c8141d6ae6e14356f8279e8661ff1f6e83
   agents/qa-astra-reconcile.md: c44228216bc0f22b03f05dfbd8f113cb0c0c2c98e18a0ea3f672e25f98de19cd
-  agents/qa-deepseek.md: 58dc8e3b96165dd0a8202910d071898771d509add632a502f35b8ba79e501bb3
+  agents/qa-deepseek.md: 6c301b830f11d2b1164f71903ca601dc70bf9b489c0bfc3a23d09d5a25263b86
   agents/qa-glm.md: 9f404b4f1fe4e05b079b2360f4cdd2c1dc7dc2939f888baf0064e90cf395fac8
   agents/qa-gpt55-medium.md: 600af84aa94a465e55c4f2f09d9b816b39be612bfc2fce25ed54ab383925041d
   agents/qa-luna-xhigh.md: 5ca2840dfaa97306d98fa4627bb7804630889f5ffbbfd85cf9362ff0a68995a8
