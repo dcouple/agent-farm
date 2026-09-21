@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Hypothesis: Same model, different instruction: does the instruction alone move recall, with the model held constant? Reviewer benchmark: GLM 5.3 Flash with a TARGETED instruction. Identical model and harness to rv-glm-claude; the only variable is what it is told to look for. (vs Astra: 0.05x cost, 8x slower; identical model to rv-glm-claude with a different instruction and different recall, which isolates the instruction effect)"
+description: "Hypothesis: Same model, different instruction: does the instruction alone move recall, with the model held constant? Reviewer benchmark: GLM 5.3 Flash with a TARGETED instruction. Identical model and harness to rv-glm-claude; the only variable is what it is told to look for. (RESULT 2026-09-21: two runs on the injected fixture with the generic message, 4 of 4 real injections both times, $0.22 and $0.19, 13 and 17 min; rv-glm-timebound reaches the same 4 of 4 at ~$0.03 in ~4 min. Either specific instruction gets GLM to 4 of 4; the time bound is the cheaper one)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

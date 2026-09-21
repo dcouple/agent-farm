@@ -13,7 +13,7 @@ checksums:
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764
   agents/correctness-reviewer.md: f945974b435e8d841f35dd2b7d2b4f1c44e83c9f5504967a90e8bd267c747584
-  agents/ds-orch-ds.md: 070a60b3c6fce91efbbebbc3eb01569a292ac3644c852ac5e355688ec0ab6f0d
+  agents/ds-orch-ds.md: babe72e7ad82bd7a1725879e2c26b5889815b79031800a4cd8c6b2f4aedc3af8
   agents/exp1-luna-xhigh-reviewer.md: 4822cd74d11510e5f94ff9e28a85e3ef1f142c353d4fee7f0b9f6796a595d55b
   agents/exp1-luna-xhigh-worker.md: 78de8c0a9c416275d0468234bd9c13eed00ef66cf7e0bb914d5e8ae302615901
   agents/exp1-luna-xhigh.md: cb5446fa2c5a48c85364af983cc1b77e98a24e0ed3d30a2da7426e0f9f23b6fd
@@ -45,7 +45,7 @@ checksums:
   agents/fx-glm-verify-skilled.md: 29c0e70e9de3d8314c533998df56fbbe10691fc0d44a3720953ffc33601733af
   agents/fx-glm-verify.md: 877bf45228330102a938c956d2eb4e424d5b13a7f09569ac7577079c75e448be
   agents/fx-luna-verify.md: 3d32f3a62705030f87c0635c113be5ad18f0bd98923e86625914847a0e55b6d8
-  agents/glm-orch-glm.md: 548b1662515e177a36711ef37dd0c6d3308104870e36ee3893c00990cfc207ee
+  agents/glm-orch-glm.md: edb196625a0c10fc0e28da2774ef4008acdfd4b47da03399f50ef299f68f8004
   agents/hx-deepseek-claude.md: 31889411dc02b38e5d4eb18e59ffcb69e51cca0243345765b070c3cb93bb9828
   agents/hx-deepseek-timebound.md: 203414561893c9a68dfc4490cf0fb3cb391338fec3908116eca6fe7400615242
   agents/hx-glm-claude.md: 8919522c7e2b59facffaddc28e88eb234037aad3aa4b3ad14516f8e9e368a7fd
@@ -81,7 +81,7 @@ checksums:
   agents/rv-glm-high.md: 3accfd0fe2446a125b5e2fff57bea750631d0d47d087380315fedac5ea4a6f50
   agents/rv-glm-low.md: ae5233963234adcfa348bd6697cc7f25eb63f1ae7d72dc3434046f4178db89ed
   agents/rv-glm-medium.md: 413483c9470220f1a98430e0fddc47f335eed1dd4741f301d251a75f9559f958
-  agents/rv-glm-targeted.md: 736eff898767acefa146764d407d4767753a5cb3ffde8cb7b2dd5bcea1d963ca
+  agents/rv-glm-targeted.md: 298e9ed8cc2d86a465d6b6419422f59a1f2b1522fbcb8f411d0774fb0e400677
   agents/rv-glm-timebound.md: da127b405f4bba8ba3ab166f5e442053de2ec7e8ed40720a1a7061c5cf5fdf71
   agents/rv-luna-max.md: e2fb07e62ee210a71020a89cf48022eaa8ec7d1ec9b7ffaf4c8c7c6f1d4a5ba3
   agents/rv-terra-high.md: 86bdd878ecccb9d39ccb0fc24ff3dc94a2cc4ad8d2909b2e19ab476959ec53ab

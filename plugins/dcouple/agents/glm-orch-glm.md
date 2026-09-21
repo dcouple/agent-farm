@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Hypothesis: The same plan-first question for the other cheap model, as its control. Hard-ticket arm under test: GLM 5.3 Flash plans and writes an ambiguous ticket alone, with an explicit plan-first body that forces the scoping and idempotence checks the bare cheap arm missed. Hypothesis: reaches the structure a careful merger preferred without a frontier planner. (RESULT 2026-09-20: issue #364 alone, 70 min, 309 turns, 33 files, $0.61 at GLM rates; green by its own report; excluded the mobile-install signal. Merger comparison pending)"
+description: "Hypothesis: The same plan-first question for the other cheap model, as its control. Hard-ticket arm under test: GLM 5.3 Flash plans and writes an ambiguous ticket alone, with an explicit plan-first body that forces the scoping and idempotence checks the bare cheap arm missed. Hypothesis: reaches the structure a careful merger preferred without a frontier planner. (RESULT 2026-09-20: issue #364 alone, 70 min, 309 turns, 33 files, $0.61 at GLM rates; green by its own report; excluded the mobile-install signal. The 2026-09-21 Astra judge ranked this tree last of four: task leases do not serialize subscription-wide updates)"
 ---
 
 You are the only agent on this ticket: you plan it and you write it. No advisors, no reviewers, no
