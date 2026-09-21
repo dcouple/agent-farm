@@ -46,7 +46,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model builds the whole thing its own way: no packages, no workers, no preflight. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Then the same draft pull request and final review as `implementer`. `--arg review=none`, or telling it so, skips the review | Review is accepted and clean-up is done. Or `blocked`, or `failed` |
 | `free-range` | Codex, Astra medium | The raw model. No skills, no pipeline. Also the control when measuring whether skills help | You say so |
 | `free-range-claude` | Claude, Fable 5.1 high | Same, on Claude | You say so |
-| `orchestrator` | Codex, Luna medium | Launch the profiles above across worktrees, poll status files, relay questions, keep one status board. Writes no code | The run summary is written |
+| `orchestrator` | Claude, Fable 5.1 medium | Launch the profiles above across worktrees, poll status files, relay questions, keep one status board. Writes no code | The run summary is written |
 
 Install it next to `dcouple`, then use qualified names. Bare `planner` and `implementer` are ambiguous once both plugins are installed, unless you set `default_plugin` in `settings.json`.
 
@@ -96,7 +96,7 @@ Children are not profiles. Each fires at one defined moment.
 | `reviewer` | implementer, one-shot | Once, when the feature is supposed to be finished. On the other vendor's model, bound as a process child on Claude | Fable 5.1 high. Astra high is the agent file's own default |
 | `second-reviewer` | implementer, one-shot | Same moment, independently, only for a dual review: the plan says `Review: dual` or the launch says `review=dual`. The same `reviewer` agent file as a native child. Also stands in when `reviewer` cannot launch | Astra high |
 
-The planner's evidence and review children reuse the shared agent files with a model override on the binding, so they run natively on Claude. Three bindings cross harnesses and run as separate headless processes: the planner's `mockup-artist` and `implementer`, and the `reviewer` of `implementer` and `one-shot`.
+The planner's evidence and review children reuse the shared agent files with a model override on the binding, so they run natively on Claude. Four bindings cross harnesses and run as separate headless processes: the planner's `mockup-artist` and `implementer`, the `reviewer` of `implementer` and `one-shot`, and the orchestrator's `advisor`.
 
 ## Where instructions live
 
