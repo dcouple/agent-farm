@@ -43,6 +43,8 @@ cannot be established from the repo. When asked to plan only, do not implement.
 
 Read `routing.json` in this installed skill and `references/routing.md`. Run the
 read-only `scripts/doctor.py` with the same CODEX_HOME/profile used by the session.
+The doctor reuses the installed route binding unless an explicit reviewed route
+is supplied. Never infer a provider from whichever catalog entry happens to exist.
 Its output is a static configuration check, not an end-to-end model test.
 Confirm the current ROOT is the user's selected GPT-6 Astra and that the native
 `astra_flash_builder` role is available. Do not change the root model or effort.
@@ -51,7 +53,8 @@ Inspect project/CLI/UI/managed overrides that the doctor cannot resolve.
 For an already-verified setup, reuse the verified configuration evidence rather
 than repeating a paid smoke test per task. For a first routed task, use a small
 real, useful implementation bundle and inspect host/router metadata afterward.
-No fake model-name check and no silent fallback. If routing cannot be established,
+No fake model-name check and no silent fallback. Do not run `subagents certify`,
+`test-model --live`, a smoke test or another paid probe as package setup. If routing cannot be established,
 finish the plan and report the execution blocker before delegating private work.
 
 ## 3. Design before dividing the work
@@ -249,8 +252,4 @@ Correction cycles: <count>
 Integration status: <what is present in the dependent workspace>
 
 
-> Vendored verbatim from ethanplusai/astra-flash-orchestrator for a like-for-like baseline. Routing here is agent-farm's provider (OpenRouter) for both root and child, not Codex Router; doctor.py/routing.json checks do not apply, treat routing as verified by the launcher.
-
-## Never fork
-
-Spawn children with `fork_turns: "none"`. A forked thread runs the parent's model regardless of the child's configured model; measured 2026-09-20, two Astra roots turned their cheap children into Astra this way. Put needed context in the packet instead.
+> Vendored verbatim from ethanplusai/astra-flash-orchestrator @ bcc7f9e (2026-09-20 22:08Z, "Support verified V4.1 Flash provider routes"). Routing here is Codex Router with the openrouter/deepseek-v4.1-flash route, which this version now lists as a verified route; doctor.py/routing.json checks are skipped and routing is verified from the child session instead.
