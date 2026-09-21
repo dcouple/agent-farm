@@ -11,7 +11,7 @@ skills:
   - implementation-reviewer
   - plan-reviewer
   - codebase-explorer
-description: "Tri-model A: DeepSeek writes and authors tests, GLM plans and reviews, Luna advises only. Role assignment from published coding benchmarks. (vs Astra: 0.06x cost at $0.27, 17x slower, 2 of 3, worse)"
+description: "Hypothesis: With three cheap models rotating through writer, reviewer and planner seats, does it matter which one holds the pen? Tri-model A: DeepSeek writes and authors tests, GLM plans and reviews, Luna advises only. Role assignment from published coding benchmarks. (vs Astra: 0.06x cost at $0.27, 17x slower, 2 of 3, worse)"
 subagents:
   worker:
     agent: exp2-deepseek-flash-worker

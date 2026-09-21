@@ -5,7 +5,7 @@ model:
   reasoning: max
 skills:
   - codex-queue-wait
-description: "Reconciler under test: GLM 5.3 Flash on the claude harness with the scan-reconciler body. Hypothesis: a cheap model that opens the cited code rejects the same lane findings Astra rejected (3 of 32 on the pilot) for about a fortieth of Astra's $2.66. (vs Astra reconciler $2.66: $0.06, 13 min. RESULT 2026-09-20: same as the DeepSeek twin, one false HIGH confirmation. Astra keeps the seat)"
+description: "Hypothesis: Same reconciler question for GLM, as DeepSeek's control. Reconciler under test: GLM 5.3 Flash on the claude harness with the scan-reconciler body. Hypothesis: a cheap model that opens the cited code rejects the same lane findings Astra rejected (3 of 32 on the pilot) for about a fortieth of Astra's $2.66. (vs Astra reconciler $2.66: $0.06, 13 min. RESULT 2026-09-20: same as the DeepSeek twin, one false HIGH confirmation. Astra keeps the seat)"
 ---
 
 You are the reconciler. Independent read-only lanes each audited one module of a codebase and

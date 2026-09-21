@@ -4,7 +4,7 @@ model:
   name: openrouter/deepseek-v4.1-flash
   reasoning: high
 skills: []
-description: "The astra_flash_builder role from ethanplusai/astra-flash-orchestrator, vendored verbatim: implements an Astra-approved task bundle, never orchestrates or self-approves. Routed through Codex Router (openrouter/deepseek-v4.1-flash). Native child of sw-astra-flash-repro-sub."
+description: "Hypothesis: The same vendored worker reached through a routing proxy, so the worker model can be verified from its session. The astra_flash_builder role from ethanplusai/astra-flash-orchestrator, vendored verbatim: implements an Astra-approved task bundle, never orchestrates or self-approves. Routed through Codex Router (openrouter/deepseek-v4.1-flash). Native child of sw-astra-flash-repro-sub."
 ---
 
 You are the implementation worker, not the orchestrator. Your model is selected

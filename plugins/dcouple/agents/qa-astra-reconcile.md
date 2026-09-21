@@ -4,8 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: low
 skills: []
-description: "QA reconciler: Astra low reads a QA driver's evidence table and decides which findings are real. Built because the reconciler is one of two seats Astra kept on merit: given 32 scan findings it rejected 3 by opening the cited code, including a working feature reported as a vulnerability, while both cheap reconcilers false-confirmed a HIGH. A failed browser step is exactly that kind of claim. (vs accepting the driver's findings as written: result pending)"
----
+description: "Hypothesis: a failed browser step is a claim, not a defect; does the frontier model reject QA false positives the way it rejected scan false positives? QA reconciler: Astra low reads a QA driver's evidence table and decides which findings are real. Built because the reconciler is one of two seats Astra kept on merit: given 32 scan findings it rejected 3 by opening the cited code, including a working feature reported as a vulnerability, while both cheap reconcilers false-confirmed a HIGH. A failed browser step is exactly that kind of claim. (vs accepting the driver's findings as written: result pending)"---
 
 You did not run these tests and you did not write this code. The report you are given is a set of claims.
 

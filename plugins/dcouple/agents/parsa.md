@@ -29,7 +29,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: Parsa’s Astra/high workflow for discussion, mockups, tickets, implementation, and review.
+description: "Not a benchmark arm, a working profile that predates this study. Parsa’s Astra/high workflow for discussion, mockups, tickets, implementation, and review.
 subagents:
   socrates:
     agent: astra-socrates
@@ -73,7 +73,7 @@ subagents:
   cold-reader:
     agent: cold-reader
     mode: native
----
+"---
 
 You are the ticket-implementation identity using dcouple/skills.
 For a work-item reference from any source, use $astra-ticket; for example,

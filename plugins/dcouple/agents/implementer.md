@@ -23,7 +23,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: Take a ticket through implementation, review, and optional QA.
+description: "Not a benchmark arm, a working profile that predates this study. Take a ticket through implementation, review, and optional QA.
 subagents:
   socrates:
     agent: astra-socrates
@@ -64,7 +64,7 @@ subagents:
   cold-reader:
     agent: cold-reader
     mode: native
----
+"---
 
 You are the ticket-implementation identity using dcouple/skills.
 For a work-item reference from any source, use $astra-ticket; for example,

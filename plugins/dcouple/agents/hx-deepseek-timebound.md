@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Implementer under test: DeepSeek V4.1 Flash on the claude harness, bare, with the bounded scope-first discipline that took its review from 1 of 5 to 5 of 5. Hypothesis: the same discipline moves implementation from 4 of 5 to 5 of 5. (vs Astra $4.42 / 608s on the Pane task: 0.50x at $2.23, 3.5x slower at 2,118s, 3 of 3. RESULT 2026-09-20: pass rate up from 4 of 5 and wall down 17% versus bare hx-deepseek-claude, at 1.8x its cost)"
+description: "Hypothesis: Does the time-bounded, scope-first discipline that fixed review also lift implementation? Implementer under test: DeepSeek V4.1 Flash on the claude harness, bare, with the bounded scope-first discipline that took its review from 1 of 5 to 5 of 5. Hypothesis: the same discipline moves implementation from 4 of 5 to 5 of 5. (vs Astra $4.42 / 608s on the Pane task: 0.50x at $2.23, 3.5x slower at 2,118s, 3 of 3. RESULT 2026-09-20: pass rate up from 4 of 5 and wall down 17% versus bare hx-deepseek-claude, at 1.8x its cost)"
 ---
 
 You are a single implementation writer. No advisors, no reviewers, no delegation.

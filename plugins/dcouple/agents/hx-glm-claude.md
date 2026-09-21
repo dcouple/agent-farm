@@ -3,7 +3,7 @@ harness: claude
 model:
   name: z-ai/glm-5.3-flash
   reasoning: max
-description: "Harness control: GLM 5.3 Flash on the Claude Code harness. Paired with exp3-glm-flash on Codex to isolate harness effect from model effect. (vs Astra: 0.12x cost at $0.55 actual per-call billing over 5 runs, 4.8x slower, 5 of 5 tie; the $0.11 token estimate quoted earlier was wrong, its proxy log had null token fields)"
+description: "Hypothesis: The same harness question on a second model, to check the first was not a one-off. Harness control: GLM 5.3 Flash on the Claude Code harness. Paired with exp3-glm-flash on Codex to isolate harness effect from model effect. (vs Astra: 0.12x cost at $0.55 actual per-call billing over 5 runs, 4.8x slower, 5 of 5 tie; the $0.11 token estimate quoted earlier was wrong, its proxy log had null token fields)"
 skills:
   - simple-plan
   - create-plan

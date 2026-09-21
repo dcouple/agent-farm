@@ -13,7 +13,7 @@ skills:
   - codebase-explorer
   - researcher
   - research-web
-description: "Experiment: Frontier planning. Produces a decision-complete plan that any implementer profile can execute."
+description: "Hypothesis: Does a planning-only frontier profile produce a plan another model can execute? Experiment: Frontier planning. Produces a decision-complete plan that any implementer profile can execute."
 subagents:
   socrates:
     agent: astra-socrates

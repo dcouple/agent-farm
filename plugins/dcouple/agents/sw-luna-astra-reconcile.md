@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: xhigh
 skills: []
-description: "Hill-climb rung: Luna xhigh writes alone; Astra low reviews the finished diff once as final reviewer, Luna applies proven findings. Zero advisor calls. Tests whether a single end-of-task Astra turn buys anything over sw-luna-raw. (vs Astra alone 2.8M tokens: result pending)"
+description: "Hypothesis: Does a single end-of-task frontier review buy anything over the bare cheap writer? Hill-climb rung: Luna xhigh writes alone; Astra low reviews the finished diff once as final reviewer, Luna applies proven findings. Zero advisor calls. Tests whether a single end-of-task Astra turn buys anything over sw-luna-raw. (vs Astra alone 2.8M tokens: result pending)"
 subagents:
   final-reviewer:
     agent: sw-astra-final-reviewer-low

@@ -19,7 +19,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Experimental cross-harness: DeepSeek Flash orchestrates on Claude Code, Luna XHigh implements on Codex."
+description: "Hypothesis: The same split with the roles reversed. Experimental cross-harness: DeepSeek Flash orchestrates on Claude Code, Luna XHigh implements on Codex."
 subagents:
   socrates:
     agent: exp2-deepseek-flash-reviewer

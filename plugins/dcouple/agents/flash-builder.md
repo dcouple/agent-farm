@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: high
 skills: []
-description: "The astra_flash_builder role from ethanplusai/astra-flash-orchestrator, vendored verbatim: implements an Astra-approved task bundle, never orchestrates or self-approves. Native child of sw-astra-flash-repro."
+description: "Hypothesis: Vendored verbatim from the public package: does its worker role, unchanged, build what its orchestrator briefs? The astra_flash_builder role from ethanplusai/astra-flash-orchestrator, vendored verbatim: implements an Astra-approved task bundle, never orchestrates or self-approves. Native child of sw-astra-flash-repro."
 ---
 
 You are the implementation worker, not the orchestrator. Your model is selected

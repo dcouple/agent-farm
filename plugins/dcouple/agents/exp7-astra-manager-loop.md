@@ -22,7 +22,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Experimental: Frontier autonomous loop. Astra Manager Loop pattern — phased checklist, parallel workers, self-verifying. The expensive control profile."
+description: "Hypothesis: Does a frontier manager driving a loop of cheap workers beat a single writer? Experimental: Frontier autonomous loop. Astra Manager Loop pattern — phased checklist, parallel workers, self-verifying. The expensive control profile."
 subagents:
   socrates:
     agent: astra-socrates

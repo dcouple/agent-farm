@@ -8,7 +8,7 @@ skills:
   - implementation-reviewer
   - codebase-explorer
   - investigate
-description: "NEGATIVE-RESULT CONTROL, do not use for real work. Identical to the bare rv- reviewer except four review skills are loaded. Loading skills made every model worse or equal; DeepSeek went from 4 of 5 defects to 0 of 5 at eighteen times the cost. Kept so the comparison can be re-run. (vs Astra: 0.1x to 0.9x cost, slower, worse or equal on every model; DeepSeek fell from 4 of 5 bare to 0 of 5 skilled at 18x its bare cost)"
+description: "Hypothesis: Do review skills help a reviewer that is already good without them? NEGATIVE-RESULT CONTROL, do not use for real work. Identical to the bare rv- reviewer except four review skills are loaded. Loading skills made every model worse or equal; DeepSeek went from 4 of 5 defects to 0 of 5 at eighteen times the cost. Kept so the comparison can be re-run. (vs Astra: 0.1x to 0.9x cost, slower, worse or equal on every model; DeepSeek fell from 4 of 5 bare to 0 of 5 skilled at 18x its bare cost)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

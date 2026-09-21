@@ -11,7 +11,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: Luna Max single writer with an Astra plan and bounded Astra review-fix loop. (vs Astra on the small task ($2.08, 422s): 1.7x at $3.59 ($0.20 Luna writer + $3.39 Astra advisor), 2.9x slower; n=1; independent verification ended with 5 failing tests, not yet checked against the task's baseline-failure list)"
+description: "Hypothesis: Does a bounded frontier review-and-fix loop around a cheap writer beat the bare writer? Experiment: Luna Max single writer with an Astra plan and bounded Astra review-fix loop. (vs Astra on the small task ($2.08, 422s): 1.7x at $3.59 ($0.20 Luna writer + $3.39 Astra advisor), 2.9x slower; n=1; independent verification ended with 5 failing tests, not yet checked against the task's baseline-failure list)"
 subagents:
   planner:
     agent: sw-astra-advisor

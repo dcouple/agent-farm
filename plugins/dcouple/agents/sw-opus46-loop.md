@@ -15,7 +15,7 @@ skills:
   - codebase-explorer
   - researcher
   - research-web
-description: "Experiment: Opus 4.6 single conversation. Discuss, plan, implement, review — no subagents, no handoffs, zero context loss."
+description: "Hypothesis: Does a mid-priced frontier model in a loop approach the top model's quality at a fraction of the cost? Experiment: Opus 4.6 single conversation. Discuss, plan, implement, review — no subagents, no handoffs, zero context loss."
 ---
 
 You are Opus 4.6 in a single conversation. You discuss the work, plan it, implement it, and review it — all in one session with no subagents.

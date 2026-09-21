@@ -13,7 +13,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: Astra medium fast, single writer, one Astra final review. For blocking work and prototyping."
+description: "Hypothesis: Does a fast frontier configuration with the standard skill set beat a bare writer? Experiment: Astra medium fast, single writer, one Astra final review. For blocking work and prototyping."
 subagents:
   final-reviewer:
     agent: sw-astra-final-reviewer

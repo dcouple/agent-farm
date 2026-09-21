@@ -5,7 +5,7 @@ model:
   reasoning: xhigh
 skills:
   - bounded-advisor
-description: "Hill-climb rung: Luna xhigh writes with exactly ONE Astra-low call, the pre-final review; no plan check. Tests whether the plan checkpoint earns its tokens. (vs sw-luna-advised-bounded and Astra alone 2.8M tokens: result pending)"
+description: "Hypothesis: Does the plan checkpoint earn its tokens, or is the pre-final review the only one that matters? Hill-climb rung: Luna xhigh writes with exactly ONE Astra-low call, the pre-final review; no plan check. Tests whether the plan checkpoint earns its tokens. (vs sw-luna-advised-bounded and Astra alone 2.8M tokens: result pending)"
 subagents:
   final-reviewer:
     agent: sw-astra-final-reviewer-low

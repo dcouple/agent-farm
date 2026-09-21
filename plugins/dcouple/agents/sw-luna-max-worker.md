@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-5.6-luna
   reasoning: max
-description: "Implementation worker. Luna Max writes all code for an Astra orchestrator. (child of sw-astra-orch-luna; measured through its parent, not on its own)"
+description: "Hypothesis: Is a cheap worker under an orchestrator as good as the same model working alone? Implementation worker. Luna Max writes all code for an Astra orchestrator. (child of sw-astra-orch-luna; measured through its parent, not on its own)"
 skills:
   - implementer
 ---

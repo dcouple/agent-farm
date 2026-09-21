@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Fix-stage implementer: deepseek/deepseek-v4.1-flash on the claude harness, no skills, no subagents. Mirrors sw-luna-raw's shape so the harness is the only variable. (vs Astra fixer: 0.07x cost at $0.12 actual, 21x slower at 81 min, 11 files, output not scored; completed on relaunch after the first attempt died on disk exhaustion)"
+description: "Hypothesis: Can the cheapest model apply a findings list at all, and what does it cost? Fix-stage implementer: deepseek/deepseek-v4.1-flash on the claude harness, no skills, no subagents. Mirrors sw-luna-raw's shape so the harness is the only variable. (vs Astra fixer: 0.07x cost at $0.12 actual, 21x slower at 81 min, 11 files, output not scored; completed on relaunch after the first attempt died on disk exhaustion)"
 ---
 
 Implement the requested change. Keep it minimal and in the style of the surrounding code.

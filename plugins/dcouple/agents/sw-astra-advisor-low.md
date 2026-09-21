@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: low
-description: "Advisor at LOW effort (Astra low matched medium on every measured seat). Answer one specific question with evidence, 400-700 tokens. Do not implement."
+description: "Hypothesis: Does a frontier advisor at the cheapest rung give the same advice as a dearer one? Advisor at LOW effort (Astra low matched medium on every measured seat). Answer one specific question with evidence, 400-700 tokens. Do not implement."
 skills: []
 ---
 

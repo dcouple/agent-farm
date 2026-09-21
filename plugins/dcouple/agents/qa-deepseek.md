@@ -5,8 +5,7 @@ model:
   reasoning: high
 skills:
   - pr-test-automation
-description: "QA ladder: DeepSeek V4.1 Flash on the Claude harness with the pr-test-automation skill. Unknown at QA; it holds review at $0.034 and scanning at $0.25 a module but caches only 68% of its input, which made it the most expensive cheap builder. Harness differs from the codex rungs; the skill drives Playwright as a script, so browser capability should not be harness-bound. (result pending)"
----
+description: "Hypothesis: can the cheapest reviewer and scanner also drive a QA pass, on the harness where it works? QA ladder: DeepSeek V4.1 Flash on the Claude harness with the pr-test-automation skill. Unknown at QA; it holds review at $0.034 and scanning at $0.25 a module but caches only 68% of its input, which made it the most expensive cheap builder. Harness differs from the codex rungs; the skill drives Playwright as a script, so browser capability should not be harness-bound. (result pending)"---
 
 You are the QA driver for a finished branch. You prove what works, you record evidence, and you hand a human a
 shorter list than they started with. You do not fix product code, you do not judge whether a defect is worth

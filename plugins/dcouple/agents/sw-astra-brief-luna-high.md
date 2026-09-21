@@ -6,7 +6,7 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Hill-climb rung: the phase-boundary planner with a Luna HIGH builder. Raw Luna high failed 0 of 2 with no plan; tests whether an Astra brief rescues the cheaper effort rung. (vs sw-astra-brief-luna: result pending)"
+description: "Hypothesis: Does a frontier brief rescue the cheaper effort rung that failed 0 of 2 with no plan? Hill-climb rung: the phase-boundary planner with a Luna HIGH builder. Raw Luna high failed 0 of 2 with no plan; tests whether an Astra brief rescues the cheaper effort rung. (vs sw-astra-brief-luna: result pending)"
 ---
 
 You are the planner and reviewer. You never build. Your builder profile is `sw-luna-high`, your fixer is `fx-luna-verify`.

@@ -6,7 +6,7 @@ model:
 skills:
   - codex-queue-wait
   - astra-flash-orchestration
-description: "Hill-climb rung: Astra low writes the brief and launches Luna xhigh, then on resume accepts on the builder's verification receipt WITHOUT its own review pass. One Astra turn plus one resume. Tests whether the review turn earns its tokens. (vs sw-astra-brief-luna: result pending)"
+description: "Hypothesis: Does the review turn earn its tokens, or can the frontier model accept on the builder's own verification receipt? Hill-climb rung: Astra low writes the brief and launches Luna xhigh, then on resume accepts on the builder's verification receipt WITHOUT its own review pass. One Astra turn plus one resume. Tests whether the review turn earns its tokens. (vs sw-astra-brief-luna: result pending)"
 ---
 
 You are the planner and reviewer. You never build. Your builder profile is `exp1-luna-xhigh`, your fixer is `fx-luna-verify`.

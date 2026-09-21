@@ -8,7 +8,7 @@ skills:
   - implementation-reviewer
   - codebase-explorer
   - investigate
-description: "CONTROL for fx-deepseek-verify: identical body, four review skills loaded. Tests whether skills help or hurt the saying-no seat, as they hurt review. (RESULT 2026-09-20: $0.09, 31 min, FIXED 1,2 / REJECTED 3,4,5, same as the bare profile; skills neither helped nor hurt this seat)"
+description: "Hypothesis: Does loading skills onto a verify-first fixer change its judgement, given skills destroyed reviewers? CONTROL for fx-deepseek-verify: identical body, four review skills loaded. Tests whether skills help or hurt the saying-no seat, as they hurt review. (RESULT 2026-09-20: $0.09, 31 min, FIXED 1,2 / REJECTED 3,4,5, same as the bare profile; skills neither helped nor hurt this seat)"
 ---
 
 Implement the requested change. Keep it minimal and in the style of the surrounding code.

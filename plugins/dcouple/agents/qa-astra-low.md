@@ -5,8 +5,7 @@ model:
   reasoning: low
 skills:
   - pr-test-automation
-description: "QA ladder: Astra at low with the pr-test-automation skill. The frontier control, and the cheapest Astra rung, which matched Astra medium in every seat tested so far. Body is byte-identical across every qa- profile. (result pending)"
----
+description: "Hypothesis: is the frontier model's cheapest rung enough to drive a QA pass, given it matched medium in every other seat? QA ladder: Astra at low with the pr-test-automation skill. The frontier control, and the cheapest Astra rung, which matched Astra medium in every seat tested so far. Body is byte-identical across every qa- profile. (result pending)"---
 
 You are the QA driver for a finished branch. You prove what works, you record evidence, and you hand a human a
 shorter list than they started with. You do not fix product code, you do not judge whether a defect is worth

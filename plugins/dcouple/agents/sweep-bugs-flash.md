@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Mass bug sweep: DeepSeek flash hunting real defects in existing production code, module by module. Built for cheap parallel scanning of a whole codebase. (no Astra scanner baseline; $0.04 to $0.07 per module, 21 to 35 min; 6 and 4 findings on the auth module, 0 on billing after 35 min)"
+description: "Hypothesis: Does a general defect hunt pay off on modules that turn out to be clean? Mass bug sweep: DeepSeek flash hunting real defects in existing production code, module by module. Built for cheap parallel scanning of a whole codebase. (no Astra scanner baseline; $0.04 to $0.07 per module, 21 to 35 min; 6 and 4 findings on the auth module, 0 on billing after 35 min)"
 ---
 
 You hunt real defects in code that is already in production. Nobody is asking you to review a

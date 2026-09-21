@@ -19,7 +19,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Experimental: Pure GLM 5.3 Flash stack on Claude Code. Cheapest per-session ($0.03 avg), native multimodal for frontend."
+description: "Hypothesis: Same runtime question for the second outside model. Experimental: Pure GLM 5.3 Flash stack on Claude Code. Cheapest per-session ($0.03 avg), native multimodal for frontend."
 subagents:
   socrates:
     agent: exp3-glm-flash-reviewer

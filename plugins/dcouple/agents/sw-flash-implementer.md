@@ -11,7 +11,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: DeepSeek V4.1 Flash single writer with Astra advisor and final review. Same shape as luna-implementer, different model."
+description: "Hypothesis: Can the cheapest flash model implement a full feature unaided? Experiment: DeepSeek V4.1 Flash single writer with Astra advisor and final review. Same shape as luna-implementer, different model."
 subagents:
   advisor:
     agent: sw-astra-advisor

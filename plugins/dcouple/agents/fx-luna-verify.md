@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: xhigh
 skills: []
-description: "Fixer under test: Luna xhigh with the mandatory verify-then-REJECT instruction. sw-luna-raw accepted all three false findings; GLM and DeepSeek with this body rejected exactly the three, 4 of 4 runs. Hypothesis: the instruction moves Luna too. (RESULT 2026-09-20: FIXED 1,2 / REJECTED 3,4,5 with file:line, $0.27 at Luna rates, 12 min. Five of five cheap fixers with the verify body now match Astra's verdict; sw-luna-raw without it accepted all five)"
+description: "Hypothesis: Does the verify-first body also buy the 'no' from Luna, which without it accepted every false finding handed to it? Fixer under test: Luna xhigh with the mandatory verify-then-REJECT instruction. sw-luna-raw accepted all three false findings; GLM and DeepSeek with this body rejected exactly the three, 4 of 4 runs. Hypothesis: the instruction moves Luna too. (RESULT 2026-09-20: FIXED 1,2 / REJECTED 3,4,5 with file:line, $0.27 at Luna rates, 12 min. Five of five cheap fixers with the verify body now match Astra's verdict; sw-luna-raw without it accepted all five)"
 ---
 
 Implement the requested change. Keep it minimal and in the style of the surrounding code.

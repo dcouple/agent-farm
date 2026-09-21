@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: low
-description: "Final reviewer at LOW effort. One holistic review of the complete diff against the plan. Replaces parallel review lanes."
+description: "Hypothesis: Is the frontier model at its cheapest rung adequate as the last reviewer? Final reviewer at LOW effort. One holistic review of the complete diff against the plan. Replaces parallel review lanes."
 skills:
   - review
   - implementation-reviewer

@@ -11,7 +11,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: Luna Max single writer with test-first implementation and bounded Astra review-fix loop. (vs Astra on the small task ($2.08, 422s): 1.4x at $2.85 ($0.23 Luna writer + $2.62 Astra advisor), 3.1x slower; n=1; independent verification ended with 5 failing tests, not yet checked against the task's baseline-failure list)"
+description: "Hypothesis: Same loop driven by tests first: does the discipline change the answer? Experiment: Luna Max single writer with test-first implementation and bounded Astra review-fix loop. (vs Astra on the small task ($2.08, 422s): 1.4x at $2.85 ($0.23 Luna writer + $2.62 Astra advisor), 3.1x slower; n=1; independent verification ended with 5 failing tests, not yet checked against the task's baseline-failure list)"
 subagents:
   planner:
     agent: sw-astra-advisor

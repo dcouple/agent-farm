@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Implementer under test: GLM 5.3 Flash on the claude harness, bare, with the bounded scope-first discipline. GLM already passes 5 of 5 at $0.55; this tests whether the discipline changes cost or wall time. (RESULT 2026-09-20: 3 of 3, $0.42 / $0.61 / $0.98, 34 / 30 / 51 min. Bare hx-glm-claude was 5 of 5 at $0.55; the time-bounded body did not help GLM)"
+description: "Hypothesis: The same discipline on the cheapest passing implementer: does it help a model that already passes? Implementer under test: GLM 5.3 Flash on the claude harness, bare, with the bounded scope-first discipline. GLM already passes 5 of 5 at $0.55; this tests whether the discipline changes cost or wall time. (RESULT 2026-09-20: 3 of 3, $0.42 / $0.61 / $0.98, 34 / 30 / 51 min. Bare hx-glm-claude was 5 of 5 at $0.55; the time-bounded body did not help GLM)"
 ---
 
 You are a single implementation writer. No advisors, no reviewers, no delegation.

@@ -4,7 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
 skills: []
-description: "Hard-ticket arm under test: DeepSeek V4.1 Flash plans and writes an ambiguous ticket alone, with an explicit plan-first body that forces the scoping and idempotence checks the bare cheap arm missed. Hypothesis: reaches the structure a careful merger preferred without a frontier planner. (RESULT 2026-09-20: issue #364 alone, 58 min, 291 turns, 39 files, $2.88 at DeepSeek rates; all suites green by its own report; explicitly rejected the mobile-install signal (push tokens keyed by user and device) and added a test pinning it out of the catalog. Merger comparison pending)"
+description: "Hypothesis: Can a cheap model do the scoping a frontier planner does, if it is told to plan before it writes? Hard-ticket arm under test: DeepSeek V4.1 Flash plans and writes an ambiguous ticket alone, with an explicit plan-first body that forces the scoping and idempotence checks the bare cheap arm missed. Hypothesis: reaches the structure a careful merger preferred without a frontier planner. (RESULT 2026-09-20: issue #364 alone, 58 min, 291 turns, 39 files, $2.88 at DeepSeek rates; all suites green by its own report; explicitly rejected the mobile-install signal (push tokens keyed by user and device) and added a test pinning it out of the catalog. Merger comparison pending)"
 ---
 
 You are the only agent on this ticket: you plan it and you write it. No advisors, no reviewers, no

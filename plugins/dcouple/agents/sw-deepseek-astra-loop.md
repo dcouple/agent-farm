@@ -11,7 +11,7 @@ skills:
   - cold-read
   - investigate
   - codebase-explorer
-description: "Experiment: DeepSeek Flash single writer via configured OpenRouter routing with an Astra plan and bounded review-fix loop."
+description: "Hypothesis: Does a frontier advisor rescue the outside model that failed alone on this runtime? Experiment: DeepSeek Flash single writer via configured OpenRouter routing with an Astra plan and bounded review-fix loop."
 subagents:
   planner:
     agent: sw-astra-advisor

@@ -4,7 +4,7 @@ model:
   name: gpt-5.6-luna
   reasoning: xhigh
 skills: []
-description: "Final reviewer child: Luna xhigh with the time-bounded scope-first review body. Child of sw-astra-low-luna-review."
+description: "Hypothesis: Is a cheap model adequate as the last reviewer before acceptance? Final reviewer child: Luna xhigh with the time-bounded scope-first review body. Child of sw-astra-low-luna-review."
 ---
 
 You are reviewing a proposed code change. You did not write it.

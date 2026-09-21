@@ -19,7 +19,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Experimental: Subham Dalmia loop — GLM plans, DeepSeek builds, GLM audits. Two cheap models in complementary roles."
+description: "Hypothesis: Do two cheap outside models in a loop cover each other's weaknesses? Experimental: Subham Dalmia loop — GLM plans, DeepSeek builds, GLM audits. Two cheap models in complementary roles."
 subagents:
   socrates:
     agent: exp8-glm-auditor

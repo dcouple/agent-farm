@@ -3,7 +3,7 @@ harness: claude
 model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: max
-description: "Harness control: DeepSeek V4.1 Flash on the Claude Code harness. Paired with exp2-deepseek-flash on Codex to isolate harness effect from model effect. (vs Astra: 0.28x cost at $1.24 actual per-call billing ($1.29 repriced from tokens), 4.2x slower, 4 of 5 vs 3 of 3; the codex version of the same model went 0 of 3)"
+description: "Hypothesis: Is a model's score a property of the model or of the runtime around it? Harness control: DeepSeek V4.1 Flash on the Claude Code harness. Paired with exp2-deepseek-flash on Codex to isolate harness effect from model effect. (vs Astra: 0.28x cost at $1.24 actual per-call billing ($1.29 repriced from tokens), 4.2x slower, 4 of 5 vs 3 of 3; the codex version of the same model went 0 of 3)"
 skills:
   - simple-plan
   - create-plan

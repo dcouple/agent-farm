@@ -19,7 +19,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Experimental: Pure DeepSeek V4.1 Flash stack on Claude Code. Highest bench scores among cheap models. (RESULT 2026-09-20 retry: invalid after 2 h and 21M context tokens with exit 0 and no edit (silent early stop); the earlier 0 of 3 were 180-minute timeouts with a first edit at 2.6 h. DeepSeek on the codex harness fails on merit; on the Claude harness the same model passes 4 of 5)"
+description: "Hypothesis: Does a cheap outside model work on the runtime built around a different model family? Experimental: Pure DeepSeek V4.1 Flash stack on Claude Code. Highest bench scores among cheap models. (RESULT 2026-09-20 retry: invalid after 2 h and 21M context tokens with exit 0 and no edit (silent early stop); the earlier 0 of 3 were 180-minute timeouts with a first edit at 2.6 h. DeepSeek on the codex harness fails on merit; on the Claude harness the same model passes 4 of 5)"
 subagents:
   socrates:
     agent: exp2-deepseek-flash-reviewer

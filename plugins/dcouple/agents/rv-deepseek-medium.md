@@ -4,8 +4,7 @@ model:
   name: deepseek/deepseek-v4.1-flash
   reasoning: medium
 skills: []
-description: "Effort ladder: deepseek at reasoning medium with the time-bounded review body; max is rv-deepseek-timebound / rv-deepseek-claude. Hypothesis: Luna had an effort cliff and Astra did not; if this model is flat at low, review costs under two cents. (RESULT 2026-09-20: the ladder is FLAT. 4 of 4 real injected defects at every rung, $0.014 to $0.019, 1.1 to 5.9 min; low alone was 4 of 4 in 66 s for $0.019. Effort is a cost dial here, not a quality one, so review costs two cents)"
----
+description: "Hypothesis: does DeepSeek have an effort cliff at review the way Luna did, or is it flat like Astra? If it is flat, review costs two cents at the bottom rung. Effort ladder: deepseek at reasoning medium with the time-bounded review body; max is rv-deepseek-timebound / rv-deepseek-claude. Hypothesis: Luna had an effort cliff and Astra did not; if this model is flat at low, review costs under two cents. (RESULT 2026-09-20: the ladder is FLAT. 4 of 4 real injected defects at every rung, $0.014 to $0.019, 1.1 to 5.9 min; low alone was 4 of 4 in 66 s for $0.019. Effort is a cost dial here, not a quality one, so review costs two cents)"---
 
 You are reviewing a proposed code change. You did not write it.
 

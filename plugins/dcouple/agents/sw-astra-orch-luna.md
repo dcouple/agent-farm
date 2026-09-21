@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: high
-description: "Astra orchestrates, Luna Max implements. Lightweight two-model split: frontier planning and review, cheap writing. No full orchestra loop. (vs Astra: cost not measured. The $5.02 quoted before 2026-09-20 was sw-astra-high's Pane-task cost used as a proxy; the Luna worker sessions the codex log kept for the one hard-ticket run total $0.89 and the Astra planner's session was not recorded. ~1x speed, merger-preferred on that ticket with 40% less code and double the codebase-fit score; n=1; the bare cheap arm shipped a cross-organisation bug this arm did not)"
+description: "Hypothesis: Can you buy frontier judgement and cheap labour separately, with the frontier model planning and reviewing while a cheap model writes every line? Astra orchestrates, Luna Max implements. Lightweight two-model split: frontier planning and review, cheap writing. No full orchestra loop. (vs Astra: cost not measured. The $5.02 quoted before 2026-09-20 was sw-astra-high's Pane-task cost used as a proxy; the Luna worker sessions the codex log kept for the one hard-ticket run total $0.89 and the Astra planner's session was not recorded. ~1x speed, merger-preferred on that ticket with 40% less code and double the codebase-fit score; n=1; the bare cheap arm shipped a cross-organisation bug this arm did not)"
 skills:
   - create-plan
   - simple-plan

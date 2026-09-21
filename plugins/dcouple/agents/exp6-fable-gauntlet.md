@@ -19,7 +19,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: "Experimental: Fable 5.1 Gauntlet Loop — fan-out sub-agents, harsh critic, blind quality compare, loop until quality bar met. The most expensive autonomous profile."
+description: "Hypothesis: Does the most elaborate scaffolding available produce the best implementation? Experimental: Fable 5.1 Gauntlet Loop — fan-out sub-agents, harsh critic, blind quality compare, loop until quality bar met. The most expensive autonomous profile."
 subagents:
   socrates:
     agent: exp6-fable-critic

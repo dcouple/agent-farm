@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Reviewer under test: GLM 5.3 Flash with rv-deepseek-claude's exact time-bounded, scope-first body. GLM only ever ran the narrower staleness lens (3 of 5). Hypothesis: the instruction, not the model, produced DeepSeek's 5 of 5. (vs Astra generic review $1.18, 1 of 5: 0.02x at $0.017 to $0.031, 4 to 6 min, 4 of 4 real injections in 3 of 3 runs. RESULT: the instruction, not the model, produced the 5 of 5)"
+description: "Hypothesis: Does the body that took DeepSeek to 5 of 5 transfer to GLM, making the two cheapest models interchangeable reviewers? Reviewer under test: GLM 5.3 Flash with rv-deepseek-claude's exact time-bounded, scope-first body. GLM only ever ran the narrower staleness lens (3 of 5). Hypothesis: the instruction, not the model, produced DeepSeek's 5 of 5. (vs Astra generic review $1.18, 1 of 5: 0.02x at $0.017 to $0.031, 4 to 6 min, 4 of 4 real injections in 3 of 3 runs. RESULT: the instruction, not the model, produced the 5 of 5)"
 ---
 
 You are reviewing a proposed code change. You did not write it.

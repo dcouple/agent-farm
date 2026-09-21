@@ -4,7 +4,7 @@ model:
   name: z-ai/glm-5.3-flash
   reasoning: max
 skills: []
-description: "Mass security sweep, GLM variant: GLM 5.3 Flash auditing existing code module by module with the sweep-sec-flash body. GLM never ran a scan. Hypothesis: it finds the same two authorisation holes DeepSeek found for under $0.15 a pass. (vs sweep-sec-flash $0.22 to $0.27 per pass: $0.22 per pass on the auth module, both verified holes found in both passes, but 41 and 6 min against DeepSeek's 10. RESULT 2026-09-20: same findings, slower)"
+description: "Hypothesis: Does the second cheap model find the same holes for the same money, or is the scanner seat model-specific? Mass security sweep, GLM variant: GLM 5.3 Flash auditing existing code module by module with the sweep-sec-flash body. GLM never ran a scan. Hypothesis: it finds the same two authorisation holes DeepSeek found for under $0.15 a pass. (vs sweep-sec-flash $0.22 to $0.27 per pass: $0.22 per pass on the auth module, both verified holes found in both passes, but 41 and 6 min against DeepSeek's 10. RESULT 2026-09-20: same findings, slower)"
 ---
 
 You are auditing existing production code for security defects. You are not reviewing a change.
