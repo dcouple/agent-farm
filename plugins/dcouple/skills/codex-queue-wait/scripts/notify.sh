@@ -6,12 +6,19 @@
 # TIMEOUT_MIN (default 180) sends a timeout message instead.
 set -u
 DIR="$1"; N="$2"; THREAD="$3"; MSG="${4:-All $N lanes have written receipts under $DIR. Check them once and continue.}"
+PROFILE="${5:-}"
 DEADLINE=$(( $(date +%s) + ${TIMEOUT_MIN:-180}*60 ))
+TIMED_OUT=0
+# On timeout the parent is woken through the SAME path as on completion (pinned model, right runtime, right cwd).
+# Measured 2026-09-21: the old timeout branch read $PROFILE before it was assigned, so every exec-mode parent
+# whose lane overran TIMEOUT_MIN got a `codex queue` call that fails with "no rollout found" and was never woken.
 until [ "$(ls "$DIR"/*/meta.json 2>/dev/null | wc -l | tr -d ' ')" -ge "$N" ]; do
-  [ "$(date +%s)" -ge "$DEADLINE" ] && { ${PROFILE:+agent-farm run "$PROFILE" --exec -- exec resume "$THREAD" --message} ${PROFILE:-codex queue --thread "$THREAD" --message} "Waiter timed out after ${TIMEOUT_MIN:-180} min: $(ls "$DIR"/*/meta.json 2>/dev/null | wc -l | tr -d ' ') of $N receipts under $DIR. Decide once: reconcile what exists or stop."; exit 2; }
+  if [ "$(date +%s)" -ge "$DEADLINE" ]; then
+    MSG="Waiter timed out after ${TIMEOUT_MIN:-180} min: $(ls "$DIR"/*/meta.json 2>/dev/null | wc -l | tr -d ' ') of $N receipts under $DIR. Decide once: reconcile what exists, wait again with a longer budget, or stop."
+    TIMED_OUT=1; break
+  fi
   sleep 15
 done
-PROFILE="${5:-}"
 if [ -n "$PROFILE" ]; then
   # exec-mode parent: the process ended with its turn; resume the same thread with the message.
   #
@@ -43,3 +50,5 @@ if [ -n "$PROFILE" ]; then
 else
   codex queue --thread "$THREAD" --message "$MSG"
 fi
+[ "$TIMED_OUT" = 1 ] && exit 2
+exit 0

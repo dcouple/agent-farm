@@ -58,8 +58,11 @@ message into an existing thread, and the thread resumes when it arrives.
 ## Rules
 
 - One message per completion event. The waiter queues exactly one message; do not ask it for progress.
-- Respect timeouts: give the waiter a deadline (`TIMEOUT_MIN`, default 180); on expiry it queues a
-  "timed out" message and you decide, once.
+- Respect timeouts: give the waiter a deadline (`TIMEOUT_MIN`, default 180); on expiry it wakes you with a
+  "timed out" message and you decide, once. The timeout wakes the parent through the same path as completion
+  (pinned model, the parent's own runtime and cwd); a builder that overruns its budget is a decision, not a lost
+  thread. Set the deadline above the lane's own budget: a 45-minute build with a 50-minute waiter timed out two
+  minutes before its receipt on 2026-09-21.
 - Children get self-contained packets, never your thread. The waiter wakes you; it does not carry
   context.
 - This skill does the waiting. Your job on resume is judgement: reconcile, verify, accept or reject.
