@@ -65,7 +65,7 @@ checksums:
   agents/qa-deepseek.md: 58dc8e3b96165dd0a8202910d071898771d509add632a502f35b8ba79e501bb3
   agents/qa-glm.md: 9f404b4f1fe4e05b079b2360f4cdd2c1dc7dc2939f888baf0064e90cf395fac8
   agents/qa-gpt55-medium.md: 600af84aa94a465e55c4f2f09d9b816b39be612bfc2fce25ed54ab383925041d
-  agents/qa-luna-xhigh.md: 4e2e5dbaa8cac6728cb6d2d593b6c8e769b9ebbfac21ff6ef0e3000927cd6e00
+  agents/qa-luna-xhigh.md: 5ca2840dfaa97306d98fa4627bb7804630889f5ffbbfd85cf9362ff0a68995a8
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
   agents/refactor.md: c0207fd6f06470bedb6d2cc4248c24490c8de1bd52d3a766dd2df009e2c231ba
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
