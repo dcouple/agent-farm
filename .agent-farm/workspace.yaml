@@ -1,33 +1,31 @@
 name: agent-farm
-telemetry:
-  enabled: true
-  capture_content: false
 instructions: |
-  Use gh for GitHub tasks.
+  Use gh for GitHub tasks, over HTTPS.
 
-  Artifacts use the Grain CLI (`grain`, formerly Morph) through the `grain`
-  connection below. Grain is this project's standing artifact destination:
-  organization YA8g3DZBN8j8x0l8Oq7Gb (DCouple), folder "Development Artifacts/DCouple/agent-farm".
-  Pass the organization and folder explicitly to discovery and creation tools.
+  Documents written for a person are published to Grain as well as saved locally.
+  Grain destination: organization YA8g3DZBN8j8x0l8Oq7Gb (DCouple),
+  folder Development Artifacts/DCouple/agent-farm. Pass the organization
+  explicitly on every Grain call.
 
-  Treat docs=grain as the default for every bundle. tmp/greenfield/ is only the
-  local working copy; a bundle that exists only there is not delivered.
-  Publish bundles to one private Grain artifact per task unless told otherwise.
-  Use multi-file checkout/push, preserve relative paths and bundle.json's published
-  identity, and include evidence/telemetry/. Verify uploads; report failures.
-
-  Export only this work's sessions (descendants are included):
-    agent-farm telemetry export --bundle <dir> --session current
-  Set AGENT_FARM_ARTIFACT_BUNDLE=<absolute-dir> before launching workers.
-  After they exit, the parent exports with --require-finished and republishes
-  the same artifact. A running session is only a snapshot; local export is not upload.
-  Conversation capture/export requires explicit permission.
-
+  The local bundle under tmp/greenfield/<slug>/ stays the working copy. Publish
+  each bundle to one private Grain workspace (html template) named after the
+  bundle's title. One bundle maps to one workspace: if bundle.json has a
+  published.id, check out and push to that workspace, and never create a second.
+  Keep the bundle's layout and relative links unchanged inside the workspace:
+  index.html, options.html, cover-sheet.html, explainers/, mockups/, evidence/,
+  bundle.json.
+  After the first publish, set bundle.json "destination" to "grain" and record
+  under "published" the kind "grain", the workspace id, its open URL, the
+  organization, and the folder. Push again after every revision of a page.
+  Verify each push (a revision was recorded and the workspace is listed in the
+  folder) and report failures plainly. A local save is not a publish.
+  Keep workspaces private. Share only when the person asks.
 connections:
   grain:
     description: |
-      Grain CLI MCP server (formerly Morph). Manage DCouple artifacts in organization
-      YA8g3DZBN8j8x0l8Oq7Gb; pass it explicitly to discovery and creation tools.
+      Publish and update Agent Farm documents. Use organization
+      YA8g3DZBN8j8x0l8Oq7Gb (DCouple), passing it explicitly to discovery and
+      creation tools.
     type: mcp
     command: grain
     args: [mcp]
