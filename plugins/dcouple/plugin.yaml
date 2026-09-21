@@ -244,7 +244,7 @@ checksums:
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
   skills/bounded-advisor/SKILL.md: 1cfbfd285323cc833d8414bf52e9f49736425f4be6005b96e7b46ea30f544197
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
-  skills/codex-queue-wait/SKILL.md: d97bdc088651da1faf49c3368ad5d224d547285bf7f005247cb7aa6e847d3735
+  skills/codex-queue-wait/SKILL.md: 8e2c48e4097ed23e6599bdf76add1620e140855b5d139774ca8c5b360b75a259
   skills/codex-queue-wait/scripts/notify.sh: 72b1e25ace739b5ed5a20c8fc6f772d2ffdc5e51ef04e5501759bbfc56582ad1
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/SKILL.md: d449b2f3cc05848ce6e8a03337112b8452a12b22df1ce91aa54c563377bf3285
