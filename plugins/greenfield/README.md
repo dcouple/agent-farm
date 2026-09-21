@@ -17,12 +17,12 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `brief` | planner | Capture the problem and the outcome wanted. File the issue |
 | `options` | planner | Argue alternatives and wait for a pick |
 | `spike` | planner | Answer one fact that blocks a decision |
-| `plan` | planner | Cover sheet, PLAN.md, work packages, handoff cards |
+| `plan` | planner, one-shot (format only) | Cover sheet, PLAN.md, work packages, handoff cards |
 | `mockup` | planner | Three interface options per round. The approved one becomes the design reference |
-| `page` | planner, orchestrator | House standard for every HTML page written for a person |
+| `page` | planner, orchestrator, one-shot | House standard for every HTML page written for a person |
 | `bug-intake` | bug-reporter | Reproduce, rank hypotheses, write the report, choose a route |
 | `work-packages` | implementer | The cycle up to the pull request: intake, preflight, who builds each package, verification |
-| `final-review` | implementer, one-shot | One independent reviewer once (two for a dual review), one fix round, one follow-up, clean-up. Stops failed instead of looping |
+| `final-review` | implementer | One independent reviewer once (two for a dual review), one fix round, one follow-up, clean-up. Stops failed instead of looping |
 | `build-package` | implementer, worker | Implement one package from its handoff card |
 | `open-pr` | implementer, one-shot | Commit, push, and open a draft pull request that teaches the change |
 | `verify-app` | qa | Drive the running application and return a verdict with evidence |
@@ -43,7 +43,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `bug-reporter` | Codex, Sol high | Reproduce, write the report, choose a route | The report is filed. No fix is proposed |
 | `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa once, one independent reviewer once (two when the plan says `Review: dual`), clean up, open a draft PR | Checks pass and review is clean. Or `blocked` (something needed is missing), or `failed` (could not reach a verified, reviewed state). It never loops |
 | `implementer-fast` | Codex, Astra medium, fast tier | A profile preset, not a second agent: `implementer` with a saved model override and `priority: speed` | Same |
-| `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model builds the whole thing its own way: no packages, no workers, no preflight. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Then the same draft pull request and final review as `implementer`. `--arg review=none`, or telling it so, skips the review | Review is accepted and clean-up is done. Or `blocked`, or `failed` |
+| `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model does whatever the work needs, its own way: no packages, no workers, no preflight, no reviewers. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Its skills (`plan`, `page`, `open-pr`) are there for their formats only, so plans, pages, and pull requests come out in the house form and publish to the `docs` destination | The work is done and a draft pull request is open. Or `blocked`, or `failed` |
 | `free-range` | Codex, Astra medium | The raw model. No skills, no pipeline. Also the control when measuring whether skills help | You say so |
 | `free-range-claude` | Claude, Fable 5.1 high | Same, on Claude | You say so |
 | `orchestrator` | Claude, Fable 5.1 medium | Launch the profiles above across worktrees, poll status files, relay questions, keep one status board. Writes no code | The run summary is written |
@@ -70,7 +70,7 @@ agent-farm run planner --config-root /path/to/agent-farm/plugins/greenfield --di
 
 ## Launch arguments
 
-`planner` and `orchestrator` declare `docs`, where documents are published. `implementer` declares `priority` (`usage`, `speed`), `review` (`none`, `single`, `dual`), `parent` (a status file path), and `source`. `bug-reporter` declares `parent` and `source`. Agent Farm rejects anything else and lists what is accepted. The values reach the agent as a `LAUNCH CONTEXT` block at the end of its instructions, which `instructions/standing-rules.md` explains how to read. They are requests to the model, not switches: `review=none` asks the implementer not to call the reviewers, it does not unbind them. `single` is the default, and a plan whose header says `Review: dual` still gets two reviewers.
+`planner`, `orchestrator`, and `one-shot` declare `docs`, where documents are published. `implementer` declares `priority` (`usage`, `speed`), `review` (`none`, `single`, `dual`), `parent` (a status file path), and `source`. `bug-reporter` declares `parent` and `source`. Agent Farm rejects anything else and lists what is accepted. The values reach the agent as a `LAUNCH CONTEXT` block at the end of its instructions, which `instructions/standing-rules.md` explains how to read. They are requests to the model, not switches: `review=none` asks the implementer not to call the reviewers, it does not unbind them. `single` is the default, and a plan whose header says `Review: dual` still gets two reviewers.
 
 `--model`, `--reasoning`, and `--speed` override the entry agent's model for one launch, which is how to A/B a different lead on the same plan:
 
@@ -93,10 +93,10 @@ Children are not profiles. Each fires at one defined moment.
 | `worker` | implementer | A package the plan marks `economy` | Luna max |
 | `advisor` | implementer, orchestrator | The caller is stuck, about to deviate, or about to declare risky work done | Astra high |
 | `qa` | implementer, bug-reporter | Once after the last package when the plan has journey or visual checks. Also to reproduce bugs that need the running app | Sol medium |
-| `reviewer` | implementer, one-shot | Once, when the feature is supposed to be finished. On the other vendor's model, bound as a process child on Claude | Fable 5.1 high. Astra high is the agent file's own default |
-| `second-reviewer` | implementer, one-shot | Same moment, independently, only for a dual review: the plan says `Review: dual` or the launch says `review=dual`. The same `reviewer` agent file as a native child. Also stands in when `reviewer` cannot launch | Astra high |
+| `reviewer` | implementer | Once, when the feature is supposed to be finished. On the other vendor's model, bound as a process child on Claude | Fable 5.1 high. Astra high is the agent file's own default |
+| `second-reviewer` | implementer | Same moment, independently, only for a dual review: the plan says `Review: dual` or the launch says `review=dual`. The same `reviewer` agent file as a native child. Also stands in when `reviewer` cannot launch | Astra high |
 
-The planner's evidence and review children reuse the shared agent files with a model override on the binding, so they run natively on Claude. Four bindings cross harnesses and run as separate headless processes: the planner's `mockup-artist` and `implementer`, the `reviewer` of `implementer` and `one-shot`, and the orchestrator's `advisor`.
+The planner's evidence and review children reuse the shared agent files with a model override on the binding, so they run natively on Claude. Four bindings cross harnesses and run as separate headless processes: the planner's `mockup-artist` and `implementer`, the `reviewer` of `implementer`, and the orchestrator's `advisor`.
 
 ## Where instructions live
 
@@ -160,7 +160,7 @@ Flow: explainer, brief, options (with spikes as needed), the person picks, plan,
 
 **The implementer decides when a child is worth calling.** Its instructions say when each child is allowed, not when it is required. `priority` (`usage` or `speed`) tells it what the run values when the two conflict, and it weighs a handoff's cost itself. `implementer-fast` is the same agent on a faster model with `priority: speed`.
 
-**No plan.** For a trivial task (contained, reversible, no product or design choice) the planner may hand one sentence straight to the implementer, after you say yes. The implementer runs headless and opens a draft pull request labelled `no-plan`, with "No plan was written for this change." as its first line. The same label applies to any task you give `implementer` or `one-shot` without a plan. Review still runs unless the change is low-risk.
+**No plan.** For a trivial task (contained, reversible, no product or design choice) the planner may hand one sentence straight to the implementer, after you say yes. The implementer runs headless and opens a draft pull request labelled `no-plan`, with "No plan was written for this change." as its first line. The same label applies to any task you give `implementer` or `one-shot` without a plan. Under `implementer`, review still runs unless the change is low-risk.
 
 ## Headless runs and the orchestrator
 
@@ -179,7 +179,7 @@ A headless profile logs small choices as assumptions, and stops with `state: blo
 Run the same plan through each and compare cost, wall-clock time, must-fix findings from the same reviewer, and human minutes to merge:
 
 - `free-range`: the raw model, as the control
-- `one-shot`: one frontier model on the fast tier builds it all, then the same review, to measure what packages and workers add
+- `one-shot`: one frontier model on the fast tier builds it all, with the house formats and no review, to measure what packages, workers, and review add
 - `implementer`: standard lead with economy workers
 - `implementer-fast`: frontier lead on the fast tier
 - `astra-implementer-high`: the earlier design, a frontier orchestrator with economy workers and economy reviewers
