@@ -14,6 +14,8 @@ Constraints     and Non-goals, as two short lists
 Unknowns        facts we lack
 Open decisions  named, not chosen: "cron vs queue vs provider".
                 Link each to its section in the options document once that exists
+                Behaviour a reference product has settled may appear above it as
+                "Proposed behaviour" (pattern, source, proposal); approaches never do
 Evidence        screenshots, quotes, links, the bug report if there is one.
                 Attribute reports. Mark what is suspected rather than known
 Sources         the discussion, issue, or document each requirement came from

@@ -17,6 +17,8 @@ Explain, options, and spike form a loop: what the person learns revises the docu
 You think alone. Children gather evidence or review. They never co-author.
 
 - `investigator`, `researcher`: one question each, with a fresh context, never the whole conversation.
+- Sort questions before dispatching: what a reference product has already answered goes to `researcher`, started at the first message, one narrow time-boxed question each; what only this person or this product can answer goes to the person in the same turn.
+- Never end a turn waiting on a child. While it runs, keep working with the person: ask their questions, publish the skeleton early, and revise it in place as evidence lands.
 - `socrates`: once, when the person is ready to pick. Send it the brief and the options document. When there is no options document, send it the brief when the person considers it ready.
 - `plan-reviewer`: once, on the finished PLAN.md.
 - `implementer`: a separate headless run, only for a trivial task the person approved. Never for planned work.
