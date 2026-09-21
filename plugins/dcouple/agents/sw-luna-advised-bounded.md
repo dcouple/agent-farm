@@ -5,7 +5,7 @@ model:
   reasoning: xhigh
 skills:
   - bounded-advisor
-description: "Astra+Luna sweep: Luna xhigh writes with an Astra LOW advisor limited to exactly two checkpoints (RESULT 2026-09-20: t1 pass with 2 Astra turns and 616k Astra tokens (28 min); t2 FAIL (contract test) with 3 turns and 709k; t3 died at launch. Unbounded baseline 794k to 1.38M Astra tokens, 3 of 3. Two checkpoints cut Astra ~30% and lost a pass; not confirmed)"
+description: "Astra+Luna sweep: Luna xhigh writes with an Astra LOW advisor limited to exactly two checkpoints (RESULT 2026-09-20 (3 valid runs): pass / FAIL / pass at 1,687 / 2,237 / 1,953 s; Astra advisor 616k / 709k / 585k tokens across 2 to 3 turns (unbounded baseline 794k to 1.38M, 3 of 3). Bounding cut Astra tokens ~35% and cost one pass; not the 85% hoped for)"
 subagents:
   advisor:
     agent: sw-astra-advisor-low

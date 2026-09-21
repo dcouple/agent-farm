@@ -113,7 +113,7 @@ checksums:
   agents/sw-flash-implementer.md: 7ef7803fac64daf5fb49e22ef991566aac04e3f275f7aa78588168531c419cdf
   agents/sw-frontier-planner.md: 468fd01a9ef16e5894538f210cf2e613f60d03bf23d0a120c7a1498c2b9180dd
   agents/sw-luna-advised-1call.md: 0166c007dc2af5b70d9afbada307d16af02125aaaaf8851dc4e556abeb923e46
-  agents/sw-luna-advised-bounded.md: b6156fae9d70d25a8404d599c607b44bbe2d111f81984b0b8f3b1944b1ac874a
+  agents/sw-luna-advised-bounded.md: c2094ac021327e57338d9f276da851ef5d0ca6c1759864de41e1a606ebec338a
   agents/sw-luna-astra-loop.md: 42baa6070223382ec05a3f7f6387097eb515d90958a3b6dc09b751c937281d77
   agents/sw-luna-astra-reconcile.md: 58b634d390b5954c3f8a2373702d10590dd6bcca2f94c3b7cc7933656732239a
   agents/sw-luna-final-reviewer.md: a4bc8cf0609a581a29649f5ea5cf044f566c2f858da958c05ba843f18ad34623
