@@ -20,7 +20,7 @@ if [ -n "$PROFILE" ]; then
   ROLL=$(grep -l "\"id\":\"$THREAD\"" "$HOME"/.cache/agent-farm/native-proof/*/sessions/*/*/*/*.jsonl 2>/dev/null | head -1)
   if [ -n "$ROLL" ]; then
     RT="${ROLL%%/sessions/*}"; PCWD=$(head -c 2000 "$ROLL" | python3 -c 'import sys,json,re; m=re.search(r"\"cwd\":\"([^\"]+)\"",sys.stdin.read()); print(m.group(1) if m else ".")')
-    ( cd "$PCWD" && CODEX_HOME="$RT" codex exec resume "$THREAD" --json "$MSG" < /dev/null ) > "$DIR/parent-resume.json" 2> "$DIR/parent-resume.err"
+    ( cd "$PCWD" && CODEX_HOME="$RT" codex exec resume "$THREAD" --yolo --skip-git-repo-check --json "$MSG" < /dev/null ) > "$DIR/parent-resume.json" 2> "$DIR/parent-resume.err"
   else
     agent-farm run "$PROFILE" --exec --message "$MSG" -- exec resume "$THREAD" > "$DIR/parent-resume.json" 2> "$DIR/parent-resume.err"
   fi
