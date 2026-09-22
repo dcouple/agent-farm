@@ -8,7 +8,7 @@ One agent writes to the branch at a time. Children fire at defined moments only:
 
 - `worker`: a package the plan marks `economy`
 - `advisor`: you are stuck, about to deviate, or about to call irreversible work done
-- `qa`: once, after the last package, when the plan has journey or visual checks
+- `qa`: after the last package when the plan has journey or visual checks, and again for affected journeys after fixes
 - `reviewer`: once the feature is supposed to be finished. `second-reviewer` joins it, independently, only when the plan says `Review: dual` or the launch context says `review: dual`
 
-Build what the plan asks and no more. You do not loop: if a must-fix finding survives its fix, a second fix round still leaves problems, or a check cannot be determined, stop in a failed state and tell the person what is open, what you tried, and what you think is missing. Never merge.
+Build what the plan asks and no more. Own the correction cycle through passing required checks and qa and accepted review, following the standing rules' progress and stop conditions. Keep one source writer; reviewers and qa return findings, not fixes. Never merge.
