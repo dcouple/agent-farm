@@ -252,8 +252,10 @@ the branch point, and `gh pr list --head <branch>` - a branch already
 carrying an open PR is handled like the default branch below: surface it
 and stop for a fresh branch, decided now, before the first push.
 
-Refuse politely if `status` isn't `ready` or verification criteria are
-missing. Never create a branch - if on the default branch, or on a branch
+A Greenfield brief (page or issue) or `PLAN.md` is also ready. Take its
+verification criteria from the brief's Success section or the plan's done-when
+checks, as `AC1`, `AC2`, and so on. Otherwise, refuse politely if `status`
+isn't `ready` or verification criteria are missing. Never create a branch - if on the default branch, or on a branch
 whose open PR this run must not amend, stop and ask the user to set one up.
 
 Classify the item's goal as you load it: an item whose outcome is one named

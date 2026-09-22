@@ -15,7 +15,9 @@ Both variants also get Agent Farm's `babysit-pr`, `tdd`, `codebase-design`, copi
 Both variants select `references: orchestra`, which holds orchestra's `references/` folder, its Claude agent files under `claude-agents/`, and `templates/`.
 Skills cite `.references/<path>`; Agent Farm maps that to the bundled folder at launch.
 
-Text is copied unchanged except for 4 patches listed in the vendor script:
+Text is copied unchanged except for 6 patches listed in the vendor script:
+- `skills/do/SKILL.md`: do accepts a Greenfield brief or PLAN.md instead of refusing it.
+- `skills/codex-do/SKILL.md`: codex-do accepts a Greenfield brief or PLAN.md instead of refusing it.
 - `skills/codex/SKILL.md`: codex dispatch resolves orchestra paths through the bundled references.
 - `skills/do/SKILL.md`: /do browser preflight detects a daemon or local run; a local run without a browser records a note instead of stopping.
 - `skills/do/SKILL.md`: /do Step 5 accepts local run and attempt ids.

@@ -61,6 +61,27 @@ const EXTRA_SKILLS=[
 
 const PATCHES=[
  {
+  why:'do accepts a Greenfield brief or PLAN.md instead of refusing it',
+  file:'skills/do/SKILL.md',
+  from:`Refuse politely if \`status\` isn't \`ready\` or verification criteria are
+missing.`,
+  to:`A Greenfield brief (page or issue) or \`PLAN.md\` is also ready. Take its
+verification criteria from the brief's Success section or the plan's done-when
+checks, as \`AC1\`, \`AC2\`, and so on. Otherwise, refuse politely if \`status\`
+isn't \`ready\` or verification criteria are missing.`,
+ },
+ {
+  why:'codex-do accepts a Greenfield brief or PLAN.md instead of refusing it',
+  file:'skills/codex-do/SKILL.md',
+  from:`Refuse politely if \`status\` isn't \`ready\` or verification criteria are
+missing.`,
+  to:`A Greenfield brief (page or issue) or \`PLAN.md\` is also ready. Take its
+verification criteria from the brief's Success section or the plan's done-when
+checks, as \`AC1\`, \`AC2\`, and so on. Otherwise, refuse politely if \`status\`
+isn't \`ready\` or verification criteria are missing.`,
+ },
+
+ {
   why:'codex dispatch resolves orchestra paths through the bundled references',
   file:'skills/codex/SKILL.md',
   from:`**Path resolution**: all paths are relative to the current repo root -
@@ -235,7 +256,7 @@ Skills with the same name in \`~/.claude/skills\` or \`~/.codex/skills\` are sti
  const walk=dir=>{for(const item of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,item.name);if(item.isDirectory())walk(file);else checksums[path.relative(plugin,file)]=createHash('sha256').update(fs.readFileSync(file)).digest('hex');}};
  for(const section of ['agents','profiles','references','skills'])walk(path.join(plugin,section));
  const lines=Object.keys(checksums).sort().map(key=>`  ${key}: ${checksums[key]}`);
- write('plugin.yaml',`name: orchestra\nversion: 0.1.3\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
+ write('plugin.yaml',`name: orchestra\nversion: 0.1.4\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
  console.log(`Vendored dcouple/orchestra@${commit.slice(0,7)} + dcouple/skills@${skillsCommit.slice(0,7)} (${EXTRA_SKILLS.length} skills): ${claudeSkills.length} Claude skills, ${codexSkills.length} Codex skills, ${roles.length} Claude agents, ${Object.keys(checksums).length} files`);
 }finally{fs.rmSync(source,{recursive:true,force:true});}
 
