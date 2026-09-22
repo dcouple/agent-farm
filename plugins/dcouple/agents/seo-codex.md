@@ -1,7 +1,7 @@
 ---
-harness: claude
+harness: codex
 model:
-  name: claude-opus-5-5
+  name: gpt-6-astra
   reasoning: high
 description: Research search performance, plan SEO improvements, and develop clear site content.
 skills:
@@ -19,10 +19,6 @@ skills:
 subagents:
   cold-reader:
     agent: cold-reader
-    harness: claude
-    model:
-      name: claude-sonnet-5
-      reasoning: medium
     mode: native
 ---
 

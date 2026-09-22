@@ -1,19 +1,20 @@
 name: dcouple
-version: 0.1.12
+version: 0.1.15
 cli_major: 0
 source:
   repository: https://github.com/dcouple/skills.git
-  commit: 77ff104d35bb23aba6cd93ea58037ae11960e56d
+  commit: e538707d4b4af0681e81275ddad5201fb5259afc
 checksums:
   profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
   profiles/astra-researcher.yaml: d38b61c0aed05a3f5449c607fa2996cf1b0071dffb1605708d69e6f04cecc5a8
   profiles/audits.yaml: b2be432724574ff46929c836f1aeb90487a87a131fde62d93c49708417e97cbd
+  profiles/business.yaml: e4bf2f9c0e2bec0254cfb70848c39e4a5d8a98d727e5ec3a879539456e92852a
   profiles/implementer.yaml: 105ab9475ee5f7883256e18e545f5b761bcd9a95a90f3522f37e5cc6b3a5e42e
   profiles/parsa.yaml: f650fdeeed28391b5463a8bc0ed8db687b92332b7218273d72efb8e193eba913
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
   profiles/raw.yaml: 62406456ffdf5a2aa53af4c2a7abf98ecb5b8693e837b5f14ef1e5f749de2ab1
   profiles/reviewer.yaml: 61ab5550917b4f3126b1cd75a51ebca80a5b763b63fada221feeb24c0965fd11
-  profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
+  profiles/seo.yaml: e114a2b8250b55d3ce588f5c14421c276d8186be2520e7514e55ab44d0182e2a
   agents/astra-audits.md: 141109546e7fa50eb058d7cf215fd27fa9b583ebd05e2b00e21e858b6b0cd7d8
   agents/astra-discuss.md: 3652889044b8bb77611bd6d911a00a9652d74bc86276df964406f11f53e4b892
   agents/astra-implementer-high.md: 782487e44a581f162981e4497be9a03cbd345b94c316948e51f55b7b43b9475c
@@ -21,6 +22,12 @@ checksums:
   agents/astra-researcher.md: 225b9ceea551ff9c6179484b273cfdc4ab646670a9abd8aad27f12a9c88e4013
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
   agents/audits.md: 42296d768d0e381d20d3b8a613eedbccd61c637de236d736e67789e1a0446a78
+  agents/business-artifact-reviewer.md: da050a6417630837601367fe8444c0270866b99491b063b77cea7fe7a01efbb6
+  agents/business-codex.md: ebe280140eb3a998164c5744155e5453bba77225c7e05704fabb9cf02596d80d
+  agents/business-context.md: 5170f16b973722e1665e5229d884d7e5fe4e68226f34942812625cf36f7d48f9
+  agents/business-research-adversary.md: 52270d252b5541c9fa7407f0315411e2a1867928d687569437ec8ef29b9c2357
+  agents/business-spec-reviewer.md: d174b4a49dc9754a1fffc0cffd4f7be043bb26ad8a63b10d54cecef1a5e89540
+  agents/business.md: 387a802f767ae4300a052290b06bb0e844ba892d2253e69e82b461d2f4ecb450
   agents/claude-pr-reviewer.md: 0cd5b5e8f171b30ab0f9d0f77b6da7575e3b6b38f08237dfbe6ca5aad067b7ed
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/codex-pr-reviewer.md: 180e4a410f69a2984724734b90542fc34c2c8cc0c72f80b7d24fd105a84d78be
@@ -36,11 +43,12 @@ checksums:
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
   agents/pr-reviewer.md: fd0b0660602e2503ff1f092d8f2bf7c61adc034d987f44c08988ffce60642643
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
-  agents/raw-claude.md: e294b7ae7b850ab0e729ea5131f91b1600df8af8b5d1a7afb7889d3dcfc090a8
-  agents/raw-codex.md: 653b734a2ae1a268d0cf13b02874b1efdcafc4ecd8daa9d8cb80b2a988e327f8
+  agents/raw-claude.md: eaa01d05caeb4fe8b43ed52fd53c615482c6001dae2d5e2da62fdea7f71d402b
+  agents/raw-codex.md: 095fd39933e422271cbcb8ad2e4182119af8a8b1aedab3897b7d7a13845fc886
   agents/refactor.md: c0207fd6f06470bedb6d2cc4248c24490c8de1bd52d3a766dd2df009e2c231ba
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
-  agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2
+  agents/seo-codex.md: 2e5fa15ad932347d825879c33ba0622fe7a27ccd26344af55a061cceccbf2642
+  agents/seo.md: 9ef395149dfea75802d7438933f56b0e4aa6405bac92e58ba4f9bd3fae3209ed
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
   agents/worker.md: b92adc8ea7d4a798898203eda4eb5600abf45ebce2f4786820bf339439149a96
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
@@ -49,6 +57,12 @@ checksums:
   skills/audits/SKILL.md: 4546afbc16125d03d6bab35f8889f486ba50d6bf059a7d747fb9680f8e282b4b
   skills/babysit-pr/metadata/codex.yaml: d9507221b14eeee91e4f46a39a69ab683b9b5f0959059232f1c1f785c96cddad
   skills/babysit-pr/SKILL.md: 8d4b8a43e4426bbc9072c9aaa65523f1cb25aec03b164105fce26b62c858fe2c
+  skills/business-agent-skills/SKILL.md: 5edadf3406b2a1c9aefc0c4a6025b26677288aae4d88e855fedccb4f1cc8d528
+  skills/business-artifact/SKILL.md: 6b5467c1b2e2459ebd1a416025a832e78a4a42efbb9f110b2ffe8c7d3515dd3a
+  skills/business-discussion/SKILL.md: 6ed54854c405ffff3d2733583b39a0fb0d53d141a240800e0e875d94cd352bea
+  skills/business-prepare-release/SKILL.md: b502905f228a8d5d187b1cea854a973d83ff3283eac645460f5159a26f4dcf77
+  skills/business-spec/SKILL.md: afd3e801bfcffcd58686bfa2e657146fb1669bad36b5534bce78d6eb88c09925
+  skills/business-spec/spec_base.md: a2ca1254186f8de1407c4519c6ce0e51c0524020a21fb5810ca545b2f17cb229
   skills/codebase-design/agents/openai.yaml: edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f
   skills/codebase-design/DEEPENING.md: f3dd099ce99289bd213914d8ee3e2429b78309c3957ca4583f7659551b1d53c1
   skills/codebase-design/DESIGN-IT-TWICE.md: 8e740bf98446dbd4dfdc132ac4346d9a7eedaf93de6a495889171cf7f99f16bd
