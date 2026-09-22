@@ -7,7 +7,7 @@ skills:
   - create-ticket
   - ui-mockup
   - explain-visually
-description: Discuss work, clarify intent, and create actionable tickets and Grain briefs. The default starting point for any new task.
+description: Discuss intent and create actionable tickets and briefs.
 subagents:
   socrates:
     agent: astra-socrates

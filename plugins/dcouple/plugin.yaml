@@ -1,45 +1,31 @@
 name: dcouple
-version: 0.1.7
+version: 0.1.9
 cli_major: 0
 source:
-  repository: https://github.com/dcouple/skills
-  commit: c7ae5b0bffc37de831c4149cc635a444877e31ad
+  repository: https://github.com/dcouple/skills.git
+  commit: bf44309948ec8ae7d2c484cde798028ee476732f
 checksums:
-  agents/astra-discuss.md: 3652889044b8bb77611bd6d911a00a9652d74bc86276df964406f11f53e4b892
+  profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
+  profiles/astra-planner.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
+  profiles/audits.yaml: cebb343953bdfd3fcdac2ab936ba6590c4c4198ee21fa9d284c8777ce4377c16
+  profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
+  profiles/codex-issue-creator.yaml: fe8f818ede8a4ad7051645badb2f53f2377a1be7a31bbbafd6007e5df78783a2
+  profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
+  profiles/parsa.yaml: f650fdeeed28391b5463a8bc0ed8db687b92332b7218273d72efb8e193eba913
+  profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
+  profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   agents/astra-implementer-high.md: 782487e44a581f162981e4497be9a03cbd345b94c316948e51f55b7b43b9475c
-  agents/astra-researcher-reader.md: df47010281e0509e95b70c552079a7d5077402d734ebb1b98548f5dcec3744b6
-  agents/astra-researcher.md: 225b9ceea551ff9c6179484b273cfdc4ab646670a9abd8aad27f12a9c88e4013
+  agents/astra-planner.md: f2fbd022ea3192cf928087ac342dc5c06d59ea034d74b378c2f5141800e6a029
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
+  agents/audits.md: ebd34d98b1ee242e361db610c539d8828c3de5b9c48dbe997899d9b1132d9d46
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764
   agents/correctness-reviewer.md: f945974b435e8d841f35dd2b7d2b4f1c44e83c9f5504967a90e8bd267c747584
-  agents/exp1-luna-xhigh-reviewer.md: 4822cd74d11510e5f94ff9e28a85e3ef1f142c353d4fee7f0b9f6796a595d55b
-  agents/exp1-luna-xhigh-worker.md: 78de8c0a9c416275d0468234bd9c13eed00ef66cf7e0bb914d5e8ae302615901
-  agents/exp1-luna-xhigh.md: 003a4ebb213341e4d6ebcbc53c801869b834cf3d9d2e62a3c8353cac1547af35
-  agents/exp10-luna-meta-orchestrator.md: cbc10924e3325ad78295be668bd7e08babf2423bc7b3a9b2d670844083ad6157
-  agents/exp2-deepseek-flash-reviewer.md: 10fc8f2af6c2286bbef0488ebb2f8ba3ed8a5351a998a18651f1e494d82d32df
-  agents/exp2-deepseek-flash-worker.md: 220aacca3f2748c79df9b5524e1560a01192b1c82f3edc2517cf97e60e2c0465
-  agents/exp2-deepseek-flash.md: 2f5b48f7df676a8e7b3d9c7d012d77b5c89ca6116563f049c6106c259eb29303
-  agents/exp3-glm-flash-reviewer.md: c2ca9f9cd03fc7942acc13efa078272c6bdb69cc7d49efca352f399ce5fed47c
-  agents/exp3-glm-flash-worker.md: 34f01a055ec2757bdbf193a64c6b7469c096c1b66e3dfb2b30b9f31ff78d751c
-  agents/exp3-glm-flash.md: 5a39b2bd5f9c746058c81e3d4eb444f09243e9287f5c66dd33682c330dc215ae
-  agents/exp4-luna-deepseek-split.md: 60db5db20230268adb92b6435cb0d688d19dcf36dfc5937f065534fb8ce1db91
-  agents/exp5-deepseek-luna-split.md: 1dd8fe8e8b79cbe1b1a6465f1ddc00c4cffe5a79c2ba6e18d5bfbaa861d7330c
-  agents/exp6-fable-critic.md: 813e1f0479fd113c0c0cb97b232880d2e206f76f36cf08ee1313413fb64a66c2
-  agents/exp6-fable-gauntlet.md: bbadfdbea86a57d2381190a0408c97d7c4bfbfeb0a6ddb6deb8630c3a88556a4
-  agents/exp6-fable-implementer.md: 4785a1fda7dac328e43871cf65e4ad726c8697c21382ae3fb0fde19961f99abf
-  agents/exp7-astra-implementer.md: d7d472e024bd0e869cdde0156d6bed01b239c7b4c41b4e41ab948ed0ba7f3a31
-  agents/exp7-astra-manager-loop.md: f5f9b8e56873dffef2132dec63523013b6b11c61cacb4b04ef61415255a82c5d
-  agents/exp7-astra-reviewer.md: 25e183e9c435d44011b9a289720dfcae79f7070afedb239c9227f9b616e5a12a
-  agents/exp8-deepseek-builder.md: fc90d8acaefd6947d2ab858c74ecdc9c1a7fa65672e7ee5e766401c8df760bf0
-  agents/exp8-glm-auditor.md: ba90ba993a0d16fd5ac0c5c4bf43d9bb31762cbe75ff1ad74862e19e946b5d9f
-  agents/exp8-glm-deepseek-loop.md: 4649d55181feb017d61100660bb520479dd6ce8c1174c864a81c541f756e7268
-  agents/exp9-meta-orchestrator.md: 7cc316438a77748228665d7409c0e98ae6e2565dc179d10ea55e6d063edebfd5
   agents/implementation-reviewer.md: 6dd4e83019c90b58da949a85cff7896203e6bce93905bd4a1fd676e87dad6add
   agents/implementer.md: af8b9cdb1f1efe3b5892bde3b052e56200c29f217975ee3d20f601b4ac1653f5
   agents/integration-reviewer.md: d0e9728efcee1a803d3be09625c400861fd20671b5c8160ab816bf988b5ecd0c
   agents/intent-reviewer.md: f845dccef62d4e4532c4e688a2c90557a980b53c74c1b6f3bbd425e918e8466b
-  agents/parsa.md: cd92130c3ca6b4fa0f5284740fbaf5e5d201f8e84c38fd3e1aeb73b9c46d69c9
+  agents/parsa.md: f707493c40949af7dbeabc5eab515bd12e33ed74f200014aba6d5b3d9b7ac053
   agents/plan-reviewer.md: ee551be6ce08029354a024714cfc52cc6825f611f72c2c8abf33cdb91c25cc14
   agents/planner.md: 4468323124b669ccf80b240cd7d40976910477903d7689fb60d2baed306b6cdc
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
@@ -49,43 +35,9 @@ checksums:
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
   agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2
   agents/socrates.md: c20efe0c4aedc55729b704964deda9ec618dfa3e69908ef028c8cb83e6fe5223
-  agents/sw-astra-advisor.md: 018d87b9f2ad8b4f79f9364394be81aac3abaf2927ed28cc4b7a8533ca2f54a4
-  agents/sw-astra-final-reviewer.md: 6b72fbc0d983918e44fc13124bdb666c526171ab1824b174f78c029cf85b66bb
-  agents/sw-baseline-raw.md: 8781c53d5e05b4d28e18d74e48e7db082b143d3aaa7532935c8d0ef76a2fca9d
-  agents/sw-fast-implementer.md: 45d0ec91d46ca9dc8317708d4120459582fd2dc57398f70e7d63fa3fda6d2fd1
-  agents/sw-flash-implementer.md: d8685a9754f51bad86ee8eba3f4f56aaff083d25ab10de74d58dc9910bd87511
-  agents/sw-frontier-planner.md: ea8dabf43e2f2de257af3d6bde9fff00827d1424eefa90cd423e1318e2df6020
-  agents/sw-luna-implementer.md: 9a80916bdd078f8fc56fe8ccf65bf32b51308ac9c6174a659435d9d556955a2a
-  agents/sw-luna-orchestra.md: 7087f02632228b94dbb28af1bdb6429085df378b092a6259e3ecd8ab53102f50
-  agents/sw-opus46-loop.md: 65b6f43c5b6cdd25c807cfcc6782eed60aed825ddd1856bb0ed9cd4c8bef99e1
   agents/worker.md: b92adc8ea7d4a798898203eda4eb5600abf45ebce2f4786820bf339439149a96
-  profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
-  profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
-  profiles/astra-researcher.yaml: d38b61c0aed05a3f5449c607fa2996cf1b0071dffb1605708d69e6f04cecc5a8
-  profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
-  profiles/codex-issue-creator.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
-  profiles/exp1-luna-xhigh.yaml: aa55db7f0d1d9076d58e75965ebbb3d91c1505d1af8f2c683780f3e5ae3d8e27
-  profiles/exp10-luna-meta-orchestrator.yaml: 0460525a17aa4f3f70f166a7faefd1673fd428096f120c87b3bcfa0e722dcc6b
-  profiles/exp2-deepseek-flash.yaml: 5860951bd344161f104a5325db05bc5a79479d01e69fe49cad1d61da74104a2a
-  profiles/exp3-glm-flash.yaml: 5fbf3a970eb6fbc34b4b723e61be7f85e124f52f64921e343b427a7e6026588a
-  profiles/exp4-luna-deepseek-split.yaml: 2d826a5bdc57193be4d71d1c8a5b39cdbfa357d4c9eda25f065d2fe843bd6ff4
-  profiles/exp5-deepseek-luna-split.yaml: 7dc74570ef734dd92dc6b8982a74641fa0ced940a4bd41d5d882796f8c4e6943
-  profiles/exp6-fable-gauntlet.yaml: e47b80f6135b4c1df671ce40ec9afacd7a29056e59441fc396aad6d74e805fa1
-  profiles/exp7-astra-manager-loop.yaml: c1ffbae5f4a5d2b4930fa0681bc16abfa8ecd22be77d8e8e6e791e1ebbab3bd3
-  profiles/exp8-glm-deepseek-loop.yaml: ed8c9a5146ead8ac7dca9990cf2a31665ebda461e1e9fc0e7aefb5f1abc2c55f
-  profiles/exp9-meta-orchestrator.yaml: c3e3617afb58b7290abb93923fe5041dae7206531732e9a0c14ede882978d4bf
-  profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
-  profiles/parsa.yaml: f650fdeeed28391b5463a8bc0ed8db687b92332b7218273d72efb8e193eba913
-  profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
-  profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
-  profiles/sw-baseline-raw.yaml: 92fd14cff370d2a36a9f4e297b2001e65a62cbd5a347d9dd5a199b5c5f272b68
-  profiles/sw-fast-implementer.yaml: 7ab3c22a35e50049d0fe3f9b1cbebcc87cd98d14e144478d29916445d0883907
-  profiles/sw-flash-implementer.yaml: a6b9109ab2369d6de273a51d34ecb7b235489d2e2ef21f41e616870950f09b23
-  profiles/sw-frontier-planner.yaml: a5a90ea00f4de7c4206fbca861a9870e3df8091441f7fb6b620b30fdb7413fb4
-  profiles/sw-luna-implementer.yaml: 3b05436e88badc0704bca01535746900ac3d4527bae62001b716ab3d07e1a29c
-  profiles/sw-luna-orchestra.yaml: 20268d0de794b244a35b01846470ce71aa00b576f5d31dfe16b4e3f9b73ad261
-  profiles/sw-opus46-loop.yaml: 41b69b63c969ef4e837927ac4545cf51c957088932bb04ea14b3a187b4e51fee
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
+  skills/audits/SKILL.md: e31d53eab2cd3dc216f1b4453c950765738a3e0903e7a5a5a6d1534569a48a9e
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b
@@ -94,13 +46,13 @@ checksums:
   skills/create-ticket/references/intent-handoff.md: 808cdc7b199455bbb50e5c34f4afafdbc8b52307591418aa906103b8e6cd20f0
   skills/create-ticket/references/socrates.md: f70a000f7d1a3ee5b291fd398c78d1e9fb9832c0e90a37af2b76726c36f7d49a
   skills/create-ticket/SKILL.md: 4022d565e0bf485dd28fbc2fad68f5d1ad48610f511b18f5a667c7853253a9d8
-  skills/deep-dive-refresh/metadata/codex.yaml: 9639dbb116ed734678c85e89bab065fd4009928d05e8830dcf5a1e4b3974e6bd
-  skills/deep-dive-refresh/SKILL.md: 7f2c7ad24334a6abbe7b548c122de41ff06703871f75906ab66834672839f4b8
   skills/deep-dive/metadata/codex.yaml: 5d62f049a521dda2788db54e8d714e916178a5e251dbca2078ecf16d35ac0493
   skills/deep-dive/references/bright-data.md: 4dec85c1ae55f534643e1c03e14747245f3b51f2fd21bd07a28c310f4a4e874a
   skills/deep-dive/references/reddit.md: f6e7b1f7f764a1a6dde07ea3d1bb5038bb238771a99097298cd1d84ddd1d4c37
   skills/deep-dive/references/x.md: 25463982d99167abe3b0eef940346077fe485abbd0747026e0afd6b4bbc3bc57
   skills/deep-dive/SKILL.md: 295d7862e4650ce4706419cc4872f87dd8c3cf182e5180c9f5f1db3f1733d9f7
+  skills/deep-dive-refresh/metadata/codex.yaml: 9639dbb116ed734678c85e89bab065fd4009928d05e8830dcf5a1e4b3974e6bd
+  skills/deep-dive-refresh/SKILL.md: 7f2c7ad24334a6abbe7b548c122de41ff06703871f75906ab66834672839f4b8
   skills/eli5/SKILL.md: df17e7f3989fdde3e12206e058ed932bc7d1a86ad75a940fd030b003fe1b90d7
   skills/excalidraw-pr-diagrams/README.md: a2830d1948b03db2c0d4e72f2bb9870f855bd7d945dfcc4d05fe9aab49a1711a
   skills/excalidraw-pr-diagrams/references/color-palette.md: 275164ffee5b1c2c36ddeb5bbdbd73765aa8b337bd1bfe8b02a5a8d5f9581c7c
@@ -129,11 +81,11 @@ checksums:
   skills/prepare-pr/SKILL.md: dc29840b85f1cc30ee4a92a79a771a13255ba8ac2eab16ef4b6c1ef828e856c9
   skills/product-compare/metadata/codex.yaml: 0495b94cd57246a5676d1ae10712341587d96e85a12b985403f7424afa8349ae
   skills/product-compare/SKILL.md: 484ffd10d695baf8af0b8462e4afb999b9cae42e9aac38563265330abe64c34f
+  skills/refactor/references/specialist-review.md: e9615b1a9172b06cb65179e5a166d04285dccd855f3e3195ab7b5a11f6118c07
+  skills/refactor/SKILL.md: 0048f960400ac6053ebd948c138f32a5c9ca5a5242e70fec34d91fa5b322a47f
   skills/refactor-apply/SKILL.md: 069b1acacaad9c1b6ea873ff6eb7de20fd571048bdbd08c44b0cbe408ec844bd
   skills/refactor-deep/SKILL.md: 8e5383649e394d4e071fd10406c566c71eb6cf4bd62b65e1da5cb4f54aceadc5
   skills/refactor-simple/SKILL.md: 7a8d4efe49957f51609c382076d0ca087902faf73ff5d37b995b8405d4600246
-  skills/refactor/references/specialist-review.md: e9615b1a9172b06cb65179e5a166d04285dccd855f3e3195ab7b5a11f6118c07
-  skills/refactor/SKILL.md: 0048f960400ac6053ebd948c138f32a5c9ca5a5242e70fec34d91fa5b322a47f
   skills/research-web/SKILL.md: e4d7741a699f69bf350485695fcce75e526aa4d9d6bbfd8e4e755c969bbab163
   skills/researcher/SKILL.md: 6fdec2189cd092a479c4003c0923d34e6f2c03207f7bbb9a75e637579417ad35
   skills/review/CRITERIA.md: 96d7e4ce5476d2dcfde99a4a986c08033e0e0860770afcd71372844c0f742370
