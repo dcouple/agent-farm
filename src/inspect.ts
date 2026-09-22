@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {namespaces} from './config.js';
 import {resolveProfile,traceIdentity} from './compiler.js';
+const variantModels=(root:string,profile:string,variants:string[],context:Parameters<typeof resolveProfile>[3])=>Object.fromEntries(variants.map(v=>{try{const a=resolveProfile(root,`${profile}:${v}`,undefined,context).nodes.main!;return [v,{name:a.model,reasoning:a.reasoning_effort,speed:a.speed,harness:a.harness}];}catch{return [v,{name:'unresolved'}];}}));
 
 export function inspectProfile(root:string,profile:string,options:WorkspaceOptions={}){
  root=fs.realpathSync(root);const workspace=resolveWorkspace(root,options),resolved=resolveProfile(root,profile,workspace);
@@ -18,5 +19,5 @@ export function inspectProfile(root:string,profile:string,options:WorkspaceOptio
 export function listProfiles(root:string){
  root=fs.realpathSync(root);const entries=namespaces(root).flatMap(context=>{const directory=path.join(context.root,'profiles');if(!fs.existsSync(directory))return [];return fs.readdirSync(directory).filter(file=>file.endsWith('.yaml')).sort().map(file=>({context,profile:file.slice(0,-5)}));}),counts=new Map<string,number>();
  for(const entry of entries)counts.set(entry.profile,(counts.get(entry.profile)??0)+1);
- return entries.map(({context,profile})=>{const qualified=context.plugin?`${context.plugin}/${profile}`:profile,resolved=resolveProfile(root,profile,undefined,{namespace:context}),agent=resolved.nodes.main!;return {profile,qualified,...(resolved.variants?{variants:resolved.variants,default_variant:resolved.default_variant}:{}),plugin:context.plugin,plugin_version:context.version,ambiguous:(counts.get(profile)??0)>1,agent:agent.name,harness:agent.harness,model:{name:agent.model,reasoning:agent.reasoning_effort,speed:agent.speed??'native default'},source_file:resolved.profile_file};});
+ return entries.map(({context,profile})=>{const qualified=context.plugin?`${context.plugin}/${profile}`:profile,resolved=resolveProfile(root,profile,undefined,{namespace:context}),agent=resolved.nodes.main!;return {profile,qualified,...(resolved.variants?{variants:resolved.variants,default_variant:resolved.default_variant,variant_models:variantModels(root,profile,resolved.variants,{namespace:context})}:{}),plugin:context.plugin,plugin_version:context.version,ambiguous:(counts.get(profile)??0)>1,agent:agent.name,harness:agent.harness,model:{name:agent.model,reasoning:agent.reasoning_effort,speed:agent.speed??'native default'},source_file:resolved.profile_file};});
 }

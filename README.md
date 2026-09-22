@@ -97,8 +97,9 @@ and visual field guides. Outputs to Grain, artifacts, or local files.
 implementation, review, and PR with sub-agents.
 
 **Variants** — Some profiles come in more than one version, such as a Claude
-and a Codex planner. They're one profile with variants, shown as
-`greenfield/planner (claude · codex)`. `agent-farm run` asks which one you
+and a Codex planner. They're one profile with variants, shown with each
+variant's model: `greenfield/planner (claude: claude-fable-5-1 high · codex:
+gpt-6-astra high)`. `agent-farm run` asks which one you
 want. Add `:codex` to the name to skip the question; without it, scripts get
 the default.
 

@@ -70,7 +70,10 @@ export function resolveProfile(root:string,requested:string,workspace?:ResolvedW
 /** Variant names with the default first, the order every picker and listing uses. */
 export function orderedVariants(variants:string[],defaultVariant?:string):string[]{return defaultVariant?[defaultVariant,...variants.filter(v=>v!==defaultVariant)]:variants;}
 /** ` (claude · codex)` for a profile with variants, empty otherwise. */
-export function variantLabel(profile:{variants?:string[];default_variant?:string}):string{return profile.variants?` (${orderedVariants(profile.variants,profile.default_variant).join(' · ')})`:'';}
+/** `claude-opus-5-5 medium fast`: a model with its reasoning and fast tier, as listings show it. */
+export function modelSummary(model:{name:string;reasoning?:string;speed?:string}):string{return [model.name,model.reasoning,model.speed==='fast'?'fast':undefined].filter(Boolean).join(' ');}
+/** ` (opus: claude-opus-5-5 medium · astra: gpt-6-astra medium)` for a profile with variants, default first; names only when models are unknown. */
+export function variantLabel(profile:{variants?:string[];default_variant?:string;variant_models?:Record<string,{name:string;reasoning?:string;speed?:string}>}):string{if(!profile.variants)return '';return ` (${orderedVariants(profile.variants,profile.default_variant).map(v=>profile.variant_models?.[v]?`${v}: ${modelSummary(profile.variant_models[v]!)}`:v).join(' · ')})`;}
 
 /** `plugin/profile[:variant]@version`, the identity telemetry and inspection report. */
 export function traceIdentity(resolution:Resolution):string{return `${resolution.plugin??'local'}/${resolution.profile_name}${resolution.variant?':'+resolution.variant:''}@${resolution.plugin_version??'local'}`;}
