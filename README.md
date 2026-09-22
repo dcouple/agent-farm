@@ -87,7 +87,8 @@ Agent Farm ships with profiles ready to use. Run `agent-farm` to pick one:
 ```
 
 **Plan** — `greenfield/planner` helps you understand a problem, decide what
-to do, and write the plan. Start here.
+to do, and write the plan. Start here. For a fuzzy idea, `dcouple/ideate` talks
+it through first and hands over a ticket.
 
 **Build** — `orchestra/overseer` builds, tests, and reviews a task into a pull
 request with little hand-holding. For smaller, clear tasks, `dcouple/raw` is the
@@ -97,9 +98,9 @@ AI model on its own plus a few good habits.
 problems, and tells you when it's ready. `dcouple/reviewer` reviews it from many
 angles at once.
 
-**More** — `product-researcher` for research write-ups, `ticket-writer` for
-quick tickets, `business` for business documents, `seo` for search content,
-and `audits` for finding outdated issues and docs.
+**More** — `ideate` to talk through an idea before planning, `product-researcher`
+for research write-ups, `business` for business documents, `seo` for search
+content, and `audits` for finding outdated issues and docs.
 
 **Variants** — Some profiles come in more than one version, such as a Claude
 and a Codex planner. They're one profile with variants, shown with each
