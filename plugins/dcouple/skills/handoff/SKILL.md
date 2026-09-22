@@ -25,6 +25,7 @@ You are the outgoing collaborator. Give the next person or agent the verified co
 ## Save one authoritative brief
 
 - Honor an explicit destination. Otherwise, when Grain is connected, read its installed skill and update the existing task workspace; if none exists, create a clearly named one in `Development Artifacts`. Retain its ID for subsequent updates.
+- When the handoff lands in a Grain workspace and the `session-trace` skill is installed, attach this session's trace to it.
 - Make essential text directly readable to both humans and agents. Link existing artifacts and retain one authoritative brief.
 - For cross-device delivery, prefer a public-safe Grain share when public sharing is authorized by the request or an established user preference. Otherwise use an appropriately restricted destination or ask before publishing.
 - Inspect the full shared content for its intended audience. Use access-controlled GitHub when the brief requires private source or sensitive context. Return the verified share URL supplied by the service.
