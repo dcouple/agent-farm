@@ -17,7 +17,7 @@ Get a list of work items, each with a source (ticket, brief, bug report, PLAN.md
 | --- | --- |
 | A bug with no report yet | `greenfield/bug-reporter` |
 | A bug report routed `direct-to-implementer` | `greenfield/implementer` |
-| An approved PLAN.md or handoff card | `greenfield/implementer`, or `greenfield/implementer-fast` when the item is urgent |
+| An approved PLAN.md or handoff card | `greenfield/implementer`, or `greenfield/implementer:fast` when the item is urgent |
 | A trivial one-line task | `greenfield/implementer`, with the task as `--message` |
 | An idea, an unclear bug, or anything with an open decision | none. Planning is a conversation. Tell the person it needs the `planner` and leave it on the board as "needs planning" |
 
@@ -39,9 +39,9 @@ agent-farm run greenfield/implementer --exec --directory ../worktrees/<slug> \
   > ../worktrees/<slug>/.agent/run.json 2>&1
 ```
 
-Agent Farm rejects an argument the profile does not declare, and lists what it accepts. `implementer` takes `priority`, `review`, `parent`, and `source`. `bug-reporter` takes `parent` and `source`. For an urgent item launch `greenfield/implementer-fast`, which is `implementer` with a saved model and `priority: speed`.
+Agent Farm rejects an argument the profile does not declare, and lists what it accepts. `implementer` takes `priority`, `review`, `parent`, and `source`. `bug-reporter` takes `parent` and `source`. For an urgent item launch `greenfield/implementer:fast`, the `implementer` variant with a saved model and `priority: speed`. A name without `:variant` launches the profile's default, and headless launches never prompt.
 
-The final JSON carries the result text, cost, duration, and an error flag. Record cost and duration in the ledger, along with the trace identity `greenfield/<profile>@<version>` from `agent-farm inspect`.
+The final JSON carries the result text, cost, duration, and an error flag. Record cost and duration in the ledger, along with the trace identity `greenfield/<profile>[:<variant>]@<version>` from `agent-farm inspect`.
 
 ## Ledger
 

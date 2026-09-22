@@ -5,14 +5,14 @@ Regenerate with `node scripts/vendor-orchestra.mjs <orchestra checkout> <skills 
 
 `/do` still calls `arena` and `hillclimb`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [`a79b9fd`](https://github.com/greenfield-inc/skills/tree/a79b9fde21a94e1f21e9ce03ab0e9e5b9f61739e): `parsa/.claude/skills/arena` as `arena`, `parsa/.claude/skills/hillclimb` as `hillclimb`, `parsa/.codex/skills/hillclimb` as `codex-hillclimb`. No Codex `arena` exists, so the Codex `/do` arena step stays unavailable, as it was before.
 
-Both profiles also get Agent Farm's `babysit-pr`, `tdd`, `codebase-design`, copied from `plugins/greenfield/skills/`, `babysit-pr` watches a pull request's CI and review bots after `/do` or `/prepare-pull-request` opens it; `tdd` (with `codebase-design`) is how every implementer writes code and tests, passed to each implementer dispatch.
+Both variants also get Agent Farm's `babysit-pr`, `tdd`, `codebase-design`, copied from `plugins/greenfield/skills/`, `babysit-pr` watches a pull request's CI and review bots after `/do` or `/prepare-pull-request` opens it; `tdd` (with `codebase-design`) is how every implementer writes code and tests, passed to each implementer dispatch.
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
-| `orchestra/overseer` | Claude, claude-fable-5-1 | The 11 Claude skills (codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop) plus arena and hillclimb, the 6 Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through `codex exec` as in orchestra. |
-| `orchestra/codex-overseer` | Codex, gpt-6-astra (high) | The 13 Codex skills, with `do` and `investigate` in `codex-do` and `codex-investigate`, plus codex-hillclimb. |
+| `orchestra/overseer:claude` (default) | Claude, claude-fable-5-1 | The 11 Claude skills (codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop) plus arena and hillclimb, the 6 Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through `codex exec` as in orchestra. |
+| `orchestra/overseer:codex` | Codex, gpt-6-astra (high) | The 13 Codex skills, with `do` and `investigate` in `codex-do` and `codex-investigate`, plus codex-hillclimb. |
 
-Both select `references: orchestra`, which holds orchestra's `references/` folder, its Claude agent files under `claude-agents/`, and `templates/`.
+Both variants select `references: orchestra`, which holds orchestra's `references/` folder, its Claude agent files under `claude-agents/`, and `templates/`.
 Skills cite `.references/<path>`; Agent Farm maps that to the bundled folder at launch.
 
 Text is copied unchanged except for 4 patches listed in the vendor script:

@@ -24,7 +24,7 @@ export class ProfileManager{
   agents(){return this.catalog().flatMap(context=>{const dir=path.join(context.root,'agents');if(!fs.existsSync(dir))return [];return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>{const name=e.isDirectory()&&fs.existsSync(path.join(dir,e.name,'agent.yaml'))?e.name:e.isFile()&&/\.(md|yaml)$/.test(e.name)?e.name.replace(/\.(md|yaml)$/,''):undefined;return name?[context.plugin?context.plugin+'/'+name:name]:[];});}).sort();}
   get(name:string){const {context,name:local}=this.context(name),file=path.join(context.root,'profiles',local+'.yaml'),source=this.source(file);let resolved:unknown,definition:unknown,error:string|undefined;try{definition=document(source);resolved=this.resolve(local,definition as Record<string,unknown>,context);}catch(e){error=(e as Error).message;}return {name,source,definition,revision:revision(source),readOnly:!context.local,file,resolved,error};}
   compose(input:{source:string;agent:string;model:string;reasoning:string;speed:string;args:string}){
-    document(input.source);qualifiedName(input.agent);
+    if(document(input.source).variants!==undefined)throw Error('This profile has variants; edit them in the YAML source');qualifiedName(input.agent);
     const doc=parseDocument(input.source,{uniqueKeys:true});doc.set('agent',input.agent);
     for(const key of ['model','reasoning','speed'] as const){const value=input[key];if(typeof value!=='string')throw Error('Expected text fields');const field=key==='model'?'name':key;if(value.trim())doc.setIn(['model',field],value.trim());else doc.deleteIn(['model',field]);}
     const model=doc.get('model') as {items?:unknown[]}|undefined;if(model?.items?.length===0)doc.delete('model');

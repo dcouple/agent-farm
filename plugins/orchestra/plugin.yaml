@@ -1,5 +1,5 @@
 name: orchestra
-version: 0.1.2
+version: 0.1.3
 cli_major: 0
 source:
   repository: https://github.com/dcouple/orchestra
@@ -13,8 +13,7 @@ checksums:
   agents/plan-reviewer.md: ab82b7bb841d4962c0365752fef280980ad10f23431201ee5917b95c88ec2699
   agents/socrates.md: bb9e47014243b812369b4a6d2e4ee01c42cdf57edfeddc48833e561a795398c8
   agents/web-researcher.md: 215d0afefbdb6ca95fe2ac779899f7beff069410eed4e6d22cebe3f59bc72573
-  profiles/codex-overseer.yaml: f2edffe9ab18ac3ebad84ca5e17ed45d46d7812399f6d09a38c81fd6c2669288
-  profiles/overseer.yaml: f22c0977a20857d2ca349be8fb288e6011aeeb4aa30d42948cc382437ccae174
+  profiles/overseer.yaml: 65236ee3033fb96ae300b5cb3da23bed2d1cedbde17e580ebab536faf86ada5b
   references/orchestra/README.md: 31d9104ef9b6c3a68d4d3e46155f7aa02a043577c63d1064426a676caa1ce815
   references/orchestra/agents/backend-verifier/instructions.md: 30fb18d811f2f4905926f1d7370b8d8910bbde4dc60826e55eacf1403c95db7c
   references/orchestra/agents/code-researcher/codebase-findings.md: 45976992e842565778b60d559d06a3865ddc8212888c2648fe66f424081c3d8b

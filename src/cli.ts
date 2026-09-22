@@ -6,11 +6,12 @@ import {validatePlugin,packPlugin,installPlugin,listPlugins,uninstallPlugin} fro
 import os from 'node:os';
 import {parseArgs} from 'node:util';
 import {resolveWorkspace,resolveInteractiveWorkspace,trustWorkspace,untrustWorkspace,showWorkspace} from './workspaces.js';
-import {build} from './compiler.js';
+import {build,variantLabel} from './compiler.js';
 import {run,execute} from './runtime.js';
 import {loginCommand} from './mcp-auth.js';
 import {loadWorkspace,unloadWorkspace,loadedWorkspaces} from './user-workspaces.js';
 import {inspectProfile,listProfiles} from './inspect.js';
+import {chooseVariant} from './interactive.js';
 import {loadProfile,unloadProfile,loadedProfiles,globalSkills,globalSkillWarning,saveGlobalSkills} from './user-skills.js';
 import {configurationName,loadHostSettings} from './config.js';
 
@@ -168,7 +169,7 @@ try {
     if (positionals[0]==='inspect') console.log(JSON.stringify(inspectProfile(root,positionals[1]!,{directory:values.directory,noWorkspace:values['no-workspace']}),null,2));
     else {
       const profiles=listProfiles(root);
-      console.log(profiles.length ? profiles.map(p=>`${p.qualified} -> ${p.agent}${p.ambiguous?' [ambiguous bare name]':''} | plugin ${p.plugin??'local'} ${p.plugin_version??'-'} | ${p.harness} | ${p.model.name} ${p.model.reasoning ?? 'default'} | ${p.model.speed}`).join('\n') : 'No launch profiles found.');
+      console.log(profiles.length ? profiles.map(p=>`${p.qualified}${variantLabel(p)} -> ${p.agent}${p.ambiguous?' [ambiguous bare name]':''} | plugin ${p.plugin??'local'} ${p.plugin_version??'-'} | ${p.harness} | ${p.model.name} ${p.model.reasoning ?? 'default'} | ${p.model.speed}`).join('\n') : 'No launch profiles found.');
     }
   } else if (['load','unload','loaded'].includes(positionals[0] ?? '')) {
     const operation=positionals[0];
@@ -194,7 +195,9 @@ try {
     const root=path.resolve(values['config-root']!),directory=path.resolve(values.directory!),options={directory,noWorkspace:values['no-workspace']};
     const interactive=!values.exec&&!values['print-launch']&&!values.build&&!values.explain&&!!process.stdin.isTTY&&!!process.stderr.isTTY;
     const workspace=interactive?await resolveInteractiveWorkspace(root,options):resolveWorkspace(root,options);
-    const bundle=build(root,positionals[1]!,directory,workspace);
+    // Interactive launches ask which variant to run; scripts get the profile's default.
+    const requested=interactive?await chooseVariant(root,positionals[1]!,workspace):positionals[1]!;
+    const bundle=build(root,requested,directory,workspace);
     if (!values.build && !values.explain && !values['print-launch']) {
       const manifest=JSON.parse(fs.readFileSync(path.join(bundle,'manifest.json'),'utf8'));
       try {

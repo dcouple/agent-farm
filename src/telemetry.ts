@@ -61,7 +61,7 @@ export async function startSession(descriptor:Descriptor,argv:string[],env:NodeJ
     'agent_farm.session.id':id,'agent_farm.parent.session.id':env.AGENT_FARM_SESSION_ID,
     'agent_farm.capture_content':descriptor.captureContent===true,
     'agent_farm.session.trace_id':traceId,'agent_farm.session.span_id':spanId,
-    'agent_farm.profile':manifest.profile,'agent_farm.plugin':agent.plugin??manifest.plugin,
+    'agent_farm.profile':manifest.profile,'agent_farm.profile.variant':manifest.variant,'agent_farm.plugin':agent.plugin??manifest.plugin,
     'agent_farm.plugin.version':agent.plugin_version??manifest.plugin_version,'agent_farm.trace_identity':manifest.trace_identity,
     'agent_farm.route':descriptor.route,'agent_farm.workspace':manifest.workspace_source?.source,
     'agent_farm.workspace.trust':manifest.workspace_source?.trust,'agent_farm.workspace.overlay':manifest.workspace_source?.overlay,

@@ -39,7 +39,7 @@ export interface Agent {
   connections: Record<string, Connection>; children: Record<string, string>;
   argument_definitions?: Record<string, ArgumentDefinition>; launch?: LaunchMetadata;
 }
-export interface Manifest { profile: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace_source?: WorkspaceMetadata; workspace_telemetry?: TelemetrySettings; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
+export interface Manifest { profile: string; variant?: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace_source?: WorkspaceMetadata; workspace_telemetry?: TelemetrySettings; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
 export interface WorkspaceMetadata {source:string;overlay?:string;trust:'none'|'personal'|'trusted'|'untrusted'|'declined';repository?:string;common?:string;sha256?:string}
 export function trustFile(workspace:WorkspaceMetadata,home=os.homedir()):string {
   return path.join(home,'.local/state/agent-farm/workspace-trust',hash(workspace.common!),workspace.sha256!+'.json');

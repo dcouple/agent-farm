@@ -205,7 +205,7 @@ connections:
     auth: native
 ---
 ${CODEX_OVERSEER}`);
- write('profiles/overseer.yaml','agent: overseer\n');
+ write('profiles/overseer.yaml','variants:\n  claude:\n    agent: overseer\n  codex:\n    agent: codex-overseer\ndefault: claude\n');
  write('README.md',`# orchestra
 
 dcouple/orchestra at [\`${commit.slice(0,7)}\`](https://github.com/dcouple/orchestra/tree/${commit}), packaged for Agent Farm.
@@ -213,14 +213,14 @@ Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> <skills
 
 \`/do\` still calls \`arena\` and \`hillclimb\`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [\`${skillsCommit.slice(0,7)}\`](https://github.com/greenfield-inc/skills/tree/${skillsCommit}): ${EXTRA_SKILLS.map(e=>`\`${e.from}\` as \`${e.to}\``).join(', ')}. No Codex \`arena\` exists, so the Codex \`/do\` arena step stays unavailable, as it was before.
 
-Both profiles also get Agent Farm's ${AGENT_FARM_SKILLS.map(n=>`\`${n}\``).join(', ')}, copied from \`plugins/greenfield/skills/\`, \`babysit-pr\` watches a pull request's CI and review bots after \`/do\` or \`/prepare-pull-request\` opens it; \`tdd\` (with \`codebase-design\`) is how every implementer writes code and tests, passed to each implementer dispatch.
+Both variants also get Agent Farm's ${AGENT_FARM_SKILLS.map(n=>`\`${n}\``).join(', ')}, copied from \`plugins/greenfield/skills/\`, \`babysit-pr\` watches a pull request's CI and review bots after \`/do\` or \`/prepare-pull-request\` opens it; \`tdd\` (with \`codebase-design\`) is how every implementer writes code and tests, passed to each implementer dispatch.
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
-| \`orchestra/overseer\` | Claude, claude-fable-5-1 | The ${claudeSkills.length} Claude skills (${claudeSkills.join(', ')}) plus ${claudeExtras.join(' and ')}, the ${roles.length} Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through \`codex exec\` as in orchestra. |
-| \`orchestra/codex-overseer\` | Codex, gpt-6-astra (high) | The ${codexSkills.length} Codex skills, with \`do\` and \`investigate\` in \`codex-do\` and \`codex-investigate\`, plus ${codexExtras.join(', ')}. |
+| \`orchestra/overseer:claude\` (default) | Claude, claude-fable-5-1 | The ${claudeSkills.length} Claude skills (${claudeSkills.join(', ')}) plus ${claudeExtras.join(' and ')}, the ${roles.length} Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through \`codex exec\` as in orchestra. |
+| \`orchestra/overseer:codex\` | Codex, gpt-6-astra (high) | The ${codexSkills.length} Codex skills, with \`do\` and \`investigate\` in \`codex-do\` and \`codex-investigate\`, plus ${codexExtras.join(', ')}. |
 
-Both select \`references: orchestra\`, which holds orchestra's \`references/\` folder, its Claude agent files under \`claude-agents/\`, and \`templates/\`.
+Both variants select \`references: orchestra\`, which holds orchestra's \`references/\` folder, its Claude agent files under \`claude-agents/\`, and \`templates/\`.
 Skills cite \`.references/<path>\`; Agent Farm maps that to the bundled folder at launch.
 
 Text is copied unchanged except for ${PATCHES.length} patches listed in the vendor script:
@@ -230,13 +230,12 @@ Orchestra's Claude agents restrict their tools (reviewers and researchers are re
 
 Skills with the same name in \`~/.claude/skills\` or \`~/.codex/skills\` are still visible to the launched harness. Save and unmount them with \`agent-farm unset global --save <name> --harness claude|codex --model <model-id>\` to run orchestra's versions only.
 `);
- write('profiles/codex-overseer.yaml','agent: codex-overseer\n');
 
  const checksums={};
  const walk=dir=>{for(const item of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,item.name);if(item.isDirectory())walk(file);else checksums[path.relative(plugin,file)]=createHash('sha256').update(fs.readFileSync(file)).digest('hex');}};
  for(const section of ['agents','profiles','references','skills'])walk(path.join(plugin,section));
  const lines=Object.keys(checksums).sort().map(key=>`  ${key}: ${checksums[key]}`);
- write('plugin.yaml',`name: orchestra\nversion: 0.1.2\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
+ write('plugin.yaml',`name: orchestra\nversion: 0.1.3\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
  console.log(`Vendored dcouple/orchestra@${commit.slice(0,7)} + dcouple/skills@${skillsCommit.slice(0,7)} (${EXTRA_SKILLS.length} skills): ${claudeSkills.length} Claude skills, ${codexSkills.length} Codex skills, ${roles.length} Claude agents, ${Object.keys(checksums).length} files`);
 }finally{fs.rmSync(source,{recursive:true,force:true});}
 

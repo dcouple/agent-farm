@@ -1,1 +1,6 @@
-agent: overseer
+variants:
+  claude:
+    agent: overseer
+  codex:
+    agent: codex-overseer
+default: claude

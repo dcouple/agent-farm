@@ -5,7 +5,8 @@ import os from 'node:os';
 import {execSync} from 'node:child_process';
 import * as p from '@clack/prompts';
 import {listProfiles, inspectProfile} from './inspect.js';
-import {build} from './compiler.js';
+import {build,orderedVariants,resolveProfile,splitVariant,variantLabel} from './compiler.js';
+import type {ResolvedWorkspace} from './workspaces.js';
 import {run} from './runtime.js';
 import {installPlugin} from './plugins.js';
 import {fileURLToPath} from 'node:url';
@@ -75,8 +76,25 @@ function rawCommand(profile: string, targetDir: string): string {
   return parts.join(' ');
 }
 
+/** Asks which variant to launch when a profile has more than one and none was named. */
+export async function chooseVariant(configRoot: string, requested: string, workspace?: ResolvedWorkspace): Promise<string> {
+  if (splitVariant(requested).variant !== undefined) return requested;
+  const resolved = resolveProfile(configRoot, requested, workspace);
+  if (!resolved.variants || resolved.variants.length < 2) return requested;
+  const choice = await p.select({
+    message: `Which ${bold(requested)} variant?`,
+    options: orderedVariants(resolved.variants, resolved.default_variant).map(variant => {
+      const agent = resolveProfile(configRoot, `${requested}:${variant}`, workspace).nodes.main!;
+      return {value: variant, label: variant, hint: `${agent.harness} · ${agent.model}${variant === resolved.default_variant ? ' · default' : ''}`};
+    }),
+  });
+  if (isCancel(choice)) bail();
+  return `${requested}:${choice as string}`;
+}
+
 async function launchProfile(configRoot: string, profile: string, targetDir: string) {
   const workspace=await resolveInteractiveWorkspace(configRoot,{directory:targetDir});
+  profile = await chooseVariant(configRoot, profile, workspace);
   const s = p.spinner();
   s.start('Building configuration');
   const bundle = build(configRoot, profile, targetDir, workspace);
@@ -253,7 +271,7 @@ export async function bareCommand(configRoot: string, directory: string) {
   const options: Choice[] = [
     ...profiles.map(prof => ({
       value: 'launch:' + prof.qualified,
-      label: prof.qualified,
+      label: prof.qualified + dim(variantLabel(prof)),
       hint: `${prof.harness} · ${prof.model.name}${prof.model.reasoning && prof.model.reasoning !== 'default' ? ' · ' + prof.model.reasoning : ''}`,
     })),
     separator,
