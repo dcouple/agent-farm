@@ -73,28 +73,33 @@ how everything fits together, and offers to launch your first session.
 
 ## Profiles
 
-Agent Farm ships with profiles ready to use. The interactive launcher shows
-them like this:
+Agent Farm ships with profiles ready to use. Run `agent-farm` to pick one:
 
 ```
 ◆  What would you like to do?
-│  ● astra-discuss        codex · gpt-6-astra · high
-│  ○ astra-researcher     codex · gpt-6-astra · high
-│  ○ implementer          codex · gpt-6-astra · medium
+│  ● greenfield/planner (claude: claude-fable-5-1 high · codex: gpt-6-astra high)
+│  ○ orchestra/overseer (claude: claude-opus-5-5 · codex: gpt-6-astra high)
+│  ○ dcouple/raw (opus: claude-opus-5-5 medium · astra: gpt-6-astra medium · sol: gpt-5.6-sol medium)
+│  ○ dcouple/qa-and-fix (claude: claude-opus-5-5 medium · codex: gpt-5.6-sol medium)
+│  ○ dcouple/reviewer (claude: claude-opus-5-5 high · codex: gpt-5.6-sol medium)
 │  ─────────────────────
 │  + Create new profile
-│  ✎ Edit a profile
-│  ⊕ Inspect a profile
 ```
 
-**Discussion** — `astra-discuss` clarifies intent and creates tickets.
-The default starting point.
+**Plan** — `greenfield/planner` helps you understand a problem, decide what
+to do, and write the plan. Start here.
 
-**Research** — `astra-researcher` runs deep dives, product comparisons,
-and visual field guides. Outputs to Grain, artifacts, or local files.
+**Build** — `orchestra/overseer` builds, tests, and reviews a task into a pull
+request with little hand-holding. For smaller, clear tasks, `dcouple/raw` is the
+AI model on its own plus a few good habits.
 
-**Implementation** — `implementer` takes a ticket through planning,
-implementation, review, and PR with sub-agents.
+**Check** — `dcouple/qa-and-fix` tests a finished pull request, fixes small safe
+problems, and tells you when it's ready. `dcouple/reviewer` reviews it from many
+angles at once.
+
+**More** — `product-researcher` for research write-ups, `ticket-writer` for
+quick tickets, `business` for business documents, `seo` for search content,
+and `audits` for finding outdated issues and docs.
 
 **Variants** — Some profiles come in more than one version, such as a Claude
 and a Codex planner. They're one profile with variants, shown with each

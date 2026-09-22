@@ -192,29 +192,6 @@ test('instruction files fail on missing files, escapes, and ambiguous sources',t
  f.put('agents/writer/agent.yaml','harness: codex\nmodel: test\ninstructions_file: instructions.md\ninstructions: inline\n');assert.throws(run,/one instructions source/);
  f.put('agents/writer.yaml','harness: codex\nmodel: test\n');assert.throws(run,/Ambiguous/);
 });
-test('shipped Astra profiles package all declared workflow roles and their own skills',t=>{
- const f=fixture(t),source=fileURLToPath(new URL('../plugins/dcouple',import.meta.url));
- fs.cpSync(path.join(source,'agents'),path.join(f.root,'agents'),{recursive:true});
- fs.cpSync(path.join(source,'profiles'),path.join(f.root,'profiles'),{recursive:true});
- // Fixture skill contents isolate graph correctness from a machine's installed skill repository.
- const skills=fs.readdirSync(path.join(source,'skills'),{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name);
- for(const skill of skills)f.put(`skills/${skill}/SKILL.md`,skill);
- // Remove legacy fixture planner so the new directory definition is unambiguous.
- fs.unlinkSync(path.join(f.root,'agents/planner.yaml'));fs.unlinkSync(path.join(f.root,'agents/worker.yaml'));
- const b=build(f.root,'implementer',f.target),m=JSON.parse(fs.readFileSync(path.join(b,'manifest.json')));
- for(const alias of ['socrates','worker','implementation-reviewer','plan-reviewer','codebase-explorer','researcher','pr-preparer','correctness-reviewer','integration-reviewer','intent-reviewer','pr-reviewer','qa','cold-reader']){
-  assert.ok(m.nodes.main.children[alias],`Missing workflow role: ${alias}`);
- }
- for(const [alias,route] of Object.entries(m.nodes.main.children)){
-  const child=m.nodes[route];assert.equal(child.model,alias==='qa'?'gpt-5.6-sol':'gpt-5.6-luna');assert.equal(child.reasoning_effort,alias==='qa'?'medium':'max');
-  assert.ok(fs.existsSync(path.join(b,'main/native-agents',alias+'.toml')));
-  for(const skill of child.skills)assert.ok(fs.existsSync(path.join(b,route,'skills',skill,'SKILL.md')));
- }
- assert.deepEqual(m.nodes['main/children/qa'].skills,['pr-test-automation']);
- assert.deepEqual(m.nodes['main/children/cold-reader'].skills,['cold-read']);
- const p=build(f.root,'astra-discuss',f.target),pm=JSON.parse(fs.readFileSync(path.join(p,'manifest.json')));
- assert.deepEqual(Object.keys(pm.nodes.main.children),['socrates']);
-});
 
 test('Markdown agents compose shared instructions and reject malformed frontmatter',t=>{
  const f=fixture(t);
