@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: claude-opus-4-6
+  name: claude-opus-5
   reasoning: high
 description: Audit stale GitHub issues, PRs, and agent-facing docs against the
   default branch. Report first; close or edit only after approval.
