@@ -274,7 +274,7 @@ export async function bareCommand(configRoot: string, directory: string) {
   const options: Choice[] = [
     ...profiles.map(prof => ({
       value: 'launch:' + prof.qualified,
-      label: prof.qualified + (prof.variants ? dim(` (${prof.variants.length} variants)`) : ''),
+      label: prof.qualified + (prof.variants ? dim(` (${prof.variants.length})`) : ''),
       hint: prof.variants ? `default ${prof.default_variant}` : `${prof.harness} · ${modelSummary({name: prof.model.name, reasoning: prof.model.reasoning === 'default' ? undefined : prof.model.reasoning, speed: prof.model.speed})}`,
     })),
     separator,

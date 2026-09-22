@@ -77,11 +77,11 @@ Agent Farm ships with profiles ready to use. Run `agent-farm` to pick one:
 
 ```
 ◆  What would you like to do?
-│  ● greenfield/planner (2 variants)
-│  ○ orchestra/overseer (2 variants)
-│  ○ dcouple/raw (3 variants)
-│  ○ dcouple/qa-and-fix (2 variants)
-│  ○ dcouple/reviewer (2 variants)
+│  ● greenfield/planner (2)
+│  ○ orchestra/overseer (2)
+│  ○ dcouple/raw (3)
+│  ○ dcouple/qa-and-fix (2)
+│  ○ dcouple/reviewer (2)
 │  ─────────────────────
 │  + Create new profile
 ```
@@ -104,7 +104,7 @@ content, and `audits` for finding outdated issues and docs.
 
 **Variants** — Some profiles come in more than one version, such as a Claude
 and a Codex planner. They're one profile with variants, such as
-`greenfield/planner (2 variants)`. `agent-farm run` asks which one you
+`greenfield/planner (2)`. `agent-farm run` asks which one you
 want and shows each variant's model; `agent-farm profiles list` shows them too. Add `:codex` to the name to skip the question; without it, scripts get
 the default.
 
