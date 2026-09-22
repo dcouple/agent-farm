@@ -5,7 +5,7 @@ import os from 'node:os';
 import {execSync} from 'node:child_process';
 import * as p from '@clack/prompts';
 import {listProfiles, inspectProfile} from './inspect.js';
-import {build,modelSummary,orderedVariants,resolveProfile,splitVariant,variantLabel} from './compiler.js';
+import {build,modelSummary,orderedVariants,resolveProfile,splitVariant} from './compiler.js';
 import type {ResolvedWorkspace} from './workspaces.js';
 import {run} from './runtime.js';
 import {installPlugin} from './plugins.js';
@@ -274,7 +274,7 @@ export async function bareCommand(configRoot: string, directory: string) {
   const options: Choice[] = [
     ...profiles.map(prof => ({
       value: 'launch:' + prof.qualified,
-      label: prof.qualified + dim(variantLabel(prof)),
+      label: prof.qualified + (prof.variants ? dim(` (${prof.variants.length})`) : ''),
       hint: prof.variants ? `default ${prof.default_variant}` : `${prof.harness} · ${modelSummary({name: prof.model.name, reasoning: prof.model.reasoning === 'default' ? undefined : prof.model.reasoning, speed: prof.model.speed})}`,
     })),
     separator,
