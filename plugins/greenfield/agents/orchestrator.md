@@ -8,7 +8,7 @@ instructions_files:
 skills:
   - orchestrate-sessions
   - page
-description: Run several work items at once across worktrees by launching other profiles, checking on them, and keeping a live status board. Writes no code.
+description: "Run several tasks at once by starting other profiles, checking on them, and keeping one status page. Doesn't write code."
 args:
   docs:
     type: string
