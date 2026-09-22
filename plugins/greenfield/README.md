@@ -1,6 +1,6 @@
 # greenfield
 
-Role-named profiles that hand work to each other through documents, not conversation. The strongest model thinks and plans alone. Cheaper models execute work packages written for them. Verification happens once, at the end.
+Role-named profiles that hand work to each other through documents, not conversation. The strongest model thinks and plans alone. Cheaper models execute work packages written for them. Verification starts after implementation, with targeted revalidation after fixes.
 
 `greenfield` is self-contained: it shares no files with the `dcouple` plugin, so the two can be installed side by side and compared on the same work. It is at an early version. The planner and implementer paths are the ones to try first. The `orchestrator` profile is experimental and will change.
 
@@ -22,7 +22,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `page` | planner, orchestrator, one-shot | House standard for every HTML page written for a person |
 | `bug-intake` | bug-reporter | Reproduce, rank hypotheses, write the report, choose a route |
 | `work-packages` | implementer | The cycle up to the pull request: intake, preflight, who builds each package, verification |
-| `final-review` | implementer | One independent reviewer once (two for a dual review), one fix round, one follow-up, clean-up. Stops failed instead of looping |
+| `final-review` | implementer | One initial independent review (two reviewers for a dual review), targeted corrections and follow-ups until accepted, then clean-up |
 | `build-package` | implementer, worker | Implement one package from its handoff card |
 | `open-pr` | implementer, one-shot | Commit, push, and open a draft pull request that teaches the change |
 | `verify-app` | qa | Drive the running application and return a verdict with evidence |
@@ -41,7 +41,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `planner` | Claude, Fable 5.1 high | Discuss and explain by default. Brief, options, spike, and plan only when asked. Never writes code. May hand a trivial task straight to the implementer, with your yes | Every work package has observable checks and leaves no decision open |
 | `planner-codex` | Codex, Astra high | The same planner on Codex: same skills and the same `planner-identity.md`, so the two can be compared on the same problem. Its children run on their own Codex defaults, `socrates` runs on Astra, and it draws mock-up images itself, so it has no `mockup-artist` | Same |
 | `bug-reporter` | Codex, Sol high | Reproduce, write the report, choose a route | The report is filed. No fix is proposed |
-| `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa once, one independent reviewer once (two when the plan says `Review: dual`), clean up, open a draft PR | Checks pass and review is clean. Or `blocked` (something needed is missing), or `failed` (could not reach a verified, reviewed state). It never loops |
+| `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa, independent review (two when the plan says `Review: dual`), targeted corrections and revalidation, clean-up, draft PR | Required checks and qa pass and review is accepted. Stops for a genuine blocker, exhausted in-scope repair, or explicit user limit, not a fixed retry count |
 | `implementer-fast` | Codex, Astra medium, fast tier | A profile preset, not a second agent: `implementer` with a saved model override and `priority: speed` | Same |
 | `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model does whatever the work needs, its own way: no packages, no workers, no preflight, no reviewers. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Its skills (`plan`, `page`, `open-pr`) are there for their formats only, so plans, pages, and pull requests come out in the house form and publish to the `docs` destination | The work is done and a draft pull request is open. Or `blocked`, or `failed` |
 | `free-range` | Codex, Astra medium | The raw model. No skills, no pipeline. Also the control when measuring whether skills help | You say so |
@@ -80,7 +80,7 @@ agent-farm run greenfield/implementer --model gpt-5.6-luna --reasoning max --arg
 
 ## Child agents
 
-Children are not profiles. Each fires at one defined moment.
+Children are not profiles. Each fires at a defined stage; corrections can require targeted follow-ups.
 
 | Child | Bound to | Fires when | Model |
 | --- | --- | --- | --- |
@@ -92,7 +92,7 @@ Children are not profiles. Each fires at one defined moment.
 | `implementer` | planner | A separate headless run, only for a trivial task you approved | its own |
 | `worker` | implementer | A package the plan marks `economy` | Luna max |
 | `advisor` | implementer, orchestrator | The caller is stuck, about to deviate, or about to declare risky work done | Astra high |
-| `qa` | implementer, bug-reporter | Once after the last package when the plan has journey or visual checks. Also to reproduce bugs that need the running app | Sol medium |
+| `qa` | implementer, bug-reporter | After the last package when the plan has journey or visual checks, and for affected journeys after fixes. Also to reproduce bugs that need the running app | Sol medium |
 | `reviewer` | implementer | Once, when the feature is supposed to be finished. On the other vendor's model, bound as a process child on Claude | Fable 5.1 high. Astra high is the agent file's own default |
 | `second-reviewer` | implementer | Same moment, independently, only for a dual review: the plan says `Review: dual` or the launch says `review=dual`. The same `reviewer` agent file as a native child. Also stands in when `reviewer` cannot launch | Astra high |
 
@@ -148,11 +148,11 @@ Flow: explainer, brief, options (with spikes as needed), the person picks, plan,
 
 **Preflight.** Before changing code the implementer confirms the result can be verified: check commands run, the app starts and browser automation is available when there are journeys, test accounts and test-mode keys exist, the design reference opens, it can push and open a pull request, and the reviewer can launch. The planner lists what is needed under "Verification needs" in PLAN.md. Anything missing means `blocked`, and nothing is attempted.
 
-**Review.** One reviewer on the other vendor's model reviews the finished commit once. The planner writes `Review: dual` in the PLAN.md header when a mistake would be hard to undo (schema, auth, payments, production side effects), and then a second reviewer on the lead's vendor reviews the same commit independently and the must-fix list is the union of both. A finding that contradicts a locked decision is marked disputed and goes to the person. Then one fix round and one follow-up, in which a reviewer checks its own items against the fix diff. A second fix round happens only if a fix introduced something new.
+**Review.** One reviewer on the other vendor's model reviews the finished commit once. The planner writes `Review: dual` in the PLAN.md header when a mistake would be hard to undo (schema, auth, payments, production side effects), and then a second reviewer on the lead's vendor reviews the same commit independently and the must-fix list is the union of both. A finding that contradicts a locked decision is marked disputed and goes to the person. Fix confirmed must-fix items and repeat targeted follow-ups until resolved. Reviewers check their own items and regressions introduced by the fix diff; they do not restart whole-feature review. Re-run affected checks and qa journeys on the changed head. Nonblocking notes do not become work.
 
 **Clean up.** Once the review is accepted, the implementer removes what should not outlive the merge, in one deletion-only commit: scratch scripts, throwaway tests, debug output, spike code, committed qa artifacts (saved elsewhere first), and working documents under `docs/agent/`. It touches only files this run added, keeps tests that prove the feature, re-runs the checks, and ends its report with what was removed and what was left. It is skipped in a failed state, where the leftovers are evidence.
 
-**Failed.** The implementer stops in `state: failed`, leaves the pull request as a draft with a failure summary, and tells the person, when a must-fix survives its fix, when the second fix round still leaves problems, when a check cannot be determined, or when a package fails on every allowed tier. An undetermined check is never a pass. The orchestrator never relaunches a failed session on its own.
+**Corrections and stops.** A standard package no longer fails merely because its first advisor-guided retry failed, and review or qa has no fixed correction-round cap. The implementer records attempts and evidence, diagnoses repeated failures, and uses the advisor to change approach when progress stalls. It stops `blocked` for a missing decision, permission, or prerequisite it cannot safely resolve, and `failed` when diagnosis and advisor input leave no viable in-scope repair. Explicit user time, spend, and attempt limits still apply. Keep the PR as a draft with the stop reason, remaining findings, and what is needed to resume. An undetermined check is never a pass; more retries never authorize weaker checks or more scope. The orchestrator still does not relaunch a failed session on its own.
 
 ## Levels, children, and work without a plan
 

@@ -8,7 +8,7 @@ skills:
   - verify-app
 ---
 
-You prove behaviour in the running application. You are called once after the last work package when a plan has journey or visual checks, or by the bug-reporter to reproduce a problem. Use the `verify-app` skill.
+You prove behaviour in the running application. You are called after the last work package when a plan has journey or visual checks, again to revalidate affected journeys after fixes, or by the bug-reporter to reproduce a problem. Use the `verify-app` skill. On revalidation, record the new commit and run the affected journeys; earlier evidence is not proof of changed behaviour.
 
 You capture evidence. You do not judge design fidelity: capture the named screens at the same size and state as the design reference, and the reviewers compare them.
 

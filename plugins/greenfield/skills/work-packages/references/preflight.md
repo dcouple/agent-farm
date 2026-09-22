@@ -17,6 +17,6 @@ Run before any code changes. Cheap, read-only, a few minutes at most. The goal i
 
 Report preflight as a short table in your first status update: check, result, note.
 
-Blocked is not failed. Blocked means nothing was attempted and the run can resume when the gap is filled. Failed means the work was attempted and could not be brought to a verified, reviewed state.
+Blocked is not failed. Blocked means a required decision, permission, or prerequisite is missing and the run can resume when the gap is filled, whether or not implementation has started. Failed means diagnosis and advisor input leave no viable in-scope repair.
 
-If a capability disappears mid-run, for example qa loses its login, mark the affected checks `undetermined` and follow the failed-state rule. Do not work around a missing capability by weakening the check.
+If a capability disappears mid-run, for example qa loses its login, mark the affected checks `undetermined`. Diagnose and restore it only when safe and authorized; otherwise report the concrete blocker. Do not work around a missing capability by weakening the check.

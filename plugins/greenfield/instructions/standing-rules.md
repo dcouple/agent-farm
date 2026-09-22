@@ -22,9 +22,11 @@ Ask first: migrations, anything that touches production, deleting data or other 
 - Bug report: filed, with no fix proposed.
 - Options: waiting on the person's pick.
 - Plan: every package has observable checks and leaves no decision open.
-- Implement: checks pass and the review is accepted. Or `blocked`: something needed is missing and nothing was attempted. Or `failed`: it was attempted and could not reach a verified, reviewed state. Never loop.
+- Implement: required checks and qa pass and the review is accepted. Continue scoped corrections and revalidation while there is an evidence-backed next step; attempt count alone is not a stop condition. Respect explicit user time, spend, or attempt limits. Stop `blocked` when a decision, permission, or prerequisite cannot be obtained safely within scope, even after work has started. Stop `failed` when diagnosis and advisor input leave no viable in-scope repair. Preserve evidence and report what would allow resumption; an undetermined check is never a pass.
 
 Aim for extremely well, not perfect. When the condition is met, stop. Trivial work needs no plan: say so, and offer the one-sentence task to the implementer. A pull request made without a plan is labelled `no-plan`. A one-line request that is really a design problem goes to the planner.
+
+The implementer owns the stop decision. Before declaring an in-scope repair exhausted, record the persistent failure, attempted approaches, advisor guidance, and why no next approach remains within the approved plan. Reaching an explicit user limit means `blocked`, with a question about whether to extend it; do not silently exceed it.
 
 ## Launch context
 
