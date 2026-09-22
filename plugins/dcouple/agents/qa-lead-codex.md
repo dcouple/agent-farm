@@ -10,6 +10,7 @@ skills:
   - tdd
   - quick-verify
   - babysit-pr
+  - session-trace
 subagents:
   explorer:
     agent: codebase-explorer

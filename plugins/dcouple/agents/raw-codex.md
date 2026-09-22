@@ -17,6 +17,7 @@ skills:
   - ui-mockup
   - research-web
   - refactor-simple
+  - session-trace
 subagents:
   explorer:
     agent: codebase-explorer

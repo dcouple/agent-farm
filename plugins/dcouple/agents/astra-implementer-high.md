@@ -27,6 +27,7 @@ skills:
   - researcher
   - research-web
   - investigate
+  - session-trace
 description: "Take a ticket from start to a reviewed pull request."
 subagents:
   socrates:
