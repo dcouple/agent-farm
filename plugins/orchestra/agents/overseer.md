@@ -3,7 +3,7 @@ harness: claude
 model:
   name: claude-fable-5-1
 description: Orchestra on Claude Fable - discussion, briefs, and the /do pipeline with Codex roles dispatched through codex exec.
-skills: [codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop]
+skills: [codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop, arena, hillclimb]
 references: orchestra
 connections:
   linear:
