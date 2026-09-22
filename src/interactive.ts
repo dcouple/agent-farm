@@ -271,19 +271,29 @@ export async function bareCommand(configRoot: string, directory: string) {
 
   type Choice = { value: string; label: string; hint?: string };
   const separator = {value: '__sep__', label: dim('─────────────────────'), hint: ''};
+  // Tab shows every description under its profile; otherwise only the highlighted one shows, as its hint.
+  let showDescriptions = false;
   const options: Choice[] = [
-    ...profiles.map(prof => ({
-      value: 'launch:' + prof.qualified,
-      label: prof.qualified + (prof.variants ? dim(` (${prof.variants.length})`) : ''),
-      hint: prof.variants ? `default ${prof.default_variant}` : `${prof.harness} · ${modelSummary({name: prof.model.name, reasoning: prof.model.reasoning === 'default' ? undefined : prof.model.reasoning, speed: prof.model.speed})}`,
-    })),
+    ...profiles.map(prof => {
+      const name = prof.qualified + (prof.variants ? dim(` (${prof.variants.length})`) : '');
+      const summary = prof.description ?? (prof.variants ? `default ${prof.default_variant}` : `${prof.harness} · ${modelSummary({name: prof.model.name, reasoning: prof.model.reasoning === 'default' ? undefined : prof.model.reasoning, speed: prof.model.speed})}`);
+      return {
+        value: 'launch:' + prof.qualified,
+        get label() { return showDescriptions && prof.description ? `${name}\n${indentWrap(prof.description, '    ').map(dim).join('\n')}` : name; },
+        get hint() { return showDescriptions && prof.description ? undefined : summary; },
+      };
+    }),
     separator,
     {value: 'create', label: `${green('+')} Create new profile`},
     {value: 'edit', label: `${yellow('✎')} Edit a profile`},
     {value: 'inspect', label: `${cyan('⊕')} Inspect a profile`},
   ];
 
-  const selection = await p.select({message: 'What would you like to do?', options});
+  // Registered before the prompt's own listener, so the flag flips before it re-renders.
+  const toggleDescriptions = (_: unknown, key?: {name?: string}) => { if (key?.name === 'tab') showDescriptions = !showDescriptions; };
+  process.stdin.on('keypress', toggleDescriptions);
+  const selection = await p.select({message: `What would you like to do? ${dim('Tab: show all descriptions')}`, options});
+  process.stdin.off('keypress', toggleDescriptions);
   if (isCancel(selection)) bail();
   const action = selection as string;
   if (action === '__sep__') { await bareCommand(configRoot, directory); return; }
@@ -355,6 +365,16 @@ export async function bareCommand(configRoot: string, directory: string) {
   const profile = action.replace('launch:', '');
   const targetDir = await pickDirectory(directory);
   await launchProfile(configRoot, profile, targetDir);
+}
+
+function indentWrap(text: string, indent: string): string[] {
+  const width = Math.max((process.stdout.columns || 80) - indent.length - 20, 30), lines: string[] = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    if (line && line.length + word.length + 1 > width) { lines.push(indent + line); line = word; }
+    else line = line ? `${line} ${word}` : word;
+  }
+  return [...lines, indent + line];
 }
 
 function truncateSkills(names: string[], max: number): string {

@@ -76,8 +76,8 @@ how everything fits together, and offers to launch your first session.
 Agent Farm ships with profiles ready to use. Run `agent-farm` to pick one:
 
 ```
-◆  What would you like to do?
-│  ● greenfield/planner (2)
+◆  What would you like to do? Tab: show all descriptions
+│  ● greenfield/planner (2) (Help you understand a problem, decide what to do, and write the plan. Doesn't write code.)
 │  ○ orchestra/overseer (2)
 │  ○ dcouple/raw (3)
 │  ○ dcouple/qa-and-fix (2)
@@ -85,6 +85,9 @@ Agent Farm ships with profiles ready to use. Run `agent-farm` to pick one:
 │  ─────────────────────
 │  + Create new profile
 ```
+
+Highlight a profile to see what it's for, or press Tab to show every
+profile's description at once.
 
 **Plan** — `greenfield/planner` helps you understand a problem, decide what
 to do, and write the plan. Start here. For a fuzzy idea, `dcouple/ideate` talks
