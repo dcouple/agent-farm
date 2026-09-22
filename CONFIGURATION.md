@@ -886,9 +886,10 @@ reports the preset, resolved arguments, resolved model, and the agent/preset
 source of each model field. `--explain` and `--print-launch` add the actual
 launch metadata, including any flag sources and `ad hoc` override marker.
 
-`codex-issue-creator` aliases `astra-planner`. `codex-implementer` aliases the
-explicit `astra-implementer-high` entry point. The `implementer` entry point
-selects Medium Fast. Compatibility names preserve existing commands.
+`implementer` has two variants: `fast` (Medium Fast, the default) and `high`
+(the former `astra-implementer-high`). The `codex-implementer` and
+`codex-issue-creator` names were removed; use `implementer:high` and
+`astra-discuss`.
 
 ## Local MCP servers and native sign-in
 

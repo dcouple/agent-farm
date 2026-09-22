@@ -1,0 +1,11 @@
+variants:
+  opus:
+    agent: raw-claude
+  astra:
+    agent: raw-codex
+  sol:
+    agent: raw-codex
+    model:
+      name: gpt-5.6-sol
+      reasoning: medium
+default: opus
