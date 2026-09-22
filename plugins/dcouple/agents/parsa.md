@@ -33,7 +33,7 @@ skills:
   - tech-deep-dive
   - product-compare
   - investigate
-description: Parsa’s Astra/high workflow for discussion, mockups, tickets, implementation, and review.
+description: "Parsa's all-in-one setup: discuss ideas, mock up screens, write tickets, build, and review."
 subagents:
   socrates:
     agent: astra-socrates

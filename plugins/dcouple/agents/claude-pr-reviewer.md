@@ -8,7 +8,7 @@ skills:
   - review
   - create-plan
   - implementer
-description: Multi-agent PR review across 15 principles with project-aware discovery. Optionally plans and applies fixes.
+description: "Review a pull request from many angles at once and list what to fix, most important first."
 subagents:
   codebase-explorer:
     agent: codebase-explorer

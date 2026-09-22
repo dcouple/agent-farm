@@ -1,0 +1,6 @@
+variants:
+  claude:
+    agent: planner
+  codex:
+    agent: astra-discuss
+default: claude

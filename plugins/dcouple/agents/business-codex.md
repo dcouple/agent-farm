@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: high
-description: Business deliverables from context through discussion, spec, draft, review, and release.
+description: "Create a business document, such as a proposal, plan, or memo, from research and discussion through to a reviewed final draft."
 skills:
   - business-agent-skills
   - business-discussion
