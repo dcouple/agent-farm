@@ -23,6 +23,11 @@ into it. Under Agent Farm the same files live in this bundle instead:
 The Claude sub-agents (code-researcher, code-reviewer, frontend-verifier,
 plan-reviewer, socrates, web-researcher) are native subagents with those names.
 Codex roles are dispatched with \`codex exec\` through the codex skill.
+Implementation follows the bundled \`tdd\` skill. Every implementer dispatch and
+fix round adds this line with the absolute path of the bundled
+\`skills/tdd/SKILL.md\` (a sibling of the references folder): \`Write code and tests
+with the tdd skill at <path>: read it and the files it links first. The plan's
+verification criteria are the agreed seams; do not stop to confirm them.\`
 The repository's own AGENTS.md, CLAUDE.md, and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.`;
@@ -38,13 +43,15 @@ into it. Under Agent Farm the same files live in this bundle instead:
 - \`.claude/agents/<role>.md\` is \`.references/claude-agents/<role>.md\`.
 - \`.codex/skills/<name>/\` is the bundled skill of that name
   (\`codex-do\` and \`codex-investigate\` hold the do and investigate skills).
+Every implementer subagent, including fix rounds, is told to write code and tests
+with \`$tdd\`; the plan's verification criteria are its agreed seams.
 Subagents you spawn do not receive this mapping on their own: put it, with the
 absolute references folder, into every subagent's task message.
 The repository's own AGENTS.md and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.`;
 
-const AGENT_FARM_SKILLS=['babysit-pr'];
+const AGENT_FARM_SKILLS=['babysit-pr','tdd','codebase-design'];
 
 const EXTRA_SKILLS=[
  {from:'parsa/.claude/skills/arena',to:'arena',harness:'claude'},
@@ -206,7 +213,7 @@ Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> <skills
 
 \`/do\` still calls \`arena\` and \`hillclimb\`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [\`${skillsCommit.slice(0,7)}\`](https://github.com/greenfield-inc/skills/tree/${skillsCommit}): ${EXTRA_SKILLS.map(e=>`\`${e.from}\` as \`${e.to}\``).join(', ')}. No Codex \`arena\` exists, so the Codex \`/do\` arena step stays unavailable, as it was before.
 
-Both profiles also get Agent Farm's ${AGENT_FARM_SKILLS.map(n=>`\`${n}\``).join(', ')}, copied from \`plugins/greenfield/skills/\`, for watching a pull request's CI and review bots after \`/do\` or \`/prepare-pull-request\` opens it.
+Both profiles also get Agent Farm's ${AGENT_FARM_SKILLS.map(n=>`\`${n}\``).join(', ')}, copied from \`plugins/greenfield/skills/\`, \`babysit-pr\` watches a pull request's CI and review bots after \`/do\` or \`/prepare-pull-request\` opens it; \`tdd\` (with \`codebase-design\`) is how every implementer writes code and tests, passed to each implementer dispatch.
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
@@ -229,7 +236,7 @@ Skills with the same name in \`~/.claude/skills\` or \`~/.codex/skills\` are sti
  const walk=dir=>{for(const item of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,item.name);if(item.isDirectory())walk(file);else checksums[path.relative(plugin,file)]=createHash('sha256').update(fs.readFileSync(file)).digest('hex');}};
  for(const section of ['agents','profiles','references','skills'])walk(path.join(plugin,section));
  const lines=Object.keys(checksums).sort().map(key=>`  ${key}: ${checksums[key]}`);
- write('plugin.yaml',`name: orchestra\nversion: 0.1.1\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
+ write('plugin.yaml',`name: orchestra\nversion: 0.1.2\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
  console.log(`Vendored dcouple/orchestra@${commit.slice(0,7)} + dcouple/skills@${skillsCommit.slice(0,7)} (${EXTRA_SKILLS.length} skills): ${claudeSkills.length} Claude skills, ${codexSkills.length} Codex skills, ${roles.length} Claude agents, ${Object.keys(checksums).length} files`);
 }finally{fs.rmSync(source,{recursive:true,force:true});}
 

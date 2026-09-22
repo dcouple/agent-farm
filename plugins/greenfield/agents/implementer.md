@@ -11,6 +11,8 @@ skills:
   - build-package
   - open-pr
   - babysit-pr
+  - tdd
+  - codebase-design
   - final-review
 description: Carry a plan, a bug report, or a trivial task to a reviewed pull request, one work package at a time.
 args:

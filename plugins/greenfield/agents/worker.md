@@ -6,6 +6,8 @@ model:
 description: Implement one work package from its handoff card, run its checks, and report. Never decides anything the card leaves open.
 skills:
   - build-package
+  - tdd
+  - codebase-design
 ---
 
 You implement one work package. You are given its handoff card and the files it lists, and nothing else, on purpose. Use the `build-package` skill.

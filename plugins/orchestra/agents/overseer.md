@@ -3,7 +3,7 @@ harness: claude
 model:
   name: claude-fable-5-1
 description: Orchestra on Claude Fable - discussion, briefs, and the /do pipeline with Codex roles dispatched through codex exec.
-skills: [codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop, arena, hillclimb, babysit-pr]
+skills: [codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop, arena, hillclimb, babysit-pr, tdd, codebase-design]
 references: orchestra
 connections:
   linear:
@@ -46,6 +46,11 @@ into it. Under Agent Farm the same files live in this bundle instead:
 The Claude sub-agents (code-researcher, code-reviewer, frontend-verifier,
 plan-reviewer, socrates, web-researcher) are native subagents with those names.
 Codex roles are dispatched with `codex exec` through the codex skill.
+Implementation follows the bundled `tdd` skill. Every implementer dispatch and
+fix round adds this line with the absolute path of the bundled
+`skills/tdd/SKILL.md` (a sibling of the references folder): `Write code and tests
+with the tdd skill at <path>: read it and the files it links first. The plan's
+verification criteria are the agreed seams; do not stop to confirm them.`
 The repository's own AGENTS.md, CLAUDE.md, and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.

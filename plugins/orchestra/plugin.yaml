@@ -1,5 +1,5 @@
 name: orchestra
-version: 0.1.1
+version: 0.1.2
 cli_major: 0
 source:
   repository: https://github.com/dcouple/orchestra
@@ -7,9 +7,9 @@ source:
 checksums:
   agents/code-researcher.md: 102f108ede110dfbce5765cfad904e06e91cca837e5eb89173c34d1ef2ae5c32
   agents/code-reviewer.md: cc522a092937228c172cd5f4f30980b31f32219097453d245c1d384522c7c4fd
-  agents/codex-overseer.md: 33a9784a506f54d65cfe5e7eed4fea5069b1b09a1fc1768e025e8d8fd6d0c5c5
+  agents/codex-overseer.md: d4f59587d7893e73103bd145f46757878d91176bfbfe61a5d7d7b9fcbb055949
   agents/frontend-verifier.md: 871d4f452da1828b0985e22ca0526c4f52c6f981dc58c00fa4eef9a8a840101f
-  agents/overseer.md: 19bab10e73141cecb195a1ce6c26e7f4b866b44bfa1e51033ab1c5d19a37ba43
+  agents/overseer.md: ccb139c29605dea7c6b7b6ea56b68ebae96005bb56c3e8df6d5108447f2e2bc3
   agents/plan-reviewer.md: ab82b7bb841d4962c0365752fef280980ad10f23431201ee5917b95c88ec2699
   agents/socrates.md: bb9e47014243b812369b4a6d2e4ee01c42cdf57edfeddc48833e561a795398c8
   agents/web-researcher.md: 215d0afefbdb6ca95fe2ac779899f7beff069410eed4e6d22cebe3f59bc72573
@@ -77,6 +77,10 @@ checksums:
   skills/code-researcher/agents/openai.yaml: 96bb78d1776784cac6dfec7a59873c1cb656de3f2fff899fdc16ec3bf74ad19e
   skills/code-reviewer/SKILL.md: 28c32b108182607c5765fa0301e226af1c0b1fe59edce897823571ac09c6bfbf
   skills/code-reviewer/agents/openai.yaml: c772911f452939b98f24523a1d12c0d31c08a024dc56d9a6b9152537c78a581d
+  skills/codebase-design/DEEPENING.md: f3dd099ce99289bd213914d8ee3e2429b78309c3957ca4583f7659551b1d53c1
+  skills/codebase-design/DESIGN-IT-TWICE.md: 8e740bf98446dbd4dfdc132ac4346d9a7eedaf93de6a495889171cf7f99f16bd
+  skills/codebase-design/SKILL.md: 2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2
+  skills/codebase-design/agents/openai.yaml: edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f
   skills/codex-do/SKILL.md: ae4a998428db043b63b00c34206ed5c2deb62a4cb87bc6170520f91bcd8371a2
   skills/codex-do/references/implementation-plan.md: 2e6974cdd5d9d04b83742f39e763b71b426bff6982867db26f04559d6acc13fb
   skills/codex-do/references/pr-body.md: f7b683dca6f08c179b84228d934d606a5952bc9f27040995ecc490ec8864a2b8
@@ -121,4 +125,8 @@ checksums:
   skills/refactor-deep/SKILL.md: 3fbc6d5c365f63616ad59bbc73cb3c8ed28c20d9dbc2952e2424e3f27c26913b
   skills/refactor-simple/SKILL.md: 9ed0590e357181e80ffdf8b7098078068f6bc656d7ce66cb1fc33e0f8f33d20b
   skills/sentry-loop/SKILL.md: a535a5388b508cec3fb79eb9b5f4e7ab152638b612ab4c82f77801a52c77dc30
+  skills/tdd/SKILL.md: cb01f66bebfaa25fa1f88e6b7e769cd9fd9f35b1120b8563749820738814c927
+  skills/tdd/agents/openai.yaml: ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b
+  skills/tdd/mocking.md: 3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef
+  skills/tdd/tests.md: 859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a
   skills/web-researcher/SKILL.md: 1834a25ce691c958af4a65fea61db6d0ff05645af8affac77a57e0ffc4674cab

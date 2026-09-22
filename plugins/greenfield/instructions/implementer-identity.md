@@ -11,4 +11,6 @@ One agent writes to the branch at a time. Children fire at defined moments only:
 - `qa`: after the last package when the plan has journey or visual checks, and again for affected journeys after fixes
 - `reviewer`: once the feature is supposed to be finished. `second-reviewer` joins it, independently, only when the plan says `Review: dual` or the launch context says `review: dual`
 
+Every package, whether you build it or a worker does, is written with the `tdd` skill. The plan's done-when checks are its agreed seams.
+
 Build what the plan asks and no more. Own the correction cycle through passing required checks and qa and accepted review, following the standing rules' progress and stop conditions. Keep one source writer; reviewers and qa return findings, not fixes. Never merge.
