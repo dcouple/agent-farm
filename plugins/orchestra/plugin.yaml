@@ -1,5 +1,5 @@
 name: orchestra
-version: 0.1.0
+version: 0.1.1
 cli_major: 0
 source:
   repository: https://github.com/dcouple/orchestra
@@ -7,9 +7,9 @@ source:
 checksums:
   agents/code-researcher.md: 102f108ede110dfbce5765cfad904e06e91cca837e5eb89173c34d1ef2ae5c32
   agents/code-reviewer.md: cc522a092937228c172cd5f4f30980b31f32219097453d245c1d384522c7c4fd
-  agents/codex-overseer.md: c3ef786309d1833d373e61db10fb67e06801f03f39e0124fab7f087dfbb19f83
+  agents/codex-overseer.md: 33a9784a506f54d65cfe5e7eed4fea5069b1b09a1fc1768e025e8d8fd6d0c5c5
   agents/frontend-verifier.md: 871d4f452da1828b0985e22ca0526c4f52c6f981dc58c00fa4eef9a8a840101f
-  agents/overseer.md: 040780d4de61e9561a66639c41bef712adf23b6c470101d84802a4a36247f6c3
+  agents/overseer.md: 19bab10e73141cecb195a1ce6c26e7f4b866b44bfa1e51033ab1c5d19a37ba43
   agents/plan-reviewer.md: ab82b7bb841d4962c0365752fef280980ad10f23431201ee5917b95c88ec2699
   agents/socrates.md: bb9e47014243b812369b4a6d2e4ee01c42cdf57edfeddc48833e561a795398c8
   agents/web-researcher.md: 215d0afefbdb6ca95fe2ac779899f7beff069410eed4e6d22cebe3f59bc72573
@@ -70,6 +70,8 @@ checksums:
   references/orchestra/verification-methods.md: e6971c99a3c0cc47a1efbdb0e48377649c647c240be5460e369ecc3968c9605a
   references/orchestra/zones.md: 4928f84e857e068eeae9cefae39098737b07152c22b72d04abea84dc88b18b28
   skills/arena/SKILL.md: 7f5af3a32d0a3683f1e77b25b9a7bb1a46e20dbdfefc501b5f5854e27fad37e7
+  skills/babysit-pr/SKILL.md: 8d4b8a43e4426bbc9072c9aaa65523f1cb25aec03b164105fce26b62c858fe2c
+  skills/babysit-pr/metadata/codex.yaml: d9507221b14eeee91e4f46a39a69ab683b9b5f0959059232f1c1f785c96cddad
   skills/backend-verifier/SKILL.md: e359613b244345e5bf64028a6a150e7072faf44acb1dbf6b73dd3bfe05fd2304
   skills/code-researcher/SKILL.md: 38e4defe3bdc1a4725d44f427af04697be1cfd3a669759aac537ed5a62939b15
   skills/code-researcher/agents/openai.yaml: 96bb78d1776784cac6dfec7a59873c1cb656de3f2fff899fdc16ec3bf74ad19e

@@ -9,6 +9,7 @@ skills:
   - plan
   - page
   - open-pr
+  - babysit-pr
 args:
   docs:
     type: string

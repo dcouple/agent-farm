@@ -5,6 +5,8 @@ Regenerate with `node scripts/vendor-orchestra.mjs <orchestra checkout> <skills 
 
 `/do` still calls `arena` and `hillclimb`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [`a79b9fd`](https://github.com/greenfield-inc/skills/tree/a79b9fde21a94e1f21e9ce03ab0e9e5b9f61739e): `parsa/.claude/skills/arena` as `arena`, `parsa/.claude/skills/hillclimb` as `hillclimb`, `parsa/.codex/skills/hillclimb` as `codex-hillclimb`. No Codex `arena` exists, so the Codex `/do` arena step stays unavailable, as it was before.
 
+Both profiles also get Agent Farm's `babysit-pr`, copied from `plugins/greenfield/skills/`, for watching a pull request's CI and review bots after `/do` or `/prepare-pull-request` opens it.
+
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
 | `orchestra/overseer` | Claude, claude-fable-5-1 | The 11 Claude skills (codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop) plus arena and hillclimb, the 6 Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through `codex exec` as in orchestra. |
