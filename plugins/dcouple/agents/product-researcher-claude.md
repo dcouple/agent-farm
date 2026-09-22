@@ -1,9 +1,8 @@
 ---
-harness: codex
+harness: claude
 model:
-  name: gpt-6-astra
+  name: claude-opus-5-5
   reasoning: high
-  speed: fast
 skills:
   - deep-dive
   - deep-dive-refresh
@@ -20,6 +19,10 @@ description: "Research a technology, product, or approach and get back a clear, 
 subagents:
   cold-reader:
     agent: astra-researcher-reader
+    harness: claude
+    model:
+      name: claude-sonnet-5
+      reasoning: medium
     mode: native
 ---
 

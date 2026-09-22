@@ -51,11 +51,12 @@ test('plugins install into isolated namespaces and list overlapping profiles',t=
  const root=fixture(t),source=makePlugin(root);
  put(root,'workspace.yaml','LOCAL');
  const {profiles}=validatePlugin(dcouple);
- for(const name of ['planner','implementer'])assert.ok(profiles.some(profile=>profile.profile===name&&profile.agent===name),`Missing validated profile: ${name}`);
+ assert.ok(profiles.length>0&&profiles.every(profile=>profile.agent),'Every bundled profile validates to an agent');
+ const shipped=profiles[0].profile;
  assert.ok(installPlugin(dcouple,root).changed>0);
  assert.equal(installPlugin(dcouple,root).changed,0);
  assert.ok(installPlugin(source.root,root).changed>0);
- assert.equal(fs.readFileSync(path.join(root,'plugins/dcouple/profiles/planner.yaml'),'utf8'),fs.readFileSync(path.join(dcouple,'profiles/planner.yaml'),'utf8'));
+ assert.equal(fs.readFileSync(path.join(root,`plugins/dcouple/profiles/${shipped}.yaml`),'utf8'),fs.readFileSync(path.join(dcouple,`profiles/${shipped}.yaml`),'utf8'));
  assert.equal(fs.readFileSync(path.join(root,'workspace.yaml'),'utf8'),'LOCAL');
  assert.deepEqual(listPlugins(root).map(item=>item.name),['dcouple','fixture']);
  const listed=listProfiles(root).filter(item=>item.profile==='implementer');

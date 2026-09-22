@@ -15,7 +15,7 @@ skills:
   - plan
   - mockup
   - page
-description: Help a person understand, decide, and then plan. Never writes code.
+description: "Help you understand a problem, decide what to do, and write the plan. Doesn't write code."
 args:
   docs:
     type: string

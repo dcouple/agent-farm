@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: medium
-description: The model with a few house habits - PRs, tickets, TDD, and watching CI - and no pipeline.
+description: "The AI model on its own, plus a few good habits for pull requests, tickets, testing, and checking its work. Best for small, clear tasks."
 skills:
   - prepare-pr
   - create-ticket
@@ -14,6 +14,9 @@ skills:
   - smallest-test
   - investigate
   - quick-verify
+  - ui-mockup
+  - research-web
+  - refactor-simple
 subagents:
   explorer:
     agent: codebase-explorer
@@ -39,6 +42,7 @@ You work directly in this repository with no pipeline imposed: do the work your 
 - Open or update a pull request with `prepare-pr`, then watch it with `babysit-pr` until checks and review bots are green.
 - Capture work or a follow-up as a ticket with `create-ticket`.
 - For a bug, use `investigate`: reproduce it and prove the root cause before fixing.
+- Offer `ui-mockup` before building a new screen, look things up with `research-web`, and run `refactor-simple` for a cleanup pass on your own diff.
 - Use `handoff` to pass work to another session, and `smallest-test` to settle an uncertainty cheaply.
 
 Helpers, when they are worth it:

@@ -5,6 +5,11 @@ model:
   reasoning: high
 skills:
   - astra-ticket
+  - implement
+  - refactor
+  - refactor-simple
+  - refactor-deep
+  - refactor-apply
   - create-ticket
   - ui-mockup
   - explain-visually
@@ -22,7 +27,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: Take a ticket through implementation, review, and optional QA.
+description: "Take a ticket from start to a reviewed pull request."
 subagents:
   socrates:
     agent: astra-socrates
@@ -60,6 +65,9 @@ subagents:
   qa:
     agent: qa
     mode: native
+  refactor:
+    agent: refactor
+    mode: native
   cold-reader:
     agent: cold-reader
     mode: native
@@ -83,3 +91,7 @@ If no starter message is supplied, wait for the user's request.
 Use the configured role names: socrates for premise review; worker for implementation and fixes; pr-preparer for PR preparation; pr-reviewer for PR review; qa for frontend/browser and backend/end-to-end verification with pr-test-automation. Use implementation-reviewer, plan-reviewer, codebase-explorer, and researcher for their corresponding supporting skills. For cold-read, use cold-reader with fresh context, not a reused reviewer. Pass workflow overrides and evidence requirements with every assignment.
 
 Batch the astra-ticket validation lanes against one head. Dispatch correctness-reviewer, integration-reviewer, and intent-reviewer independently with their skill-defined scopes; keep pr-reviewer for feedback inspection or the declared final holistic fallback. Run in waves when concurrency is limited. The parent collects CI/automated review state, reconciles findings, serializes fixes and publication, and verifies the final current-head gate.
+
+Use create-ticket for discussion and ticket capture; offer ui-mockup for UI changes before implementation. For an approved plan, orchestrate implement: pass its bundled path, plan and intent artifacts to the Luna Max worker for implementation and fixes. Override implement's direct-current-session instruction for this profile; the Astra parent does not become the code writer. The worker returns at review gates; the parent dispatches fresh implementation-reviewer and adversarial/cold-reader roles, reconciles findings, and sends fixes back to worker. The parent verifies the final gates before moving the plan to done. Keep optional refactor work explicitly requested; its presence does not make it a ticket gate. For refactor, use the single configured refactor role with an explicit analysis, specialist-review, adversarial-review, or apply assignment. Dispatch fresh instances for independent scopes; all instances can access the refactoring skills, but only the one assigned an authorized apply plan may edit. The parent runs the refactor workflow and its helper dispatch; a leaf instance returns at delegation gates. The parent supplies fresh adversarial and cold-read passes when a leaf helper needs them; leaf helpers return at that gate instead of bypassing it. Preserve the task’s model and no-archive instructions in every dispatch.
+
+Image generation and openai-docs are runtime-provided skills/capabilities. Check their availability when needed; do not invent a bundled substitute or silently use a paid API fallback. Grain is optional and follows the called skill’s fallback.

@@ -14,7 +14,7 @@ skills:
   - tdd
   - codebase-design
   - final-review
-description: Carry a plan, a bug report, or a trivial task to a reviewed pull request, one work package at a time.
+description: "Build what a plan describes, step by step, and open a reviewed pull request."
 args:
   priority:
     values: [usage, speed]
