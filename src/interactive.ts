@@ -5,7 +5,7 @@ import os from 'node:os';
 import {execSync} from 'node:child_process';
 import * as p from '@clack/prompts';
 import {listProfiles, inspectProfile} from './inspect.js';
-import {build,orderedVariants,resolveProfile,splitVariant,variantLabel} from './compiler.js';
+import {build,modelSummary,orderedVariants,resolveProfile,splitVariant,variantLabel} from './compiler.js';
 import type {ResolvedWorkspace} from './workspaces.js';
 import {run} from './runtime.js';
 import {installPlugin} from './plugins.js';
@@ -86,7 +86,7 @@ export async function chooseVariant(configRoot: string, requested: string, works
     options: orderedVariants(resolved.variants, resolved.default_variant).map(variant => {
       // A broken variant shows its error instead of blocking the ones that work.
       let hint: string;
-      try { const agent = resolveProfile(configRoot, `${requested}:${variant}`, workspace).nodes.main!; hint = `${agent.harness} · ${agent.model}`; }
+      try { const agent = resolveProfile(configRoot, `${requested}:${variant}`, workspace).nodes.main!; hint = `${agent.harness} · ${modelSummary({name: agent.model, reasoning: agent.reasoning_effort, speed: agent.speed})}`; }
       catch (error) { hint = `cannot launch: ${error instanceof Error ? error.message : error}`; }
       return {value: variant, label: variant, hint: `${hint}${variant === resolved.default_variant ? ' · default' : ''}`};
     }),
@@ -275,7 +275,7 @@ export async function bareCommand(configRoot: string, directory: string) {
     ...profiles.map(prof => ({
       value: 'launch:' + prof.qualified,
       label: prof.qualified + dim(variantLabel(prof)),
-      hint: `${prof.variants ? 'default ' + prof.default_variant + ' · ' : ''}${prof.variants && prof.default_variant === prof.harness ? '' : prof.harness + ' · '}${prof.model.name}${prof.model.reasoning && prof.model.reasoning !== 'default' ? ' · ' + prof.model.reasoning : ''}`,
+      hint: prof.variants ? `default ${prof.default_variant}` : `${prof.harness} · ${modelSummary({name: prof.model.name, reasoning: prof.model.reasoning === 'default' ? undefined : prof.model.reasoning, speed: prof.model.speed})}`,
     })),
     separator,
     {value: 'create', label: `${green('+')} Create new profile`},

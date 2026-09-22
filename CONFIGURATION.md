@@ -114,8 +114,9 @@ Select a variant with `NAME:VARIANT`, for example `agent-farm run
 greenfield/planner:codex`. A name without a variant runs the default, so scripts,
 orchestrators, and headless launches never prompt. An interactive `agent-farm
 run` of a profile with more than one variant asks which to launch, and the
-picker and `profiles list` show the variants in parentheses, default first:
-`greenfield/planner (claude · codex)`. `run`, `inspect`, `load`, and `set
+picker and `profiles list` show each variant with its model and reasoning,
+default first: `greenfield/planner (claude: claude-fable-5-1 high · codex:
+gpt-6-astra high)`. `run`, `inspect`, `load`, and `set
 global` all accept `NAME:VARIANT`; `unload` and `unset global` also take it,
 and remove whichever variant of that profile is loaded.
 

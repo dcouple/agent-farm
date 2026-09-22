@@ -61,7 +61,7 @@ test('listings show one entry per profile with its variants, default first',t=>{
  assert.deepEqual(planner.variants,['claude','codex']);assert.equal(planner.default_variant,'codex');assert.equal(planner.harness,'codex');
  const result=spawnSync(process.execPath,[cli,'profiles','list','--config-root',f.root],{encoding:'utf8',env:{...process.env,AGENT_FARM_TELEMETRY:'off'}});
  assert.equal(result.status,0,result.stderr);
- assert.match(result.stdout,/^planner \(codex · claude\) -> planner-codex/m);
+ assert.match(result.stdout,/^planner \(codex: gpt-6-astra high · claude: claude-fable-5-1\) -> planner-codex/m);
  assert.match(result.stdout,/^plain -> planner-claude/m);
 });
 
