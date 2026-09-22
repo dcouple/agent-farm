@@ -890,7 +890,7 @@ launch metadata, including any flag sources and `ad hoc` override marker.
 `implementer` has two variants: `fast` (Medium Fast, the default) and `high`
 (the former `astra-implementer-high`). The `codex-implementer` and
 `codex-issue-creator` names were removed; use `implementer:high` and
-`astra-discuss`.
+`ticket-writer:codex`.
 
 ## Local MCP servers and native sign-in
 
