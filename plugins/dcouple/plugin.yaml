@@ -1,5 +1,5 @@
 name: dcouple
-version: 0.1.7
+version: 0.1.8
 cli_major: 0
 source:
   repository: https://github.com/dcouple/skills
@@ -10,6 +10,7 @@ checksums:
   agents/astra-researcher-reader.md: df47010281e0509e95b70c552079a7d5077402d734ebb1b98548f5dcec3744b6
   agents/astra-researcher.md: 225b9ceea551ff9c6179484b273cfdc4ab646670a9abd8aad27f12a9c88e4013
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
+  agents/audits.md: ebd34d98b1ee242e361db610c539d8828c3de5b9c48dbe997899d9b1132d9d46
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764
   agents/correctness-reviewer.md: f945974b435e8d841f35dd2b7d2b4f1c44e83c9f5504967a90e8bd267c747584
@@ -62,6 +63,7 @@ checksums:
   profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/astra-researcher.yaml: d38b61c0aed05a3f5449c607fa2996cf1b0071dffb1605708d69e6f04cecc5a8
+  profiles/audits.yaml: cebb343953bdfd3fcdac2ab936ba6590c4c4198ee21fa9d284c8777ce4377c16
   profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/codex-issue-creator.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
   profiles/exp1-luna-xhigh.yaml: aa55db7f0d1d9076d58e75965ebbb3d91c1505d1af8f2c683780f3e5ae3d8e27
@@ -86,6 +88,7 @@ checksums:
   profiles/sw-luna-orchestra.yaml: 20268d0de794b244a35b01846470ce71aa00b576f5d31dfe16b4e3f9b73ad261
   profiles/sw-opus46-loop.yaml: 41b69b63c969ef4e837927ac4545cf51c957088932bb04ea14b3a187b4e51fee
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
+  skills/audits/SKILL.md: e31d53eab2cd3dc216f1b4453c950765738a3e0903e7a5a5a6d1534569a48a9e
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b
