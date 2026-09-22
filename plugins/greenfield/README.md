@@ -28,6 +28,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `tdd` | implementer, worker, one-shot | Red-green test-driven development through public interfaces. From [mattpocock/skills](https://github.com/mattpocock/skills/tree/c55ee46073ed/skills/engineering/tdd) at `c55ee46`, unchanged (MIT; see `THIRD_PARTY_NOTICES.md`) |
 | `codebase-design` | implementer, worker, one-shot | Deep-module and seam vocabulary that `tdd` consults. From [mattpocock/skills](https://github.com/mattpocock/skills/tree/c55ee46073ed/skills/engineering/codebase-design) at `c55ee46`, unchanged (MIT; see `THIRD_PARTY_NOTICES.md`) |
 | `babysit-pr` | implementer, one-shot | Watch the open pull request's CI and review bots until green: fix real findings, answer false positives, rebase. Merges only when asked |
+| `session-trace` | implementer | Publish the session as a trace page in Grain: story, key moments, timeline, subagents, and PRs. Runs on request, or when the task already has a Grain page |
 | `verify-app` | qa | Drive the running application and return a verdict with evidence |
 | `gather-evidence` | investigator | Answer one factual question about the code or a running system |
 | `web-research` | researcher | Answer one question from outside sources, with citations |

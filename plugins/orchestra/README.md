@@ -5,7 +5,7 @@ Regenerate with `node scripts/vendor-orchestra.mjs <orchestra checkout> <skills 
 
 `/do` still calls `arena` and `hillclimb`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [`a79b9fd`](https://github.com/greenfield-inc/skills/tree/a79b9fde21a94e1f21e9ce03ab0e9e5b9f61739e): `parsa/.claude/skills/arena` as `arena`, `parsa/.claude/skills/hillclimb` as `hillclimb`, `parsa/.codex/skills/hillclimb` as `codex-hillclimb`. No Codex `arena` exists, so the Codex `/do` arena step stays unavailable, as it was before.
 
-Both variants also get Agent Farm's `babysit-pr`, `tdd`, `codebase-design`, copied from `plugins/greenfield/skills/`, `babysit-pr` watches a pull request's CI and review bots after `/do` or `/prepare-pull-request` opens it; `tdd` (with `codebase-design`) is how every implementer writes code and tests, passed to each implementer dispatch.
+Both variants also get Agent Farm's `babysit-pr`, `tdd`, `codebase-design`, `session-trace`, copied from `plugins/greenfield/skills/`, `babysit-pr` watches a pull request's CI and review bots after `/do` or `/prepare-pull-request` opens it; `tdd` (with `codebase-design`) is how every implementer writes code and tests, passed to each implementer dispatch; `session-trace` publishes the run as a trace page in Grain when the task has one.
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |

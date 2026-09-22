@@ -51,7 +51,7 @@ The repository's own AGENTS.md and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.`;
 
-const AGENT_FARM_SKILLS=['babysit-pr','tdd','codebase-design'];
+const AGENT_FARM_SKILLS=['babysit-pr','tdd','codebase-design','session-trace'];
 
 const EXTRA_SKILLS=[
  {from:'parsa/.claude/skills/arena',to:'arena',harness:'claude'},
@@ -252,7 +252,7 @@ Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> <skills
 
 \`/do\` still calls \`arena\` and \`hillclimb\`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [\`${skillsCommit.slice(0,7)}\`](https://github.com/greenfield-inc/skills/tree/${skillsCommit}): ${EXTRA_SKILLS.map(e=>`\`${e.from}\` as \`${e.to}\``).join(', ')}. No Codex \`arena\` exists, so the Codex \`/do\` arena step stays unavailable, as it was before.
 
-Both variants also get Agent Farm's ${AGENT_FARM_SKILLS.map(n=>`\`${n}\``).join(', ')}, copied from \`plugins/greenfield/skills/\`, \`babysit-pr\` watches a pull request's CI and review bots after \`/do\` or \`/prepare-pull-request\` opens it; \`tdd\` (with \`codebase-design\`) is how every implementer writes code and tests, passed to each implementer dispatch.
+Both variants also get Agent Farm's ${AGENT_FARM_SKILLS.map(n=>`\`${n}\``).join(', ')}, copied from \`plugins/greenfield/skills/\`, \`babysit-pr\` watches a pull request's CI and review bots after \`/do\` or \`/prepare-pull-request\` opens it; \`tdd\` (with \`codebase-design\`) is how every implementer writes code and tests, passed to each implementer dispatch; \`session-trace\` publishes the run as a trace page in Grain when the task has one.
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
@@ -274,7 +274,7 @@ Skills with the same name in \`~/.claude/skills\` or \`~/.codex/skills\` are sti
  const walk=dir=>{for(const item of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,item.name);if(item.isDirectory())walk(file);else checksums[path.relative(plugin,file)]=createHash('sha256').update(fs.readFileSync(file)).digest('hex');}};
  for(const section of ['agents','profiles','references','skills'])walk(path.join(plugin,section));
  const lines=Object.keys(checksums).sort().map(key=>`  ${key}: ${checksums[key]}`);
- write('plugin.yaml',`name: orchestra\nversion: 0.1.6\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
+ write('plugin.yaml',`name: orchestra\nversion: 0.1.7\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
  console.log(`Vendored dcouple/orchestra@${commit.slice(0,7)} + dcouple/skills@${skillsCommit.slice(0,7)} (${EXTRA_SKILLS.length} skills): ${claudeSkills.length} Claude skills, ${codexSkills.length} Codex skills, ${roles.length} Claude agents, ${Object.keys(checksums).length} files`);
 }finally{fs.rmSync(source,{recursive:true,force:true});}
 
