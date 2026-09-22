@@ -7,7 +7,7 @@ instructions_files:
   - ../instructions/standing-rules.md
 skills:
   - bug-intake
-description: Reproduce broken behaviour and write a bug report someone else can act on. Never fixes.
+description: "Reproduce a bug and write a clear report someone else can fix from. Doesn't fix it itself."
 args:
   parent:
     type: path

@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: medium
   speed: fast
-description: One model does whatever the work needs, its own way. It knows the house formats for plans, pages, and pull requests, and nothing else is imposed on it.
+description: "One AI does the whole task its own way, then opens a pull request."
 skills:
   - plan
   - page
