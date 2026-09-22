@@ -63,7 +63,8 @@ test('plugins install into isolated namespaces and list overlapping profiles',t=
  assert.ok(listed.every(item=>item.ambiguous));
  const result=cliRun(root,['profiles','list']);
  assert.equal(result.status,0,result.stderr);
- assert.match(result.stdout,/dcouple\/implementer -> .*\[ambiguous bare name\].*plugin dcouple 0\.1\.7/);
+ const bundledVersion=validatePlugin(dcouple).info.version.replaceAll('.','\\.');
+ assert.match(result.stdout,new RegExp(`dcouple/implementer -> .*\\[ambiguous bare name\\].*plugin dcouple ${bundledVersion}`));
  assert.match(result.stdout,/fixture\/implementer -> .*\[ambiguous bare name\].*plugin fixture 1\.0\.0/);
 });
 
