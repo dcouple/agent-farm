@@ -1,1 +1,6 @@
-agent: implementer
+variants:
+  fast:
+    agent: implementer
+  high:
+    agent: astra-implementer-high
+default: fast

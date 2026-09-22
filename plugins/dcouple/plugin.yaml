@@ -1,20 +1,18 @@
 name: dcouple
-version: 0.1.10
+version: 0.1.12
 cli_major: 0
 source:
   repository: https://github.com/dcouple/skills.git
-  commit: cebc79f7c56efcc877f9a8c209370e54d39b4eca
+  commit: 77ff104d35bb23aba6cd93ea58037ae11960e56d
 checksums:
-  profiles/astra-audits.yaml: bd4804cf400629623f0767c63be50172fe5fa3359117fdc2a5a49ae84b591185
   profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
-  profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/astra-researcher.yaml: d38b61c0aed05a3f5449c607fa2996cf1b0071dffb1605708d69e6f04cecc5a8
-  profiles/audits.yaml: cebb343953bdfd3fcdac2ab936ba6590c4c4198ee21fa9d284c8777ce4377c16
-  profiles/codex-implementer.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
-  profiles/codex-issue-creator.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
-  profiles/implementer.yaml: 3ddddf7340aceb017a41106802360ffe8154a75575c919d4c5ba63b7469edb4a
+  profiles/audits.yaml: b2be432724574ff46929c836f1aeb90487a87a131fde62d93c49708417e97cbd
+  profiles/implementer.yaml: 105ab9475ee5f7883256e18e545f5b761bcd9a95a90f3522f37e5cc6b3a5e42e
   profiles/parsa.yaml: f650fdeeed28391b5463a8bc0ed8db687b92332b7218273d72efb8e193eba913
   profiles/planner.yaml: c05c37771e490227fe8b0e1fd701d59a92dfa029c764ce25ed29f9c987577232
+  profiles/raw.yaml: 62406456ffdf5a2aa53af4c2a7abf98ecb5b8693e837b5f14ef1e5f749de2ab1
+  profiles/reviewer.yaml: 61ab5550917b4f3126b1cd75a51ebca80a5b763b63fada221feeb24c0965fd11
   profiles/seo.yaml: 4c4a17bc184a65c7581c29daf56582a64ba8b4801f72d86d7073ea4af2211d2d
   agents/astra-audits.md: 141109546e7fa50eb058d7cf215fd27fa9b583ebd05e2b00e21e858b6b0cd7d8
   agents/astra-discuss.md: 3652889044b8bb77611bd6d911a00a9652d74bc86276df964406f11f53e4b892
@@ -23,7 +21,9 @@ checksums:
   agents/astra-researcher.md: 225b9ceea551ff9c6179484b273cfdc4ab646670a9abd8aad27f12a9c88e4013
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
   agents/audits.md: 42296d768d0e381d20d3b8a613eedbccd61c637de236d736e67789e1a0446a78
+  agents/claude-pr-reviewer.md: 0cd5b5e8f171b30ab0f9d0f77b6da7575e3b6b38f08237dfbe6ca5aad067b7ed
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
+  agents/codex-pr-reviewer.md: 180e4a410f69a2984724734b90542fc34c2c8cc0c72f80b7d24fd105a84d78be
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764
   agents/correctness-reviewer.md: f945974b435e8d841f35dd2b7d2b4f1c44e83c9f5504967a90e8bd267c747584
   agents/implementation-reviewer.md: 6dd4e83019c90b58da949a85cff7896203e6bce93905bd4a1fd676e87dad6add
@@ -36,6 +36,8 @@ checksums:
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
   agents/pr-reviewer.md: fd0b0660602e2503ff1f092d8f2bf7c61adc034d987f44c08988ffce60642643
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
+  agents/raw-claude.md: e294b7ae7b850ab0e729ea5131f91b1600df8af8b5d1a7afb7889d3dcfc090a8
+  agents/raw-codex.md: 653b734a2ae1a268d0cf13b02874b1efdcafc4ecd8daa9d8cb80b2a988e327f8
   agents/refactor.md: c0207fd6f06470bedb6d2cc4248c24490c8de1bd52d3a766dd2df009e2c231ba
   agents/researcher.md: b73f89b196333bcec5405fba1d4ba0aefe154b31fdd298e623c03d438a69b2bb
   agents/seo.md: 3cc59d902c92f191dfb9c60cf776174557c53fbec5121fa2e389c4caf79deaf2
@@ -45,6 +47,12 @@ checksums:
   skills/audits/CRITERIA.md: cf7110b4c7de828b5b9137c6f189fc68cecb5beab13d74be22c2b301100c7841
   skills/audits/metadata/codex.yaml: 4c543c8345d9744cce5bf33b02c6f541fed473f227c1f376defd1c17eaa54f2c
   skills/audits/SKILL.md: 4546afbc16125d03d6bab35f8889f486ba50d6bf059a7d747fb9680f8e282b4b
+  skills/babysit-pr/metadata/codex.yaml: d9507221b14eeee91e4f46a39a69ab683b9b5f0959059232f1c1f785c96cddad
+  skills/babysit-pr/SKILL.md: 8d4b8a43e4426bbc9072c9aaa65523f1cb25aec03b164105fce26b62c858fe2c
+  skills/codebase-design/agents/openai.yaml: edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f
+  skills/codebase-design/DEEPENING.md: f3dd099ce99289bd213914d8ee3e2429b78309c3957ca4583f7659551b1d53c1
+  skills/codebase-design/DESIGN-IT-TWICE.md: 8e740bf98446dbd4dfdc132ac4346d9a7eedaf93de6a495889171cf7f99f16bd
+  skills/codebase-design/SKILL.md: 2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b
@@ -86,6 +94,7 @@ checksums:
   skills/prepare-pr/assets/pr-walkthrough.html: d3028a699a3d3db47b1fd715042ce383a133dd10ce1bbfec5a6c1580f26e139a
   skills/prepare-pr/references/writing-guide.md: 16b34fde6e45c9a3f163efe5e31dcb1cbedd31bbdde9823977fe84d9a62013f3
   skills/prepare-pr/SKILL.md: dc29840b85f1cc30ee4a92a79a771a13255ba8ac2eab16ef4b6c1ef828e856c9
+  skills/principled-review/SKILL.md: a3cbd9addaa762e9b7b35c036b98b107e06e4c0121e46374d8714533ee756639
   skills/product-compare/metadata/codex.yaml: 0495b94cd57246a5676d1ae10712341587d96e85a12b985403f7424afa8349ae
   skills/product-compare/SKILL.md: 484ffd10d695baf8af0b8462e4afb999b9cae42e9aac38563265330abe64c34f
   skills/refactor/references/specialist-review.md: e9615b1a9172b06cb65179e5a166d04285dccd855f3e3195ab7b5a11f6118c07
@@ -109,6 +118,10 @@ checksums:
   skills/seo-writing-framework/SKILL.md: e38ba974dd465af400e7f3d079aae045227a414b068df50cca0682d62768b5e0
   skills/simple-plan/SKILL.md: f44e315d73df99f49dcda35335216181e4829733e4c6103cb4f6a875bfece6d3
   skills/smallest-test/SKILL.md: 4cf2ff62440d498328e66b76a81c754a1429862256b0481a750cfa7409acc437
+  skills/tdd/agents/openai.yaml: ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b
+  skills/tdd/mocking.md: 3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef
+  skills/tdd/SKILL.md: cb01f66bebfaa25fa1f88e6b7e769cd9fd9f35b1120b8563749820738814c927
+  skills/tdd/tests.md: 859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a
   skills/tech-deep-dive/metadata/codex.yaml: d47507a02e6eb5fa552ea35c7ffc6c58a48d1b7bbb22361e2777d49a6dc6ff1f
   skills/tech-deep-dive/references/bright-data.md: 22e4a2d85b6fa5e405e007dff23aa08ef0281bcf8d6bc4d852786b196dbea1d7
   skills/tech-deep-dive/references/reddit.md: 98c59ca2e5244834c2ebbc41b391b9116a4ef22b6ce3f24af66e5d39a758f823

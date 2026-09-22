@@ -1,1 +1,6 @@
-agent: audits
+variants:
+  claude:
+    agent: audits
+  codex:
+    agent: astra-audits
+default: claude
