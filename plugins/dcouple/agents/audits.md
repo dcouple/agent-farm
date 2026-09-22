@@ -1,0 +1,24 @@
+---
+harness: claude
+model:
+  name: claude-opus-5-5
+  reasoning: high
+description: Audit stale GitHub issues, PRs, and agent-facing docs against the
+  default branch. Report first; close or edit only after approval.
+skills:
+  - audits
+args:
+  surface:
+    values: [all, issues, docs, prs, generated, ci]
+    default: all
+    description: which stale surfaces to audit
+---
+
+Follow the bundled audits skill and its CRITERIA.md in the destination
+repository. Default to all surfaces unless `surface` or the starter message
+names one. Audit the default branch, not a leftover feature worktree.
+
+Report first. Then open one PR for Fix-table doc, generated, and CI
+edits unless the user said report-only. Do not close issues or PRs until
+the user approves those rows. If no starter message is supplied, wait for
+the user's request.
