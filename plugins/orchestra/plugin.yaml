@@ -79,7 +79,6 @@ checksums:
   skills/code-reviewer/agents/openai.yaml: c772911f452939b98f24523a1d12c0d31c08a024dc56d9a6b9152537c78a581d
   skills/codebase-design/DEEPENING.md: f3dd099ce99289bd213914d8ee3e2429b78309c3957ca4583f7659551b1d53c1
   skills/codebase-design/DESIGN-IT-TWICE.md: 8e740bf98446dbd4dfdc132ac4346d9a7eedaf93de6a495889171cf7f99f16bd
-  skills/codebase-design/LICENSE: 0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5
   skills/codebase-design/SKILL.md: 2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2
   skills/codebase-design/agents/openai.yaml: edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f
   skills/codex-do/SKILL.md: ae4a998428db043b63b00c34206ed5c2deb62a4cb87bc6170520f91bcd8371a2
@@ -126,7 +125,6 @@ checksums:
   skills/refactor-deep/SKILL.md: 3fbc6d5c365f63616ad59bbc73cb3c8ed28c20d9dbc2952e2424e3f27c26913b
   skills/refactor-simple/SKILL.md: 9ed0590e357181e80ffdf8b7098078068f6bc656d7ce66cb1fc33e0f8f33d20b
   skills/sentry-loop/SKILL.md: a535a5388b508cec3fb79eb9b5f4e7ab152638b612ab4c82f77801a52c77dc30
-  skills/tdd/LICENSE: 0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5
   skills/tdd/SKILL.md: cb01f66bebfaa25fa1f88e6b7e769cd9fd9f35b1120b8563749820738814c927
   skills/tdd/agents/openai.yaml: ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b
   skills/tdd/mocking.md: 3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef
