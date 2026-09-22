@@ -39,7 +39,7 @@ export interface Agent {
   connections: Record<string, Connection>; children: Record<string, string>;
   argument_definitions?: Record<string, ArgumentDefinition>; launch?: LaunchMetadata;
 }
-export interface Manifest { profile: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace_source?: WorkspaceMetadata; workspace_telemetry?: TelemetrySettings; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
+export interface Manifest { profile: string; variant?: string; plugin?: string; plugin_version?: string; trace_identity:string; directory: string; workspace_source?: WorkspaceMetadata; workspace_telemetry?: TelemetrySettings; nodes: Record<string, Agent>; cross_plugin_dependencies?: Array<{plugin:string;version?:string;references:string[]}> }
 export interface WorkspaceMetadata {source:string;overlay?:string;trust:'none'|'personal'|'trusted'|'untrusted'|'declined';repository?:string;common?:string;sha256?:string}
 export function trustFile(workspace:WorkspaceMetadata,home=os.homedir()):string {
   return path.join(home,'.local/state/agent-farm/workspace-trust',hash(workspace.common!),workspace.sha256!+'.json');
@@ -388,7 +388,7 @@ export function run(bundle: string, route: string, args: string[], launchCommand
   const selected=manifest.nodes[route]; if (!selected) throw new Error('Unknown bundled child');
   bundle=materializeLaunch(bundle,route,resolveLaunch(selected,requested));
   const launch=launchCommand(bundle,route,{...requested,nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain,configRoot});
-  const metadata={workspace_source:manifest.workspace_source,telemetry:launch.telemetry,telemetry_access:launch.telemetry_access,profile:manifest.profile,plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
+  const metadata={workspace_source:manifest.workspace_source,telemetry:launch.telemetry,telemetry_access:launch.telemetry_access,profile:manifest.profile,...(manifest.variant?{variant:manifest.variant}:{}),plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
   if (values.explain) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,launch:launch.launch},null,2));
   else if (values['print-launch']) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides,launch:launch.launch},null,2));
   else execute(launch.argv,launch.cwd,launch.env);

@@ -6,8 +6,8 @@ Role-named profiles that hand work to each other through documents, not conversa
 
 ## What is in this folder
 
-- `profiles/`: `planner`, `planner-codex`, `bug-reporter`, `implementer`, `implementer-fast` (a preset of `implementer`), `one-shot`, `free-range`, `free-range-claude`, `orchestrator`
-- `agents/`: one per profile except `implementer-fast`, plus the children `socrates`, `investigator`, `researcher`, `plan-reviewer`, `mockup-artist`, `worker`, `advisor`, `qa`, `reviewer`
+- `profiles/`: `planner` (`claude` · `codex`), `bug-reporter`, `implementer` (`standard` · `fast`), `one-shot`, `free-range` (`codex` · `claude`), `orchestrator`. A profile with variants lists them in parentheses, default first. Pick one with `NAME:VARIANT`, or let `agent-farm run` ask
+- `agents/`: one per profile variant except `implementer:fast`, which reuses `implementer`, plus the children `socrates`, `investigator`, `researcher`, `plan-reviewer`, `mockup-artist`, `worker`, `advisor`, `qa`, `reviewer`
 - `instructions/`: `standing-rules.md`, `implementer-identity.md`, `planner-documents.md`, `planner-identity.md`
 - `skills/`: nineteen, each bound to an agent that calls it
 
@@ -42,13 +42,13 @@ Role-named profiles that hand work to each other through documents, not conversa
 | Profile | Harness and model | Job | Stops when |
 | --- | --- | --- | --- |
 | `planner` | Claude, Fable 5.1 high | Discuss and explain by default. Brief, options, spike, and plan only when asked. Never writes code. May hand a trivial task straight to the implementer, with your yes | Every work package has observable checks and leaves no decision open |
-| `planner-codex` | Codex, Astra high | The same planner on Codex: same skills and the same `planner-identity.md`, so the two can be compared on the same problem. Its children run on their own Codex defaults, `socrates` runs on Astra, and it draws mock-up images itself, so it has no `mockup-artist` | Same |
+| `planner:codex` | Codex, Astra high | The same planner on Codex: same skills and the same `planner-identity.md`, so the two can be compared on the same problem. Its children run on their own Codex defaults, `socrates` runs on Astra, and it draws mock-up images itself, so it has no `mockup-artist` | Same |
 | `bug-reporter` | Codex, Sol high | Reproduce, write the report, choose a route | The report is filed. No fix is proposed |
 | `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa, independent review (two when the plan says `Review: dual`), targeted corrections and revalidation, clean-up, draft PR | Required checks and qa pass and review is accepted. Stops for a genuine blocker, exhausted in-scope repair, or explicit user limit, not a fixed retry count |
-| `implementer-fast` | Codex, Astra medium, fast tier | A profile preset, not a second agent: `implementer` with a saved model override and `priority: speed` | Same |
+| `implementer:fast` | Codex, Astra medium, fast tier | A variant, not a second agent: `implementer` with a saved model override and `priority: speed` | Same |
 | `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model does whatever the work needs, its own way: no packages, no workers, no preflight, no reviewers. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Its skills (`plan`, `page`, `open-pr`) are there for their formats only, so plans, pages, and pull requests come out in the house form and publish to the `docs` destination | The work is done and a draft pull request is open. Or `blocked`, or `failed` |
 | `free-range` | Codex, Astra medium | The raw model. No skills, no pipeline. Also the control when measuring whether skills help | You say so |
-| `free-range-claude` | Claude, Fable 5.1 high | Same, on Claude | You say so |
+| `free-range:claude` | Claude, Fable 5.1 high | Same, on Claude | You say so |
 | `orchestrator` | Claude, Fable 5.1 medium | Launch the profiles above across worktrees, poll status files, relay questions, keep one status board. Writes no code | The run summary is written |
 
 Install it next to `dcouple`, then use qualified names. Bare `planner` and `implementer` are ambiguous once both plugins are installed, unless you set `default_plugin` in `settings.json`.
@@ -61,7 +61,7 @@ agent-farm run greenfield/planner --directory /path/to/project
 agent-farm run greenfield/bug-reporter --directory /path/to/project
 agent-farm run greenfield/implementer --directory /path/to/project/worktrees/feature \
   --arg source=docs/agent/plans/feature/PLAN.md
-agent-farm run greenfield/implementer-fast --directory /path/to/project/worktrees/hotfix
+agent-farm run greenfield/implementer:fast --directory /path/to/project/worktrees/hotfix
 ```
 
 To work on the plugin without installing it, point `--config-root` at this folder and use bare names:
@@ -87,11 +87,11 @@ Children are not profiles. Each fires at a defined stage; corrections can requir
 
 | Child | Bound to | Fires when | Model |
 | --- | --- | --- | --- |
-| `socrates` | planner, planner-codex | Once, when the person is ready to pick an option. Argues for less | Fable 5.1 high. Astra high under planner-codex |
-| `investigator` | planner, planner-codex, bug-reporter | One evidence question, with a fresh context | Sonnet 5 under planner. Luna max elsewhere |
-| `researcher` | planner, planner-codex | A question the codebase cannot answer | Sonnet 5 under planner. Luna max under planner-codex |
-| `plan-reviewer` | planner | Once, on the finished PLAN.md: what would an implementer still have to decide? | Sonnet 5 under planner. Luna max under planner-codex |
-| `mockup-artist` | planner (not `planner-codex`) | A separate headless Codex run, when `mockup` wants generated images. Given the scope, screenshot paths, and a folder. Returns image files | Sol medium |
+| `socrates` | planner, planner:codex | Once, when the person is ready to pick an option. Argues for less | Fable 5.1 high. Astra high under planner:codex |
+| `investigator` | planner, planner:codex, bug-reporter | One evidence question, with a fresh context | Sonnet 5 under planner. Luna max elsewhere |
+| `researcher` | planner, planner:codex | A question the codebase cannot answer | Sonnet 5 under planner. Luna max under planner:codex |
+| `plan-reviewer` | planner | Once, on the finished PLAN.md: what would an implementer still have to decide? | Sonnet 5 under planner. Luna max under planner:codex |
+| `mockup-artist` | planner (not `planner:codex`) | A separate headless Codex run, when `mockup` wants generated images. Given the scope, screenshot paths, and a folder. Returns image files | Sol medium |
 | `implementer` | planner | A separate headless run, only for a trivial task you approved | its own |
 | `worker` | implementer | A package the plan marks `economy` | Luna max |
 | `advisor` | implementer, orchestrator | The caller is stuck, about to deviate, or about to declare risky work done | Astra high |
@@ -161,7 +161,7 @@ Flow: explainer, brief, options (with spikes as needed), the person picks, plan,
 
 **The plan gives the level.** The planner read the code and wrote the steps, so it marks each package `economy` or `standard`, with one line of why, using `skills/plan/references/levels.md`. It never names a model: each plugin maps levels to its own models. Here `economy` goes to `worker` and `standard` stays with the lead. The level is a starting point. A failed check promotes the package, and the implementer may start higher when a package is plainly harder than marked.
 
-**The implementer decides when a child is worth calling.** Its instructions say when each child is allowed, not when it is required. `priority` (`usage` or `speed`) tells it what the run values when the two conflict, and it weighs a handoff's cost itself. `implementer-fast` is the same agent on a faster model with `priority: speed`.
+**The implementer decides when a child is worth calling.** Its instructions say when each child is allowed, not when it is required. `priority` (`usage` or `speed`) tells it what the run values when the two conflict, and it weighs a handoff's cost itself. `implementer:fast` is the same agent on a faster model with `priority: speed`.
 
 **No plan.** For a trivial task (contained, reversible, no product or design choice) the planner may hand one sentence straight to the implementer, after you say yes. The implementer runs headless and opens a draft pull request labelled `no-plan`, with "No plan was written for this change." as its first line. The same label applies to any task you give `implementer` or `one-shot` without a plan. Under `implementer`, review still runs unless the change is low-risk.
 
@@ -184,10 +184,10 @@ Run the same plan through each and compare cost, wall-clock time, must-fix findi
 - `free-range`: the raw model, as the control
 - `one-shot`: one frontier model on the fast tier builds it all, with the house formats and no review, to measure what packages, workers, and review add
 - `implementer`: standard lead with economy workers
-- `implementer-fast`: frontier lead on the fast tier
+- `implementer:fast`: frontier lead on the fast tier
 - `astra-implementer-high`: the earlier design, a frontier orchestrator with economy workers and economy reviewers
 
-Every launch reports a trace identity, `greenfield/<profile>@<version>`, plus the resolved model and arguments, in `--explain`, `--print-launch`, and the bundle's `agent.json`. Use it to tag runs.
+Every launch reports a trace identity, `greenfield/<profile>[:<variant>]@<version>`, plus the resolved model and arguments, in `--explain`, `--print-launch`, and the bundle's `agent.json`. Use it to tag runs.
 
 Export telemetry from your shell before launching (`CLAUDE_CODE_ENABLE_TELEMETRY=1` for Claude Code, an `[otel]` block in Codex's `config.toml`). Agent Farm passes the shell environment through to the harness.
 
@@ -198,4 +198,4 @@ Export telemetry from your shell before launching (`CLAUDE_CODE_ENABLE_TELEMETRY
 | No configuration for harness environment variables, and no tracing integration | Export telemetry variables in the shell |
 | No run registry or status envelope, and a finished process child cannot be resumed | The status file and ledger formats defined here. The second reviewer's follow-up is a fresh instance given its own findings and the fix diff |
 | No tier map: model names are written in each agent file | Find and replace. Use `--model` for one-off comparisons |
-| One agent file cannot launch on either harness | `free-range` and `free-range-claude` are separate agents |
+| One agent file cannot launch on either harness | Each harness has its own agent file; one profile groups them as variants, such as `free-range` (`codex` · `claude`) |

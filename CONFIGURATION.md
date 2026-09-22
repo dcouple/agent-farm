@@ -45,7 +45,8 @@ development workflow.
 ## Plugin and profile names
 
 Use `plugin/profile` to select an installed profile unambiguously, for example
-`agent-farm run dcouple/implementer`. Qualified names contain exactly one slash;
+`agent-farm run dcouple/implementer`. Append `:variant` to pick one of a
+profile's [variants](#variants), as in `greenfield/implementer:fast`. Qualified names contain exactly one slash;
 both components use lowercase letters, digits, `_`, and `-`, beginning with a
 letter. `run`, `inspect`, `load`, and `unload` all accept qualified names.
 
@@ -86,6 +87,46 @@ of `name`, `reasoning`, and `speed`; omitted fields keep the agent value. A
 profile still cannot override the harness, tools, instructions, skills,
 connections, or children. Command-line flags take precedence over the profile
 preset, which takes precedence over agent defaults.
+
+### Variants
+
+When several profiles do the same job and differ only in harness or model, make
+them one profile with variants instead:
+
+```yaml
+variants:
+  claude:
+    agent: planner
+  codex:
+    agent: planner-codex
+    model:
+      reasoning: high
+default: claude
+```
+
+Each variant accepts exactly the fields above (`agent`, `model`, `args`). A
+profile with `variants` has no top-level `agent`, `model`, or `args`, and
+`default` must name one of its variants. Variant names follow the configuration
+name rule. The Claude and Codex variants still point at separate agent files,
+because instructions are tuned per harness; the profile only groups them.
+
+Select a variant with `NAME:VARIANT`, for example `agent-farm run
+greenfield/planner:codex`. A name without a variant runs the default, so scripts,
+orchestrators, and headless launches never prompt. An interactive `agent-farm
+run` of a profile with more than one variant asks which to launch, and the
+picker and `profiles list` show the variants in parentheses, default first:
+`greenfield/planner (claude · codex)`. `run`, `inspect`, `load`, and `set
+global` all accept `NAME:VARIANT`; `unload` and `unset global` also take it,
+and remove whichever variant of that profile is loaded.
+
+The manifest records the variant, and the trace identity becomes
+`plugin/profile:variant@version`. `profile` itself stays the profile name, so
+telemetry `agent_access.profiles` entries and Codex resume state are shared by
+a profile's variants. Codex variants of one profile also share one private
+Codex home, so don't run two of them with different skill sets in the same
+directory at the same time. Plugin validation resolves every variant, not only
+the default. The profile editor in `agent-farm ui` edits single-agent profiles;
+edit variants in the YAML source.
 
 `agent-farm run NAME` launches the complete identity. `agent-farm set global NAME` loads
 only its selected top-level skills into the native user skill directory.

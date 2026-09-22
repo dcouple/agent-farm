@@ -96,11 +96,11 @@ and visual field guides. Outputs to Grain, artifacts, or local files.
 **Implementation** — `implementer` takes a ticket through planning,
 implementation, review, and PR with sub-agents.
 
-**Experimental** — Agent Farm also ships experimental profiles that
-benchmark cheaper models (Luna, DeepSeek, GLM) against frontier models,
-test cross-harness workflows, and explore autonomous loop patterns like
-Gauntlet and Manager Loop. These change frequently — run
-`agent-farm profiles list` to see what's available.
+**Variants** — Some profiles come in more than one version, such as a Claude
+and a Codex planner. They're one profile with variants, shown as
+`greenfield/planner (claude · codex)`. `agent-farm run` asks which one you
+want. Add `:codex` to the name to skip the question; without it, scripts get
+the default.
 
 ## Four entry points
 
@@ -122,6 +122,7 @@ commands. `agent-farm doctor` tells you what's working and what's not.
 ```sh
 agent-farm run planner
 agent-farm run dcouple/implementer
+agent-farm run greenfield/planner:codex
 agent-farm run implementer --directory ~/repos/my-project --message "Fix the failing tests"
 agent-farm run implementer --model gpt-6-astra --speed fast --arg review=full
 ```

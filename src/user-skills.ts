@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import {resolve,resolveProfile} from './compiler.js';
+import {resolve,resolveProfile,splitVariant} from './compiler.js';
 import {stringify} from 'yaml';
 import {files,hash} from './runtime.js';
 import {userSkillSource} from './skill-layout.js';
@@ -9,7 +9,7 @@ import {namespaces} from './config.js';
 
 type Harness = 'claude' | 'codex';
 interface Entry { name:string; plugin?:string; source: string; destination: string }
-interface Loaded { profile: string; plugin?:string; plugin_version?:string; harness: Harness; root: string; skills: Entry[] }
+interface Loaded { profile: string; variant?: string; plugin?:string; plugin_version?:string; harness: Harness; root: string; skills: Entry[] }
 interface State { version: 1; profiles: Record<string,Loaded> }
 export interface UserSkillOptions { home?: string; env?: NodeJS.ProcessEnv; harness?: string }
 function harness(value: string): Harness {
@@ -54,7 +54,7 @@ export function loadProfile(root: string, profile: string, options: UserSkillOpt
   return withState(options,(state,save)=>{
     fs.mkdirSync(directory,{recursive:true});
     const target=fs.realpathSync(directory);
-    const item: Loaded={profile:resolved.profile,plugin:resolved.plugin,plugin_version:resolved.plugin_version,harness:selected,root,skills:agent.skills.map(skill=>({name:skill,plugin:agent.skill_plugins?.[skill]?.plugin,source:userSkillSource(fs.realpathSync(agent.skill_sources![skill]!),selected,home),destination:path.join(target,skill)}))};
+    const item: Loaded={profile:resolved.profile,...(resolved.variant?{variant:resolved.variant}:{}),plugin:resolved.plugin,plugin_version:resolved.plugin_version,harness:selected,root,skills:agent.skills.map(skill=>({name:skill,plugin:agent.skill_plugins?.[skill]?.plugin,source:userSkillSource(fs.realpathSync(agent.skill_sources![skill]!),selected,home),destination:path.join(target,skill)}))};
     const key=selected+':'+resolved.profile,previous=state.profiles[key];
     if (previous) {
       if (JSON.stringify(previous)!==JSON.stringify(item)) throw new Error('Profile selection changed; unload the existing profile before loading it again');
@@ -85,6 +85,8 @@ export function loadProfile(root: string, profile: string, options: UserSkillOpt
 }
 export function unloadProfile(profile: string, options: UserSkillOptions={}): Loaded[] {
   if (options.harness) harness(options.harness);
+  // Loaded state is keyed by profile, so `name:variant` unloads whichever variant of that profile is loaded.
+  profile=splitVariant(profile).name;
   return withState(options,(state,save)=>{
     let matches=Object.entries(state.profiles).filter(([,p])=>(p.profile===profile||(!profile.includes('/')&&p.profile.endsWith('/'+profile)))&&(!options.harness||p.harness===options.harness));
     if(!profile.includes('/')&&new Set(matches.map(([,p])=>p.profile)).size>1)throw new Error(`Loaded profile ${profile} is ambiguous; use one of: ${[...new Set(matches.map(([,p])=>p.profile))].join(', ')}`);

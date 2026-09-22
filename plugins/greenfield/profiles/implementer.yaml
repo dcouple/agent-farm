@@ -1,1 +1,12 @@
-agent: implementer
+variants:
+  standard:
+    agent: implementer
+  fast:
+    agent: implementer
+    model:
+      name: gpt-6-astra
+      reasoning: medium
+      speed: fast
+    args:
+      priority: speed
+default: standard

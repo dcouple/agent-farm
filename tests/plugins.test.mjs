@@ -170,7 +170,7 @@ test('plugin CLI lists complete receipt metadata and uninstalls bundled plugins'
  assert.equal(installed.name,'dcouple');
  assert.equal(installed.version,validatePlugin(dcouple).info.version);
  assert.equal(installed.profiles,validatePlugin(dcouple).profiles.length);
- assert.equal(installed.source.repository,'https://github.com/dcouple/skills');
+ assert.deepEqual(installed.source,validatePlugin(dcouple).info.source);
  result=run(['uninstall','dcouple']);
  assert.equal(result.status,0,result.stderr);
  assert.equal(JSON.parse(result.stdout).name,'dcouple');

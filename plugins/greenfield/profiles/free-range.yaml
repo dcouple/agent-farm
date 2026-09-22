@@ -1,1 +1,6 @@
-agent: free-range
+variants:
+  codex:
+    agent: free-range
+  claude:
+    agent: free-range-claude
+default: codex
