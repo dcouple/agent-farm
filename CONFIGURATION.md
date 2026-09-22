@@ -24,17 +24,21 @@ workspace.yaml                 Optional personal fallback workspace
 overlays/
   my-project.yaml              Personal project settings
 instructions/                  Optional shared instruction includes
+references/
+  orchestra/                   Shared reference folder, selected by agents
+    zones.md
+    rubrics/backend-api.md
 plugins/
   dcouple/                     Installed plugin namespace
     plugin.yaml
-    profiles/ agents/ skills/ instructions/
+    profiles/ agents/ skills/ instructions/ references/
 .plugins/
   dcouple.json                 Install receipt; do not edit
 ```
 
-The top-level `profiles/`, `agents/`, `skills/`, and `instructions/` directories
-are the unnamed local namespace. Each installed plugin has the same four-section
-layout under `plugins/<name>/`. A plugin source directory is also a valid config
+The top-level `profiles/`, `agents/`, `skills/`, `instructions/`, and
+`references/` directories are the unnamed local namespace. Each installed plugin
+has the same five-section layout under `plugins/<name>/`. A plugin source directory is also a valid config
 root, so `agent-farm run planner --config-root /path/to/plugin` remains the
 development workflow.
 
@@ -193,6 +197,44 @@ policy:
 These settings describe how Codex presents and invokes the skill. They do not
 declare child agents. The launcher preserves their bytes when translating the
 filename; it does not reinterpret policy or infer a Claude equivalent.
+
+## Shared references
+
+A skill's own `references/` folder belongs to that skill. When several skills
+and agents cite the same documents (a review rubric, a zone table, report
+formats), put them in a top-level reference folder and select it from each agent
+that needs it:
+
+```yaml
+---
+harness: claude
+model: claude-fable-5-1
+skills: [do, discussion]
+references: orchestra
+---
+```
+
+`references` names exactly one folder, `references/<name>/`, in the agent's own
+plugin (or the local namespace). A qualified name such as `dcouple/orchestra`
+selects another plugin's folder, following the same cross-plugin rules as
+skills. The folder must exist and contain at least one file. Agents without the
+field get no references; children do not inherit them, so select the folder on
+every child that reads it.
+
+The compiler copies the folder into that agent's bundle at
+`<route>/references/`. The files are checksummed with the rest of the bundle,
+and an edit produces a new bundle. Every launch of the agent, whether it is the
+entry point, a process child, or a native child, gets this line in its instructions:
+
+```text
+Bundled references: /…/.agent-farm/generated/<bundle>/main/references. A path written as `.references/<path>` in your instructions or skills means /…/main/references/<path>; read it from there, not from the repository.
+```
+
+Skills can therefore cite `.references/zones.md`, the layout used by skill
+repositories that sync a shared `.references/` directory into each project.
+Agent Farm never writes that directory into the repository. `agent-farm load`
+and `set global` install only skills, so references reach agents through
+`agent-farm run`.
 
 ## Prepared launches and native arguments
 
@@ -650,6 +692,7 @@ the native Codex configuration on the next launch.
 | SKILL.md | SKILL.md, unchanged | SKILL.md, unchanged |
 | metadata/codex.yaml | agents/openai.yaml | Omitted |
 | references and other support files | Preserved | Preserved |
+| Top-level `references/<name>/` selected by `references:` | `<route>/references/`, named in developer instructions | `<route>/references/`, named in the appended system prompt |
 
 The generated `agents/openai.yaml` name is Codex's native convention. It will
 still appear inside generated bundles; it is not part of the central authoring

@@ -6,7 +6,7 @@ import {configurationName,pluginIdentity} from './config.js';
 import {resolveProfile} from './compiler.js';
 import {files,hash} from './runtime.js';
 
-const sections=['profiles','agents','skills','instructions'];
+const sections=['profiles','agents','skills','instructions','references'];
 interface Plugin{name:string;version:string;cli_major:number;source?:{repository:string;commit:string};checksums?:Record<string,string>}
 interface Receipt{name:string;version:string;layout?:number;source?:unknown;checksums:Record<string,string>}
 
