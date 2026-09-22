@@ -9,7 +9,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 - `profiles/`: `planner`, `planner-codex`, `bug-reporter`, `implementer`, `implementer-fast` (a preset of `implementer`), `one-shot`, `free-range`, `free-range-claude`, `orchestrator`
 - `agents/`: one per profile except `implementer-fast`, plus the children `socrates`, `investigator`, `researcher`, `plan-reviewer`, `mockup-artist`, `worker`, `advisor`, `qa`, `reviewer`
 - `instructions/`: `standing-rules.md`, `implementer-identity.md`, `planner-documents.md`, `planner-identity.md`
-- `skills/`: sixteen, each bound to an agent that calls it
+- `skills/`: seventeen, each bound to an agent that calls it
 
 | Skill | Used by | For |
 | --- | --- | --- |
@@ -25,6 +25,7 @@ Role-named profiles that hand work to each other through documents, not conversa
 | `final-review` | implementer | One initial independent review (two reviewers for a dual review), targeted corrections and follow-ups until accepted, then clean-up |
 | `build-package` | implementer, worker | Implement one package from its handoff card |
 | `open-pr` | implementer, one-shot | Commit, push, and open a draft pull request that teaches the change |
+| `babysit-pr` | implementer, one-shot | Watch the open pull request's CI and review bots until green: fix real findings, answer false positives, rebase. Merges only when asked |
 | `verify-app` | qa | Drive the running application and return a verdict with evidence |
 | `gather-evidence` | investigator | Answer one factual question about the code or a running system |
 | `web-research` | researcher | Answer one question from outside sources, with citations |

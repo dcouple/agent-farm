@@ -44,6 +44,8 @@ The repository's own AGENTS.md and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.`;
 
+const AGENT_FARM_SKILLS=['babysit-pr'];
+
 const EXTRA_SKILLS=[
  {from:'parsa/.claude/skills/arena',to:'arena',harness:'claude'},
  {from:'parsa/.claude/skills/hillclimb',to:'hillclimb',harness:'claude'},
@@ -136,6 +138,8 @@ try{
  for(const name of codexSkills)copy(`codex/skills/${name}`,`skills/${codexDirectory(name)}`);
  // Skills /do still calls after orchestra moved them to dcouple/skills.
  for(const extra of EXTRA_SKILLS)copy(`dcouple-skills/${extra.from}`,`skills/${extra.to}`);
+ // Agent Farm's own general-purpose skills, copied so this plugin stays self-contained.
+ for(const name of AGENT_FARM_SKILLS)fs.cpSync(fileURLToPath(new URL(`../plugins/greenfield/skills/${name}/`,import.meta.url)),path.join(plugin,'skills',name),{recursive:true});
  const claudeExtras=EXTRA_SKILLS.filter(e=>e.harness==='claude').map(e=>e.to),codexExtras=EXTRA_SKILLS.filter(e=>e.harness==='codex').map(e=>e.to);
 
  // One shared folder stands in for the repo-root .references/ that orchestra's
@@ -165,7 +169,7 @@ harness: claude
 model:
   name: claude-fable-5-1
 description: Orchestra on Claude Fable - discussion, briefs, and the /do pipeline with Codex roles dispatched through codex exec.
-skills: [${[...claudeSkills,...claudeExtras].join(', ')}]
+skills: [${[...claudeSkills,...claudeExtras,...AGENT_FARM_SKILLS].join(', ')}]
 references: orchestra
 connections:
   linear:
@@ -185,7 +189,7 @@ model:
   name: gpt-6-astra
   reasoning: high
 description: Orchestra on Codex - the Codex /do pipeline with its role skills.
-skills: [${[...codexSkills.map(codexDirectory),...codexExtras].join(', ')}]
+skills: [${[...codexSkills.map(codexDirectory),...codexExtras,...AGENT_FARM_SKILLS].join(', ')}]
 references: orchestra
 connections:
   linear:
@@ -201,6 +205,8 @@ dcouple/orchestra at [\`${commit.slice(0,7)}\`](https://github.com/dcouple/orche
 Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> <skills checkout> [orchestra commit] [skills commit]\`; do not edit these files by hand.
 
 \`/do\` still calls \`arena\` and \`hillclimb\`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [\`${skillsCommit.slice(0,7)}\`](https://github.com/greenfield-inc/skills/tree/${skillsCommit}): ${EXTRA_SKILLS.map(e=>`\`${e.from}\` as \`${e.to}\``).join(', ')}. No Codex \`arena\` exists, so the Codex \`/do\` arena step stays unavailable, as it was before.
+
+Both profiles also get Agent Farm's ${AGENT_FARM_SKILLS.map(n=>`\`${n}\``).join(', ')}, copied from \`plugins/greenfield/skills/\`, for watching a pull request's CI and review bots after \`/do\` or \`/prepare-pull-request\` opens it.
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
@@ -223,7 +229,7 @@ Skills with the same name in \`~/.claude/skills\` or \`~/.codex/skills\` are sti
  const walk=dir=>{for(const item of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,item.name);if(item.isDirectory())walk(file);else checksums[path.relative(plugin,file)]=createHash('sha256').update(fs.readFileSync(file)).digest('hex');}};
  for(const section of ['agents','profiles','references','skills'])walk(path.join(plugin,section));
  const lines=Object.keys(checksums).sort().map(key=>`  ${key}: ${checksums[key]}`);
- write('plugin.yaml',`name: orchestra\nversion: 0.1.0\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
+ write('plugin.yaml',`name: orchestra\nversion: 0.1.1\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
  console.log(`Vendored dcouple/orchestra@${commit.slice(0,7)} + dcouple/skills@${skillsCommit.slice(0,7)} (${EXTRA_SKILLS.length} skills): ${claudeSkills.length} Claude skills, ${codexSkills.length} Codex skills, ${roles.length} Claude agents, ${Object.keys(checksums).length} files`);
 }finally{fs.rmSync(source,{recursive:true,force:true});}
 
