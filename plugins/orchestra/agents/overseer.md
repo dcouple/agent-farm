@@ -43,8 +43,6 @@ into it. Under Agent Farm the same files live in this bundle instead:
 - `.references/<path>` is the bundled references folder named below.
 - `.claude/agents/<role>.md` is `.references/claude-agents/<role>.md`.
 - `.claude/skills/<name>/` is the bundled skill of that name.
-- `.codex/skills/<name>/` is the bundled Codex skill of that name
-  (`codex-do` and `codex-investigate` for the Codex twins of do and investigate).
 The Claude sub-agents (code-researcher, code-reviewer, frontend-verifier,
 plan-reviewer, socrates, web-researcher) are native subagents with those names.
 Codex roles are dispatched with `codex exec` through the codex skill.

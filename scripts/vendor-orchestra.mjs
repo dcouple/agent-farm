@@ -9,6 +9,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {parse} from 'yaml';
 
 const OVERSEER=`You run dcouple/orchestra: /discussion, /create-brief, /do, /investigate,
 /prepare-pull-request, /postmortem, and the other bundled skills, exactly as
@@ -19,8 +20,6 @@ into it. Under Agent Farm the same files live in this bundle instead:
 - \`.references/<path>\` is the bundled references folder named below.
 - \`.claude/agents/<role>.md\` is \`.references/claude-agents/<role>.md\`.
 - \`.claude/skills/<name>/\` is the bundled skill of that name.
-- \`.codex/skills/<name>/\` is the bundled Codex skill of that name
-  (\`codex-do\` and \`codex-investigate\` for the Codex twins of do and investigate).
 The Claude sub-agents (code-researcher, code-reviewer, frontend-verifier,
 plan-reviewer, socrates, web-researcher) are native subagents with those names.
 Codex roles are dispatched with \`codex exec\` through the codex skill.
@@ -39,8 +38,8 @@ into it. Under Agent Farm the same files live in this bundle instead:
 - \`.claude/agents/<role>.md\` is \`.references/claude-agents/<role>.md\`.
 - \`.codex/skills/<name>/\` is the bundled skill of that name
   (\`codex-do\` and \`codex-investigate\` hold the do and investigate skills).
-Every subagent you spawn gets the same mapping in its task context, with the
-absolute references folder.
+Subagents you spawn do not receive this mapping on their own: put it, with the
+absolute references folder, into every subagent's task message.
 The repository's own AGENTS.md and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.`;
@@ -63,7 +62,7 @@ before dispatching - a role that can't read its instructions improvises
 instead of failing.`,
  },
  {
-  why:'/do browser preflight detects a daemon or local run',
+  why:'/do browser preflight detects a daemon or local run; a local run without a browser records a note instead of stopping',
   file:'skills/do/SKILL.md',
   from:`- Classify browser need from the authoritative loaded item before any browser
   preflight. E2E-browser criteria or a manual UI journey make the run browser
@@ -84,7 +83,8 @@ instead of failing.`,
   write the marker for a non-browser item. **Local run** (neither is set): use
   the Playwright MCP attached to this session (its tools end in
   \`browser_snapshot\`, \`browser_navigate\`, and so on; under Agent Farm the
-  server is \`orchestra_playwright\`). Create an evidence directory outside the
+  server is \`orchestra_playwright\`); prove it with the snapshot-then-close probe
+  in the next item, using that server's tool names. Create an evidence directory outside the
   repository, \`\${TMPDIR:-/tmp}/orchestra-evidence/<id>/<attempt>\`, and use it,
   run id \`local-<id>\`, and attempt id \`<attempt>\` wherever this skill or the
   frontend-verifier names \`ORCHESTRA_BROWSER_EVIDENCE_DIR\`,
@@ -92,6 +92,12 @@ instead of failing.`,
   in the frontend-verifier dispatch. If no browser MCP is attached, record a
   preflight note naming the missing transport and continue; only the QA drive
   depends on it.`,
+ },
+ {
+  why:'/do Step 5 accepts local run and attempt ids',
+  file:'skills/do/SKILL.md',
+  from:'its run/attempt ids to match the current daemon environment, require every',
+  to:'its run/attempt ids to match the current daemon environment (on a local run,\n  the local run and attempt ids from Step 0), require every',
  },
  {
   why:'frontend-verifier accepts a dispatch-supplied evidence directory on local runs',
@@ -138,8 +144,8 @@ try{
  for(const role of roles){
   const text=fs.readFileSync(path.join(plugin,'references/orchestra/claude-agents',role+'.md'),'utf8'),match=/^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(text);
   if(!match)throw new Error(`Missing frontmatter: claude/agents/${role}.md`);
-  const field=key=>new RegExp(`^${key}: (.*)$`,'m').exec(match[1])?.[1];
-  write(`agents/${role}.md`,`---\nharness: claude\nmodel: ${field('model')}\ndescription: ${JSON.stringify(field('description'))}\nreferences: orchestra\n---\n${match[2].replace(/^\n+/,'')}`);
+  const meta=parse(match[1]);if(typeof meta.model!=='string'||typeof meta.description!=='string')throw new Error(`claude/agents/${role}.md needs a model and a description`);
+  write(`agents/${role}.md`,`---\nharness: claude\nmodel: ${meta.model}\ndescription: ${JSON.stringify(meta.description.trim())}\nreferences: orchestra\n---\n${match[2].replace(/^\n+/,'')}`);
  }
  const subagents=roles.map(role=>`  ${role}:\n    agent: ${role}\n    mode: native\n`).join('');
  write('agents/overseer.md',`---
@@ -192,6 +198,8 @@ Skills cite \`.references/<path>\`; Agent Farm maps that to the bundled folder a
 
 Text is copied unchanged except for ${PATCHES.length} patches listed in the vendor script:
 ${PATCHES.map(patch=>`- \`${patch.file}\`: ${patch.why}.`).join('\n')}
+
+Orchestra's Claude agents restrict their tools (reviewers and researchers are read-only). Agent Farm native subagents get a prompt, model, and effort only, so those allowlists are not enforced; the agents stay read-only by their written charters.
 
 Skills with the same name in \`~/.claude/skills\` or \`~/.codex/skills\` are still visible to the launched harness. Save and unmount them with \`agent-farm unset global --save <name> --harness claude|codex --model <model-id>\` to run orchestra's versions only.
 `);

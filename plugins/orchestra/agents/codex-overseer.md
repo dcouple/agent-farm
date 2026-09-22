@@ -23,8 +23,8 @@ into it. Under Agent Farm the same files live in this bundle instead:
 - `.claude/agents/<role>.md` is `.references/claude-agents/<role>.md`.
 - `.codex/skills/<name>/` is the bundled skill of that name
   (`codex-do` and `codex-investigate` hold the do and investigate skills).
-Every subagent you spawn gets the same mapping in its task context, with the
-absolute references folder.
+Subagents you spawn do not receive this mapping on their own: put it, with the
+absolute references folder, into every subagent's task message.
 The repository's own AGENTS.md and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.

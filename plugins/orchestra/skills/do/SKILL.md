@@ -186,7 +186,8 @@ These preflight items are only checkable now that the item is loaded:
   write the marker for a non-browser item. **Local run** (neither is set): use
   the Playwright MCP attached to this session (its tools end in
   `browser_snapshot`, `browser_navigate`, and so on; under Agent Farm the
-  server is `orchestra_playwright`). Create an evidence directory outside the
+  server is `orchestra_playwright`); prove it with the snapshot-then-close probe
+  in the next item, using that server's tool names. Create an evidence directory outside the
   repository, `${TMPDIR:-/tmp}/orchestra-evidence/<id>/<attempt>`, and use it,
   run id `local-<id>`, and attempt id `<attempt>` wherever this skill or the
   frontend-verifier names `ORCHESTRA_BROWSER_EVIDENCE_DIR`,
@@ -675,7 +676,8 @@ follows successful QA.
   verify an upload via its API asset id, never a bare curl.
 - Before the frontend-verifier dispatch, save `git status --short`. Accept only
   the actual dispatched verifier's completed `evidence-manifest.json`; require
-  its run/attempt ids to match the current daemon environment, require every
+  its run/attempt ids to match the current daemon environment (on a local run,
+  the local run and attempt ids from Step 0), require every
   listed absolute path to remain under the current attempt evidence directory,
   and reject missing, partial, unlisted, fixture, or older-attempt files. Host
   every manifest entry through `qa-assets`, then read back the persisted PR

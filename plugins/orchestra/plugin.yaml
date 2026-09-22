@@ -7,11 +7,11 @@ source:
 checksums:
   agents/code-researcher.md: 102f108ede110dfbce5765cfad904e06e91cca837e5eb89173c34d1ef2ae5c32
   agents/code-reviewer.md: cc522a092937228c172cd5f4f30980b31f32219097453d245c1d384522c7c4fd
-  agents/codex-overseer.md: 8be63e513685dc8f23b7445473b0c27e175f01f61db94ae254f4379b6d0d0db6
-  agents/frontend-verifier.md: 31b155895941a11176eea95885fe19a0b171507364f824024635edd629a877a1
-  agents/overseer.md: 946154cca5e3d53854939321874ba8d2b1fd38b4c8c63cc1888b51808b5c5f04
+  agents/codex-overseer.md: 9d5464c0d5de2684efed0b8018dc1340b3734e5ad8d184037363848c0a35f2e1
+  agents/frontend-verifier.md: 871d4f452da1828b0985e22ca0526c4f52c6f981dc58c00fa4eef9a8a840101f
+  agents/overseer.md: cea97052aeb6775c248439feb60dc15f9ae8d596157fe66842b9419520c2b064
   agents/plan-reviewer.md: ab82b7bb841d4962c0365752fef280980ad10f23431201ee5917b95c88ec2699
-  agents/socrates.md: 499c53e439768ae7628eea66f4fcd95bac4f2d78467118411be087bcbdacdb98
+  agents/socrates.md: bb9e47014243b812369b4a6d2e4ee01c42cdf57edfeddc48833e561a795398c8
   agents/web-researcher.md: 215d0afefbdb6ca95fe2ac779899f7beff069410eed4e6d22cebe3f59bc72573
   profiles/codex-overseer.yaml: f2edffe9ab18ac3ebad84ca5e17ed45d46d7812399f6d09a38c81fd6c2669288
   profiles/overseer.yaml: f22c0977a20857d2ca349be8fb288e6011aeeb4aa30d42948cc382437ccae174
@@ -85,7 +85,7 @@ checksums:
   skills/cold-read/SKILL.md: 4d3060f5ce7a93d8797adb9d801ce37b77909c7d83e56f0bd9d8b9e6ce5b4f77
   skills/create-brief/SKILL.md: 432e8502f983887abb2cb1a8f54176082c4fd865568623ccb152d587920615a9
   skills/discussion/SKILL.md: de249fd051f1e6bdce6dac954a066ba76538f81e8b1b119c97a65fcb4cc0e02f
-  skills/do/SKILL.md: 9b02da96351578b6676ed3f115c2761aff578479f2fe22a0eedf5ee86b858b15
+  skills/do/SKILL.md: 754d850540185876918b91ce6f9e12536aa6ca3f486e21c6b08db1b908f23932
   skills/do/references/implementation-plan.md: 1c37780cd39a4bd9dc80bb7b2ec17b8cfb23c67097c55464d49e7ed2fd82bbe8
   skills/do/references/pr-body.md: f7b683dca6f08c179b84228d934d606a5952bc9f27040995ecc490ec8864a2b8
   skills/do/references/wrap-up-report.md: 14c835bc03442ac22c570ea530f58192557adbd17fdb367a74806c387ae5db90

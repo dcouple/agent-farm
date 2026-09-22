@@ -11,9 +11,12 @@ Regenerate with `node scripts/vendor-orchestra.mjs <orchestra checkout> [commit]
 Both select `references: orchestra`, which holds orchestra's `references/` folder, its Claude agent files under `claude-agents/`, and `templates/`.
 Skills cite `.references/<path>`; Agent Farm maps that to the bundled folder at launch.
 
-Text is copied unchanged except for 3 patches listed in the vendor script:
+Text is copied unchanged except for 4 patches listed in the vendor script:
 - `skills/codex/SKILL.md`: codex dispatch resolves orchestra paths through the bundled references.
-- `skills/do/SKILL.md`: /do browser preflight detects a daemon or local run.
+- `skills/do/SKILL.md`: /do browser preflight detects a daemon or local run; a local run without a browser records a note instead of stopping.
+- `skills/do/SKILL.md`: /do Step 5 accepts local run and attempt ids.
 - `references/orchestra/claude-agents/frontend-verifier.md`: frontend-verifier accepts a dispatch-supplied evidence directory on local runs.
+
+Orchestra's Claude agents restrict their tools (reviewers and researchers are read-only). Agent Farm native subagents get a prompt, model, and effort only, so those allowlists are not enforced; the agents stay read-only by their written charters.
 
 Skills with the same name in `~/.claude/skills` or `~/.codex/skills` are still visible to the launched harness. Save and unmount them with `agent-farm unset global --save <name> --harness claude|codex --model <model-id>` to run orchestra's versions only.
