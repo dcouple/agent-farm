@@ -5,12 +5,13 @@ source:
   repository: https://github.com/dcouple/skills
   commit: c7ae5b0bffc37de831c4149cc635a444877e31ad
 checksums:
+  agents/astra-audits.md: 6bd72cb09a2313691df2d1a09528395388daed57bc6b3f606c811118ee185215
   agents/astra-discuss.md: 3652889044b8bb77611bd6d911a00a9652d74bc86276df964406f11f53e4b892
   agents/astra-implementer-high.md: 782487e44a581f162981e4497be9a03cbd345b94c316948e51f55b7b43b9475c
   agents/astra-researcher-reader.md: df47010281e0509e95b70c552079a7d5077402d734ebb1b98548f5dcec3744b6
   agents/astra-researcher.md: 225b9ceea551ff9c6179484b273cfdc4ab646670a9abd8aad27f12a9c88e4013
   agents/astra-socrates.md: e5beb8c629002b9d081f6de5b89b33092445bf01af96f60810bee134e65ab835
-  agents/audits.md: ebd34d98b1ee242e361db610c539d8828c3de5b9c48dbe997899d9b1132d9d46
+  agents/audits.md: c9d2800d81413f7349b720c0fb1cf07fe5bc0d24bde72ebfe77f5cfa057d2b8b
   agents/codebase-explorer.md: 82509faceaba3c76e699bfec58961e858cf4c7fcb63c4bf6be7fb3cd07c74576
   agents/cold-reader.md: 5c15608c6fbb0da1d3d566b1e3f7ffd33a98c3e529d15e9e3a4c85554d839764
   agents/correctness-reviewer.md: f945974b435e8d841f35dd2b7d2b4f1c44e83c9f5504967a90e8bd267c747584
@@ -60,6 +61,7 @@ checksums:
   agents/sw-luna-orchestra.md: 7087f02632228b94dbb28af1bdb6429085df378b092a6259e3ecd8ab53102f50
   agents/sw-opus46-loop.md: 65b6f43c5b6cdd25c807cfcc6782eed60aed825ddd1856bb0ed9cd4c8bef99e1
   agents/worker.md: b92adc8ea7d4a798898203eda4eb5600abf45ebce2f4786820bf339439149a96
+  profiles/astra-audits.yaml: bd4804cf400629623f0767c63be50172fe5fa3359117fdc2a5a49ae84b591185
   profiles/astra-discuss.yaml: b568fcff00b135881dca2ea75cb84137f620185c3119e57a4783dee57a0bd91f
   profiles/astra-implementer-high.yaml: 5ff61564e10db1e944f471999039138aba089bebc171e9759cb8d7093ec429b7
   profiles/astra-researcher.yaml: d38b61c0aed05a3f5449c607fa2996cf1b0071dffb1605708d69e6f04cecc5a8
@@ -88,7 +90,9 @@ checksums:
   profiles/sw-luna-orchestra.yaml: 20268d0de794b244a35b01846470ce71aa00b576f5d31dfe16b4e3f9b73ad261
   profiles/sw-opus46-loop.yaml: 41b69b63c969ef4e837927ac4545cf51c957088932bb04ea14b3a187b4e51fee
   skills/astra-ticket/SKILL.md: 947bafea5c2ed7a02f39f17e5e9e6a59acbe5f3c13039102069bc817f1104c8c
-  skills/audits/SKILL.md: e31d53eab2cd3dc216f1b4453c950765738a3e0903e7a5a5a6d1534569a48a9e
+  skills/audits/CRITERIA.md: cf7110b4c7de828b5b9137c6f189fc68cecb5beab13d74be22c2b301100c7841
+  skills/audits/metadata/codex.yaml: 4c543c8345d9744cce5bf33b02c6f541fed473f227c1f376defd1c17eaa54f2c
+  skills/audits/SKILL.md: 7768181ad56a4185e63e59f403950562cd8529f0a6db56db452ddf7aa0683b3f
   skills/codebase-explorer/SKILL.md: 58981e4880cabd190e32fde01c6d1d019ad23a364bb6e14dfad71b1d85502af9
   skills/cold-read/SKILL.md: ffca715188c0ef7dc673b42cb3012fbf1e2361c3ae677a8171e67b79d5243112
   skills/create-plan/plan_base.md: 6d7d6d0d120e4ddd3f1f37fd0c278caf36c838447373c250542a64e38b6b3a9b

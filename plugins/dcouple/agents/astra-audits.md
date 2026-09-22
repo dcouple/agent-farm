@@ -1,8 +1,8 @@
 ---
-harness: claude
+harness: codex
 model:
-  name: claude-opus-4-6
-  reasoning: high
+  name: gpt-6-astra
+  reasoning: low
 description: Audit stale GitHub issues, PRs, and agent-facing docs against the
   default branch. Report first; close or edit only after approval.
 skills:
