@@ -16,7 +16,7 @@ skills:
   - eli5
   - cold-read
   - create-ticket
-description: Research technologies, products, and workflows. Produce visual field guides, product comparisons, and cited syntheses in Grain or as artifacts.
+description: "Research a technology, product, or approach and get back a clear, sourced write-up."
 subagents:
   cold-reader:
     agent: astra-researcher-reader

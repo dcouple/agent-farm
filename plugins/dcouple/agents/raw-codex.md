@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: medium
-description: The model with a few house habits - PRs, tickets, TDD, and watching CI - and no pipeline.
+description: "The AI model on its own, plus a few good habits for pull requests, tickets, testing, and checking its work. Best for small, clear tasks."
 skills:
   - prepare-pr
   - create-ticket

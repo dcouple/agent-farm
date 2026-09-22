@@ -22,7 +22,7 @@ skills:
   - researcher
   - research-web
   - investigate
-description: Take a ticket through implementation, review, and optional QA.
+description: "Take a ticket from start to a reviewed pull request."
 subagents:
   socrates:
     agent: astra-socrates

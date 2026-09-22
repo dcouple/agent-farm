@@ -7,7 +7,7 @@ skills:
   - create-ticket
   - ui-mockup
   - explain-visually
-description: Discuss intent and create actionable tickets and briefs.
+description: "Talk through a new idea or task and turn it into a clear ticket or brief."
 subagents:
   socrates:
     agent: socrates

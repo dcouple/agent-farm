@@ -3,7 +3,7 @@ harness: claude
 model:
   name: claude-opus-5-5
   reasoning: high
-description: Research search performance, plan SEO improvements, and develop clear site content.
+description: "Improve how a site shows up in search: learn what people look for, plan pages, and write clear content."
 skills:
   - good-writing-fundamentals
   - seo-authority-pass
