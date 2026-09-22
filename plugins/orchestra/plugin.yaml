@@ -1,5 +1,5 @@
 name: orchestra
-version: 0.1.6
+version: 0.1.7
 cli_major: 0
 source:
   repository: https://github.com/dcouple/orchestra
@@ -7,9 +7,9 @@ source:
 checksums:
   agents/code-researcher.md: 102f108ede110dfbce5765cfad904e06e91cca837e5eb89173c34d1ef2ae5c32
   agents/code-reviewer.md: cc522a092937228c172cd5f4f30980b31f32219097453d245c1d384522c7c4fd
-  agents/codex-overseer.md: ab7ad65d1d56c1604dfa17b14a710321b82a9b6d31eca1b01b6d0427882356b3
+  agents/codex-overseer.md: 78264116fc1b4b37389bf8022354be6520c3adad22bba07a59d7964fa4a44def
   agents/frontend-verifier.md: 871d4f452da1828b0985e22ca0526c4f52c6f981dc58c00fa4eef9a8a840101f
-  agents/overseer.md: 3df1a55b33070e4a71fd311db8fed800283de539bc9649f24f95589dc8c01103
+  agents/overseer.md: 1d40d4d7542281b453ba6b99ce04e81ec2590f31fe093e379873775637fe011b
   agents/plan-reviewer.md: ab82b7bb841d4962c0365752fef280980ad10f23431201ee5917b95c88ec2699
   agents/socrates.md: bb9e47014243b812369b4a6d2e4ee01c42cdf57edfeddc48833e561a795398c8
   agents/web-researcher.md: 215d0afefbdb6ca95fe2ac779899f7beff069410eed4e6d22cebe3f59bc72573
@@ -124,6 +124,9 @@ checksums:
   skills/refactor-deep/SKILL.md: 3fbc6d5c365f63616ad59bbc73cb3c8ed28c20d9dbc2952e2424e3f27c26913b
   skills/refactor-simple/SKILL.md: 9ed0590e357181e80ffdf8b7098078068f6bc656d7ce66cb1fc33e0f8f33d20b
   skills/sentry-loop/SKILL.md: a535a5388b508cec3fb79eb9b5f4e7ab152638b612ab4c82f77801a52c77dc30
+  skills/session-trace/SKILL.md: 0a47bf7bb8a744d3164fb12cbc6dd487660cfe6889545bbe003f0e2f3a5a18c2
+  skills/session-trace/references/page-guide.md: 312ccb7a66213566b5af78d008da7fa61fbaab65a534e83c4c4c72e68628acff
+  skills/session-trace/scripts/build-trace.mjs: 23098b086a8108502a7f8ba36a3d2a53f0ae6b55bb3c8b7aba4fdc6dc9457b48
   skills/tdd/SKILL.md: cb01f66bebfaa25fa1f88e6b7e769cd9fd9f35b1120b8563749820738814c927
   skills/tdd/agents/openai.yaml: ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b
   skills/tdd/mocking.md: 3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef

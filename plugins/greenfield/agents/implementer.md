@@ -14,6 +14,7 @@ skills:
   - tdd
   - codebase-design
   - final-review
+  - session-trace
 description: "Build what a plan describes, step by step, and open a reviewed pull request."
 args:
   priority:
