@@ -116,13 +116,16 @@ orchestrators, and headless launches never prompt. An interactive `agent-farm
 run` of a profile with more than one variant asks which to launch, and the
 picker and `profiles list` show the variants in parentheses, default first:
 `greenfield/planner (claude · codex)`. `run`, `inspect`, `load`, and `set
-global` all accept `NAME:VARIANT`.
+global` all accept `NAME:VARIANT`; `unload` and `unset global` also take it,
+and remove whichever variant of that profile is loaded.
 
 The manifest records the variant, and the trace identity becomes
 `plugin/profile:variant@version`. `profile` itself stays the profile name, so
 telemetry `agent_access.profiles` entries and Codex resume state are shared by
-a profile's variants. Plugin validation resolves every variant, not only the
-default. The profile editor in `agent-farm ui` edits single-agent profiles;
+a profile's variants. Codex variants of one profile also share one private
+Codex home, so don't run two of them with different skill sets in the same
+directory at the same time. Plugin validation resolves every variant, not only
+the default. The profile editor in `agent-farm ui` edits single-agent profiles;
 edit variants in the YAML source.
 
 `agent-farm run NAME` launches the complete identity. `agent-farm set global NAME` loads

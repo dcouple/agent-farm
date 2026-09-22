@@ -84,8 +84,11 @@ export async function chooseVariant(configRoot: string, requested: string, works
   const choice = await p.select({
     message: `Which ${bold(requested)} variant?`,
     options: orderedVariants(resolved.variants, resolved.default_variant).map(variant => {
-      const agent = resolveProfile(configRoot, `${requested}:${variant}`, workspace).nodes.main!;
-      return {value: variant, label: variant, hint: `${agent.harness} · ${agent.model}${variant === resolved.default_variant ? ' · default' : ''}`};
+      // A broken variant shows its error instead of blocking the ones that work.
+      let hint: string;
+      try { const agent = resolveProfile(configRoot, `${requested}:${variant}`, workspace).nodes.main!; hint = `${agent.harness} · ${agent.model}`; }
+      catch (error) { hint = `cannot launch: ${error instanceof Error ? error.message : error}`; }
+      return {value: variant, label: variant, hint: `${hint}${variant === resolved.default_variant ? ' · default' : ''}`};
     }),
   });
   if (isCancel(choice)) bail();

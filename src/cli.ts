@@ -178,7 +178,7 @@ try {
     if (operation==='loaded') {
       if (values.harness) throw new Error('agent-farm loaded lists all harnesses');
       const entries=loadedProfiles();
-      console.log(entries.length ? entries.map(p=>`${p.profile} [plugin ${p.plugin??'local'}] (${p.harness}): ${p.skills.map(s=>`${path.basename(s.destination)} [plugin ${s.plugin??p.plugin??'local'}]`).join(', ') || 'no skills'}`).join('\n') : 'No profiles loaded into user skills.');
+      console.log(entries.length ? entries.map(p=>`${p.profile}${p.variant?':'+p.variant:''} [plugin ${p.plugin??'local'}] (${p.harness}): ${p.skills.map(s=>`${path.basename(s.destination)} [plugin ${s.plugin??p.plugin??'local'}]`).join(', ') || 'no skills'}`).join('\n') : 'No profiles loaded into user skills.');
     } else if (operation==='load') {
       const entry=loadProfile(path.resolve(values['config-root']!),positionals[1]!,{harness:values.harness});
       console.log(`Loaded ${entry.profile}: ${entry.skills.length} skills for ${entry.harness}. Skills only; start a fresh native session to verify discovery.`);

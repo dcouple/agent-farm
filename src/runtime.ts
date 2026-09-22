@@ -388,7 +388,7 @@ export function run(bundle: string, route: string, args: string[], launchCommand
   const selected=manifest.nodes[route]; if (!selected) throw new Error('Unknown bundled child');
   bundle=materializeLaunch(bundle,route,resolveLaunch(selected,requested));
   const launch=launchCommand(bundle,route,{...requested,nativeArgs:[...(values['native-arg'] ?? []),...args.slice(separator+1)],message:values.message,prepare:!values.explain,configRoot});
-  const metadata={workspace_source:manifest.workspace_source,telemetry:launch.telemetry,telemetry_access:launch.telemetry_access,profile:manifest.profile,plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
+  const metadata={workspace_source:manifest.workspace_source,telemetry:launch.telemetry,telemetry_access:launch.telemetry_access,profile:manifest.profile,...(manifest.variant?{variant:manifest.variant}:{}),plugin:manifest.plugin,plugin_version:manifest.plugin_version,trace_identity:manifest.trace_identity,cross_plugin_dependencies:manifest.cross_plugin_dependencies};
   if (values.explain) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,launch:launch.launch},null,2));
   else if (values['print-launch']) console.log(JSON.stringify({...metadata,argv:launch.argv,cwd:launch.cwd,bundle,env:launch.envOverrides,launch:launch.launch},null,2));
   else execute(launch.argv,launch.cwd,launch.env);

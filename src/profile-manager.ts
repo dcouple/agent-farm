@@ -38,7 +38,11 @@ export class ProfileManager{
     // Do not expose connection secrets or provider credentials in the browser inspector.
     return {profile:result.profile,agent:a.qualified_name,harness:a.harness,model:a.launch?.model,args:a.launch?.arguments,argument_definitions:a.argument_definitions,instructions:a.instructions,skills:a.skills,subagents:a.children,source_file:a.source_file,workspace_source:workspace.metadata,telemetry_access:telemetryAccess(telemetry,result.profile)};
   }
-  duplicate(name:string){const current=this.get(name),{context}=this.context(name),value=document(current.source);if(context.plugin&&typeof value.agent==='string'&&!value.agent.includes('/'))value.agent=context.plugin+'/'+value.agent;return {source:stringify(value)};}
+  duplicate(name:string){const current=this.get(name),{context}=this.context(name),value=document(current.source);
+    // A copy lands in the local namespace, so plugin agents it names must be qualified, including every variant's.
+    const qualify=(entry:Record<string,unknown>)=>{if(context.plugin&&typeof entry.agent==='string'&&!entry.agent.includes('/'))entry.agent=context.plugin+'/'+entry.agent;};
+    qualify(value);if(value.variants&&typeof value.variants==='object')for(const entry of Object.values(value.variants as Record<string,unknown>))if(entry&&typeof entry==='object')qualify(entry as Record<string,unknown>);
+    return {source:stringify(value)};}
   preview(input:{name:string;source:string;revision:string|null}){
     const name=configurationName(input.name,'profile name'),value=document(input.source);
     const local=this.catalog().find(c=>c.local);if(!local)throw Error('Use a host configuration root, not a plugin directory');

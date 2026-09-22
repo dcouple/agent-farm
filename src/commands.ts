@@ -103,7 +103,7 @@ export const commands: Command[] = [
   },
   {
     name: 'set global',
-    usage: 'agent-farm set global [PROFILE] [--harness claude|codex]',
+    usage: 'agent-farm set global [PROFILE[:VARIANT]] [--harness claude|codex]',
     group: 'configure',
     description: "Install a profile's skills into the native user skill directory so they are available in every repository. Only skills are mounted — not the model, identity, or sub-agents.",
     flags: [
@@ -118,7 +118,7 @@ export const commands: Command[] = [
   },
   {
     name: 'unset global',
-    usage: 'agent-farm unset global [PROFILE] [--harness claude|codex]',
+    usage: 'agent-farm unset global [PROFILE[:VARIANT]] [--harness claude|codex]',
     group: 'configure',
     description: "Remove a profile's managed skills from the native user directory.",
     flags: [

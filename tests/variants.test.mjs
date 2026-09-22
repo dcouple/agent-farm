@@ -7,7 +7,10 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {build,resolveProfile} from '../dist/compiler.js';
 import {listProfiles,inspectProfile} from '../dist/inspect.js';
-import {validatePlugin} from '../dist/plugins.js';
+import {validatePlugin,installPlugin} from '../dist/plugins.js';
+import {ProfileManager} from '../dist/profile-manager.js';
+import {loadProfile,loadedProfiles,unloadProfile} from '../dist/user-skills.js';
+import {chooseVariant} from '../dist/interactive.js';
 const cli=fileURLToPath(new URL('../dist/cli.js',import.meta.url));
 
 function fixture(t) {
@@ -68,4 +71,47 @@ test('plugin validation checks every variant, not only the default',t=>{
  assert.deepEqual(validatePlugin(f.root).profiles.find(p=>p.profile==='planner').variants,['claude','codex']);
  f.put('profiles/planner.yaml','variants:\n  claude:\n    agent: missing-agent\n  codex:\n    agent: planner-codex\ndefault: codex\n');
  assert.throws(()=>validatePlugin(f.root),/missing agent/);
+});
+
+function withPlugin(t,f){
+ const source=path.join(f.base,'plugin'),host=path.join(f.base,'host');
+ const put=(p,text)=>{const file=path.join(source,p);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text);};
+ put('plugin.yaml','name: fixture\nversion: 1.0.0\ncli_major: 0\n');
+ put('agents/planner-claude.md','---\nharness: claude\nmodel: claude-fable-5-1\n---\nPlugin Claude planner.\n');
+ put('agents/planner-codex.md','---\nharness: codex\nmodel: gpt-6-astra\n---\nPlugin Codex planner.\n');
+ put('profiles/planner.yaml','variants:\n  claude:\n    agent: planner-claude\n  codex:\n    agent: planner-codex\ndefault: claude\n');
+ installPlugin(source,host);return host;
+}
+
+test('duplicating a plugin profile with variants qualifies every variant agent',t=>{
+ const f=fixture(t),host=withPlugin(t,f),manager=new ProfileManager(host,f.target);
+ const {source}=manager.duplicate('fixture/planner');
+ assert.match(source,/agent: fixture\/planner-claude/);assert.match(source,/agent: fixture\/planner-codex/);
+ const preview=manager.preview({name:'my-planner',source,revision:null});
+ assert.equal(preview.resolved.harness,'claude');
+ assert.throws(()=>manager.compose({source,agent:'x',model:'',reasoning:'',speed:'',args:'{}'}),/edit them in the YAML source/);
+});
+
+test('unload and loaded understand NAME:VARIANT',t=>{
+ const f=fixture(t),home=path.join(f.base,'home');fs.mkdirSync(home);const options={home,env:{}};
+ loadProfile(f.root,'planner:claude',options);
+ assert.deepEqual(loadedProfiles(options).map(p=>[p.profile,p.variant]),[['planner','claude']]);
+ assert.equal(unloadProfile('planner:claude',options).length,1);
+ assert.deepEqual(loadedProfiles(options),[]);
+});
+
+test('default_plugin picks the plugin for a bare NAME:VARIANT',t=>{
+ const f=fixture(t),host=withPlugin(t,f);
+ fs.cpSync(path.join(f.root,'agents'),path.join(host,'agents'),{recursive:true});fs.cpSync(path.join(f.root,'profiles'),path.join(host,'profiles'),{recursive:true});
+ assert.throws(()=>resolveProfile(host,'planner:codex'),/Ambiguous profile planner/);
+ fs.writeFileSync(path.join(host,'settings.json'),'{"default_plugin":"fixture"}\n');
+ const resolved=resolveProfile(host,'planner:codex');
+ assert.equal(resolved.plugin,'fixture');assert.equal(resolved.variant,'codex');
+ assert.throws(()=>resolveProfile(host,'planner:gemini'),/Profile fixture\/planner has no variant gemini/);
+});
+
+test('the variant question is skipped when a variant is named or there is only one',async t=>{
+ const f=fixture(t);
+ assert.equal(await chooseVariant(f.root,'planner:claude'),'planner:claude');
+ assert.equal(await chooseVariant(f.root,'plain'),'plain');
 });
