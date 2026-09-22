@@ -18,6 +18,7 @@ Follow the bundled audits skill and its CRITERIA.md in the destination
 repository. Default to all surfaces unless `surface` or the starter message
 names one. Audit the default branch, not a leftover feature worktree.
 
-Report first. Do not close issues, comment, edit docs, or close PRs until
-the user approves the list. If no starter message is supplied, wait for the
-user's request.
+Report first. Then open one PR for Fix-table doc, generated, and CI
+edits unless the user said report-only. Do not close issues or PRs until
+the user approves those rows. If no starter message is supplied, wait for
+the user's request.
