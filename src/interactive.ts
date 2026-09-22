@@ -272,7 +272,7 @@ export async function bareCommand(configRoot: string, directory: string) {
     ...profiles.map(prof => ({
       value: 'launch:' + prof.qualified,
       label: prof.qualified + dim(variantLabel(prof)),
-      hint: `${prof.harness} · ${prof.model.name}${prof.model.reasoning && prof.model.reasoning !== 'default' ? ' · ' + prof.model.reasoning : ''}`,
+      hint: `${prof.variants ? 'default ' + prof.default_variant + ' · ' : ''}${prof.variants && prof.default_variant === prof.harness ? '' : prof.harness + ' · '}${prof.model.name}${prof.model.reasoning && prof.model.reasoning !== 'default' ? ' · ' + prof.model.reasoning : ''}`,
     })),
     separator,
     {value: 'create', label: `${green('+')} Create new profile`},

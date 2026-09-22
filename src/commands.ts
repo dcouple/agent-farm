@@ -20,9 +20,9 @@ export const commands: Command[] = [
   {name:'telemetry',usage:'agent-farm telemetry mcp [--project DIR] [--directory STORE] [--scope project|machine]\n       agent-farm telemetry export --bundle DIR [--session ID ...] [--project DIR] [--directory STORE] [--include-content] [--require-finished]',group:'inspect',description:'Serve read-only telemetry tools over stdio MCP, or export selected sessions and descendants into an existing artifact bundle. Export is project-scoped and local only; publishing remains the workspace workflow’s responsibility.'},
   {
     name: 'run',
-    usage: 'agent-farm run [PLUGIN/]NAME [options] [-- native arguments...]',
+    usage: 'agent-farm run [PLUGIN/]NAME[:VARIANT] [options] [-- native arguments...]',
     group: 'launch',
-    description: 'Launch a profile in the native Claude Code or Codex terminal.',
+    description: 'Launch a profile in the native Claude Code or Codex terminal. For a profile with variants, it asks which one; add :VARIANT to skip the question.',
     flags: [
       {name: 'no-workspace', description: 'Skip workspace connections, instructions, and telemetry overrides; host telemetry defaults still apply', type: 'boolean'},
       {name: 'directory', description: 'Repository to open', type: 'string', default: 'cwd'},
@@ -75,7 +75,7 @@ export const commands: Command[] = [
   },
   {
     name: 'inspect',
-    usage: 'agent-farm inspect [PLUGIN/]NAME [--directory PATH] [--no-workspace]',
+    usage: 'agent-farm inspect [PLUGIN/]NAME[:VARIANT] [--directory PATH] [--no-workspace]',
     group: 'inspect',
     description: 'Show the resolved agent graph for a profile: model, skills, children, connections, and source files. Output is JSON.',
     flags: [
