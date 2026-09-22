@@ -190,6 +190,18 @@ the detached launches together serializes the lanes and doubles wall-clock.
 and is non-empty. Exit 142 is the watchdog's SIGALRM reap signature: it is a
 classified failure, not a success, and step 3 handles it.
 
+**Codex unavailable**: when a dispatch fails because Codex itself is
+unavailable (its `.log` shows a usage limit, quota, or authentication error,
+or `codex` is not installed), do not wait for a reset. Run the same role as a
+Claude sub-agent with the same prompt and the same two files. A role with a
+Claude twin (code-researcher, code-reviewer, plan-reviewer, web-researcher)
+uses that agent; any other role (implementer, backend-verifier, investigator,
+refactor-simple, refactor-deep) runs as a `general-purpose` sub-agent with an
+explicit `model` (default `opus`) and the leaf-agent line. Implementer fix
+rounds go back to the same sub-agent. Record `runtime_fallback: claude` and
+the `fallback_cause` in `plan.md`, and route the rest of the run's Codex roles
+to Claude the same way.
+
 ### 3. Return the report
 Read the output file. Check the status line the format requires (reviewers:
 `**Verdict:**` + `**Counts:**` with the Must Fix count - a reviewer report

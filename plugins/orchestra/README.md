@@ -9,13 +9,14 @@ Both variants also get Agent Farm's `babysit-pr`, `tdd`, `codebase-design`, copi
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
-| `orchestra/overseer:claude` (default) | Claude, claude-fable-5-1 | The 11 Claude skills (codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop) plus arena and hillclimb, the 6 Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through `codex exec` as in orchestra. |
+| `orchestra/overseer:claude` (default) | Claude, claude-opus-5-5 | The 11 Claude skills (codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop) plus arena and hillclimb, the 6 Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through `codex exec` as in orchestra. |
 | `orchestra/overseer:codex` | Codex, gpt-6-astra (high) | The 13 Codex skills, with `do` and `investigate` in `codex-do` and `codex-investigate`, plus codex-hillclimb. |
 
 Both variants select `references: orchestra`, which holds orchestra's `references/` folder, its Claude agent files under `claude-agents/`, and `templates/`.
 Skills cite `.references/<path>`; Agent Farm maps that to the bundled folder at launch.
 
-Text is copied unchanged except for 6 patches listed in the vendor script:
+Text is copied unchanged except for 7 patches listed in the vendor script:
+- `skills/codex/SKILL.md`: codex falls back to Claude sub-agents when Codex is unavailable.
 - `skills/do/SKILL.md`: do accepts a Greenfield brief or PLAN.md instead of refusing it.
 - `skills/codex-do/SKILL.md`: codex-do accepts a Greenfield brief or PLAN.md instead of refusing it.
 - `skills/codex/SKILL.md`: codex dispatch resolves orchestra paths through the bundled references.

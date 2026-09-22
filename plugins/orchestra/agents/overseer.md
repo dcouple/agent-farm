@@ -1,8 +1,8 @@
 ---
 harness: claude
 model:
-  name: claude-fable-5-1
-description: Orchestra on Claude Fable - discussion, briefs, and the /do pipeline with Codex roles dispatched through codex exec.
+  name: claude-opus-5-5
+description: Orchestra on Claude Opus 5.5 - discussion, briefs, and the /do pipeline with Codex roles dispatched through codex exec.
 skills: [codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop, arena, hillclimb, babysit-pr, tdd, codebase-design]
 references: orchestra
 connections:

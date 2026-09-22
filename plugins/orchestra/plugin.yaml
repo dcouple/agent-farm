@@ -1,5 +1,5 @@
 name: orchestra
-version: 0.1.4
+version: 0.1.5
 cli_major: 0
 source:
   repository: https://github.com/dcouple/orchestra
@@ -9,7 +9,7 @@ checksums:
   agents/code-reviewer.md: cc522a092937228c172cd5f4f30980b31f32219097453d245c1d384522c7c4fd
   agents/codex-overseer.md: d4f59587d7893e73103bd145f46757878d91176bfbfe61a5d7d7b9fcbb055949
   agents/frontend-verifier.md: 871d4f452da1828b0985e22ca0526c4f52c6f981dc58c00fa4eef9a8a840101f
-  agents/overseer.md: ccb139c29605dea7c6b7b6ea56b68ebae96005bb56c3e8df6d5108447f2e2bc3
+  agents/overseer.md: f443ff0be0ee727bc72864066a4f00d211bf28cc639b78d0d7545f592baa60a3
   agents/plan-reviewer.md: ab82b7bb841d4962c0365752fef280980ad10f23431201ee5917b95c88ec2699
   agents/socrates.md: bb9e47014243b812369b4a6d2e4ee01c42cdf57edfeddc48833e561a795398c8
   agents/web-researcher.md: 215d0afefbdb6ca95fe2ac779899f7beff069410eed4e6d22cebe3f59bc72573
@@ -88,7 +88,7 @@ checksums:
   skills/codex-investigate/SKILL.md: e3d217021b8393d9b4b14615aef90a15f9073c3f3dbedf4e96173e391a9a8d64
   skills/codex-security-scan/SKILL.md: 2ee7fa7a21430f27eae04dcd841e07bf743ea0e3198fd9af1c3e537c8f1ce654
   skills/codex-security-scan/agents/openai.yaml: 86b915144fcebbe16647588bf64b8fa2b112d8506a11770dd551543566c45bcc
-  skills/codex/SKILL.md: c4b94f0c07e904d905049f73caf8823da212c2055c5939ca197f795bd18ac47a
+  skills/codex/SKILL.md: 9a9827a7d5faefb9d73ec2c296413906c3c40c02b00eeafe2a6a3e00250b65e2
   skills/cold-read/SKILL.md: 4d3060f5ce7a93d8797adb9d801ce37b77909c7d83e56f0bd9d8b9e6ce5b4f77
   skills/create-brief/SKILL.md: 432e8502f983887abb2cb1a8f54176082c4fd865568623ccb152d587920615a9
   skills/discussion/SKILL.md: de249fd051f1e6bdce6dac954a066ba76538f81e8b1b119c97a65fcb4cc0e02f
