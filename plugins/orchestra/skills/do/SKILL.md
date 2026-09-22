@@ -189,7 +189,8 @@ These preflight items are only checkable now that the item is loaded:
   server is `orchestra_playwright`); prove it with the snapshot-then-close probe
   in the next item, using that server's tool names. Create an evidence directory outside the
   repository, `${TMPDIR:-/tmp}/orchestra-evidence/<id>/<attempt>`, and use it,
-  run id `local-<id>`, and attempt id `<attempt>` wherever this skill or the
+  run id `local-<id>`, and attempt id `<attempt>` (`1`, then one higher for each
+  QA retry) wherever this skill or the
   frontend-verifier names `ORCHESTRA_BROWSER_EVIDENCE_DIR`,
   `ORCHESTRA_BROWSER_RUN_ID`, or `ORCHESTRA_BROWSER_ATTEMPT_ID`; pass all three
   in the frontend-verifier dispatch. If no browser MCP is attached, record a
