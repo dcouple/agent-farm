@@ -77,11 +77,11 @@ Agent Farm ships with profiles ready to use. Run `agent-farm` to pick one:
 
 ```
 ◆  What would you like to do?
-│  ● greenfield/planner (claude: claude-fable-5-1 high · codex: gpt-6-astra high)
-│  ○ orchestra/overseer (claude: claude-opus-5-5 · codex: gpt-6-astra high)
-│  ○ dcouple/raw (opus: claude-opus-5-5 medium · astra: gpt-6-astra medium · sol: gpt-5.6-sol medium)
-│  ○ dcouple/qa-and-fix (claude: claude-opus-5-5 medium · codex: gpt-5.6-sol medium)
-│  ○ dcouple/reviewer (claude: claude-opus-5-5 high · codex: gpt-5.6-sol medium)
+│  ● greenfield/planner (2 variants)
+│  ○ orchestra/overseer (2 variants)
+│  ○ dcouple/raw (3 variants)
+│  ○ dcouple/qa-and-fix (2 variants)
+│  ○ dcouple/reviewer (2 variants)
 │  ─────────────────────
 │  + Create new profile
 ```
@@ -103,10 +103,9 @@ for research write-ups, `business` for business documents, `seo` for search
 content, and `audits` for finding outdated issues and docs.
 
 **Variants** — Some profiles come in more than one version, such as a Claude
-and a Codex planner. They're one profile with variants, shown with each
-variant's model: `greenfield/planner (claude: claude-fable-5-1 high · codex:
-gpt-6-astra high)`. `agent-farm run` asks which one you
-want. Add `:codex` to the name to skip the question; without it, scripts get
+and a Codex planner. They're one profile with variants, such as
+`greenfield/planner (2 variants)`. `agent-farm run` asks which one you
+want and shows each variant's model; `agent-farm profiles list` shows them too. Add `:codex` to the name to skip the question; without it, scripts get
 the default.
 
 ## Four entry points
@@ -130,8 +129,8 @@ commands. `agent-farm doctor` tells you what's working and what's not.
 agent-farm run planner
 agent-farm run dcouple/implementer
 agent-farm run greenfield/planner:codex
-agent-farm run implementer --directory ~/repos/my-project --message "Fix the failing tests"
-agent-farm run implementer --model gpt-6-astra --speed fast --arg review=full
+agent-farm run greenfield/implementer --directory ~/repos/my-project --message "Fix the failing tests"
+agent-farm run greenfield/implementer --model gpt-6-astra --speed fast --arg review=dual
 ```
 
 Several plugins can be installed together. Use `plugin/profile` when plugins
@@ -189,7 +188,7 @@ is validated; conflicts with agent-defined connections still fail.
 agent-farm workspace trust                    # review and approve this repository
 agent-farm workspace show                     # merged values, sources, trust state
 agent-farm workspace untrust                  # revoke repository approval
-agent-farm run implementer --explain
+agent-farm run greenfield/implementer --explain
 ```
 
 Trust binds the real Git common directory and the file's SHA-256, so linked
