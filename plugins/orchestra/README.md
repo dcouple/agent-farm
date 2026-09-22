@@ -6,7 +6,7 @@ Regenerate with `node scripts/vendor-orchestra.mjs <orchestra checkout> [commit]
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
 | `orchestra/overseer` | Claude, claude-fable-5-1 | The 11 Claude skills (codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop), the 6 Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through `codex exec` as in orchestra. |
-| `orchestra/codex-overseer` | Codex, gpt-6-astra (low) | The 13 Codex skills, with `do` and `investigate` in `codex-do` and `codex-investigate`. |
+| `orchestra/codex-overseer` | Codex, gpt-6-astra (high) | The 13 Codex skills, with `do` and `investigate` in `codex-do` and `codex-investigate`. |
 
 Both select `references: orchestra`, which holds orchestra's `references/` folder, its Claude agent files under `claude-agents/`, and `templates/`.
 Skills cite `.references/<path>`; Agent Farm maps that to the bundled folder at launch.
