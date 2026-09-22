@@ -87,7 +87,7 @@ test('qualified launches remain isolated and bare names honor default_plugin',t=
  const own=build(root,'dcouple/implementer',root),other=build(root,'fixture/implementer',root);
  assert.notEqual(own,other);
  assert.equal(JSON.parse(fs.readFileSync(path.join(own,'manifest.json'))).plugin,'dcouple');
- assert.equal(inspectProfile(root,'fixture/implementer').plugin_version,'1.0.0');
+ assert.equal(inspectProfile(root,'fixture/implementer',{directory:root}).plugin_version,'1.0.0');
  assert.match(fs.readFileSync(path.join(other,'main/instructions.md'),'utf8'),/FIXTURE/);
  assert.doesNotMatch(fs.readFileSync(path.join(other,'main/instructions.md'),'utf8'),/Socratic/);
 });
