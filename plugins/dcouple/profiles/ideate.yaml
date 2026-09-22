@@ -1,0 +1,6 @@
+variants:
+  astra:
+    agent: ideate-astra
+  opus:
+    agent: ideate
+default: astra

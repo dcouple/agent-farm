@@ -3,8 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: low
-description: Audit stale GitHub issues, PRs, and agent-facing docs against the
-  default branch. Report first; close or edit only after approval.
+description: "Find outdated issues, pull requests, and docs, and suggest what to close or update. Changes nothing until you approve."
 skills:
   - audits
 args:
