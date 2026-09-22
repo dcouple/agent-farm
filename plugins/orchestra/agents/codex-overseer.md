@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: high
-description: Orchestra on Codex - the Codex /do pipeline with its role skills.
+description: "The full Orchestra workflow: talk a task through, write the brief, then build, test, and review it into a pull request with little hand-holding."
 skills: [backend-verifier, code-researcher, code-reviewer, codex-security-scan, codex-do, frontend-verifier, implementer, codex-investigate, investigator, plan-reviewer, refactor-deep, refactor-simple, web-researcher, codex-hillclimb, babysit-pr, tdd, codebase-design]
 references: orchestra
 connections:

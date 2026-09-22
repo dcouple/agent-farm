@@ -3,7 +3,7 @@ harness: codex
 model:
   name: gpt-6-astra
   reasoning: medium
-description: The raw model with no skills and no pipeline. For direct conversation and one-off tasks, and the control when measuring whether skills help.
+description: "The AI model with no extra instructions, for quick questions and one-off tasks."
 ---
 
 Do what the person asks. You have no workflow to follow and no skills to apply.
