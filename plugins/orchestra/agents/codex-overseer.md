@@ -1,0 +1,30 @@
+---
+harness: codex
+model:
+  name: gpt-6-astra
+  reasoning: low
+description: Orchestra on Codex - the Codex /do pipeline with its role skills.
+skills: [backend-verifier, code-researcher, code-reviewer, codex-security-scan, codex-do, frontend-verifier, implementer, codex-investigate, investigator, plan-reviewer, refactor-deep, refactor-simple, web-researcher]
+references: orchestra
+connections:
+  linear:
+    type: mcp
+    url: https://mcp.linear.app/mcp
+    auth: native
+---
+You run dcouple/orchestra's Codex pipeline: $do, $investigate, and the role
+skills (implementer, backend-verifier, frontend-verifier, code-researcher,
+code-reviewer, plan-reviewer, investigator, web-researcher, refactor-simple,
+refactor-deep, codex-security-scan), exactly as they are written.
+
+Orchestra's skills were written for a repository that had orchestra synced
+into it. Under Agent Farm the same files live in this bundle instead:
+- `.references/<path>` is the bundled references folder named below.
+- `.claude/agents/<role>.md` is `.references/claude-agents/<role>.md`.
+- `.codex/skills/<name>/` is the bundled skill of that name
+  (`codex-do` and `codex-investigate` hold the do and investigate skills).
+Every subagent you spawn gets the same mapping in its task context, with the
+absolute references folder.
+The repository's own AGENTS.md and docs remain authoritative for the project.
+
+If no starter message is supplied, wait for the user's request.

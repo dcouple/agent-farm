@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><!-- <item title> — Brief --></title>
+<script type="application/yaml" id="orchestra-meta">
+# Machine metadata — the work item's state. Consumers (/do, publish, postmortem)
+# read this block as YAML and, when tracker state governs, replace this element's
+# text WHOLESALE — never edit the body to change state. Emit real values only;
+# omit optional keys that don't apply. See .references/html-brief.md · Metadata.
+#
+# type: feature | bug
+# id: <id>
+# status: draft | ready
+# zone: <0-3 — stakes + consequence radius; .references/zones.md>
+# review_lanes: dual | single        # optional human override of the zone's lane dial
+# frontend_verifier: true | false    # optional human override — run the app-driving QA agent or not
+# ios_testing: required | optional   # optional human override; default optional
+# severity: critical | high | medium | low   # bugs only
+# phases:                            # one entry = single outcome; 2+ = multi-phase
+#   - { n: 1, title: <phase title> }
+# artifact_bundle: <url — filled at publish>
+# linear_issues: []                  # per .references/tracker-lifecycle.md
+# github: <issue url — filled at publish>
+# artifact_upload: failed            # set only when a milestone bundle upload failed
+</script>
+<style>
+  :root {
+    --paper: #FAF8F5;
+    --ink: #1F2328;
+    --ink-soft: #5A5F66;
+    --line: #E4DFD7;
+    --panel: #FFFFFF;
+    --accent: #0E7569;
+    --accent-soft: #E3F0EE;
+    --warn: #B45309;
+    --warn-soft: #F7EBDD;
+    --out: #9F3A38;
+    --out-soft: #F6E8E7;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #15191D; --ink: #E8E6E1; --ink-soft: #9BA1A8;
+      --line: #2C3237; --panel: #1C2126;
+      --accent: #2FA79A; --accent-soft: #16302D;
+      --warn: #D98E3D; --warn-soft: #32271A;
+      --out: #CF6F6C; --out-soft: #33211F;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); line-height: 1.6; font-size: 16px; }
+  .page { max-width: 720px; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
+
+  header.masthead { border-bottom: 1px solid var(--line); padding-bottom: 1.75rem; margin-bottom: 2.5rem; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: .5rem .75rem; align-items: center; margin-bottom: 1rem; }
+  .badge { font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; padding: .2rem .55rem; border-radius: 3px; text-transform: uppercase; }
+  .badge.type { background: var(--accent-soft); color: var(--accent); }
+  .badge.status { border: 1px solid var(--line); color: var(--ink-soft); }
+  .badge.zone { border: 1px solid var(--warn); color: var(--warn); background: var(--warn-soft); }
+  h1 { font-family: var(--serif); font-weight: 500; font-size: 2.1rem; line-height: 1.2; letter-spacing: -.01em; text-wrap: balance; margin-bottom: .75rem; }
+  .standfirst { color: var(--ink-soft); font-size: 1.05rem; max-width: 60ch; }
+  .links { margin-top: 1rem; font-size: .85rem; display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .links a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+
+  section { margin-bottom: 2.75rem; }
+  .eyebrow { font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: .6rem; }
+  h2 { font-size: 1.25rem; margin-bottom: .75rem; letter-spacing: -.01em; }
+  p { margin-bottom: .9rem; max-width: 65ch; }
+  code { font-family: var(--mono); font-size: .85em; background: var(--panel); border: 1px solid var(--line); padding: .08em .35em; border-radius: 3px; }
+  a { color: var(--accent); }
+
+  /* Progressive disclosure — native details/summary, no JS. Research summaries,
+     mockups, and sub-report digests collapse; core sections stay open (plain
+     <section>). Never nest details. */
+  details { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); margin: 1rem 0; }
+  details > summary { cursor: pointer; padding: .7rem 1rem; font-weight: 600; font-size: .92rem; list-style: none; display: flex; align-items: center; gap: .6rem; }
+  details > summary::before { content: "▸"; color: var(--accent); font-size: .8em; transition: none; }
+  details[open] > summary::before { content: "▾"; }
+  details > summary .hint { font-weight: 400; color: var(--ink-soft); font-size: .82rem; }
+  details > .body { padding: 0 1rem 1rem; border-top: 1px solid var(--line); padding-top: .9rem; }
+
+  /* Before/after (or expected/actual) panel pair */
+  .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  @media (max-width: 560px) { .before-after { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem 1.2rem; }
+  .panel h3 { margin-bottom: .6rem; font-size: .78rem; font-family: var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .panel.after { border-color: var(--accent); }
+  .panel.after h3 { color: var(--accent); }
+  .panel ul { padding-left: 1.1rem; font-size: .92rem; }
+  .panel li { margin-bottom: .4rem; }
+
+  /* Opening diagram — required slot right after the masthead */
+  .diagram { margin: 1.5rem 0 2.5rem; }
+  .diagram svg, .diagram img { display: block; max-width: 100%; height: auto; }
+  .diagram figcaption { margin-top: .5rem; font-size: .8rem; color: var(--ink-soft); }
+
+  /* Horizontal flow of stages/components — also the multi-phase timeline.
+     .done = phase completed — /do's progress renders only in its own
+     implementation plan; briefs never carry run state. Kept for pipeline
+     strips that depict an already-shipped predecessor. */
+  .pipeline { display: flex; align-items: stretch; margin: 1.5rem 0; overflow-x: auto; padding-bottom: .5rem; }
+  .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .75rem .9rem; min-width: 130px; flex: 1; }
+  .stage.hot { border-color: var(--accent); background: var(--accent-soft); }
+  .stage.done { border-color: var(--accent); }
+  .stage.done .name::after { content: " ✓"; color: var(--accent); }
+  .stage .name { font-family: var(--mono); font-size: .78rem; font-weight: 600; margin-bottom: .25rem; }
+  .stage .desc { font-size: .78rem; color: var(--ink-soft); line-height: 1.45; }
+  .arrow { align-self: center; padding: 0 .5rem; color: var(--ink-soft); flex: none; }
+  .strip-note { margin: -.5rem 0 0; font-size: .8rem; color: var(--ink-soft); }
+
+  /* Locked directions — one card per D-number */
+  .decision { border-left: 3px solid var(--accent); padding: .2rem 0 .2rem 1.1rem; margin-bottom: 1.25rem; }
+  .decision .tag { font-family: var(--mono); font-size: .78rem; font-weight: 700; color: var(--accent); }
+  .decision p { margin: .3rem 0 0; font-size: .95rem; }
+  .decision .rejected { color: var(--ink-soft); font-size: .85rem; }
+  .decision .rejected::before { content: "rejected — "; font-style: italic; }
+
+  /* Dependencies & mechanics — one card per dependency. The vbadge states
+     whether the mechanics were verified (research/sub-report) or assumed. */
+  .dep { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); padding: .9rem 1.1rem; margin-bottom: .9rem; }
+  .dep-head { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-bottom: .35rem; }
+  .dep-name { font-weight: 600; font-size: .95rem; }
+  .vbadge { font-family: var(--mono); font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; padding: .14rem .5rem; border-radius: 999px; }
+  .vbadge.verified { background: var(--accent-soft); color: var(--accent); }
+  .vbadge.assumed { background: var(--warn-soft); color: var(--warn); }
+  .dep p { font-size: .9rem; margin-bottom: .3rem; }
+  .dep .report { font-size: .82rem; }
+  .callout { border-left: 3px solid var(--warn); background: var(--warn-soft); border-radius: 0 6px 6px 0; padding: .8rem 1.1rem; margin: 1.25rem 0; font-size: .95rem; }
+  .callout.none { border-left-color: var(--line); background: var(--panel); color: var(--ink-soft); }
+
+  /* In / out of scope — also reused for sequencing (work before / work after) */
+  .scope { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 560px) { .scope { grid-template-columns: 1fr; } }
+  .scope .panel.in { border-top: 3px solid var(--accent); }
+  .scope .panel.outof { border-top: 3px solid var(--out); }
+  .scope .panel.outof h3 { color: var(--out); }
+
+  /* Acceptance criteria — auto-numbered AC1, AC2… */
+  ol.acs { padding-left: 0; list-style: none; counter-reset: ac; }
+  ol.acs li { counter-increment: ac; position: relative; padding-left: 3.2rem; margin-bottom: .8rem; font-size: .95rem; max-width: 62ch; }
+  ol.acs li::before {
+    content: "AC" counter(ac); position: absolute; left: 0; top: .1em;
+    font-family: var(--mono); font-size: .72rem; font-weight: 700;
+    color: var(--accent); background: var(--accent-soft); padding: .15rem .4rem; border-radius: 3px;
+  }
+
+  /* UI before/after mockups — a vertical stack of before|after PAIRS.
+     Each .pair is its own 2-col grid, so rows can never bleed into each
+     other, and captions sit in normal flow. align-items:start lets each
+     card size to its content. Never put fixed heights on a mock.
+     See html-brief.md · Mockups. */
+  .shots { margin: 1.75rem 0; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; margin-bottom: 2rem; }
+  .pair:last-child { margin-bottom: 0; }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; } }
+  .shot { margin: 0; }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; }
+  .shot.after img { border-color: var(--accent); }
+  .shot figcaption { margin-top: .55rem; font-size: .8rem; color: var(--ink-soft); line-height: 1.4; }
+  .shot.after figcaption { color: var(--accent); }
+
+  /* Schematic screen replica — build mockups from these parts when a real
+     screenshot can't be driven. Content-sized (no heights). Compose, don't
+     hand-roll. */
+  .mock { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 1.1rem 1.15rem 1.25rem; font-size: .85rem; }
+  .shot.after .mock { border-color: var(--accent); }
+  .mock-eyebrow { font-family: var(--mono); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: .7rem; }
+  .mock-q { font-weight: 600; font-size: .9rem; margin-bottom: .85rem; }
+  .mock-opt { display: flex; align-items: center; gap: .6rem; border: 1px solid var(--line); border-radius: 6px; padding: .6rem .7rem; margin-bottom: .55rem; }
+  .mock-opt:last-child { margin-bottom: 0; }
+  .mock-opt.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .mock-opt .mark { width: 15px; height: 15px; flex: none; border: 1.5px solid var(--ink-soft); position: relative; }
+  .mock-opt .mark.radio { border-radius: 50%; }
+  .mock-opt .mark.check { border-radius: 4px; }
+  .mock-opt.sel .mark { border-color: var(--accent); background: var(--accent); }
+  .mock-opt.sel .mark.check::after { content: "✓"; position: absolute; inset: 0; color: var(--paper); font-size: 11px; line-height: 15px; text-align: center; }
+  .mock-opt.sel .mark.radio::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--paper); }
+  .mock-field { display: flex; justify-content: space-between; align-items: center; gap: 1rem; border: 1px solid var(--line); border-radius: 6px; padding: .6rem .7rem; margin-bottom: .55rem; color: var(--ink-soft); }
+  .mock-field:last-child { margin-bottom: 0; }
+  .mock-field.hl { border-color: var(--accent); }
+  .mock-field .val { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .mock-doc { border: 1px dashed var(--line); border-radius: 6px; padding: 1.5rem .7rem; text-align: center; color: var(--ink-soft); margin-bottom: .7rem; }
+  .shot.after .mock-doc { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .mock-actions { display: flex; gap: .5rem; margin-top: .2rem; }
+  .mock-btn { font-size: .8rem; padding: .4rem .85rem; border-radius: 6px; border: 1px solid var(--line); color: var(--ink-soft); }
+  .mock-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .mock-note { font-size: .76rem; color: var(--ink-soft); margin-top: .75rem; }
+
+  /* Open questions */
+  .question { background: var(--warn-soft); border-left: 3px solid var(--warn); border-radius: 0 6px 6px 0; padding: .8rem 1.1rem; margin-bottom: .75rem; font-size: .95rem; }
+  .question strong { color: var(--warn); font-family: var(--mono); font-size: .78rem; letter-spacing: .05em; }
+
+  /* User-journey flows — one .pipeline per journey, each labeled. Reuses
+     .stage; .skip = a muted/dashed step the journey bypasses, .term = a
+     terminal endpoint (e.g. an off-ramp). */
+  .journey { margin: 0 0 1.5rem; }
+  .journey:last-child { margin-bottom: 0; }
+  .journey .pipeline { overflow-x: visible; }
+  .journey .stage { min-width: 0; flex: 1 1 0; }
+  .journey-label { font-weight: 600; font-size: .92rem; margin-bottom: .5rem; }
+  .stage.skip { border-style: dashed; opacity: .6; }
+  .stage.term { border-color: var(--accent); background: var(--accent-soft); }
+
+  /* Verification as a categorized checklist (UX vs Backend) + a flow→check map */
+  .vgroup { margin-bottom: 1.6rem; }
+  .vgroup-head { font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: .7rem; }
+  .vlist { list-style: none; }
+  .vlist li { position: relative; padding-left: 1.9rem; margin-bottom: .55rem; font-size: .92rem; line-height: 1.45; max-width: 66ch; }
+  .vlist li::before { content: ""; position: absolute; left: 0; top: .18em; width: 15px; height: 15px; border: 1.5px solid var(--ink-soft); border-radius: 4px; }
+  .flowmap { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: .85rem; }
+  .flowmap th, .flowmap td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .flowmap th { font-family: var(--mono); font-size: .66rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); }
+  .flowmap td:first-child { font-weight: 600; white-space: nowrap; }
+
+  /* Run config — the zone panel. Shows the zone (per zones.md) and the dials
+     it derives; the settable dials reflect the metadata and are changed by
+     telling the agent during alignment (a static file can't write back). */
+  .dials { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 1.15rem 1.3rem; }
+  .dial { display: grid; grid-template-columns: 118px 1fr; gap: 1rem; align-items: start; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+  .dial:last-child { border-bottom: none; }
+  .dial-label { font-family: var(--mono); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); padding-top: .3rem; }
+  .dial-opts { display: flex; gap: .45rem; flex-wrap: wrap; align-items: center; }
+  .pill { font-size: .82rem; padding: .32rem .72rem; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-soft); }
+  .pill.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .dial-why { flex-basis: 100%; font-size: .8rem; color: var(--ink-soft); margin: .4rem 0 0; }
+  .dials-note { font-size: .8rem; color: var(--ink-soft); margin: .9rem 0 0; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.25rem; font-size: .8rem; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="meta-row">
+      <span class="badge type"><!-- feature | bug --></span>
+      <span class="badge status"><!-- draft — for alignment | ready --></span>
+      <span class="badge zone"><!-- zone <n> — <label from zones.md>; required, mirrors the footer --></span>
+    </div>
+    <h1><!-- item title --></h1>
+    <p class="standfirst"><!-- one-sentence intent, in the user's language --></p>
+    <div class="links"><!-- tracker issue link once it exists; omit before publish --></div>
+  </header>
+
+  <figure class="diagram">
+    <!-- Opening diagram — required, see html-brief.md. Architecture /
+         flow of what's happening: inline SVG on the tokens, the .pipeline
+         strip, or an inlined data: URI image. Never skipped. -->
+    <figcaption><!-- one line: what the diagram shows --></figcaption>
+  </figure>
+
+  <!-- Sections per the html-brief.md section map. Each section:
+       <p class="eyebrow">NN · name</p> + <h2> + content. Pick components
+       that fit: prose, .before-after, .pipeline, .decision, .dep, .scope,
+       ol.acs, .question, details. -->
+
+  <!-- DEPENDENCIES & MECHANICS — one .dep card per dependency; badge states
+       whether its mechanics were verified or assumed. Sub-report digests go
+       in a collapsed details block. Schema changes get a .callout — always
+       present, "none" allowed. Sequencing reuses the .scope grid.
+  <section>
+    <p class="eyebrow">04 · Dependencies &amp; mechanics</p>
+    <h2>What this rests on, and how it actually works</h2>
+    <div class="dep">
+      <div class="dep-head">
+        <span class="dep-name">HelloSign embedded signing</span>
+        <span class="vbadge verified">verified</span>
+      </div>
+      <p>What it does for this item and how the mechanism works, in two sentences.</p>
+      <details>
+        <summary>Research digest <span class="hint">— refs/hellosign.html</span></summary>
+        <div class="body"><p>Key findings summary; full report at <a href="refs/hellosign.html">refs/hellosign.html</a>.</p></div>
+      </details>
+    </div>
+    <div class="callout"><strong>Schema changes:</strong> `signatures` table gains `expires_at`; migration required. ("none" is a valid — and mandatory-to-state — value.)</div>
+    <div class="scope">
+      <div class="panel in"><h3>Work before this</h3><ul><li>candidate prerequisite item</li></ul></div>
+      <div class="panel"><h3>Work after this</h3><ul><li>named follow-up, deferred</li></ul></div>
+    </div>
+  </section> -->
+
+  <!-- APPROACH (section 05 — always present, see html-brief.md · Approach) —
+       how we'll tackle this, at approach altitude, never specific steps.
+       Multi-phase (phases metadata has 2+ entries): binding timeline, one
+       .stage per phase, titles matching phases[].title exactly, then a
+       self-contained block per phase.
+  <section>
+    <p class="eyebrow">05 · Approach</p>
+    <h2>How we'll tackle this</h2>
+    <div class="pipeline">
+      <div class="stage"><div class="name">1 · Phase title</div><div class="desc">desired end state</div></div>
+      <div class="arrow">&#8594;</div>
+      <div class="stage"><div class="name">2 · Phase title</div><div class="desc">…</div></div>
+    </div>
+  </section>
+       Single-phase: prose or 3–6 bullets, optionally an indicative strip:
+  <div class="pipeline">
+    <div class="stage"><div class="name">stage</div><div class="desc">outcome</div></div>
+    <div class="arrow">&#8594;</div>
+    <div class="stage"><div class="name">stage</div><div class="desc">outcome</div></div>
+  </div>
+  <p class="strip-note">Indicative sequence — /do's plan stage owns the real plan.</p> -->
+
+  <!-- MOCKUPS (user-facing items; collapsed by default unless zone 0) —
+       a .shots stack of .pair rows inside a details block. Prefer real
+       screenshots (data: URIs); otherwise compose from .mock parts and say so.
+  <details>
+    <summary>Mockups <span class="hint">— indicative, not pixel-final</span></summary>
+    <div class="body">
+      <div class="shots">
+        <div class="pair">
+          <figure class="shot"><div class="mock">…</div><figcaption>Before — schematic</figcaption></figure>
+          <figure class="shot after"><div class="mock">…</div><figcaption>After — schematic</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </details> -->
+
+  <!-- VERIFICATION — categorized checklist + flow→AC map.
+  <section>
+    <p class="eyebrow">07 · Verification</p>
+    <h2>What we'll check, by surface</h2>
+    <div class="vgroup">
+      <p class="vgroup-head">UX / in-app flows</p>
+      <ul class="vlist"><li>AC1 — a human-runnable check</li></ul>
+    </div>
+    <div class="vgroup">
+      <p class="vgroup-head">Backend / data</p>
+      <ul class="vlist"><li>AC10 — a test-provable check</li></ul>
+    </div>
+    <table class="flowmap">
+      <tr><th>User flow</th><th>Exercises</th></tr>
+      <tr><td>SMS user</td><td>AC1, AC2 · AC10</td></tr>
+    </table>
+  </section> -->
+
+  <!-- RUN CONFIG — zone primary; review_lanes, frontend_verifier, and ios_testing are the
+       zone-default overrides; pills reflect the metadata. The user changes
+       them by telling the agent during alignment — the page can't write back.
+  <section>
+    <p class="eyebrow">09 · Run config</p>
+    <h2>How /do will run this</h2>
+    <div class="dials">
+      <div class="dial">
+        <div class="dial-label">Zone</div>
+        <div class="dial-opts">
+          <span class="pill">0</span><span class="pill on">1</span><span class="pill">2</span><span class="pill">3</span>
+          <p class="dial-why">Substantial change, escalated by a schema touch (zones.md floors).</p>
+        </div>
+      </div>
+      <div class="dial">
+        <div class="dial-label">Review lanes</div>
+        <div class="dial-opts"><span class="pill on">single — Codex (zone default)</span><span class="pill">dual</span></div>
+      </div>
+      <div class="dial">
+        <div class="dial-label">Frontend verifier</div>
+        <div class="dial-opts"><span class="pill on">run (zone default)</span><span class="pill">skip</span></div>
+      </div>
+      <div class="dial">
+        <div class="dial-label">iOS testing</div>
+        <div class="dial-opts"><span class="pill on">optional (default)</span><span class="pill">required</span></div>
+      </div>
+      <div class="dial">
+        <div class="dial-label">Derived</div>
+        <div class="dial-opts"><span class="pill on">plan/code caps 3/3</span><span class="pill on">QA always</span></div>
+      </div>
+    </div>
+    <p class="dials-note">Zone per references/zones.md; say the word during alignment to flip a settable dial — the agent updates the metadata and this panel.</p>
+  </section> -->
+
+  <footer>
+    <strong><!-- zone <n> — <label> (always; mirrors the masthead badge) --></strong> ·
+    Generated by <code>/create-brief</code> ·
+    This page is the work item — the brief <code>/do</code> executes against.
+  </footer>
+</div>
+</body>
+</html>

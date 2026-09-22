@@ -1,0 +1,117 @@
+# AGENTS.md - template
+
+> Copy this file to a codebase's root as `AGENTS.md` and fill in each section.
+> This is the **universal** instruction file: every coding agent (Claude,
+> Codex, or any other harness) reads it. Keep anything harness-specific out -
+> `CLAUDE.md` points here and adds the Claude-only parts. Delete this header
+> block after copying.
+
+## What this project is
+
+One or two sentences: what the product does, who uses it, and the one thing an
+agent must not break.
+
+## Commands
+
+The exact commands, not descriptions. Agents run these verbatim.
+
+```bash
+# install:    <e.g. npm install>
+# dev server: <e.g. npm run dev>
+# typecheck:  <e.g. npm run typecheck>
+# lint:       <e.g. npm run lint>
+# format:     <e.g. npm run format>
+# tests:      <e.g. npm run test>
+# build:      <e.g. npm run build>
+```
+
+## Architecture
+
+The map an agent needs before editing - keep it to what's load-bearing:
+
+- Top-level layout: which directory owns what.
+- The request/data flow in one paragraph (e.g. route → service → repository).
+- Where new code of each common kind goes (endpoint, component, migration,
+  background job).
+
+## Conventions
+
+Only rules an agent would otherwise get wrong - not a style guide:
+
+- Patterns to follow (name the canonical example file for each).
+- Things that look editable but aren't (generated files, vendored code).
+- Error-handling and logging idioms.
+
+## Work-item tracking
+
+The workflow skills (`/create-brief`, `/do`) create work-item artifacts
+(brief.html - the canonical HTML work item, refs/ including research
+sub-reports, plan.md, wrapup.md) locally under `./tmp/<id>/`.
+`./tmp/` is scratch - never commit it.
+
+This section decides where work items get published. Describe the
+destination and the exact steps - the skills follow these instructions at
+publish, pull, and wrap-up. If this section gives no instructions, nothing
+is published: work items stay local under `./tmp/<id>/`.
+
+Example - publish to GitHub issues (replace or delete):
+
+```yaml
+tracker: github
+github_repo: <owner>/<repo>   # where gh issue create targets; omit to use the current repo
+# artifact_host: https://<daemon-host>   # optional stable viewer for work-item bundles
+```
+
+When `artifact_host` is set, export `ARTIFACT_HOST_TOKEN` with its upload
+bearer token; the shared publish procedure uploads the bundle and attaches
+the viewer URL.
+
+> Publish per `.references/publish-work-item.md` (it owns both branches:
+> lean bundle-backed body with `artifact_host`, markdown rendition + marker
+> comments without one).
+
+Example - publish to Linear (replace or delete):
+
+```yaml
+tracker: linear
+linear_team: <team key or team ID>
+# artifact_host: https://<daemon-host>   # optional stable viewer for work-item bundles
+# linear_agents:                         # only with a Linear agent daemon; read by /linear-work-orchestrator
+#   planner: <planning agent app user display name>
+#   implementer: <implementing agent app user display name>
+#   session_concurrency: <the daemon's SESSION_CONCURRENCY, kept in sync by hand>
+#   portfolio_label: <label marking issues the orchestrator manages>
+#   stale_hours: { implementer: 6, planner: 2 }   # optional
+```
+
+> Publish each work item to that team per
+> `.references/publish-work-item.md`; `linear_issues` metadata follows
+> `.references/tracker-lifecycle.md`. `/do` discovers team workflow
+> statuses at runtime. Linear specifics: with `artifact_host`, the bundle
+> rides as an attachment card (export `ARTIFACT_HOST_TOKEN`); without one,
+> document any required artifact attachment steps here. With
+> `linear_agents`, `/linear-work-orchestrator` steers the daemon's agents
+> per `.references/linear-agent-sessions.md`.
+
+Configure one tracker example, not both.
+
+## Run notifications
+
+Optional. Lets a long autonomous run (`/do`) push a notification to your phone
+at a human gate, a hard stop, or on completion. One-way for now (inform only;
+authenticated two-way approve/deny is future work). Unset → default topic; see
+`.references/notify.md`.
+
+```yaml
+notify: https://ntfy.sh/<your-topic>   # subscribe to it in the ntfy mobile app
+```
+
+A public topic is readable by anyone who knows it - set your own here for
+privacy, and never put a secret, token, or PHI in a message body.
+
+## Boundaries
+
+- Commands that must never run automatically (destructive ops, deploys,
+  production migrations).
+- Files/paths that are off-limits.
+- Secrets: where config lives; never commit values.
