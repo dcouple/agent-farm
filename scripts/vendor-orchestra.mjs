@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Regenerates plugins/orchestra from a pinned dcouple/orchestra commit.
-// Usage: node scripts/vendor-orchestra.mjs <orchestra checkout> [commit]
+// Usage: node scripts/vendor-orchestra.mjs <orchestra checkout> <skills checkout> [orchestra commit] [skills commit]
 // Skill, agent, and reference text is copied byte-for-byte. The only edits are
 // the PATCHES below; each must match exactly once or the script fails.
 import fs from 'node:fs';
@@ -43,6 +43,12 @@ absolute references folder, into every subagent's task message.
 The repository's own AGENTS.md and docs remain authoritative for the project.
 
 If no starter message is supplied, wait for the user's request.`;
+
+const EXTRA_SKILLS=[
+ {from:'parsa/.claude/skills/arena',to:'arena',harness:'claude'},
+ {from:'parsa/.claude/skills/hillclimb',to:'hillclimb',harness:'claude'},
+ {from:'parsa/.codex/skills/hillclimb',to:'codex-hillclimb',harness:'codex'},
+];
 
 const PATCHES=[
  {
@@ -108,13 +114,15 @@ instead of failing.`,
  },
 ];
 
-const [checkout,ref='cd3d468682fdb727d109a762ebb131daa4e7ece8']=process.argv.slice(2);
-if(!checkout)throw new Error('Usage: node scripts/vendor-orchestra.mjs <orchestra checkout> [commit]');
+const [checkout,skillsCheckout,ref='cd3d468682fdb727d109a762ebb131daa4e7ece8',skillsRef='a79b9fde21a94e1f21e9ce03ab0e9e5b9f61739e']=process.argv.slice(2);
+if(!checkout||!skillsCheckout)throw new Error('Usage: node scripts/vendor-orchestra.mjs <orchestra checkout> <skills checkout> [orchestra commit] [skills commit]');
+const skillsCommit=execFileSync('git',['rev-parse',skillsRef+'^{commit}'],{cwd:skillsCheckout,encoding:'utf8'}).trim();
 const commit=execFileSync('git',['rev-parse',ref+'^{commit}'],{cwd:checkout,encoding:'utf8'}).trim();
 const plugin=fileURLToPath(new URL('../plugins/orchestra/',import.meta.url));
 const source=fs.mkdtempSync(path.join(os.tmpdir(),'orchestra-vendor-'));
 try{
  execFileSync('sh',['-c','git archive "$1" claude codex references templates | tar -x -C "$2"','sh',commit,source],{cwd:checkout});
+ execFileSync('sh',['-c','mkdir "$2/dcouple-skills" && git archive "$1" '+EXTRA_SKILLS.map(e=>e.from).join(' ')+' | tar -x -C "$2/dcouple-skills"','sh',skillsCommit,source],{cwd:skillsCheckout});
  fs.rmSync(plugin,{recursive:true,force:true});
  const copy=(from,to)=>fs.cpSync(path.join(source,from),path.join(plugin,to),{recursive:true});
  const write=(relative,text)=>{const file=path.join(plugin,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text);};
@@ -126,6 +134,9 @@ try{
  for(const name of claudeSkills)copy(`claude/skills/${name}`,`skills/${name}`);
  const codexDirectory=name=>claudeSkills.includes(name)?`codex-${name}`:name;
  for(const name of codexSkills)copy(`codex/skills/${name}`,`skills/${codexDirectory(name)}`);
+ // Skills /do still calls after orchestra moved them to dcouple/skills.
+ for(const extra of EXTRA_SKILLS)copy(`dcouple-skills/${extra.from}`,`skills/${extra.to}`);
+ const claudeExtras=EXTRA_SKILLS.filter(e=>e.harness==='claude').map(e=>e.to),codexExtras=EXTRA_SKILLS.filter(e=>e.harness==='codex').map(e=>e.to);
 
  // One shared folder stands in for the repo-root .references/ that orchestra's
  // sync.sh used to install, plus the Claude agent files the Codex dispatch reads.
@@ -154,7 +165,7 @@ harness: claude
 model:
   name: claude-fable-5-1
 description: Orchestra on Claude Fable - discussion, briefs, and the /do pipeline with Codex roles dispatched through codex exec.
-skills: [${claudeSkills.join(', ')}]
+skills: [${[...claudeSkills,...claudeExtras].join(', ')}]
 references: orchestra
 connections:
   linear:
@@ -174,7 +185,7 @@ model:
   name: gpt-6-astra
   reasoning: high
 description: Orchestra on Codex - the Codex /do pipeline with its role skills.
-skills: [${codexSkills.map(codexDirectory).join(', ')}]
+skills: [${[...codexSkills.map(codexDirectory),...codexExtras].join(', ')}]
 references: orchestra
 connections:
   linear:
@@ -187,12 +198,14 @@ ${CODEX_OVERSEER}`);
  write('README.md',`# orchestra
 
 dcouple/orchestra at [\`${commit.slice(0,7)}\`](https://github.com/dcouple/orchestra/tree/${commit}), packaged for Agent Farm.
-Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> [commit]\`; do not edit these files by hand.
+Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> <skills checkout> [orchestra commit] [skills commit]\`; do not edit these files by hand.
+
+\`/do\` still calls \`arena\` and \`hillclimb\`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [\`${skillsCommit.slice(0,7)}\`](https://github.com/greenfield-inc/skills/tree/${skillsCommit}): ${EXTRA_SKILLS.map(e=>`\`${e.from}\` as \`${e.to}\``).join(', ')}. No Codex \`arena\` exists, so the Codex \`/do\` arena step stays unavailable, as it was before.
 
 | Profile | Harness and model | What it loads |
 | --- | --- | --- |
-| \`orchestra/overseer\` | Claude, claude-fable-5-1 | The ${claudeSkills.length} Claude skills (${claudeSkills.join(', ')}), the ${roles.length} Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through \`codex exec\` as in orchestra. |
-| \`orchestra/codex-overseer\` | Codex, gpt-6-astra (high) | The ${codexSkills.length} Codex skills, with \`do\` and \`investigate\` in \`codex-do\` and \`codex-investigate\`. |
+| \`orchestra/overseer\` | Claude, claude-fable-5-1 | The ${claudeSkills.length} Claude skills (${claudeSkills.join(', ')}) plus ${claudeExtras.join(' and ')}, the ${roles.length} Claude agents as native subagents, Linear and Playwright MCP. Codex roles run through \`codex exec\` as in orchestra. |
+| \`orchestra/codex-overseer\` | Codex, gpt-6-astra (high) | The ${codexSkills.length} Codex skills, with \`do\` and \`investigate\` in \`codex-do\` and \`codex-investigate\`, plus ${codexExtras.join(', ')}. |
 
 Both select \`references: orchestra\`, which holds orchestra's \`references/\` folder, its Claude agent files under \`claude-agents/\`, and \`templates/\`.
 Skills cite \`.references/<path>\`; Agent Farm maps that to the bundled folder at launch.
@@ -211,6 +224,6 @@ Skills with the same name in \`~/.claude/skills\` or \`~/.codex/skills\` are sti
  for(const section of ['agents','profiles','references','skills'])walk(path.join(plugin,section));
  const lines=Object.keys(checksums).sort().map(key=>`  ${key}: ${checksums[key]}`);
  write('plugin.yaml',`name: orchestra\nversion: 0.1.0\ncli_major: 0\nsource:\n  repository: https://github.com/dcouple/orchestra\n  commit: ${commit}\nchecksums:\n${lines.join('\n')}\n`);
- console.log(`Vendored dcouple/orchestra@${commit.slice(0,7)}: ${claudeSkills.length} Claude skills, ${codexSkills.length} Codex skills, ${roles.length} Claude agents, ${Object.keys(checksums).length} files`);
+ console.log(`Vendored dcouple/orchestra@${commit.slice(0,7)} + dcouple/skills@${skillsCommit.slice(0,7)} (${EXTRA_SKILLS.length} skills): ${claudeSkills.length} Claude skills, ${codexSkills.length} Codex skills, ${roles.length} Claude agents, ${Object.keys(checksums).length} files`);
 }finally{fs.rmSync(source,{recursive:true,force:true});}
 
