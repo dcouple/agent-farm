@@ -103,10 +103,11 @@ for research write-ups, `business` for business documents, `seo` for search
 content, and `audits` for finding outdated issues and docs.
 
 **Variants** — Some profiles come in more than one version, such as a Claude
-and a Codex planner. They're one profile with variants, such as
-`greenfield/planner (2)`. `agent-farm run` asks which one you
-want and shows each variant's model; `agent-farm profiles list` shows them too. Add `:codex` to the name to skip the question; without it, scripts get
-the default.
+and a Codex planner. They're one profile with variants, and the menu shows
+how many: `greenfield/planner (2)`. `agent-farm run` asks which one you want
+and shows each variant's model; `agent-farm profiles list` shows them too.
+Add `:codex` to the name to skip the question; without it, scripts get the
+default.
 
 ## Four entry points
 
