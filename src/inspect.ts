@@ -12,7 +12,7 @@ export function inspectProfile(root:string,profile:string,options:WorkspaceOptio
   workspace_source:workspace.metadata,telemetry,telemetry_access:telemetryAccess(telemetry,resolved.profile),cross_plugin_dependencies:resolved.cross_plugin_dependencies,
   agents:Object.fromEntries(Object.entries(resolved.nodes).map(([route,agent])=>[route,{agent:agent.name,qualified_agent:agent.qualified_name,plugin:agent.plugin,plugin_version:agent.plugin_version,source_file:agent.source_file,harness:agent.harness,
     model:{name:agent.model,reasoning:agent.reasoning_effort,speed:agent.speed??'native default',sources:agent.launch?.model.sources},arguments:agent.launch?.arguments??{},argument_definitions:agent.argument_definitions??{},preset:agent.launch?.preset,override:agent.launch?.override,instructions:agent.instructions,mode:route==='main'?'entry point':agent.mode,description:agent.description,
-    skills:agent.skills.map(name=>({name,plugin:agent.skill_plugins?.[name]?.plugin,plugin_version:agent.skill_plugins?.[name]?.version,source_file:path.join(agent.skill_sources![name]!,'SKILL.md')})),connections:agent.connections,subagents:agent.children}]))};
+    skills:agent.skills.map(name=>({name,plugin:agent.skill_plugins?.[name]?.plugin,plugin_version:agent.skill_plugins?.[name]?.version,source_file:path.join(agent.skill_sources![name]!,'SKILL.md')})),references:agent.references?{name:agent.references.name,plugin:agent.references.plugin,plugin_version:agent.references.version,source:agent.references.source}:undefined,connections:agent.connections,subagents:agent.children}]))};
 }
 
 export function listProfiles(root:string){
