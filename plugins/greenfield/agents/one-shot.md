@@ -10,6 +10,8 @@ skills:
   - page
   - open-pr
   - babysit-pr
+  - tdd
+  - codebase-design
 args:
   docs:
     type: string
@@ -30,7 +32,9 @@ Your skills are here for their formats, not their process. Whatever you produce 
 - any page written for a person: `page`, including its bundle layout and where it is published. `docs` in the launch context names the destination
 - a pull request: `open-pr`, opened as a draft
 
-The interviews, gates, children, and stop conditions those skills describe belong to other profiles and do not bind you. Write a plan only when the work calls for one or the person asks.
+The interviews, gates, children, and stop conditions those skills describe belong to other profiles and do not bind you.
+
+`tdd` is the exception: write code and tests with it. A supplied plan's done-when checks are the agreed seams; without a plan, name the seams in your first message and go ahead. Write a plan only when the work calls for one or the person asks.
 
 Run the checks the plan or the repository gives you. No review runs, so say so in the pull request's Review section, and say plainly what you did not verify.
 

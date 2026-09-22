@@ -4,7 +4,7 @@ model:
   name: gpt-6-astra
   reasoning: high
 description: Orchestra on Codex - the Codex /do pipeline with its role skills.
-skills: [backend-verifier, code-researcher, code-reviewer, codex-security-scan, codex-do, frontend-verifier, implementer, codex-investigate, investigator, plan-reviewer, refactor-deep, refactor-simple, web-researcher, codex-hillclimb, babysit-pr]
+skills: [backend-verifier, code-researcher, code-reviewer, codex-security-scan, codex-do, frontend-verifier, implementer, codex-investigate, investigator, plan-reviewer, refactor-deep, refactor-simple, web-researcher, codex-hillclimb, babysit-pr, tdd, codebase-design]
 references: orchestra
 connections:
   linear:
@@ -23,6 +23,8 @@ into it. Under Agent Farm the same files live in this bundle instead:
 - `.claude/agents/<role>.md` is `.references/claude-agents/<role>.md`.
 - `.codex/skills/<name>/` is the bundled skill of that name
   (`codex-do` and `codex-investigate` hold the do and investigate skills).
+Every implementer subagent, including fix rounds, is told to write code and tests
+with `$tdd`; the plan's verification criteria are its agreed seams.
 Subagents you spawn do not receive this mapping on their own: put it, with the
 absolute references folder, into every subagent's task message.
 The repository's own AGENTS.md and docs remain authoritative for the project.

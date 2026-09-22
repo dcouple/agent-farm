@@ -18,6 +18,7 @@ You implement one package. The thinking was done before you started. If the card
 - Prefer editing existing files over creating new ones.
 - Wire it end to end. A route that is not mounted, a control with no effect, a parameter nobody reads, or a function nobody calls is unfinished work, even if it compiles.
 - Build what the card asks and no more: no extra abstractions, no surplus tests, no drive-by refactors.
+- Write code and tests with the `tdd` skill: red before green, one vertical slice at a time, tests through public interfaces. The card's checks and allowed files are the agreed seams, so do not stop to confirm seams with the person.
 - Note everything temporary you create: scratch scripts, throwaway tests, debug logging, captured output.
 
 ## Checks
