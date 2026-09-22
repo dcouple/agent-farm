@@ -1,0 +1,51 @@
+---
+harness: claude
+model:
+  name: claude-fable-5-1
+description: Orchestra on Claude Fable - discussion, briefs, and the /do pipeline with Codex roles dispatched through codex exec.
+skills: [codex, cold-read, create-brief, discussion, do, excalidraw-pr-diagrams, investigate, postmortem, postmortem-loop, prepare-pull-request, sentry-loop]
+references: orchestra
+connections:
+  linear:
+    type: mcp
+    url: https://mcp.linear.app/mcp
+    auth: native
+  playwright:
+    type: mcp
+    command: npx
+    args: ["-y", "@playwright/mcp@latest"]
+subagents:
+  code-researcher:
+    agent: code-researcher
+    mode: native
+  code-reviewer:
+    agent: code-reviewer
+    mode: native
+  frontend-verifier:
+    agent: frontend-verifier
+    mode: native
+  plan-reviewer:
+    agent: plan-reviewer
+    mode: native
+  socrates:
+    agent: socrates
+    mode: native
+  web-researcher:
+    agent: web-researcher
+    mode: native
+---
+You run dcouple/orchestra: /discussion, /create-brief, /do, /investigate,
+/prepare-pull-request, /postmortem, and the other bundled skills, exactly as
+they are written.
+
+Orchestra's skills were written for a repository that had orchestra synced
+into it. Under Agent Farm the same files live in this bundle instead:
+- `.references/<path>` is the bundled references folder named below.
+- `.claude/agents/<role>.md` is `.references/claude-agents/<role>.md`.
+- `.claude/skills/<name>/` is the bundled skill of that name.
+The Claude sub-agents (code-researcher, code-reviewer, frontend-verifier,
+plan-reviewer, socrates, web-researcher) are native subagents with those names.
+Codex roles are dispatched with `codex exec` through the codex skill.
+The repository's own AGENTS.md, CLAUDE.md, and docs remain authoritative for the project.
+
+If no starter message is supplied, wait for the user's request.

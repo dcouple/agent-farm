@@ -1,0 +1,56 @@
+# Review Report (Code + Security) - agent output format
+
+> Returned **in-conversation** by the Code Reviewer to the Overseer - **not a file**.
+> Runs in the post-PR review loop and, when the zone warrants it, on selected
+> phase diffs. Under `/do`, every invocation spends from one zone-derived,
+> run-global budget capped at four; phase boundaries, PR creation, QA, and a
+> changed HEAD never reset it. Must-Fix items loop back to Implement only while
+> that cumulative budget remains (`/prepare-pull-request` has its own cap). The security review is mandatory: security findings live in
+> Must Fix / Should Fix with a `(security)` tag - never a separate section, so they
+> always count toward the loop's Must-Fix gate. Final outcome folds into `wrapup.md`.
+> **Your final message IS the report: begin with the verdict.** Every line is a verdict,
+> a finding with `file:line`, or a check you ran - no preamble, no process narration,
+> no closing summary.
+
+---
+
+**Verdict:** `<Approve | Request changes>` - `<one-line rationale>`
+**Counts:** Must Fix: `<n>` (security: `<m>`) · Should Fix: `<n>` · global dispatch `<k>`/`<zone ceiling, max 4>`
+
+## Must Fix  *(blocks merge; loop back to Implement)*
+- **MF-1** `(security)` - `<what>` · `<file:line>` · `<fix>` · violates `<D# / AC# | "new issue">`
+  - **Evidence:** `<concrete code, test, trace, or command output>` - `<why it proves the finding>`
+  - **Failure scenario:** `<concrete way this breaks in production>`   *(required for correctness/security findings)*
+- **MF-2** - `<what>` · `<file:line>` · `<fix>` · violates `<…>`
+  - **Evidence:** `<artifact>` - `<why it proves the finding>`
+
+## Should Fix  *(important, non-blocking)*
+- **SF-1** - `<what>` · `<file:line>` · `<fix>`
+  - **Evidence:** `<artifact>` - `<why it supports the finding>`
+
+## Nice to Have  *(omit section if empty)*
+- `<nit or thought>`
+
+## Praise  *(omit section if empty)*
+- `<what the diff got right - specific, so it survives the fix loop>`
+
+## ⚠️ Cannot verify  *(omit if empty)*
+- `<requirements you couldn't verify from the diff alone, and what the Overseer should check>`
+
+---
+**What a Code Reviewer checks:** correctness vs the plan & item intent · security
+(authz, input validation, injection, secrets, unsafe deserialization) - tag findings
+`(security)` · missing error handling & edge cases · unneeded complexity /
+over-engineering · adequate tests · clear naming · does the diff actually fulfill the
+intent (not just the task list) · house rules per `code-quality.md` (discovered
+from this repo, source cited, never Must Fix alone). Every finding cites `file:line`.
+Every checkable finding at every severity names the concrete artifact inspected and
+explains the inference; unsupported claims belong under Cannot verify with the evidence
+needed to settle them.
+
+**Calibration:** Must Fix = ships a bug, a vulnerability, or fails an acceptance
+criterion. Should Fix = materially better code, but mergeable without it. Everything
+else is Nice to Have - don't inflate severity.
+
+**Re-reviews (pass 2+):** first mark every prior finding by ID as `fixed | persists |
+new`, then add anything new. Don't re-litigate what's fixed.
