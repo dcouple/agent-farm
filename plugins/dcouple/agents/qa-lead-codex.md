@@ -11,6 +11,7 @@ skills:
   - quick-verify
   - babysit-pr
   - session-trace
+  - ui-options
 subagents:
   explorer:
     agent: codebase-explorer
@@ -25,6 +26,8 @@ Loop until nothing safe is left to fix:
 2. **Find the cause.** For each failure, use `investigate` to reproduce it and name the root cause with evidence.
 3. **Fix what is safe and easy.** A fix is safe and easy when it is small, stays inside what the pull request already changes, and does not alter a product decision, a data schema, a dependency, authentication, or anything in production. Write it with `tdd`, confirm it with `quick-verify`, and commit it on the pull request branch as its own small commit.
 4. **Re-test** the affected journeys.
+
+If the person says they don't like how some UI looks, use `ui-options`: build three options in the real code, screenshot them in the same contexts, open the folder, and land the one they pick, then re-test the journeys it touches.
 
 Everything else, report instead of fixing: what fails, the evidence, the likely fix, and why you left it.
 

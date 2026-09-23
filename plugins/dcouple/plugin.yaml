@@ -1,9 +1,9 @@
 name: dcouple
-version: 0.1.20
+version: 0.1.21
 cli_major: 0
 source:
   repository: https://github.com/dcouple/skills.git
-  commit: 9ca11c97967e16934b3a3972e3a6346268da0e1e
+  commit: f332b946e653a2623d0348766b03db3a9119d1a7
 checksums:
   profiles/audits.yaml: b2be432724574ff46929c836f1aeb90487a87a131fde62d93c49708417e97cbd
   profiles/business.yaml: e4bf2f9c0e2bec0254cfb70848c39e4a5d8a98d727e5ec3a879539456e92852a
@@ -41,8 +41,8 @@ checksums:
   agents/pr-preparer.md: 1c3ad325b058d31384f9582fabaa62f6383acb80136c37a05880ccffe4aebc1c
   agents/pr-reviewer.md: fd0b0660602e2503ff1f092d8f2bf7c61adc034d987f44c08988ffce60642643
   agents/product-researcher-claude.md: 67bacc7680e3de2d654f3a5c5d5f5337d8e1c5b22ec05d93ccec1358919a76ac
-  agents/qa-lead-codex.md: d66981f72105e8edcea5376fda942be71497f609230a048370ba52b69459e796
-  agents/qa-lead.md: d07486fa4ce86564bfd8f67cdab9b5512a8b02cd25c64bbfeb5072e300d9cb11
+  agents/qa-lead-codex.md: 1e882d1cd64e6984e64918844e97e26ddafbb5ab60c7e51469e0ceff5b72c84a
+  agents/qa-lead.md: 7b9d00595a9829e09f6ee46213f178601f550211e3e4fe9335a06c6d0749896c
   agents/qa.md: 6712d6719c9841ae8a881cf03cd24585fb7cfd121436658bdc2fa682c2686ac4
   agents/raw-claude.md: cf1757519196c2c349c90a1f771d6e770a45eaa397b662bacea0f9d56326e811
   agents/raw-codex.md: 831bc6b6835fc804fc57797314edc6c802e19145b17736cf8c9cae0bf1d3a75e
@@ -148,3 +148,4 @@ checksums:
   skills/tech-deep-dive/SKILL.md: 078e77e0fa52d10de29f31835c1c5e9f312a6654a0ecd2101ed14630f907eb1b
   skills/ui-mockup/metadata/codex.yaml: c4d429511137c9dc38631c01586ec9b474b3547bc5e597559da1e7fcd994d135
   skills/ui-mockup/SKILL.md: c2e908da3ec9076babf9fe1185605bc2d2ca54e64a67630004705dba52169fc5
+  skills/ui-options/SKILL.md: 9010b45848fb09ba18f6b763b1011fa7af6790b427d63697cb76bf841100c50f
