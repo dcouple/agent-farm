@@ -26,10 +26,10 @@ How we will know it works
   Journeys            numbered user flows to drive in the running app
   Whole-feature check commands and suites
 
-Packages              table: stage | title | what it does in plain English |
-                      depends on | status; link each row to its approach below
-Package approach      concise sections: approach, reuse/extend/new systems,
-                      schema/data impact, dependencies and relevant checks
+Packages              stacked cards: stage/title, one-line outcome, labels,
+                      dependencies/status, expandable technical approach
+Package approach      approach, reuse/extend/new systems, schema/contracts,
+                      affected areas and relevant checks, on this same page
 Look at these first   the two or three packages you consider riskiest, and why.
                       Invite the person to cut any they would be nervous to
                       wake up to.
@@ -53,7 +53,7 @@ Write clear observable outcomes for the requested backend/frontend behavior and 
 
 ## Explain the approach in each package
 
-Keep the summary table scannable, then give each package a short, full-width approach section on this same page. A compact paragraph plus a few labeled bullets is usually enough. A simple package may fit entirely in its table row; do not create a separate planning document.
+Use stacked full-width package cards as the default, following [presentation.md](presentation.md). Each card has a title, a one-line outcome, meaningful labels, dependencies/status, and expandable approach details on this same page. A compact paragraph plus a few labeled bullets is usually enough. A small package need not use a disclosure at all. A summary table is optional for many packages, not a replacement for their approach. Do not create a separate planning document.
 
 Each package should answer:
 

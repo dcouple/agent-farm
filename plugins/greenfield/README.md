@@ -55,7 +55,7 @@ Options include a short complexity statement covering added codebase complexity,
 
 ## Planning and the finish line
 
-The planner retains the HTML `cover-sheet.html` in the existing work bundle. It contains the outcome, scope and exclusions, locked decisions, high-level architecture context, approved design, meaningful risks, and concise package approach notes: how the work will be implemented, systems reused or extended, new systems and why, schema/data changes or none, dependencies, and relevant checks. Keep the summary table scannable and put longer approach notes in full-width sections on the same page. The implementer chooses concrete files, algorithms, and steps using repository patterns.
+The planner retains the HTML `cover-sheet.html` in the existing work bundle. It contains the outcome, scope and exclusions, locked decisions, high-level architecture context, approved design, meaningful risks, and concise package approach notes: how the work will be implemented, systems reused or extended, new systems and why, schema/data changes or none, dependencies, and relevant checks. Use stacked package cards with visible outcomes and important risks, meaningful reuse/extend/new labels, and expandable approach notes on the same page. The narrative layout follows the approved Agent-started Grain setup sample. The implementer chooses concrete files, algorithms, and steps using repository patterns.
 
 Every brief and plan cover sheet includes a linked table of contents and references to its other bundle files. Constraints and Non-goals occupy separate full-width sections stacked vertically, including on wide screens.
 

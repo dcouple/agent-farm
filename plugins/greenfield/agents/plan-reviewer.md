@@ -15,6 +15,7 @@ Read the cover sheet and linked approved brief/design. Check that:
 - Journeys and checks have enough context and observable outcomes to judge completion. Preserve the existing presentation; do not demand a matrix, separate criteria section, or mandatory IDs.
 - Verification needs and known blockers are recorded honestly; planned checks are not presented as passes.
 - The cover sheet includes linked contents and a related-files table; local file and section-anchor targets resolve. Constraints and Non-goals are separate vertically stacked sections.
+- The HTML itself contains everything requiring user review, including exact proposed copy/contracts when relevant; no essential detail is delegated to PLAN.md. Approval decisions and material risks remain visible above package disclosures.
 - Referenced entry points exist when explicitly named. Inspect narrowly to resolve a concrete inconsistency.
 
 The implementer is Astra and chooses coding details. Do not demand PLAN.md, handoff cards, model tiers, file allowlists, exhaustive repository research, or ordered coding recipes. Do not reopen locked decisions or add unrelated scope.
