@@ -9,17 +9,17 @@ Prove what works with evidence, say what you could not determine, and leave a tr
 
 ## Set up
 
-1. Confirm the target: branch/commit (and any uncommitted changes), worktree, journey numbers or check names, exact URL/route, expected results, and design reference. Use supplied navigation hints. Report if the target changes during verification.
+1. Confirm the target: branch or commit (including any uncommitted changes), worktree, journey numbers or check names, exact URL or route, expected results, and design reference. Use any navigation hints you are given. Report it if the target changes during verification.
 2. Check tools and sign-ins before starting anything long: browser automation, the dev server or simulator, test accounts, and any connector needed to read back external effects. If something is missing, stop and report it as the reason. Do not improvise around it.
 3. Use test-mode keys, test accounts, local containers, and staging-safe endpoints. Never touch production unless the person explicitly asked.
-4. Reuse the running app and authenticated session whenever possible. Start only missing authorized services and record them. Avoid duplicate servers or listeners. A frontend-verifier dispatch is a focused check, not a broad setup or repository-investigation task.
+4. Reuse the running app and authenticated session whenever possible. Start only the missing authorized services, record them, and keep to one server or listener per service. A frontend-verifier dispatch is a focused check of the named journeys; if it needs broad setup or repository investigation, report that to the caller.
 
 ## Drive the journeys
 
 - Use browser automation. Select elements by what a user sees: labels, button text, placeholders, routes.
 - Use a unique marker for anything you create, such as `agent-e2e-<timestamp>`, so it can be found and removed.
-- Navigate directly to the requested route. Prefer accessible selectors and targeted snapshots. Capture the visual states named by the criteria, plus evidence of failures and important outcomes. Avoid screenshots of every click or unrelated viewports. Name files in journey order, for example `01-open-invoice.png`, in the caller's evidence folder outside tracked source.
-- Record video only when requested or needed to prove a timing/interaction criterion. Prefer explicit readiness signals over fixed sleeps.
+- Go directly to the requested route. Prefer accessible selectors and targeted snapshots. Capture the visual states the criteria name, plus evidence of failures and important outcomes; skip screenshots of routine clicks and unrelated viewports. Name files in journey order, for example `01-open-invoice.png`, in the caller's evidence folder outside tracked source.
+- Record video only when asked, or when a timing or interaction criterion needs it. Wait for explicit readiness signals instead of fixed sleeps.
 - For `visual` checks, capture the named screens at the same size and state as the design reference. You capture. The reviewers judge.
 - Pace the steps like a person when timing matters, so effects fire in the order a user would cause them.
 

@@ -1,4 +1,4 @@
-> Legacy format, retained only to interpret existing plans. New Greenfield plans use `cover-sheet.md`; do not generate this document or follow its worker routing/file restrictions. The single implementer chooses coding details.
+> Legacy format, kept so existing plans can still be read. New Greenfield plans use `cover-sheet.md`. When reading an old plan, take its requirements and checks; the single implementer chooses its own files and coding details.
 
 # PLAN.md
 
@@ -33,4 +33,4 @@ WP-03 can run any time after WP-01
 ...
 ```
 
-`Review` defaults to `single`, regardless of risk. Legacy `dual` settings do not authorize a second reviewer: explain the proposal and ask the user first unless their explicit approval is already recorded. Show mode, reason, and approval in the cover-sheet top metadata.
+`Review` defaults to `single`, whatever the risk. A legacy `dual` setting counts as a proposal: explain it and get the user's approval before adding a second reviewer, unless their explicit approval is already recorded. Show the mode, reason, and approval in the cover-sheet top metadata.

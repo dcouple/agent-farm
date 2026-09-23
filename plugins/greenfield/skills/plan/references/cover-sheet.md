@@ -1,6 +1,6 @@
 # Plan cover sheet
 
-The HTML cover sheet is the plan for both the person and the implementer. Write it for a human: what is being built, what was decided, what could go wrong, and how they will know it works. Lead with the story and pictures. Show ask-first actions as call-outs, not buried in a list. Include all information the person must review or approve in this HTML page, including material requirements, package approaches, schema implications, risks, and checks. Never depend on a PLAN.md link for those details; supporting evidence may be linked. Save it as `cover-sheet.html` in the existing bundle; no separate PLAN.md or handoff cards.
+The HTML cover sheet is the plan for both the person and the implementer. Write it for a human: what is being built, what was decided, what could go wrong, and how they will know it works. Lead with the story and pictures. Show ask-first actions as call-outs, not buried in a list. Put everything the person must review or approve on this page, including material requirements, package approaches, schema implications, risks, and checks; link supporting evidence as needed. Save it as `cover-sheet.html` in the existing bundle.
 
 ```text
 Header                feature, one-line outcome, status chip:
@@ -37,30 +37,30 @@ Look at these first   the two or three packages you consider riskiest, and why.
 Change log            newest first. Scope/decision changes are recorded here.
 ```
 
-Review defaults to single lane. Small, low-risk changes may automatically skip review; disclose the skip and reason up front and label it in the top metadata. Otherwise explain and ask before dual review or skipping review unless the person already explicitly authorized that mode. Show exceptions requiring approval as pending in the top metadata; a plan entry alone is not permission to proceed.
+Review defaults to single lane. Small, low-risk changes may skip review automatically: disclose the skip and its reason up front and label it in the top metadata. For dual review or no review, explain and ask first unless the person has already explicitly authorized that mode. Show an exception as pending in the top metadata until the person approves it.
 
 ## Layout and linked contents
 
-Constraints and Non-goals are separate full-width sections stacked vertically at every viewport width, never side-by-side cards or columns.
+Constraints and Non-goals are separate full-width sections, stacked vertically at every viewport width.
 
-Every cover sheet has a visible **Contents & related files** navigation near the top: section anchor links plus a table of linked filenames/titles and their purpose. Include the brief, options, approved designs, explainers, evidence, and other existing bundle files; follow `../../page/references/bundle.md`. Keep it current when adding files, use relative links within the bundle, and verify targets before publishing. Do not link nonexistent planned files; if there are no related files yet, say so explicitly and retain the section links.
+Every cover sheet has a visible **Contents & related files** navigation near the top: section anchor links plus a table of linked filenames or titles and their purpose. List the brief, options, approved designs, explainers, evidence, and other bundle files that exist, following `../../page/references/bundle.md`. Keep it current as files are added, use relative links within the bundle, and check every target before publishing. Link only files that exist; if there are none yet, say so and keep the section links.
 
-## Keep verification in the existing presentation
+## Verification: How we will know it works
 
-Retain **How we will know it works**, with numbered journeys and whole-feature commands/suites. This section is the finish line for implementation; do not replace it with a validation matrix, a separate criteria section, or mandatory criterion-ID columns. Preserve an existing cover sheet's presentation when updating it.
+**How we will know it works** is the finish line for implementation. It holds numbered journeys and whole-feature commands or suites, and implementers and verifiers refer to them by journey number or check name. Keep this format when updating an existing cover sheet.
 
-Write clear observable outcomes for the requested backend/frontend behavior and approved visual states in those journeys and checks. Include relevant prerequisites or known blockers where needed, in plain language. The implementer and frontend verifier refer to journey numbers or check names, record observed results and evidence in the work's status/evidence, and complete the required checks before marking the feature done. Missing verification remains undetermined, not a pass.
+Give each journey and check an observable outcome for the requested backend or frontend behavior and approved visual states. Add prerequisites or known blockers in plain language. The implementer and frontend verifier record observed results and evidence in the work's status files and finish the required checks before marking the feature done. A check that has not run stays undetermined.
 
 ## Explain the approach in each package
 
-Use stacked full-width package cards as the default, following [presentation.md](presentation.md). Each card has a title, a one-line outcome, meaningful labels, dependencies/status, and expandable approach details on this same page. A compact paragraph plus a few labeled bullets is usually enough. A small package need not use a disclosure at all. A summary table is optional for many packages, not a replacement for their approach. Do not create a separate planning document.
+Use stacked full-width package cards, following [presentation.md](presentation.md). Each card has a title, a one-line outcome, meaningful labels, dependencies and status, and expandable approach details on this same page. A short paragraph plus a few labelled bullets is usually enough; a small package can skip the disclosure. With many packages, a summary table can sit above the cards.
 
-Each package should answer:
+Each package answers:
 
-- **Outcome and approach:** What will change, and how will we implement it? Describe the important data/control flow and integration boundaries, not just the desired result.
-- **Reuse or extend:** Name the existing services, components, APIs, jobs, or patterns we will build on, and what changes in them. Link useful existing entry points where confirmed.
-- **New systems:** Identify any new component, service, abstraction, or dependency and why existing systems are insufficient. Say “none” when none is needed; do not invent architecture to fill the template.
-- **Schema and data:** State the necessary entities/fields, relationships, constraints or indexes at a conceptual level, and any migration/backfill or compatibility implications. Say “no schema changes” where applicable. Mark unverified assumptions explicitly; do not fabricate table or field names. Surface required migration approvals under Ask-first actions; planning a migration does not authorize executing it.
-- **Execution and checks:** Name meaningful dependencies or sequencing constraints, affected backend/frontend surfaces, and the relevant journeys or whole-feature checks from **How we will know it works**. Mention the key risk or unresolved assumption if it could change the approach.
+- **Outcome and approach:** what will change and how we will build it. Describe the important data and control flow and the integration boundaries.
+- **Reuse or extend:** the existing services, components, APIs, jobs, or patterns we build on, and what changes in them. Link confirmed entry points where useful.
+- **New systems:** any new component, service, abstraction, or dependency, and why existing systems are insufficient. Write "none" when nothing new is needed.
+- **Schema and data:** the entities and fields, relationships, constraints or indexes needed, at a conceptual level, and any migration, backfill, or compatibility implications. Write "no schema changes" where that applies. Mark unverified table or field names as assumptions. List migrations that need approval under Ask-first actions; running one needs its own approval.
+- **Execution and checks:** dependencies or sequencing, affected backend and frontend surfaces, and the relevant journeys or whole-feature checks. Mention the key risk or assumption if it could change the approach.
 
-This is technical direction, not a coding recipe. Avoid per-file edits, function signatures, pseudocode, exhaustive task lists, and arbitrary class or method names. Distinguish locked architecture decisions from a proposed approach: the implementer can refine routine details within scope, but must surface discoveries that change product behavior, schema commitments, system boundaries, or required permissions. Investigate only enough to make the proposed approach credible.
+Give technical direction and leave the coding to the implementer: skip per-file edits, function signatures, pseudocode, exhaustive task lists, and invented class or method names. Separate locked architecture decisions from the proposed approach. The implementer refines routine details within scope and raises any discovery that changes product behavior, schema commitments, system boundaries, or required permissions. Investigate just enough to make the approach credible.

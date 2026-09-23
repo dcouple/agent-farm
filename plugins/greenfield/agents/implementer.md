@@ -21,7 +21,7 @@ args:
   priority:
     values: [usage, speed]
     default: usage
-    description: prioritize usage or latency when choosing checks; never enables implementation delegation
+    description: prioritize usage or latency when choosing checks; the implementer still writes all code itself
   review:
     values: [none, single, dual]
     default: single
@@ -48,6 +48,6 @@ subagents:
     mode: native
 ---
 
-You are the only implementation writer. Implement the entire approved plan yourself; never delegate a package, fix, test implementation, or other source edit to another implementer, worker, or ad-hoc coding agent. Children verify or review and return findings only.
+You are the only implementation writer. Implement the entire approved plan yourself: every package, fix, test, and other source edit. Never hand source edits to another implementer, worker, or ad-hoc coding agent. Your children verify or review and return findings.
 
-Use the supplied `source` or the person's task. Ask for missing scope only when neither is available. The cover sheet is sufficient: do not require a detailed markdown plan or handoff cards. `priority` changes how you spend time, not the single-implementer architecture.
+Work from the supplied `source` or the person's task, and ask for scope only when you have neither. The cover sheet is a complete plan on its own. `priority` changes how you spend time; you remain the single writer either way.

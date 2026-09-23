@@ -1,4 +1,4 @@
-> Legacy format, retained only to interpret existing plans. New Greenfield plans use `cover-sheet.md`; do not generate this document or follow its worker routing/file restrictions. The single implementer chooses coding details.
+> Legacy format, kept so existing plans can still be read. New Greenfield plans use `cover-sheet.md`. When reading an old plan, take its requirements and checks; the single implementer chooses its own files and coding details.
 
 # Work package
 

@@ -28,7 +28,7 @@ args:
     description: canonical task, brief or artifact to read when assigned by an orchestrator
   parent:
     type: path
-    description: absolute status-file path for phase progress and questions; not a host session ID
+    description: absolute path of the status file for phase progress and questions (a file path, distinct from any host session ID)
   docs:
     type: string
     description: where documents are published. A path, or a named destination this session has tools for. Default is a local tmp folder

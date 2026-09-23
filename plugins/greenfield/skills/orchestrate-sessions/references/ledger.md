@@ -1,6 +1,6 @@
 # Ledger
 
-Use host durable state when available; otherwise `.agent/ledger.json`. Keep one entry per work item. Host IDs are opaque and distinct from `status_file`; do not infer associations.
+Use host durable state when available; otherwise `.agent/ledger.json`. Keep one entry per work item. Host IDs are opaque and separate from `status_file`; record associations only as the host reports them.
 
 ```json
 {
