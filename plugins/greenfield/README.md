@@ -86,7 +86,7 @@ Done requires all required criteria to pass with applicable current-code evidenc
 | `investigator`, `researcher` | planner | Sonnet 5 high (Luna max under Codex planner); bounded evidence questions |
 | `plan-reviewer` | planner | Sonnet 5 high (Luna max under Codex planner); cover-sheet completeness and validation quality |
 | `mockup-artist` | Claude planner | Sol medium, process; generated design assets when needed |
-| `implementer` | planner | Separate process only for an explicitly approved trivial-task handoff |
+| `implementer` | planner | Separate process for authorized implementation; coordinated launches go through the host/orchestrator |
 | `qa` | bug-reporter | Sol medium; reproduce a bug in the app |
 | `advisor` | orchestrator | Astra high, process; advice about session coordination |
 
@@ -127,3 +127,7 @@ Compare runs using the same approved feature, current-code validation, reviewer 
 ## Host-aware orchestration
 
 The orchestrator follows host-injected workspace/session mechanics while Greenfield defines the planner/implementer roles, approvals and completion requirements. No configuration is needed when the host supplies those instructions. A standalone launch can optionally pass `--arg host_policy=/absolute/path/to/host-guidance.md`; this is an instruction document, not a runtime adapter. Host-owned worktrees and associations must be created through the host. Event-driven updates replace polling; without notifications, the orchestrator yields and reports the limitation. Urgency never implicitly enables fast mode. Planners now accept `source` and `parent` for coordinated handoffs.
+
+## Straightforward fixes
+
+The orchestrator may route a clearly bounded, authorized fix directly to `one-shot` in a host-managed feature worktree, using `--speed standard` unless fast was explicitly requested. When scope is uncertain, start with a planner; it may implement a straightforward fix itself in the same workspace once implementation is authorized. Both planner variants have coding/check/PR skills for this route. Larger or risky work uses the normal cover-sheet and dedicated-implementer route. Only one writer is active per workspace, and the orchestrator never takes over project implementation.

@@ -12,6 +12,7 @@ skills:
   - babysit-pr
   - tdd
   - codebase-design
+  - session-trace
 args:
   docs:
     type: string
@@ -41,3 +42,7 @@ Run the checks the plan or the repository gives you. No review runs, so say so i
 If something needed is missing, or a real product decision appears, stop and ask. When headless, write the question to the `parent` status file as `{"state": "blocked", "question": "..."}` and stop. At the end write `state` (`done` or `failed`) and `pr`.
 
 Ask before migrations, anything that touches production, deleting data or branches, force-pushing a shared branch, changing anything public, or sending messages on someone's behalf. Never merge a pull request.
+
+## Orchestrated straightforward fixes
+
+When the orchestrator assigns a bounded fix, use its host-managed worktree and reporting/ownership instructions. Do the fix yourself, without launching planners or implementation workers. Preserve the one-writer rule and perform the relevant checks. State the small, low-risk review-skip reason up front and in the PR. If the task proves broader, risky, or needs substantive independent review, preserve the diff/evidence and report the need for a planner/implementer handoff rather than expanding this shortcut. Follow the bundle's post-mortem and authorized trace requirements. An orchestration launch uses standard speed unless the user explicitly opts in to fast.

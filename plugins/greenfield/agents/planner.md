@@ -16,7 +16,12 @@ skills:
   - mockup
   - page
   - session-trace
-description: "Help you understand a problem, decide what to do, and write the plan. Doesn't write code."
+  - tdd
+  - codebase-design
+  - verify-app
+  - open-pr
+  - babysit-pr
+description: "Investigate, present options and plan; directly complete straightforward fixes when implementation is authorized."
 args:
   source:
     type: string

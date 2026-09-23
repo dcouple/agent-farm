@@ -59,3 +59,18 @@ test('orchestrator accepts host guidance and planners accept coordinated handoff
   assert.throws(()=>command(bundle,'main',{prepare:false,args:['undeclared=bad']}),/undeclared|Unknown|unknown/);
  }
 });
+
+
+test('small-work routes have implementation skills and one-shot accepts standard speed',t=>{
+ for(const profile of ['planner','planner:codex']){
+  const main=resolveProfile(root,profile).nodes.main;
+  for(const skill of ['tdd','codebase-design','verify-app','open-pr','session-trace'])assert.ok(main.skills.includes(skill),`${profile}: ${skill}`);
+ }
+ const target=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'greenfield-one-shot-')));
+ t.after(()=>fs.rmSync(target,{recursive:true,force:true}));
+ const bundle=build(root,'one-shot',target);verify(bundle);
+ const launch=command(bundle,'main',{prepare:false,speed:'standard',args:['source=Fix the contained regression']});
+ assert.ok(launch.argv.includes('service_tier="default"'));
+ assert.equal(launch.launch.arguments.source,'Fix the contained regression');
+ assert.deepEqual(Object.keys(resolveProfile(root,'one-shot').nodes.main.children),[]);
+});
