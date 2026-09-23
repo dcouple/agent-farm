@@ -10,7 +10,7 @@ Read the cover sheet and linked approved brief/design. Check that:
 
 - Top metadata names the review mode. Single-lane Fable is the default; dual/none needs an explicit user approval reference or must remain visibly pending approval, except an automatic small, low-risk skip must state that reason.
 - The outcome, exclusions, constraints, and locked product decisions are clear and consistent.
-- Package outcomes cover every required backend/frontend surface and integration path.
+- Package outcomes cover every required backend/frontend surface and integration path. Each package explains a credible implementation approach, systems reused/extended or newly introduced (with rationale), schema/data impact or none, and meaningful dependencies/checks. Unverified assumptions are labeled; schema changes and approval needs are visible. Ask for missing technical direction, not a coding recipe.
 - The journeys and whole-feature checks in **How we will know it works** cover the requested behavior, meaningful edge cases, and approved visual states.
 - Journeys and checks have enough context and observable outcomes to judge completion. Preserve the existing presentation; do not demand a matrix, separate criteria section, or mandatory IDs.
 - Verification needs and known blockers are recorded honestly; planned checks are not presented as passes.

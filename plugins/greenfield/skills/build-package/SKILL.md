@@ -5,7 +5,7 @@ description: Implement and self-check one outcome stage from the approved cover 
 
 # Build package
 
-You are the sole implementer. Read the stage outcome, relevant journey numbers or check names, locked decisions, design reference, and code needed to implement them. Select files and steps yourself using existing repository patterns; no handoff card or file allowlist is required.
+You are the sole implementer. Read the stage outcome and proposed technical approach, reuse/extension choices, schema/data impact, relevant journey numbers or check names, locked decisions, design reference, and code needed to implement them. Select files and steps yourself using existing repository patterns; no handoff card or file allowlist is required.
 
 ## Implement
 
