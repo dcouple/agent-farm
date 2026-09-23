@@ -5,3 +5,5 @@
 3. Fix product defects yourself, run affected command checks, and ask the verifier to recheck only changed journeys. Missing login/tool/service means undetermined; diagnose safely or report the exact blocker. Never weaken a criterion to turn it green.
 4. Open/update the draft PR with `open-pr`. Run `final-review` for the final Fable review, make all fixes yourself, and revalidate affected criteria. Review follow-ups concern findings and the fix diff, not another full pass over the feature.
 5. Mark done only when all required cover-sheet criteria pass and required review is accepted. Preserve work on a concrete blocked/failed outcome, respecting explicit user limits. Never merge.
+
+6. After implementation ends, publish `post-mortem.html` using the page bundle reference, and refresh the task-scoped `trace.html`. Explain blockers, surprises, deviations from the approved approach, and actual verification/review outcomes. Update hub/cover-sheet contents and bundle metadata. Mark ongoing snapshots and missing capture honestly.

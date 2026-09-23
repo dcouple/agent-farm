@@ -98,6 +98,10 @@ The old `worker` agent file is retained for legacy configurations but is not bou
 
 The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent; `fast` additionally selects the fast service tier. `planner`, `orchestrator`, and `one-shot` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
 
+## Post-mortem and conversation viewer
+
+Every bundle includes `trace.html`, emphasizing user/agent messages with tool calls collapsed. Capture only authorized task sessions and descendants; clearly report unavailable capture and incomplete snapshots. After implementation, add `post-mortem.html` covering outcome, blockers, surprises, deviations, verification, and lessons. Link both from the hub and cover sheet. The HTML plan contains everything requiring user review; PLAN.md is never a required companion.
+
 ## Documents and destinations
 
 One work item has one bundle: `index.html` (brief/hub), `options.html`, `cover-sheet.html`, `mockups/`, `explainers/`, `evidence/`, and `bundle.json`, as needed. The cover sheet is read by people, implementers, and reviewers. Use relative links and preserve the published identity on updates.

@@ -1,6 +1,6 @@
 # Plan cover sheet
 
-The HTML cover sheet is the plan for both the person and the implementer. Write it for a human: what is being built, what was decided, what could go wrong, and how they will know it works. Lead with the story and pictures. Show ask-first actions as call-outs, not buried in a list. Save it as `cover-sheet.html` in the existing bundle; no separate PLAN.md or handoff cards.
+The HTML cover sheet is the plan for both the person and the implementer. Write it for a human: what is being built, what was decided, what could go wrong, and how they will know it works. Lead with the story and pictures. Show ask-first actions as call-outs, not buried in a list. Include all information the person must review or approve in this HTML page, including material requirements, package approaches, schema implications, risks, and checks. Never depend on a PLAN.md link for those details; supporting evidence may be linked. Save it as `cover-sheet.html` in the existing bundle; no separate PLAN.md or handoff cards.
 
 ```text
 Header                feature, one-line outcome, status chip:

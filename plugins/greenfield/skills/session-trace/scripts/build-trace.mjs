@@ -117,7 +117,7 @@ function codexThread(rows) {
     if (d.type === 'response_item' && p.type === 'agent_message' && !cur) { open(ts, textOf(p.content)); continue; }
     if (!cur) continue;
     if (ts > cur.end) cur.end = ts;
-    if (d.type === 'response_item' && p.type === 'message' && p.role === 'assistant') { const t = textOf(p.content).trim(); if (t) cur.replies.push(clean(t)); }
+    if (d.type === 'response_item' && p.type === 'message' && p.role === 'assistant' && !['analysis', 'reasoning'].includes(p.channel)) { const t = textOf(p.content).trim(); if (t) cur.replies.push(clean(t)); }
     if (d.type === 'response_item' && (p.type === 'function_call' || p.type === 'custom_tool_call')) { calls.set(p.call_id, {ts, p}); cur.ids.push(p.call_id); }
     if (d.type === 'response_item' && (p.type === 'function_call_output' || p.type === 'custom_tool_call_output')) outputs.set(p.call_id, {ts, text: typeof p.output === 'string' ? p.output : textOf(p.output)});
   }
@@ -182,11 +182,11 @@ const lane = (start, end, href, text, cls = '', star = false) => `<div class="la
 const hours = []; for (let h = new Date(t0); h.setMinutes(60, 0, 0) < t1;) hours.push(`<span class="hr" style="left:${(100 * (h - t0) / SPAN).toFixed(2)}%">${h.toLocaleTimeString('en-US', {hour: 'numeric'})}</span>`);
 const turnHtml = turns.map((t, i) => {
   const head = firstLine(t.ask).slice(0, 110), reply = t.replies.at(-1) ?? '', earlier = t.replies.slice(0, -1);
-  return `<details class="turn" id="t${i}" data-text="${E((t.ask + ' ' + t.steps.map(s => s.label + ' ' + s.detail).join(' ')).toLowerCase().slice(0, 20000))}"><summary><span class="meta">${clock(t.start)}</span><span class="ask">${E(head)}</span><span class="meta">${t.steps.length} steps · ${dur(t.start, t.end)}</span></summary>
-<div class="q">${trunc(t.ask, 2500)}</div>
-${earlier.length ? `<details><summary class="meta">${earlier.length} earlier progress updates</summary>${earlier.map(r => `<div class="reply">${E(r.slice(0, 3000))}</div>`).join('')}</details>` : ''}
-${t.steps.length ? stepsHtml(t.steps, t.start, t.end) : ''}
-${reply ? `<div class="reply">${E(reply)}</div>` : ''}<a class="up" href="#timeline">↑ Timeline</a></details>`;
+  return `<details class="turn" open id="t${i}" data-text="${E((t.ask + ' ' + t.replies.join(' ') + ' ' + t.steps.map(s => s.label + ' ' + s.detail).join(' ')).toLowerCase().slice(0, 20000))}"><summary><span class="meta">${clock(t.start)}</span><span class="ask">${E(head)}</span><span class="meta">${t.steps.length} steps · ${dur(t.start, t.end)}</span></summary>
+<div class="q"><strong>User</strong>\n${E(t.ask)}</div>
+${earlier.map(r => `<div class="reply"><strong>Agent</strong>\n${E(r)}</div>`).join('')}
+${t.steps.length ? `<details class="tool-calls"><summary>${t.steps.length} tool calls</summary>${stepsHtml(t.steps, t.start, t.end)}</details>` : ''}
+${reply ? `<div class="reply"><strong>Agent</strong>\n${E(reply)}</div>` : ''}<a class="up" href="#timeline">↑ Timeline</a></details>`;
 }).join('\n');
 const title = opt.title ?? `Session trace, ${day(turns[0].start)}`;
 const page = `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -233,7 +233,7 @@ section{background:var(--card);border:1px solid var(--line);border-radius:10px;p
 ${opt.back ? `<p class="muted"><a href="${E(opt.back)}">← Back</a></p>` : ''}
 <h1>${E(title)}</h1>
 <p class="lede">Every request, every step the agent took, its subagents, and the PRs it opened, from the ${trace.harness === 'claude' ? 'Claude Code' : 'Codex'} session log${trace.model ? ` (${E(trace.model)})` : ''}. ${day(turns[0].start)}, ${clock(turns[0].start)} – ${clock(new Date(t1).toISOString())} ${zone}. Command output is left out; emails and tokens are redacted.</p>
-<div class="stats"><div><b>${turns.length}</b>requests</div><div><b>${nsteps}</b>tool calls</div><div><b>${subagents.length}</b>subagents</div><div><b>${prs.length}</b>PRs</div><div><b>${dur(turns[0].start, new Date(t1).toISOString())}</b>wall clock</div></div>
+<p><a href="#requests">Read the conversation</a></p><div class="stats"><div><b>${turns.length}</b>requests</div><div><b>${nsteps}</b>tool calls</div><div><b>${subagents.length}</b>subagents</div><div><b>${prs.length}</b>PRs</div><div><b>${dur(turns[0].start, new Date(t1).toISOString())}</b>wall clock</div></div>
 ${story.summary ? `<section><h2>What happened</h2>${String(story.summary).split(/\n\s*\n/).map(p => `<p>${E(p)}</p>`).join('')}</section>` : ''}
 ${moments.length ? `<section><h2>Key moments</h2><div class="moments">${moments.map(m => `<a class="moment" href="#t${m.turn}"><span class="meta">★ ${clock(turns[m.turn].start)}</span><b>${E(m.title)}</b>${m.detail ? `<span>${E(m.detail)}</span>` : ''}</a>`).join('')}</div></section>` : ''}
 <section id="timeline"><h2>Timeline</h2>
@@ -244,8 +244,8 @@ ${turns.map((t, i) => lane(t.start, t.end, `t${i}`, firstLine(t.ask).slice(0, 14
 ${subagents.length ? `<h3>Subagents</h3>${subagents.map((a, i) => lane(a.start, a.end, `a${i}`, a.description, 'sub')).join('\n')}` : ''}
 </section>
 ${prs.length ? `<section><h2>Pull requests</h2><ol class="prs">${prs.map(p => `<li><a href="${E(p.url)}">${E(p.repo)} #${p.number}</a> <span class="meta">${clock(p.time)}</span></li>`).join('')}</ol></section>` : ''}
-<section id="requests"><h2>Every request, step by step</h2><p class="muted">Open a request to see what was asked, each tool call with its timing, and the reply.</p>
-<div class="tools"><input id="filter" type="search" placeholder="Filter requests and steps…" aria-label="Filter requests and steps"><button type="button" id="expand">Expand all</button><span class="meta" id="count"></span></div>
+<section id="requests"><h2>Conversation</h2><p class="muted">User messages and agent replies are shown below. Tool calls stay collapsed until opened.</p>
+<div class="tools"><input id="filter" type="search" placeholder="Filter requests and steps…" aria-label="Filter requests and steps"><button type="button" id="expand">Collapse all</button><span class="meta" id="count"></span></div>
 ${turnHtml}</section>
 ${subagents.length ? `<section><h2>Subagents</h2>${subagents.map((a, i) => `<details class="turn" id="a${i}"><summary><span class="meta">${clock(a.start)}</span><span class="ask">${E(a.description)}</span><span class="meta">${a.steps.length} steps · ${dur(a.start, a.end)}</span></summary>${stepsHtml(a.steps, a.start, a.end)}</details>`).join('\n')}</section>` : ''}
 <section><h2>Raw trace</h2><p>The same trace as OpenTelemetry spans (OTLP JSON), for any OTel viewer: <a href="trace.otlp.json">trace.otlp.json</a>.</p></section>

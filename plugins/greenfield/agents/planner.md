@@ -15,6 +15,7 @@ skills:
   - plan
   - mockup
   - page
+  - session-trace
 description: "Help you understand a problem, decide what to do, and write the plan. Doesn't write code."
 args:
   docs:
