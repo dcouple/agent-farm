@@ -26,8 +26,15 @@ Include:
 
 Keep it brief enough to read before coding. Explain the important technical approach without prescribing per-file edits, function signatures, or exhaustive steps. The implementer decides the concrete files and coding details. Do not duplicate the cover sheet in another implementation document.
 
-## Review and handoff
+## Self-check and handoff
 
-Send the cover sheet and linked design to `plan-reviewer` once for scope coverage, consistency, and testability of the validation criteria. It should not demand file-by-file steps. Fix substantive omissions, then mark the plan ready for the person's approval and return its link. Do not launch planned implementation unless separately authorized under your role instructions.
+Before presenting the cover sheet for approval, check it yourself against the brief and approved design:
+
+- Scope, exclusions, constraints and locked decisions agree. Packages cover the affected backend/frontend paths and explain the approach, reuse/extension, new systems, schema/data impact and dependencies. Label assumptions and surface required approvals.
+- **How we will know it works** covers required behavior, meaningful edge cases and approved visual states, with observable outcomes and enough context to execute. Record prerequisites and blockers honestly; planned checks are not passes. Keep the existing journeys/checks presentation.
+- The HTML contains everything requiring user review, including exact proposed copy or contract semantics when needed. Do not send the reader to PLAN.md. Important decisions and risks remain visible above package disclosures.
+- Top metadata names the review mode and any required approval or small-change skip reason. Contents/related-file links and anchors resolve; Constraints and Non-goals are vertically stacked. Confirm explicitly named entry points with narrow inspection when needed.
+
+Fix substantive omissions, mark the cover sheet **ready for approval**, and return its link. This is a planner self-check, not independent review or user approval. Do not launch a plan-reviewer agent, demand detailed coding recipes, reopen settled decisions, or turn the check into an exhaustive research phase. Socrates remains earlier in `options`, before the person picks the direction; do not repeat it as a finished-plan review. Do not launch planned implementation unless separately authorized under your role instructions.
 
 When scope or a locked decision changes, revise the same cover sheet and affected criteria. Routine technical discoveries and additional in-scope caller files are handled by the implementer without a replan.

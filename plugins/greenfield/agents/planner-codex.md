@@ -46,9 +46,6 @@ subagents:
   researcher:
     agent: researcher
     mode: native
-  plan-reviewer:
-    agent: plan-reviewer
-    mode: native
   implementer:
     agent: implementer
     mode: process

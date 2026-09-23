@@ -4,7 +4,7 @@ The HTML cover sheet is the plan for both the person and the implementer. Write 
 
 ```text
 Header                feature, one-line outcome, status chip:
-                      draft | plan-reviewer: pass | approved | in build | done
+                      draft | ready for approval | approved | in build | done
 Review metadata       single lane — Fable (default), alongside status at the top
                       exceptions: mode, reason, small-change skip or user approval status
 Contents              section anchors and linked table of related bundle files

@@ -50,13 +50,6 @@ subagents:
       name: claude-sonnet-5
       reasoning: high
     mode: native
-  plan-reviewer:
-    agent: plan-reviewer
-    harness: claude
-    model:
-      name: claude-sonnet-5
-      reasoning: high
-    mode: native
   mockup-artist:
     agent: mockup-artist
     mode: process

@@ -96,3 +96,14 @@ test('Greenfield CLI arguments reach both harnesses and reject invalid profile i
   const result=invoke(profile,args);assert.equal(result.status,1);assert.match(result.stderr,pattern);
  }
 });
+
+
+test('planners retain Socrates without a separate plan-reviewer agent',()=>{
+ assert.equal(fs.existsSync(path.join(root,'agents/plan-reviewer.md')),false);
+ for(const profile of ['planner','planner:codex']){
+  const resolved=resolveProfile(root,profile),children=resolved.nodes.main.children;
+  assert.ok(children.socrates);
+  assert.equal(resolved.nodes[children.socrates].mode,'native');
+  assert.equal(Object.hasOwn(children,'plan-reviewer'),false);
+ }
+});

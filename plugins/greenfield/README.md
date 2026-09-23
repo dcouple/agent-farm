@@ -58,7 +58,7 @@ The planner retains the HTML `cover-sheet.html` in the existing work bundle. It 
 
 Every brief and plan cover sheet includes a linked table of contents and references to its other bundle files. Constraints and Non-goals occupy separate full-width sections stacked vertically, including on wide screens.
 
-Keep the existing **How we will know it works** presentation: numbered journeys and whole-feature commands/suites, with observable outcomes and relevant prerequisites. No separate validation matrix or mandatory criterion IDs are needed. All requested behavior and approved visual states must be covered, including alternate entry paths when relevant. The planner records verification prerequisites and known blockers; it does not build a new harness as part of routine planning. One bounded plan review checks scope and testability.
+Keep the existing **How we will know it works** presentation: numbered journeys and whole-feature commands/suites, with observable outcomes and relevant prerequisites. No separate validation matrix or mandatory criterion IDs are needed. All requested behavior and approved visual states must be covered, including alternate entry paths when relevant. The planner records verification prerequisites and known blockers; it does not build a new harness as part of routine planning. The planner self-checks scope, approach, verification and presentation before marking the cover sheet ready for approval. Socrates remains earlier in options, before the direction is chosen; there is no separate plan-reviewer agent.
 
 Do not generate a detailed `PLAN.md`, per-package markdown handoff cards, economy/standard tiers, or file allowlists. Legacy templates remain marked as such only to interpret older sources. Planning is ready when the product decisions are settled and the finish line is testable, not when every coding choice is prescribed.
 
@@ -83,7 +83,6 @@ Done requires all required criteria to pass with applicable current-code evidenc
 | `second-reviewer` | implementer | Astra high, native; only explicit dual review or documented fallback when Fable cannot launch |
 | `socrates` | planner | Fable high (Astra high under Codex planner); challenge unnecessary scope |
 | `investigator`, `researcher` | planner | Sonnet 5 high (Luna max under Codex planner); bounded evidence questions |
-| `plan-reviewer` | planner | Sonnet 5 high (Luna max under Codex planner); cover-sheet completeness and validation quality |
 | `mockup-artist` | Claude planner | Sol medium, process; generated design assets when needed |
 | `implementer` | planner | Separate process for authorized implementation; coordinated launches go through the host/orchestrator |
 | `qa` | bug-reporter | Sol medium; reproduce a bug in the app |
