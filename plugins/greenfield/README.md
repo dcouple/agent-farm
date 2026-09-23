@@ -123,3 +123,7 @@ A headless orchestrator passes the cover-sheet path/link as `source` and a statu
 - `session-trace` supports requested trace artifacts; follow the session's explicit permission requirements for conversation capture/export.
 
 Compare runs using the same approved feature, current-code validation, reviewer rubric, model/effort, costs, active elapsed time, and human intervention time. Record the resolved trace identity `greenfield/<profile>[:<variant>]@<version>`; the earlier multi-worker benchmark is not the new workflow.
+
+## Host-aware orchestration
+
+The orchestrator follows host-injected workspace/session mechanics while Greenfield defines the planner/implementer roles, approvals and completion requirements. No configuration is needed when the host supplies those instructions. A standalone launch can optionally pass `--arg host_policy=/absolute/path/to/host-guidance.md`; this is an instruction document, not a runtime adapter. Host-owned worktrees and associations must be created through the host. Event-driven updates replace polling; without notifications, the orchestrator yields and reports the limitation. Urgency never implicitly enables fast mode. Planners now accept `source` and `parent` for coordinated handoffs.

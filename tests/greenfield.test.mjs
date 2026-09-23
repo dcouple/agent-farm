@@ -44,3 +44,18 @@ test('both planner variants hand off to the same single-writer implementation gr
   assert.deepEqual(Object.keys(entry.children).sort(),['frontend-verifier','reviewer','second-reviewer']);
  }
 });
+
+test('orchestrator accepts host guidance and planners accept coordinated handoffs',t=>{
+ const target=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'greenfield-host-')));
+ t.after(()=>fs.rmSync(target,{recursive:true,force:true}));
+ const policy=path.join(target,'host.md'),source=path.join(target,'brief.html'),parent=path.join(target,'status.json');
+ fs.writeFileSync(policy,'Use the host workspace and event tools.');
+ fs.writeFileSync(source,'<h1>Task brief</h1>');
+ for(const [profile,args] of [['orchestrator',[`host_policy=${policy}`]],['planner',[`source=${source}`,`parent=${parent}`]],['planner:codex',[`source=${source}`,`parent=${parent}`]]]){
+  const bundle=build(root,profile,target);verify(bundle);
+  const launch=command(bundle,'main',{prepare:false,args});
+  assert.ok(launch.argv.length>0);
+  for(const arg of args){const split=arg.indexOf("=");assert.equal(launch.launch.arguments[arg.slice(0,split)],arg.slice(split+1));}
+  assert.throws(()=>command(bundle,'main',{prepare:false,args:['undeclared=bad']}),/undeclared|Unknown|unknown/);
+ }
+});

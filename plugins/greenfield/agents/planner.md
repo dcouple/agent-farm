@@ -18,6 +18,12 @@ skills:
   - session-trace
 description: "Help you understand a problem, decide what to do, and write the plan. Doesn't write code."
 args:
+  source:
+    type: string
+    description: canonical task, brief or artifact to read when assigned by an orchestrator
+  parent:
+    type: path
+    description: absolute status-file path for phase progress and questions; not a host session ID
   docs:
     type: string
     description: where documents are published. A path, or a named destination this session has tools for. Default is a local tmp folder
