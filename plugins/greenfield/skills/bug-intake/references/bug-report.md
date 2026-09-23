@@ -31,7 +31,8 @@ Not doing here: fix, refactor, plan
 When the route is `direct-to-implementer`, add the lines an implementer needs so the report can serve as a single work package:
 
 ```
+Files allowed:
 Constraints:
 Ask first:
-Escalate if:   the cause turns out to be outside the likely locus, or the fix needs a design choice
+Escalate if:   the cause turns out to be outside the files above, or the fix needs a design choice
 ```
