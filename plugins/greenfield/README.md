@@ -13,7 +13,6 @@ Plan with a high-level cover sheet, then let one Astra Low implementer build the
 | `implementer` (`implementer:standard`) | Astra low | All implementation and corrections, package self-checks, frontend verification, final review, draft PR |
 | `implementer:fast` | Astra low, fast service tier | Compatibility variant of the same implementer; sets `priority: speed`, never adds workers |
 | `bug-reporter` | Sol high | Reproduce and write a report without fixing code |
-| `one-shot` | Astra medium, fast service tier | Independent comparison profile; follows its own execution approach and uses house formats |
 | `free-range` / `free-range:claude` | Astra medium / Fable 5.1 high | Raw-model comparison profiles without the Greenfield workflow |
 | `orchestrator` | Fable 5.1 medium | Experimental coordination of separate work items/worktrees |
 
@@ -96,7 +95,7 @@ The old `worker` agent file is retained for legacy configurations but is not bou
 
 `implementer` accepts `source`, `parent`, `review` (`single`, `dual`, `none`), and `priority` (`usage`, `speed`). `single` is always the default, using Fable. Except for small, low-risk changes, any dual or skipped review must be disclosed up front and explicitly approved by the user before proceeding; prior explicit user requests/flags suffice, but agent-generated settings do not. Show the review mode in the cover sheet’s top metadata, with the reason and approval reference for exceptions. Small, low-risk changes may automatically skip review without asking; disclose the skip and reason up front and in the top metadata. There is no automatic risk-based dual escalation. `priority` influences latency/usage tradeoffs without enabling worker routing. `--model` and `--reasoning` remain explicit per-launch overrides.
 
-The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent; `fast` additionally selects the fast service tier. `planner`, `orchestrator`, and `one-shot` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
+The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent; `fast` additionally selects the fast service tier. `planner` and `orchestrator` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
 
 ## Post-mortem and conversation viewer
 
@@ -130,7 +129,7 @@ The orchestrator follows host-injected workspace/session mechanics while Greenfi
 
 ## Straightforward fixes
 
-The orchestrator may route a clearly bounded, authorized fix directly to `one-shot` in a host-managed feature worktree, using `--speed standard` unless fast was explicitly requested. When scope is uncertain, start with a planner; it may implement a straightforward fix itself in the same workspace once implementation is authorized. Both planner variants have coding/check/PR skills for this route. Larger or risky work uses the normal cover-sheet and dedicated-implementer route. Only one writer is active per workspace, and the orchestrator never takes over project implementation.
+The orchestrator may route a clearly bounded, authorized fix directly to `implementer` in a host-managed feature worktree. Standard speed remains the default; fast requires explicit opt-in. When scope is uncertain, start with a planner; it may implement a straightforward fix itself in the same workspace once implementation is authorized. Both planner variants have coding/check/PR skills for this route. Larger or risky work uses the normal cover-sheet and dedicated-implementer route. Only one writer is active per workspace, and the orchestrator never takes over project implementation.
 
 ## Profile arguments
 
@@ -141,7 +140,6 @@ Pass repeatable `--arg key=value` flags before the native-CLI `--` separator. Qu
 | `planner`, `planner:codex` | `docs`, `source`, `parent` |
 | `implementer`, `implementer:fast` | `source`, `parent`, `priority=usage\|speed`, `review=single\|dual\|none` |
 | `orchestrator` | `docs`, `host_policy` |
-| `one-shot` | `docs`, `source`, `parent` |
 | `bug-reporter` | `source`, `parent` |
 
 `parent` is the status JSON file path, not a host session ID. `host_policy` is a guidance-file path, not automatic tool configuration. Path arguments are passed through as written, so supply absolute paths for cross-workspace handoffs. `source` may be a document path, artifact URL, or contained task. Use `--message` for supplemental assignment text; unsupported profile arguments are not a substitute for host-injected context.
@@ -155,3 +153,5 @@ agent-farm run greenfield/orchestrator --directory /absolute/coordination \
 ```
 
 Use `agent-farm inspect greenfield/planner:codex` to inspect argument declarations, or add `--explain` to a run command to check resolved arguments without launching a model. Keep `--speed fast` separate from `--arg priority=speed`: priority alone does not select a service tier.
+
+The former `one-shot` agent/profile has been removed. Update saved launches to `greenfield/implementer`, or use the planner’s authorized small-fix route.

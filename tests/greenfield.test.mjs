@@ -62,18 +62,14 @@ test('orchestrator accepts host guidance and planners accept coordinated handoff
 });
 
 
-test('small-work routes have implementation skills and one-shot accepts standard speed',t=>{
+test('planners retain small-fix skills and the removed one-shot route cannot resolve',()=>{
  for(const profile of ['planner','planner:codex']){
   const main=resolveProfile(root,profile).nodes.main;
   for(const skill of ['tdd','codebase-design','verify-app','open-pr','session-trace'])assert.ok(main.skills.includes(skill),`${profile}: ${skill}`);
  }
- const target=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'greenfield-one-shot-')));
- t.after(()=>fs.rmSync(target,{recursive:true,force:true}));
- const bundle=build(root,'one-shot',target);verify(bundle);
- const launch=command(bundle,'main',{prepare:false,speed:'standard',args:['source=Fix the contained regression']});
- assert.ok(launch.argv.includes('service_tier="default"'));
- assert.equal(launch.launch.arguments.source,'Fix the contained regression');
- assert.deepEqual(Object.keys(resolveProfile(root,'one-shot').nodes.main.children),[]);
+ assert.equal(fs.existsSync(path.join(root,'profiles/one-shot.yaml')),false);
+ assert.equal(fs.existsSync(path.join(root,'agents/one-shot.md')),false);
+ assert.throws(()=>resolveProfile(root,'one-shot'));
 });
 
 
@@ -85,7 +81,7 @@ test('Greenfield CLI arguments reach both harnesses and reject invalid profile i
  const source='https://example.test/plan?revision=3&mode=review';
  const parent=path.join(target,'status files','task.json'),policy=path.join(target,'host guidance.md');
  const invoke=(profile,args)=>spawnSync(process.execPath,[cli,'run',profile,'--config-root',root,'--directory',target,'--no-workspace','--explain',...args.flatMap(a=>['--arg',a])],{encoding:'utf8',env:{...process.env,HOME:home,AGENT_FARM_TELEMETRY:'off'}});
- for(const [profile,args] of [['planner',[`source=${source}`,`parent=${parent}`]],['planner:codex',[`source=${source}`,`parent=${parent}`]],['orchestrator',[`host_policy=${policy}`]],['implementer',[`source=${source}`,`parent=${parent}`]],['implementer:fast',[`source=${source}`]],['one-shot',[`source=${source}`,`parent=${parent}`]]]){
+ for(const [profile,args] of [['planner',[`source=${source}`,`parent=${parent}`]],['planner:codex',[`source=${source}`,`parent=${parent}`]],['orchestrator',[`host_policy=${policy}`]],['implementer',[`source=${source}`,`parent=${parent}`]],['implementer:fast',[`source=${source}`]]]){
   const result=invoke(profile,args);assert.equal(result.status,0,result.stderr);
   const launch=JSON.parse(result.stdout);
   const codex=launch.argv.find(v=>v.startsWith('developer_instructions='));
