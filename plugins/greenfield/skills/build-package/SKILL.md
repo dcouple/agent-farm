@@ -1,42 +1,24 @@
 ---
 name: build-package
-description: Use when implementing one work package from its handoff card.
+description: Implement and self-check one outcome stage from the approved cover sheet, using the surrounding repository context.
 ---
 
 # Build package
 
-You implement one package. The thinking was done before you started. If the card does not tell you something you need to decide, that is a gap in the plan, not a decision for you.
+You are the sole implementer. Read the stage outcome and proposed technical approach, reuse/extension choices, schema/data impact, relevant journey numbers or check names, locked decisions, design reference, and code needed to implement them. Select files and steps yourself using existing repository patterns; no handoff card or file allowlist is required.
 
-## Before editing
+## Implement
 
-1. Read the whole card. Read the files under "Context to read" and nothing else unless a step requires it.
-2. Find the existing pattern the card points to and copy its shape. Do not invent a new one.
+- Write the stage's code and tests yourself. Never delegate source edits or test implementation.
+- Follow `tdd` for behavior changes and repository conventions. Keep checks proportional to the change.
+- Trace the full path: caller, adapter, request, server validation, persistence, response, and every affected renderer. Check alternate entry points such as new-item composers, mobile, and portals when in scope.
+- Preserve identity and state through edits/retries; use concrete edge cases from the cover sheet. A compiled helper that is not wired into the feature is incomplete.
+- Choose normal technical details autonomously. Stay inside the approved outcome, constraints, and locked decisions; avoid unrelated refactors and abstractions.
 
-## While editing
+## Check before advancing
 
-- Stay inside "Files allowed". Follow "Steps" in order. Respect "Forbidden", "Constraints", and the locked decisions.
-- Prefer editing existing files over creating new ones.
-- Wire it end to end. A route that is not mounted, a control with no effect, a parameter nobody reads, or a function nobody calls is unfinished work, even if it compiles.
-- Build what the card asks and no more: no extra abstractions, no surplus tests, no drive-by refactors.
-- Write code and tests with the `tdd` skill: red before green, one vertical slice at a time, tests through public interfaces. The card's checks and allowed files are the agreed seams, so do not stop to confirm seams with the person.
-- Note everything temporary you create: scratch scripts, throwaway tests, debug logging, captured output.
+Inspect the diff. Run stage-specific tests and required lint/type checks for affected code. Record each validation ID as pass, fail, or pending integration/undetermined, with command or journey evidence and the tested revision. Distinguish baseline failures from regressions.
 
-## Checks
+For runnable UI stages, use the focused `frontend-verifier` dispatch described in `work-packages`. You may also drive the app yourself. A command test does not prove a live journey; retain that distinction. Fix failures yourself and rerun affected checks before claiming the stage works.
 
-Run the card's `command` checks, plus the repository's type-check and lint for the files you touched. Fix what you broke. A failure that existed before your change is not yours: report it and leave it. You cannot prove `journey` or `visual` checks yourself. Say so, and leave them to qa and the reviewers.
-
-## Stop and escalate, do not decide
-
-Stop and report back when an "Escalate if" condition is true, when a step cannot be done as written, when the change needs a file outside "Files allowed", or when a product or design question appears. Say what you found, what you tried, and what is now unknown. Do not answer the question yourself.
-
-## Report
-
-```
-Status:       done | escalate | failed
-Checks:       each command check, pass or fail, with the output that proves it
-Unproven:     journey and visual checks left for qa
-Changed:      files
-Assumptions:  small choices you made that the card did not spell out
-Temporary:    paths of anything that should be removed before merge
-Escalation:   the condition, what you tried, what is unknown
-```
+Keep a small status record: stage, changed paths, validation results, assumptions, temporary artifacts, and any blocker. Do not create a detailed per-stage handoff document. Escalate only a genuine product/scope decision, authorization need, or unresolved prerequisite; a necessary in-scope caller edit is ordinary implementation.

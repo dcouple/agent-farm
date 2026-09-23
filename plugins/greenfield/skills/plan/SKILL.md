@@ -1,40 +1,40 @@
 ---
 name: plan
-description: Use when the person says to write the plan or build it and the direction is chosen. Writes the cover sheet, PLAN.md, and handoff cards. Never implements.
+description: Use when the direction is chosen and the person wants a plan. Writes a high-level HTML cover sheet with package outcomes and explicit validation criteria. Never implements.
 ---
 
 # Plan
 
-The plan is a contract for a weaker model, not a design essay. If the implementer still has to invent the product, the plan is not done.
+Write the context a capable Astra implementer needs, not instructions for a weaker worker. The approved cover sheet is the single implementation handoff. Do not generate PLAN.md, per-package markdown cards, file allowlists, model tiers, or exhaustive step-by-step implementation recipes.
 
-## Before writing
+## Establish the outcome
 
-- If the request is trivial, say it needs no plan, and follow your instructions for handing a one-sentence task to the implementer with the person's yes.
-- If two designs are still live, stop and use the `options` skill first. Do not hide a choice inside a work package.
-- Do not rewrite the conversation into a plan. Pull the facts into the brief or bug report, confirm the gist with the person in one paragraph, then plan.
-- Interview until these are explicit: what done means for the whole feature, what is out of scope, hard constraints, and how it will be verified.
-- Work out what it takes to verify the result, and list it under "Verification needs" in PLAN.md: test accounts, seed data, environment variables, test-mode keys, services that must be running. The implementer checks these before it starts. A check nobody can run is not a check.
-- Read the code the plan will touch. Every file and pattern a package names must exist. Prefer existing patterns and name the file to copy.
+Use the existing brief, approved design, and decisions. Resolve genuine product choices with the person; do not ask them to approve routine implementation details. A trivial task can use the existing one-sentence handoff instead of a plan. When alternatives remain unresolved, use `options`.
 
-## Two outputs
+Inspect enough of the repository to identify the affected surfaces, integration boundaries, existing patterns, and verification prerequisites. Link a few useful entry points when known. Use a bounded investigator only for a specific unknown that matters to scope or validation; do not routinely fan out a full repository investigation. Do not construct a new test harness or repair the environment during planning. Record what the implementer must check during preflight, with known blockers distinguished from assumptions.
 
-1. **Cover sheet**, an HTML page for the person. This is what they approve. Layout: [references/cover-sheet.md](references/cover-sheet.md). Render with the `page` house standard and save it as `cover-sheet.html` in the work's bundle.
-2. **PLAN.md**, plain text in the worktree at `docs/agent/plans/{slug}/PLAN.md`. A short header and the work packages. Format: [references/plan-md.md](references/plan-md.md) and [references/work-package.md](references/work-package.md).
+## One output
 
-Implementers never read the cover sheet. Everything they need is in the package and its handoff card: [references/handoff-card.md](references/handoff-card.md). Write one card per package into `docs/agent/plans/{slug}/handoff/WP-nn.md`.
+Write `cover-sheet.html` in the work's existing bundle using the `page` standard and [references/cover-sheet.md](references/cover-sheet.md). Both the person and the implementer read it. Preserve its published identity and links to the brief and approved designs.
 
-## Work packages
+Include:
+- Outcome, scope and exclusions, high-level approach, constraints, locked decisions and deferred items.
+- Stacked package cards following [the presentation reference](references/presentation.md), with concise approach notes on the same cover sheet: outcome, how it will be implemented, systems to reuse or extend, any new systems and why, schema/data changes (or none), meaningful dependencies, and relevant journey numbers or check names. Follow the package guidance in the cover-sheet reference; name confirmed integration points and distinguish assumptions from facts. Stages are checkpoints for one implementer, not dispatches or file restrictions. Cover every affected client and entry path, including alternate composers and adapters.
+- The existing **How we will know it works** section: numbered journeys and whole-feature commands/suites, with clear observable outcomes and relevant prerequisites. Preserve this presentation; do not require a separate matrix or criterion IDs. Cover backend, frontend, integration, and design behavior that the feature actually needs. Include relevant identity/duplicate-name and notification edge cases when applicable, without adding generic checklists unrelated to the task.
+- Known environment/fixture needs, required whole-feature checks, and what cannot yet be exercised. Distinguish a planned test from an observed pass. Missing capability never silently waives a required criterion.
+- Top-of-page plan metadata must show `Review: single lane — Fable` by default. Before proposing dual review or no review, explain the mode and reason up front and ask the person for explicit approval. Record an exception as proposed/pending until approved, then show its mode, reason, and approval reference in the same metadata. Prior explicit user authorization suffices; an agent-selected setting does not. Never automatically choose dual based on risk. Exception: small, low-risk changes may skip review without asking; disclose that decision up front and record the reason in the top metadata, following `final-review`.
 
-Each package leaves the repository working, carries observable checks, gives a level for who should build it, and leaves nothing for the implementer to decide. Read [references/work-package.md](references/work-package.md) before writing the first one, and [references/levels.md](references/levels.md) when choosing a level.
+Keep it brief enough to read before coding. Explain the important technical approach without prescribing per-file edits, function signatures, or exhaustive steps. The implementer decides the concrete files and coding details. Do not duplicate the cover sheet in another implementation document.
 
-## Record what was decided and what was cut
+## Self-check and handoff
 
-The cover sheet carries a "Decisions locked" table (decision, chosen, rejected, one line of why) and a "Deferred" table (item, why, a concrete trigger for revisiting). Implementers and the reviewer treat locked decisions as closed.
+Before presenting the cover sheet for approval, check it yourself against the brief and approved design:
 
-## Gate
+- Scope, exclusions, constraints and locked decisions agree. Packages cover the affected backend/frontend paths and explain the approach, reuse/extension, new systems, schema/data impact and dependencies. Label assumptions and surface required approvals.
+- **How we will know it works** covers required behavior, meaningful edge cases and approved visual states, with observable outcomes and enough context to execute. Record prerequisites and blockers honestly; planned checks are not passes. Keep the existing journeys/checks presentation.
+- The HTML contains everything requiring user review, including exact proposed copy or contract semantics when needed. Do not send the reader to PLAN.md. Important decisions and risks remain visible above package disclosures.
+- Top metadata names the review mode and any required approval or small-change skip reason. Contents/related-file links and anchors resolve; Constraints and Non-goals are vertically stacked. Confirm explicitly named entry points with narrow inspection when needed.
 
-When the plan is complete, send PLAN.md to `plan-reviewer` once with one question: what would an implementer still have to decide, and do the named files and patterns exist? Fix what it finds. Then tell the person the plan is ready for approval, name the two or three riskiest packages, and stop. Do not launch an implementer.
+Fix substantive omissions, mark the cover sheet **ready for approval**, and return its link. This is a planner self-check, not independent review or user approval. Do not launch a plan-reviewer agent, demand detailed coding recipes, reopen settled decisions, or turn the check into an exhaustive research phase. Socrates remains earlier in `options`, before the person picks the direction; do not repeat it as a finished-plan review. Do not launch planned implementation unless separately authorized under your role instructions.
 
-## Replans
-
-When an implementer bounces a package back, patch that package and, if a locked decision changed, the cover sheet's tables and change log. Leave the other packages alone.
+When scope or a locked decision changes, revise the same cover sheet and affected criteria. Routine technical discoveries and additional in-scope caller files are handled by the implementer without a replan.

@@ -1,3 +1,5 @@
+> Legacy format, retained only to interpret existing plans. New Greenfield plans use `cover-sheet.md`; do not generate this document or follow its worker routing/file restrictions. The single implementer chooses coding details.
+
 # Work package
 
 The unit that gets routed and executed. One package, one fresh context.

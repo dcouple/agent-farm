@@ -9,17 +9,19 @@ Every piece of work has one bundle: a folder holding all the pages written for a
   index.html           the brief. It is the hub, so opening the folder lands on it
   options.html
   cover-sheet.html
+  trace.html           conversation viewer, present in every bundle
+  post-mortem.html     final implementation retrospective
   explainers/<topic>.html
   mockups/<screen>-v<n>-<option>.html     or .png
   evidence/            screenshots and recordings
   bundle.json
 ```
 
-- `<slug>` is a short kebab-case name for the work, the same one used for the branch and for `docs/agent/plans/<slug>/` when a plan follows.
+- `<slug>` is a short kebab-case name for the work, the same one used for the branch.
 - Link between documents with relative links only (`options.html#decision-1`, `explainers/queue.html`). A bundle must work unchanged when it is opened from disk, zipped, copied, or published somewhere else.
-- The brief lists every other document under "Related", and each of them links back to `index.html`. An explainer written before any brief exists gets its own bundle, and is moved in and linked when the brief appears.
-- Create a document only when it is needed. A small piece of work may be `index.html` and `cover-sheet.html` and nothing else.
-- Files for agents (PLAN.md, handoff cards, spikes) are not part of the bundle. They live in the worktree. The cover sheet names the branch and the path to PLAN.md, and PLAN.md's header names where the cover sheet is.
+- Every brief and plan cover sheet has a visible **Contents & related files** navigation near the top: section anchor links and a table listing every other existing bundle file by linked filename/title and purpose, including supporting evidence and `bundle.json`. For large evidence collections, link an evidence index that lists each file. Keep this navigation and `bundle.json`'s document list current as files are added; verify local targets and anchors before publishing. Never invent links to files not yet created. If no related files exist, say so explicitly. Each related document links back to `index.html`. An explainer written before any brief exists gets its own bundle, and is moved in and linked when the brief appears.
+- Every bundle includes `trace.html`; add `post-mortem.html` when implementation finishes or ends blocked/failed. Create other documents only when needed. Link both from the hub and cover-sheet contents, and list them in `bundle.json`. A pending trace page must explicitly state unavailable/pending capture, never pretend it contains a completed trace.
+- `cover-sheet.html` is the implementation handoff for both the person and agents. It includes package outcomes and validation criteria, and links the approved design. Do not generate a duplicate PLAN.md or handoff cards. For legacy inputs, bring every decision, requirement, approach, schema implication, risk, and check requiring user review into the HTML cover sheet; never require opening PLAN.md to approve or understand the plan. Legacy files may remain supporting evidence; status and evidence retain paths/revisions for verification.
 
 `bundle.json` is how a later session, or an orchestrator, finds and updates the same bundle instead of making a second one:
 
@@ -78,3 +80,13 @@ A running session's evidence is a live snapshot, not a final record. Arrange for
 the parent or orchestrator to refresh the evidence and the published bundle after
 the associated sessions finish. Distinguish local export from successful upload,
 verify the published evidence, and report incomplete snapshots or failures plainly.
+
+## Final post-mortem
+
+At the end of implementation, write `post-mortem.html` in the same bundle and publish it with the updated cover sheet and trace. Use [post-mortem.md](post-mortem.md). On a blocked or failed ending, label it accordingly; do not imply completion. While work continues, any retrospective is an interim snapshot. The parent refreshes it after workers finish.
+
+## Conversation viewer
+
+Every bundle contains a locally readable `trace.html`, built with `session-trace`. Lead with chronological user messages and agent replies, with clear roles and readable formatting. Tool calls are collapsed by default and independently expandable; expanding a conversation must not expand tool details. Keep worker threads clearly separate and reachable. Link the viewer prominently from the hub, plan, and post-mortem.
+
+Use only explicitly identified sessions for this task and its descendants, never the newest unrelated session. Respect conversation-capture authorization and destination audience; an explicit request for a conversation viewer authorizes that requested scope, not unrelated history or public sharing. If capture is unauthorized or unavailable, include an honest status page and obtain missing permission when required. Record omissions, redactions, missing workers, and whether the snapshot is final. Never substitute a made-up transcript or internal reasoning for user-visible messages.

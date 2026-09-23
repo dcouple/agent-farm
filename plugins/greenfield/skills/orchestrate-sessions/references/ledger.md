@@ -1,6 +1,6 @@
 # Ledger
 
-`.agent/ledger.json`, kept by the orchestrator. One entry per work item.
+Use host durable state when available; otherwise `.agent/ledger.json`. Keep one entry per work item. Host IDs are opaque and distinct from `status_file`; do not infer associations.
 
 ```json
 {
@@ -8,7 +8,7 @@
   "items": [
     {
       "id": "ENG-123",
-      "source": "docs/agent/plans/invoice-pdf/handoff/WP-01.md",
+      "source": "/absolute/bundle/cover-sheet.html",
       "urgency": "normal",
       "worktree": "../worktrees/invoice-pdf",
       "branch": "invoice-pdf",
@@ -17,8 +17,17 @@
       "stage": "queued | running | blocked | in review | pr open | done | failed | needs planning",
       "started": "<ISO 8601 time>",
       "last_change": "<ISO 8601 time>",
-      "polls_without_change": 0,
-      "strikes": 0,
+      "host_workspace_id": null,
+      "host_worker_id": null,
+      "owning_session_id": null,
+      "last_event_id": null,
+      "phase": "planning | awaiting approval | implementing | complete",
+      "source_revision": null,
+      "implementation_approval": null,
+      "host_policy": "injected or explicit document path",
+      "bundle": null,
+      "post_mortem": null,
+      "trace": null,
       "cost_usd": null,
       "duration_ms": null,
       "pr": null,
