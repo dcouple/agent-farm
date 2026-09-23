@@ -1,6 +1,6 @@
 ---
 name: orchestrate-sessions
-description: Coordinate authorized work through host-managed workspaces and planner and implementer sessions, leaving the work itself to them and waiting for their events.
+description: Coordinate authorized work through host-managed workspaces and planner/implementer sessions without taking over their work or polling them.
 ---
 
 # Orchestrate sessions

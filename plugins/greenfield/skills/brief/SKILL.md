@@ -14,12 +14,12 @@ A brief says what is wrong or wanted, for whom, and how a user would know it is 
 - Capture the trigger: what happened, what was expected, and what it costs. For a new idea, capture the unmet need.
 - When the request arrives with a solution attached ("add patches to cut editing costs"), look at the actual behaviour and cost first, and write the problem underneath it.
 - Ask what is missing instead of inventing it: what prompted this, who is affected, what a good result would enable, what would make the current approach good enough.
-- Read the code or send `investigator` one question when a fact about today's behaviour is needed. Do not pass the whole conversation to a child.
+- Read the code or send `investigator` one question when a fact about today's behaviour is needed. Give the child just that question.
 - Research settles behaviour, never approach. A researched answer about what a user observes goes in as a labelled proposal with its source, pending the person's confirmation; anything about how it is built is only named here and argued in the options document.
 
 ## When intent changes
 
-Revise the same brief. Do not start a new one. Mark the earlier goal as superseded, cite the decision that replaced it, refresh success and constraints, and add a change-log line. Keep constraints that still hold. If what changed is only the approach, the brief does not change: that belongs in the options document.
+Revise the same brief. Mark the earlier goal as superseded, cite the decision that replaced it, refresh success and constraints, and add a change-log line. Keep constraints that still hold. If what changed is only the approach, the brief does not change: that belongs in the options document.
 
 ## One brief or several
 

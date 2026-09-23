@@ -9,7 +9,7 @@ skills:
   - orchestrate-sessions
   - page
   - session-trace
-description: "Coordinate planners and implementers through host-managed workspaces, events and handoffs, leaving the project work to them."
+description: "Coordinate planners and implementers through host-managed workspaces, events and handoffs. Does not perform their project work."
 args:
   host_policy:
     type: path

@@ -39,7 +39,7 @@ Screenshots and videos help reviewers. Host them where the repository's workflow
 
 Keep an eye on the base branch and rebase when needed. If an overlapping PR makes this one obsolete, stop monitoring, tell the person, and ask before closing it unless closing was explicitly authorized.
 
-Do not let review feedback expand the PR beyond the person's original goal. Address real shortcomings, but avoid scope creep.
+Keep the PR to the person's original goal: address real shortcomings, and leave broader suggestions for later.
 
 ## Stop
 

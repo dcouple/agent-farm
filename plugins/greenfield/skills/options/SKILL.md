@@ -14,7 +14,7 @@ This is the only place alternatives are argued. If an implementer could still ch
 - State each option's complexity-ladder rung from the standing rules, and give a reason for every rung above the lowest workable one.
 - Give every option, including the smallest version and doing nothing, a short complexity statement as described in the template. Cover both the requirements and the implementation: the complexity added compared with today, the likely ways it breaks, and the ongoing maintenance or operating cost. Say which requirements drive that cost, what could be simplified or deferred, and what the user would lose. Back claims with repository evidence where you have it, label assumptions, and describe effort and risk in words rather than scores or probabilities.
 - Recommend one option and say what the person must accept if they take it.
-- A decision blocked on a missing fact becomes a spike or a question for `researcher`. Do not guess the fact.
+- A decision blocked on a missing fact becomes a spike or a question for `researcher`.
 - Revise the document in place as the person learns. Record why options changed under "What we learned".
 
 ## Socrates

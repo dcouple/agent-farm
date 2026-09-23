@@ -12,7 +12,7 @@ description: Use when packages are done and a draft pull request must be opened 
 3. Fetch and rebase onto the base branch. Resolve mechanical conflicts. Ask about any conflict that changes meaning.
 4. Run the build and the plan's whole-feature check after the rebase.
 5. Push the branch. Force-pushing is on the ask-first list. After your own rebase of your own branch, `--force-with-lease` is acceptable. Nothing stronger, and never on a shared branch.
-6. If a pull request already exists for the branch, update it. Do not open a second one.
+6. If a pull request already exists for the branch, update that one.
 
 ## Open it as a draft
 
@@ -47,8 +47,8 @@ Reviewers' verdicts, must-fix items and how each was resolved, disputed items, o
 What was removed after review, what was left and why, and where the evidence lives.
 ```
 
-Every claim in the description must be true of the current commit. Evidence gathered on an earlier commit supports only what did not change since: say which commit each check ran on, and never write a pass you did not see. If the brief does not say why the work was wanted, say the motivation was not supplied. Do not invent one. Keep any sections or closing lines the repository requires. Read the pull request back after saving it and check the links work. If it is large, say so at the top and suggest how to read it.
+Every claim in the description must be true of the current commit. Evidence gathered on an earlier commit supports only what did not change since: say which commit each check ran on, and never write a pass you did not see. If the brief does not say why the work was wanted, say the motivation was not supplied. Keep any sections or closing lines the repository requires. Read the pull request back after saving it and check the links work. If it is large, say so at the top and suggest how to read it.
 
 ## After a failed run
 
-Keep it a draft. Put a failure summary at the very top: what is still open with evidence, what was tried, which checks are undetermined and why, and the likely cause. Do not tidy away the evidence.
+Keep it a draft. Put a failure summary at the very top: what is still open with evidence, what was tried, which checks are undetermined and why, and the likely cause. Leave the evidence in place.

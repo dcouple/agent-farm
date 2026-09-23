@@ -15,7 +15,7 @@ Every page belongs to a bundle, and a bundle has a destination. Read [references
 
 ## Colours
 
-Start the style sheet with this block. Add tokens if you need them. Do not restyle these. Give `body` an explicit background and text colour.
+Start the style sheet with this block. Add tokens if you need them, and keep these values as they are. Give `body` an explicit background and text colour.
 
 ```css
 :root {

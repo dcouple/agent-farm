@@ -71,17 +71,17 @@ Give the person the published link when there is one, and the local path otherwi
 
 When the workspace or person requests telemetry evidence, use the workspace's
 collection and export instructions. Include only sessions associated with this
-work and their relevant descendants, not the machine's entire telemetry store.
+work and their relevant descendants.
 Keep the evidence under `evidence/telemetry/`, preserve its provenance and
 completeness metadata in `bundle.json`, and publish it with the other bundle files
 to the same existing container.
 
 Collection, export commands, provider configuration, and destination-specific
-upload procedures belong in project workspace instructions, not this skill.
+upload procedures come from the project's workspace instructions.
 Conversation content requires explicit authorization; even metadata can contain
 private paths or tool arguments. Preserve the artifact's audience.
 
-A running session's evidence is a live snapshot, not a final record. Arrange for
+A running session's evidence is a live snapshot. Arrange for
 the parent or orchestrator to refresh the evidence and the published bundle after
 the associated sessions finish. Distinguish local export from successful upload,
 verify the published evidence, and report incomplete snapshots or failures plainly.

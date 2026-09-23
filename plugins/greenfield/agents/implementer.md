@@ -21,7 +21,7 @@ args:
   priority:
     values: [usage, speed]
     default: usage
-    description: prioritize usage or latency when choosing checks; the implementer still writes all code itself
+    description: prioritize usage or latency when choosing checks; never enables implementation delegation
   review:
     values: [none, single, dual]
     default: single

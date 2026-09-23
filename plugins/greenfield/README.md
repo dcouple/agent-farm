@@ -60,7 +60,7 @@ Every brief and plan cover sheet includes a linked table of contents and referen
 
 Keep the existing **How we will know it works** presentation: numbered journeys and whole-feature commands/suites, with observable outcomes and relevant prerequisites. No separate validation matrix or mandatory criterion IDs are needed. All requested behavior and approved visual states must be covered, including alternate entry paths when relevant. The planner records verification prerequisites and known blockers; it does not build a new harness as part of routine planning. The planner self-checks scope, approach, verification and presentation before marking the cover sheet ready for approval. Socrates remains earlier in options, before the direction is chosen; there is no separate plan-reviewer agent.
 
-Do not generate a detailed `PLAN.md`, per-package markdown handoff cards, economy/standard tiers, or file allowlists. Legacy templates remain marked as such only to interpret older sources. Planning is ready when the product decisions are settled and the finish line is testable, not when every coding choice is prescribed.
+The cover sheet is the only plan document; older plans are still accepted as input. Planning is ready when the product decisions are settled and the finish line is testable, with coding choices left to the implementer.
 
 ## Implementation and checks
 
