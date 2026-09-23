@@ -49,6 +49,10 @@ node dist/cli.js run implementer --config-root plugins/greenfield \
   --directory /path/to/project --arg source=/absolute/path/to/bundle/cover-sheet.html
 ```
 
+## Options and complexity
+
+Options include a short complexity statement covering added codebase complexity, likely bug risks, ongoing maintenance, and the feature requirements driving that cost. Present meaningful simplifications or deferrals with the user value lost, alongside implementation alternatives. Ground claims in known systems and label assumptions; do not invent numerical scores. Carry the chosen trade-off into the plan.
+
 ## Planning and the finish line
 
 The planner retains the HTML `cover-sheet.html` in the existing work bundle. It contains the outcome, scope and exclusions, locked decisions, high-level architecture context, approved design, meaningful risks, and concise package approach notes: how the work will be implemented, systems reused or extended, new systems and why, schema/data changes or none, dependencies, and relevant checks. Keep the summary table scannable and put longer approach notes in full-width sections on the same page. The implementer chooses concrete files, algorithms, and steps using repository patterns.
