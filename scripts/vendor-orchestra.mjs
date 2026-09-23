@@ -245,10 +245,14 @@ connections:
 ---
 ${CODEX_OVERSEER}`);
  write('profiles/overseer.yaml','variants:\n  claude:\n    agent: overseer\n  codex:\n    agent: codex-overseer\ndefault: claude\n');
+ // A hand-written guide to the plugin; edit scripts/orchestra-guide.html, not the copy.
+ fs.copyFileSync(fileURLToPath(new URL('orchestra-guide.html',import.meta.url)),path.join(plugin,'index.html'));
  write('README.md',`# orchestra
 
 dcouple/orchestra at [\`${commit.slice(0,7)}\`](https://github.com/dcouple/orchestra/tree/${commit}), packaged for Agent Farm.
 Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> <skills checkout> [orchestra commit] [skills commit]\`; do not edit these files by hand.
+
+For a one-page visual map of the workflow, open [index.html](index.html) (edit \`scripts/orchestra-guide.html\`, not the copy). The DCouple org's copy is in Grain: \`grain://workspace/open?workspaceId=QCEhppHlyzNE-jCQF_HbI&source=cli\`.
 
 \`/do\` still calls \`arena\` and \`hillclimb\`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [\`${skillsCommit.slice(0,7)}\`](https://github.com/greenfield-inc/skills/tree/${skillsCommit}): ${EXTRA_SKILLS.map(e=>`\`${e.from}\` as \`${e.to}\``).join(', ')}. No Codex \`arena\` exists, so the Codex \`/do\` arena step stays unavailable, as it was before.
 

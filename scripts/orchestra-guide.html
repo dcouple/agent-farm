@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orchestra guide</title>
+<style>
+:root {
+  --bg: #f7f4ec; --panel: #fffdf7; --ink: #1f2421; --muted: #5b635c; --line: #d9d4c5;
+  --moss: #3f7a4a; --moss-soft: #e3efdf; --mint: #2c8a6e;
+  --gold: #9a6a12; --gold-soft: #f6ead0; --lilac: #6f55a0; --lilac-soft: #ece6f6;
+  --code: #efeadd;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181d; --panel: #1e2128; --ink: #efe8d6; --muted: #a4a89c; --line: #343842;
+    --moss: #8cc47e; --moss-soft: #22301f; --mint: #6fd1b0;
+    --gold: #e0b85c; --gold-soft: #332a17; --lilac: #b9a3e6; --lilac-soft: #2a2437;
+    --code: #262a31;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 32px 16px 64px; }
+.prose { max-width: 70ch; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 6px; }
+h2 { font-size: 1.3rem; margin: 40px 0 10px; }
+h3 { font-size: 1.05rem; margin: 22px 0 6px; }
+p { margin: 8px 0; }
+.lede { color: var(--muted); font-size: 1.1rem; margin: 0 0 20px; }
+code, pre { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); border-radius: 5px; }
+code { padding: 1px 5px; }
+pre { padding: 12px 14px; overflow-x: auto; line-height: 1.5; }
+pre code { padding: 0; background: none; }
+a { color: var(--mint); }
+table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.95rem; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: .03em; }
+.table-wrap { overflow-x: auto; }
+.table-wrap table { min-width: 560px; }
+figure { margin: 24px 0; padding: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+figure { overflow-x: auto; }
+figure svg { width: 100%; min-width: 620px; height: auto; display: block; }
+figcaption { color: var(--muted); font-size: 0.9rem; padding: 8px 6px 2px; }
+.callout { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--moss); border-radius: 8px; padding: 12px 16px; margin: 14px 0; }
+.callout.gold { border-left-color: var(--gold); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+.chip { font-size: 0.8rem; padding: 2px 10px; border-radius: 999px; background: var(--moss-soft); color: var(--moss); border: 1px solid var(--line); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 12px 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.card h3 { margin-top: 0; }
+.card p { font-size: 0.95rem; }
+footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 16px; }
+
+/* diagram */
+.d-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; }
+.d-planner { fill: var(--moss-soft); stroke: var(--moss); stroke-width: 1.5; }
+.d-bug { fill: var(--lilac-soft); stroke: var(--lilac); stroke-width: 1.5; }
+.d-gate { fill: var(--gold-soft); stroke: var(--gold); stroke-width: 1.5; }
+.d-lane { fill: none; stroke: var(--moss); stroke-width: 2; }
+.d-dash { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 5; }
+.d-line { fill: none; stroke: var(--muted); stroke-width: 1.6; }
+.d-t { fill: var(--ink); font: 13px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.d-b { fill: var(--ink); font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.d-s { fill: var(--muted); font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.d-m { fill: var(--muted); font: 12px ui-monospace, Menlo, monospace; }
+.d-arrow { fill: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<header class="prose">
+<h1>Orchestra</h1>
+<p class="lede">One overseer that talks a task through, writes the brief, then builds, tests and reviews it into a pull request with little hand-holding. Codex does the implementation; Claude and Codex share the reviewing.</p>
+<div class="chips"><span class="chip">overseer:claude</span><span class="chip">overseer:codex</span><span class="chip">/discussion</span><span class="chip">/create-brief</span><span class="chip">/do</span></div>
+</header>
+
+<figure>
+<svg viewBox="0 0 760 852" role="img" aria-labelledby="map-title map-desc">
+<title id="map-title">How work moves through Orchestra</title>
+<desc id="map-desc">The overseer handles three kinds of input. Questions go to /discussion, which routes them to a researcher or investigator. New features and bugs go to /create-brief, which needs your confirmation and a Socrates review. A ready brief or ticket goes to /do, which preflights, plans by zone, implements with Codex, verifies, opens a PR, loops review and QA, and wraps up for your review.</desc>
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker>
+</defs>
+
+<rect x="20" y="10" width="720" height="50" rx="10" class="d-planner"/>
+<text x="380" y="31" text-anchor="middle" class="d-b">orchestra/overseer</text>
+<text x="380" y="50" text-anchor="middle" class="d-s">claude (default): Opus 5.5 · codex: Astra high</text>
+<path d="M380,60 V84" class="d-line" marker-end="url(#ah)"/>
+<rect x="300" y="86" width="160" height="34" rx="17" class="d-gate"/>
+<text x="380" y="108" text-anchor="middle" class="d-b">You bring work</text>
+<path d="M380,120 V134 M140,134 H620 M140,134 V148 M380,134 V148 M620,134 V148" class="d-line"/>
+
+<rect x="30" y="150" width="220" height="50" rx="8" class="d-box"/>
+<text x="140" y="171" text-anchor="middle" class="d-b">A question</text>
+<text x="140" y="189" text-anchor="middle" class="d-s">how it works, why it broke</text>
+<rect x="270" y="150" width="220" height="50" rx="8" class="d-box"/>
+<text x="380" y="171" text-anchor="middle" class="d-b">A new feature or bug</text>
+<text x="380" y="189" text-anchor="middle" class="d-s">not written up yet</text>
+<rect x="510" y="150" width="220" height="50" rx="8" class="d-box"/>
+<text x="620" y="171" text-anchor="middle" class="d-b">A ready brief or ticket</text>
+<text x="620" y="189" text-anchor="middle" class="d-s">Linear item, URL, or brief.html</text>
+<path d="M140,200 V222" class="d-line" marker-end="url(#ah)"/>
+<path d="M380,200 V222" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,200 V222" class="d-line" marker-end="url(#ah)"/>
+
+<rect x="30" y="224" width="220" height="40" rx="8" class="d-bug"/>
+<text x="140" y="249" text-anchor="middle" class="d-b">/discussion</text>
+<rect x="270" y="224" width="220" height="40" rx="8" class="d-bug"/>
+<text x="380" y="249" text-anchor="middle" class="d-b">/create-brief</text>
+<rect x="510" y="224" width="220" height="40" rx="8" class="d-bug"/>
+<text x="620" y="249" text-anchor="middle" class="d-b">/do</text>
+<path d="M140,264 V286" class="d-line" marker-end="url(#ah)"/>
+<path d="M380,264 V286" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,264 V286" class="d-line" marker-end="url(#ah)"/>
+
+<!-- discussion -->
+<rect x="30" y="288" width="220" height="92" rx="8" class="d-box"/>
+<text x="140" y="309" text-anchor="middle" class="d-b">routes each question</text>
+<text x="140" y="329" text-anchor="middle" class="d-s">our code → code-researcher</text>
+<text x="140" y="348" text-anchor="middle" class="d-s">docs, prior art → web-researcher</text>
+<text x="140" y="367" text-anchor="middle" class="d-s">why broken → investigator</text>
+<path d="M140,380 V402" class="d-line" marker-end="url(#ah)"/>
+<rect x="45" y="404" width="190" height="34" rx="17" class="d-box"/>
+<text x="140" y="426" text-anchor="middle" class="d-m">decision log</text>
+
+<!-- brief -->
+<rect x="270" y="288" width="220" height="56" rx="8" class="d-box"/>
+<text x="380" y="310" text-anchor="middle" class="d-b">feature or bug track</text>
+<text x="380" y="330" text-anchor="middle" class="d-m">brief.html + mockups</text>
+<path d="M380,344 V366" class="d-line" marker-end="url(#ah)"/>
+<polygon points="380,368 450,392 380,416 310,392" class="d-gate"/>
+<text x="380" y="397" text-anchor="middle" class="d-b">you confirm</text>
+<path d="M380,416 V436" class="d-line" marker-end="url(#ah)"/>
+<polygon points="380,438 450,462 380,486 310,462" class="d-gate"/>
+<text x="380" y="467" text-anchor="middle" class="d-b">Socrates</text>
+<text x="302" y="467" text-anchor="end" class="d-s">you can waive</text>
+<path d="M380,486 V506" class="d-line" marker-end="url(#ah)"/>
+<rect x="290" y="508" width="180" height="34" rx="17" class="d-box"/>
+<text x="380" y="530" text-anchor="middle" class="d-s">ready → run /do</text>
+
+<!-- do lane -->
+<rect x="500" y="280" width="240" height="560" rx="14" class="d-lane"/>
+<g>
+<rect x="510" y="288" width="220" height="50" rx="8" class="d-box"/>
+<text x="620" y="309" text-anchor="middle" class="d-b">0 · preflight and load</text>
+<text x="620" y="327" text-anchor="middle" class="d-s">never on the default branch</text>
+<rect x="510" y="354" width="220" height="50" rx="8" class="d-box"/>
+<text x="620" y="375" text-anchor="middle" class="d-b">1 · plan, by zone 0–3</text>
+<text x="620" y="393" text-anchor="middle" class="d-s">research, plan review</text>
+<rect x="510" y="420" width="220" height="50" rx="8" class="d-planner"/>
+<text x="620" y="441" text-anchor="middle" class="d-b">2 · implement</text>
+<text x="620" y="459" text-anchor="middle" class="d-s">Codex implementer, tdd</text>
+<rect x="510" y="486" width="220" height="50" rx="8" class="d-box"/>
+<text x="620" y="507" text-anchor="middle" class="d-b">3 · verify</text>
+<text x="620" y="525" text-anchor="middle" class="d-s">backend-verifier</text>
+<rect x="510" y="552" width="220" height="50" rx="8" class="d-box"/>
+<text x="620" y="573" text-anchor="middle" class="d-b">4 · pull request</text>
+<text x="620" y="591" text-anchor="middle" class="d-s">build gate, selective commit</text>
+<rect x="510" y="618" width="220" height="50" rx="8" class="d-bug"/>
+<text x="620" y="639" text-anchor="middle" class="d-b">5 · review, then QA</text>
+<text x="620" y="657" text-anchor="middle" class="d-s">until no Must Fix remains</text>
+<rect x="510" y="684" width="220" height="50" rx="8" class="d-box"/>
+<text x="620" y="705" text-anchor="middle" class="d-b">6 · wrap-up</text>
+<text x="620" y="723" text-anchor="middle" class="d-s">postmortem, awaiting review</text>
+</g>
+<path d="M620,338 V352" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,404 V418" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,470 V484" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,536 V550" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,602 V616" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,668 V682" class="d-line" marker-end="url(#ah)"/>
+<path d="M620,734 V762" class="d-line" marker-end="url(#ah)"/>
+<rect x="530" y="764" width="180" height="34" rx="17" class="d-gate"/>
+<text x="620" y="786" text-anchor="middle" class="d-b">you merge the PR</text>
+<text x="620" y="825" text-anchor="middle" class="d-s">/do never merges</text>
+
+<!-- zones -->
+<rect x="30" y="570" width="450" height="200" rx="10" class="d-box"/>
+<text x="46" y="594" class="d-b">Zones set how hard /do reviews</text>
+<text x="46" y="618" class="d-s">zone · stakes · review lanes · plan / code review caps</text>
+<text x="46" y="646" class="d-t">0  must be perfect</text><text x="220" y="646" class="d-t">Codex + Claude</text><text x="400" y="646" class="d-t">3 / 3</text>
+<text x="46" y="672" class="d-t">1  substantial</text><text x="220" y="672" class="d-t">Codex</text><text x="400" y="672" class="d-t">3 / 3</text>
+<text x="46" y="698" class="d-t">2  contained</text><text x="220" y="698" class="d-t">Codex</text><text x="400" y="698" class="d-t">1 / 1</text>
+<text x="46" y="724" class="d-t">3  trivial</text><text x="220" y="724" class="d-t">Codex</text><text x="400" y="724" class="d-t">1 / 1</text>
+<text x="46" y="752" class="d-s">Auth, schema, money, production config or data deletion: zone 1 at least.</text>
+<rect x="30" y="790" width="450" height="50" rx="10" class="d-gate"/>
+<text x="255" y="811" text-anchor="middle" class="d-b">Green actions run unattended</text>
+<text x="255" y="829" text-anchor="middle" class="d-s">Red actions (production, irreversible) wait for your approval</text>
+</svg>
+<figcaption>Purple boxes are the overseer's commands and its review step, green is where Codex writes code, and gold marks your decisions.</figcaption>
+</figure>
+
+<section class="prose">
+<h2>Which command do I use?</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>You have</th><th>Use</th><th>What happens</th></tr></thead>
+<tbody>
+<tr><td>A question about the code, the ecosystem, or a failure</td><td><code>/discussion</code></td><td>Each question goes to the right specialist, and decisions land in <code>tmp/discussions/</code>.</td></tr>
+<tr><td>A feature or bug that isn't written up</td><td><code>/create-brief</code></td><td>A <code>brief.html</code> with mockups, which you confirm and Socrates challenges.</td></tr>
+<tr><td>A ready brief, Linear item or URL</td><td><code>/do</code></td><td>The full run: plan, implement, verify, PR, review and QA, wrap-up.</td></tr>
+<tr><td>Something broken you want diagnosed</td><td><code>/investigate</code></td><td>One investigator finds the cause without fixing it.</td></tr>
+<tr><td>Changes you already made in the session</td><td><code>/prepare-pull-request</code></td><td>Turns them into a clean pull request.</td></tr>
+<tr><td>A goal like “this metric reaches that target”</td><td><code>/do</code> with <code>hillclimb</code></td><td>Runs the implement step as a measured improvement loop.</td></tr>
+</tbody>
+</table>
+</div>
+
+<pre><code>agent-farm plugin install orchestra
+agent-farm run orchestra/overseer --directory /path/to/project</code></pre>
+<p>Agent Farm asks which variant to run. <code>orchestra/overseer:claude</code> or <code>:codex</code> skips the question.</p>
+
+<h2>The two overseers</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th><code>claude</code> (default)</th><th><code>codex</code></th></tr></thead>
+<tbody>
+<tr><td>Overseer</td><td>Claude Opus 5.5</td><td>Astra high</td></tr>
+<tr><td>Implementation</td><td>Codex implementer, Sol medium, run as a separate process</td><td>Codex implementer at low effort</td></tr>
+<tr><td>Review lanes</td><td>Codex, plus a Claude lane at zone 0</td><td>Codex only</td></tr>
+<tr><td>Claude helpers</td><td>code-researcher, code-reviewer, frontend-verifier, plan-reviewer, web-researcher (Sonnet or Opus), Socrates (Fable)</td><td>Codex versions of the same roles</td></tr>
+<tr><td>Connections</td><td>Linear, Playwright</td><td>Linear</td></tr>
+</tbody>
+</table>
+</div>
+<p>The Claude overseer launches Codex roles with <code>codex exec</code>: the implementer (Sol medium, kept for fix rounds) and short-lived Sol low runs for backend verification, plan review, code review, code research and investigation. If Codex is unavailable, each role falls back to its Claude counterpart.</p>
+
+<h2>What <code>/do</code> does</h2>
+<ol>
+<li><strong>Preflight and load.</strong> Lists any missing credentials in one message, loads the item into <code>tmp/&lt;id&gt;/</code>, and stops if you're on the default branch.</li>
+<li><strong>Plan.</strong> The zone sets the review lanes, loop caps and how much research to do. It writes a research dossier and <code>plan.md</code>, and can try competing candidates with <code>arena</code>.</li>
+<li><strong>Implement.</strong> The Codex implementer builds it test-first.</li>
+<li><strong>Verify.</strong> The backend verifier checks it against rubrics. UI checks wait for step 5.</li>
+<li><strong>Pull request.</strong> Build gate, deploy-notes scan, a selective commit, and a structured PR body.</li>
+<li><strong>Review, then QA.</strong> Review repeats until a pass has no Must Fix findings, then the frontend and backend verifiers drive QA. Evidence goes to a <code>qa-assets</code> prerelease, never into the repo.</li>
+<li><strong>Wrap-up.</strong> Writes <code>wrapup.md</code>, labels the PR <code>awaiting-human-review</code>, updates Linear, and runs a postmortem.</li>
+</ol>
+
+<h2>Safety and attention</h2>
+<ul>
+<li><strong>Green</strong> actions, like code and reversible staging changes, run unattended.</li>
+<li><strong>Red</strong> actions, like anything touching production or anything irreversible, need your approval in the session. Otherwise they are recorded and you are notified.</li>
+<li>Notifications go out through ntfy.sh. Nothing received there can approve an action.</li>
+<li><code>babysit-pr</code> watches CI and bot reviews and merges only if you asked it to.</li>
+</ul>
+
+<h2>Where things go</h2>
+<p>Working files live in <code>tmp/&lt;id&gt;/</code>, or wherever the repository's <code>AGENTS.md</code> says. A companion Grain folder under <code>Development Artifacts/</code> is renamed to <code>PR-&lt;n&gt;-&lt;title&gt;</code> once the PR exists. The PR body is the live dashboard, and PR comments carry the evidence.</p>
+</section>
+
+<footer class="prose">
+Source: <a href="https://github.com/dcouple/orchestra">dcouple/orchestra</a>, vendored into agent-farm's <code>plugins/orchestra</code> by <code>scripts/vendor-orchestra.mjs</code>. Details are in the plugin's <a href="https://github.com/greenfield-inc/agent-farm/blob/main/plugins/orchestra/README.md">README</a>.<br>The DCouple org also has this guide in Grain: <a href="grain://workspace/open?workspaceId=QCEhppHlyzNE-jCQF_HbI&amp;source=cli">open it in Grain</a>.
+</footer>
+</main>
+</body>
+</html>

@@ -4,6 +4,8 @@ Plan with a high-level cover sheet, then let one implementer build the feature a
 
 `greenfield` is self-contained and can be installed alongside `dcouple` and `orchestra`. This version changes the default implementer from Sol with economy workers to Astra Low without implementation delegation. Existing detailed plans remain accepted, but new plans do not require markdown implementation plans or handoff cards.
 
+For a one-page visual map of how work is routed, open [index.html](index.html). The DCouple org's copy is in Grain: `grain://workspace/open?workspaceId=yHB684FB7BNBH42OW47wm&source=cli`.
+
 ## Profiles
 
 | Profile | Entry model | Role |

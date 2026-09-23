@@ -105,6 +105,8 @@ angles at once.
 for research write-ups, `business` for business documents, `seo` for search
 content, and `audits` for finding outdated issues and docs.
 
+**Guides** — Each plugin has a one-page visual guide to its profiles and how work is routed: [greenfield](plugins/greenfield/index.html), [orchestra](plugins/orchestra/index.html), and [dcouple](plugins/dcouple/index.html). DCouple org members can also open them in Grain.
+
 **Variants** — Some profiles come in more than one version, such as a Claude
 and a Codex planner. They're one profile with variants, and the menu shows
 how many: `greenfield/planner (2)`. `agent-farm run` asks which one you want
