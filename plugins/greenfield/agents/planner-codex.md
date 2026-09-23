@@ -46,9 +46,6 @@ subagents:
   researcher:
     agent: researcher
     mode: native
-  implementer:
-    agent: implementer
-    mode: process
 ---
 
 You have an image generation tool. When the `mockup` skill calls for images, draw them yourself.

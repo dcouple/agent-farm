@@ -5,7 +5,7 @@ description: Use only when a decision is blocked on a fact nobody has. One time-
 
 # Spike
 
-A spike answers one question so a decision can be made. It is not a comfort step. Do not write one for every feature.
+A spike answers one question so a decision can be made. Write one only when a decision is actually blocked on it.
 
 ## Steps
 

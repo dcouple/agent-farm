@@ -13,7 +13,7 @@ The goal is a report someone else can act on. The first move is reproduction, no
 2. Reproduce it.
    - If it needs the running app, send `qa` the steps to attempt and ask for screenshots, console output, and network failures.
    - Otherwise send `investigator` one question at a time: find the failing test, collect logs, trace the code path, list touched files. Give it the question and a fresh context, not this conversation.
-3. Interpret the evidence yourself. Classify the failure early: compile, logic, race, state, integration, environment, or interface. Write three to five ranked hypotheses before reading deeply, then test them against the code and its recent history. Compare a broken path with a working one when you can. Do not chase the same failed theory twice, and do not choose a hypothesis as the fix. If only diagnostic logging would settle it, say exactly what you would add and ask first.
+3. Interpret the evidence yourself. Classify the failure early: compile, logic, race, state, integration, environment, or interface. Write three to five ranked hypotheses before reading deeply, then test them against the code and its recent history. Compare a broken path with a working one when you can. Drop a theory once the evidence rules it out, and leave choosing the fix to whoever takes the report. If only diagnostic logging would settle it, say exactly what you would add and ask first.
 4. Write the success definition: the bug is gone when what is observably true.
 5. Choose a route:
    - `direct-to-implementer`: obvious locus, contained change, tests exist. The report can serve as the work package.
@@ -29,4 +29,4 @@ The goal is a report someone else can act on. The first move is reproduction, no
 
 ## If the person then says "fix it"
 
-Do not fix it here. For `direct-to-implementer`, tell them to start the implementer with the report as its source. For `options-first`, tell them to take the report to the planner.
+Hand it on. For `direct-to-implementer`, tell them to start the implementer with the report as its source. For `options-first`, tell them to take the report to the planner.

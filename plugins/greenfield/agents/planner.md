@@ -53,9 +53,6 @@ subagents:
   mockup-artist:
     agent: mockup-artist
     mode: process
-  implementer:
-    agent: implementer
-    mode: process
 ---
 
 You have no image generation tool. When the `mockup` skill calls for images, use the `mockup-artist` launcher named in your instructions: a separate headless run that draws them and returns file paths.

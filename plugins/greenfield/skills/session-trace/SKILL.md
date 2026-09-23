@@ -12,11 +12,11 @@ Read [references/page-guide.md](references/page-guide.md) first. It says what th
 ## When to run
 
 - When the user asks for a trace, a run review, or a page they can share about a session.
-- Every Greenfield bundle includes `trace.html`. Refresh it at meaningful handoffs and after implementation finishes, subject to explicit conversation-capture authorization. If capture is unavailable or unauthorized, include a clearly labeled status page instead of silently omitting the viewer.
+- Every Greenfield bundle includes `trace.html`. Refresh it at meaningful handoffs and after implementation finishes, when conversation capture is explicitly authorized. If capture is unavailable or unauthorized, put a clearly labeled status page in its place.
 
 ## Steps
 
-1. **Identify the authorized task sessions.** Pass `--session FILE` for the exact current task session; do not select an unrelated log merely because it is newest. Include only this task and known descendants. Record missing sessions and running snapshots.
+1. **Identify the authorized task sessions.** Pass `--session FILE` with the current task's own session file; the newest log may belong to another task. Include only this task and its known descendants. Record missing sessions and running snapshots.
    - Claude Code: `~/.claude/projects/<project>/$CLAUDE_CODE_SESSION_ID.jsonl`, with subagents under `<session id>/subagents/`.
    - Codex: the newest `~/.codex/sessions/**/rollout-*.jsonl` whose first line (`session_meta`) has this working directory and no `parent_thread_id`. Its subagents are the rollouts whose `parent_thread_id` is its `id`.
    - The script finds both on its own; pass `--session FILE` to choose.

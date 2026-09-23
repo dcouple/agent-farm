@@ -38,12 +38,23 @@ test('Greenfield compiles a single Astra Low writer with verification and cross-
  }
 });
 
-test('both planner variants hand off to the same single-writer implementation graph',()=>{
- for(const profile of ['planner','planner:codex']){
-  const resolved=resolveProfile(root,profile),entry=resolved.nodes[resolved.nodes.main.children.implementer];
-  assert.equal(entry.mode,'process');assert.equal(entry.model,'gpt-6-astra');assert.equal(entry.reasoning_effort,'low');assert.equal(entry.speed,'standard');
-  assert.deepEqual(Object.keys(entry.children).sort(),['frontend-verifier','reviewer','second-reviewer']);
- }
+test('the Claude implementer variant runs Opus 5.5 with an Astra reviewer and Claude-native helpers',t=>{
+ const target=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'greenfield-claude-')));
+ t.after(()=>fs.rmSync(target,{recursive:true,force:true}));
+ const resolved=resolveProfile(root,'implementer:claude'),main=resolved.nodes.main;
+ assert.equal(main.harness,'claude');assert.equal(main.model,'claude-opus-5-5');assert.equal(main.reasoning_effort,'medium');
+ assert.deepEqual(Object.keys(main.children).sort(),['frontend-verifier','reviewer','second-reviewer']);
+ const node=name=>resolved.nodes[main.children[name]];
+ assert.deepEqual([node('reviewer').mode,node('reviewer').harness,node('reviewer').model],['process','codex','gpt-6-astra']);
+ assert.deepEqual([node('second-reviewer').mode,node('second-reviewer').harness,node('second-reviewer').model,node('second-reviewer').reasoning_effort],['native','claude','claude-opus-5-5','high']);
+ assert.deepEqual([node('frontend-verifier').mode,node('frontend-verifier').harness,node('frontend-verifier').model,node('frontend-verifier').reasoning_effort],['native','claude','claude-opus-5-5','medium']);
+ const bundle=build(root,'implementer:claude',target);verify(bundle);
+ const launch=command(bundle,'main',{prepare:false});
+ assert.equal(launch.argv[launch.argv.indexOf('--model')+1],'claude-opus-5-5');
+});
+
+test('planners leave implementation launches to the person',()=>{
+ for(const profile of ['planner','planner:codex'])assert.equal(Object.hasOwn(resolveProfile(root,profile).nodes.main.children,'implementer'),false);
 });
 
 test('orchestrator accepts host guidance and planners accept coordinated handoffs',t=>{
@@ -81,7 +92,7 @@ test('Greenfield CLI arguments reach both harnesses and reject invalid profile i
  const source='https://example.test/plan?revision=3&mode=review';
  const parent=path.join(target,'status files','task.json'),policy=path.join(target,'host guidance.md');
  const invoke=(profile,args)=>spawnSync(process.execPath,[cli,'run',profile,'--config-root',root,'--directory',target,'--no-workspace','--explain',...args.flatMap(a=>['--arg',a])],{encoding:'utf8',env:{...process.env,HOME:home,AGENT_FARM_TELEMETRY:'off'}});
- for(const [profile,args] of [['planner',[`source=${source}`,`parent=${parent}`]],['planner:codex',[`source=${source}`,`parent=${parent}`]],['orchestrator',[`host_policy=${policy}`]],['implementer',[`source=${source}`,`parent=${parent}`]],['implementer:fast',[`source=${source}`]]]){
+ for(const [profile,args] of [['planner',[`source=${source}`,`parent=${parent}`]],['planner:codex',[`source=${source}`,`parent=${parent}`]],['orchestrator',[`host_policy=${policy}`]],['implementer',[`source=${source}`,`parent=${parent}`]],['implementer:fast',[`source=${source}`]],['implementer:claude',[`source=${source}`,`parent=${parent}`]]]){
   const result=invoke(profile,args);assert.equal(result.status,0,result.stderr);
   const launch=JSON.parse(result.stdout);
   const codex=launch.argv.find(v=>v.startsWith('developer_instructions='));

@@ -27,6 +27,6 @@ Footer          origin (explain | chat | bug), linked issue, and a change log,
                 newest first: what changed, why, and what it superseded
 ```
 
-Constraints and Non-goals must remain vertically stacked at every viewport width; never place them in adjacent columns or cards. Every brief includes the linked contents and related-files navigation described in `../../page/references/bundle.md`, updated as files are added.
+Constraints and Non-goals stay stacked vertically, each full width, at every viewport width. Every brief includes the linked contents and related-files navigation described in `../../page/references/bundle.md`, updated as files are added.
 
 The issue body, when there is one, carries: the problem, who it affects, success, constraints and non-goals, open decisions, and the link to this page.

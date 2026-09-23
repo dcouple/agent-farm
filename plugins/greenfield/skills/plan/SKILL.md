@@ -5,36 +5,41 @@ description: Use when the direction is chosen and the person wants a plan. Write
 
 # Plan
 
-Write the context a capable Astra implementer needs, not instructions for a weaker worker. The approved cover sheet is the single implementation handoff. Do not generate PLAN.md, per-package markdown cards, file allowlists, model tiers, or exhaustive step-by-step implementation recipes.
+Write the context a capable implementer needs to build the feature. The approved cover sheet is the whole implementation handoff: it explains what to build and why, and leaves the step-by-step coding to the implementer.
 
 ## Establish the outcome
 
-Use the existing brief, approved design, and decisions. Resolve genuine product choices with the person; do not ask them to approve routine implementation details. A trivial task can use the existing one-sentence handoff instead of a plan. When alternatives remain unresolved, use `options`.
+Start from the existing brief, approved design, and decisions. Settle genuine product choices with the person and leave routine implementation details to the implementer. A trivial task can use the existing one-sentence handoff instead of a plan. When alternatives are still open, use `options`.
 
-Inspect enough of the repository to identify the affected surfaces, integration boundaries, existing patterns, and verification prerequisites. Link a few useful entry points when known. Use a bounded investigator only for a specific unknown that matters to scope or validation; do not routinely fan out a full repository investigation. Do not construct a new test harness or repair the environment during planning. Record what the implementer must check during preflight, with known blockers distinguished from assumptions.
+Inspect enough of the repository to identify the affected surfaces, integration boundaries, existing patterns, and verification prerequisites. Link a few useful entry points when known. Keep investigation bounded: use an investigator only for a specific unknown that affects scope or validation. Leave test harnesses and environment repair to the implementer, and record what it must check during preflight, separating known blockers from assumptions.
 
 ## One output
 
-Write `cover-sheet.html` in the work's existing bundle using the `page` standard and [references/cover-sheet.md](references/cover-sheet.md). Both the person and the implementer read it. Preserve its published identity and links to the brief and approved designs.
+Write `cover-sheet.html` in the work's existing bundle using the `page` standard and [references/cover-sheet.md](references/cover-sheet.md). The person and the implementer both read it. Keep its published identity and its links to the brief and approved designs.
 
 Include:
-- Outcome, scope and exclusions, high-level approach, constraints, locked decisions and deferred items.
-- Stacked package cards following [the presentation reference](references/presentation.md), with concise approach notes on the same cover sheet: outcome, how it will be implemented, systems to reuse or extend, any new systems and why, schema/data changes (or none), meaningful dependencies, and relevant journey numbers or check names. Follow the package guidance in the cover-sheet reference; name confirmed integration points and distinguish assumptions from facts. Stages are checkpoints for one implementer, not dispatches or file restrictions. Cover every affected client and entry path, including alternate composers and adapters.
-- The existing **How we will know it works** section: numbered journeys and whole-feature commands/suites, with clear observable outcomes and relevant prerequisites. Preserve this presentation; do not require a separate matrix or criterion IDs. Cover backend, frontend, integration, and design behavior that the feature actually needs. Include relevant identity/duplicate-name and notification edge cases when applicable, without adding generic checklists unrelated to the task.
-- Known environment/fixture needs, required whole-feature checks, and what cannot yet be exercised. Distinguish a planned test from an observed pass. Missing capability never silently waives a required criterion.
-- Top-of-page plan metadata must show `Review: single lane — Fable` by default. Before proposing dual review or no review, explain the mode and reason up front and ask the person for explicit approval. Record an exception as proposed/pending until approved, then show its mode, reason, and approval reference in the same metadata. Prior explicit user authorization suffices; an agent-selected setting does not. Never automatically choose dual based on risk. Exception: small, low-risk changes may skip review without asking; disclose that decision up front and record the reason in the top metadata, following `final-review`.
 
-Keep it brief enough to read before coding. Explain the important technical approach without prescribing per-file edits, function signatures, or exhaustive steps. The implementer decides the concrete files and coding details. Do not duplicate the cover sheet in another implementation document.
+- Outcome, scope and exclusions, high-level approach, constraints, locked decisions, and deferred items.
+- Stacked package cards following [the presentation reference](references/presentation.md), each with concise approach notes: the outcome, how it will be built, systems to reuse or extend, any new systems and why, schema and data changes (or "none"), meaningful dependencies, and the relevant journey numbers or check names. Follow the package guidance in the cover-sheet reference, name confirmed integration points, and label assumptions. Packages are checkpoints for one implementer. Cover every affected client and entry path, including alternate composers and adapters.
+- The **How we will know it works** section: numbered journeys and whole-feature commands or suites, each with an observable outcome and its prerequisites. Cover the backend, frontend, integration, and design behavior the feature needs, including identity, duplicate-name, and notification edge cases when they apply. Keep the checks specific to this task.
+- Known environment and fixture needs, required whole-feature checks, and anything that cannot be exercised yet. Mark planned tests as planned; only an observed result counts as a pass. A missing capability leaves its criterion open.
+- Review metadata at the top of the page, following `final-review`:
+  - The default is `Review: single lane`.
+  - Small, low-risk changes may skip review without asking. Say so up front and record the reason in the metadata.
+  - For dual review or no review, explain the mode and reason and ask the person first. Show it as pending until they approve, then record the mode, reason, and approval. Their earlier explicit authorization counts; a setting you chose yourself does not.
+  - Choose dual review only when the person asks for it, whatever the risk.
+
+Keep the page short enough to read before coding. Explain the important technical approach and let the implementer choose files, signatures, and steps.
 
 ## Self-check and handoff
 
-Before presenting the cover sheet for approval, check it yourself against the brief and approved design:
+Before presenting the cover sheet, check it yourself against the brief and approved design:
 
-- Scope, exclusions, constraints and locked decisions agree. Packages cover the affected backend/frontend paths and explain the approach, reuse/extension, new systems, schema/data impact and dependencies. Label assumptions and surface required approvals.
-- **How we will know it works** covers required behavior, meaningful edge cases and approved visual states, with observable outcomes and enough context to execute. Record prerequisites and blockers honestly; planned checks are not passes. Keep the existing journeys/checks presentation.
-- The HTML contains everything requiring user review, including exact proposed copy or contract semantics when needed. Do not send the reader to PLAN.md. Important decisions and risks remain visible above package disclosures.
-- Top metadata names the review mode and any required approval or small-change skip reason. Contents/related-file links and anchors resolve; Constraints and Non-goals are vertically stacked. Confirm explicitly named entry points with narrow inspection when needed.
+- Scope, exclusions, constraints, and locked decisions agree. Packages cover the affected backend and frontend paths and explain the approach, reuse or extension, new systems, schema and data impact, and dependencies. Assumptions are labelled and required approvals are visible.
+- **How we will know it works** covers required behavior, meaningful edge cases, and approved visual states, with observable outcomes and enough context to run each check. Prerequisites and blockers are recorded honestly, and planned checks are marked as planned.
+- The page itself contains everything the person must review, including exact proposed copy or contract semantics when they matter. Important decisions and risks are visible above the package disclosures.
+- The top metadata names the review mode and any approval or small-change skip reason. Contents and related-file links resolve, and Constraints and Non-goals are stacked vertically. Explicitly named entry points are confirmed with a quick look when needed.
 
-Fix substantive omissions, mark the cover sheet **ready for approval**, and return its link. This is a planner self-check, not independent review or user approval. Do not launch a plan-reviewer agent, demand detailed coding recipes, reopen settled decisions, or turn the check into an exhaustive research phase. Socrates remains earlier in `options`, before the person picks the direction; do not repeat it as a finished-plan review. Do not launch planned implementation unless separately authorized under your role instructions.
+Fix substantive gaps, mark the cover sheet **ready for approval**, and return its link. This is your own check, separate from user approval, so keep it quick: settled decisions stay settled and coding detail stays with the implementer. Socrates reviews the direction once, during `options`. Start implementation only when your role instructions separately authorize it; otherwise hand off as your role instructions describe.
 
-When scope or a locked decision changes, revise the same cover sheet and affected criteria. Routine technical discoveries and additional in-scope caller files are handled by the implementer without a replan.
+When scope or a locked decision changes, revise the same cover sheet and its affected criteria. The implementer handles routine technical discoveries and extra in-scope caller files without a replan.

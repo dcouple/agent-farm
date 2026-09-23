@@ -5,7 +5,7 @@ description: Use when the person wants to understand a concept or how something 
 
 # Explain
 
-Finish when the person could teach it back. Do not become useful by proposing a build.
+Finish when the person could teach it back. Ideas for what to build belong in `options`.
 
 ## Inline first
 
@@ -13,7 +13,7 @@ Answer small questions in the conversation. Offer an HTML explainer only when th
 
 ## Gather facts before teaching
 
-Read the code yourself for small questions. For a larger trace, send `investigator` one question with a fresh context, for example "how does a message travel from the API to the provider, with file references". You interpret what comes back. Do not pass the whole conversation to a child.
+Read the code yourself for small questions. For a larger trace, send `investigator` one question with a fresh context, for example "how does a message travel from the API to the provider, with file references". Give the child just that question, and interpret what comes back yourself.
 
 ## The explainer
 

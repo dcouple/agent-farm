@@ -1,6 +1,6 @@
 # Planner documents
 
-The person and the implementer share one HTML plan cover sheet, rendered with the `page` house standard and saved in the work's bundle. It carries high-level context and validation criteria; do not duplicate it in an agent-only implementation plan.
+The person and the implementer share one HTML plan cover sheet, rendered with the `page` house standard and saved in the work's bundle. It carries the high-level context and validation criteria for both readers.
 
 | Document | Skill | Reader |
 | --- | --- | --- |
@@ -22,7 +22,7 @@ What the person learns is not pasted into the brief or the cover sheet as a bloc
 - Facts that define the problem: the brief, under Today, Evidence, and Sources. Questions still unanswered: the brief's Unknowns.
 - Learning that changed which approaches are viable: the options page, under "What we learned".
 - The outcome: the cover sheet's "Decisions locked" and "Deferred", with a link to the options page. Not the journey.
-- The cover sheet links the relevant context and approved design. Its package outcomes, concise technical approaches (reuse/extension, new systems, schema/data impact), and validation criteria carry the implementation handoff; no separate markdown plan or cards.
+- The cover sheet links the relevant context and approved design. Its package outcomes, short technical approaches (what is reused or extended, new systems, schema and data impact), and validation criteria are the whole implementation handoff.
 
 The test: would it still be true under a different approach? Brief. Is it about choosing between approaches? Options.
 

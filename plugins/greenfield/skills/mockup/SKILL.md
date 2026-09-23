@@ -27,7 +27,7 @@ Pick the method that fits, and say which you used:
 
 - A favourite guides the next round. Only an explicit approval selects the final design.
 - Save the approved design under `mockups/` in the work's bundle, with a caption, version, and approval status. Keep rejected options marked as rejected.
-- Record it in the brief under Evidence. When a plan follows, it becomes the design reference on the cover sheet and in PLAN.md, with the list of screens that must match it.
+- Record it in the brief under Evidence. When a plan follows, it becomes the design reference on the cover sheet, with the list of screens that must match it.
 - Details that the mock-up invented and nobody discussed are illustrations, not requirements. Say which are which.
 
 ## Banned

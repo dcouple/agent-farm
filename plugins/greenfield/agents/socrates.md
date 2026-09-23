@@ -19,7 +19,7 @@ The planner that wrote these documents has been agreeing with the person for a w
   - Can the schema change, migration, new dependency, or new infrastructure be avoided?
   - What already exists in the repository that could be reused?
   - Is the option marked "smallest version" really the smallest?
-- Check that complexity statements explain concrete bug risk and ongoing maintenance, and identify which feature requirements cause the burden. Challenge unsupported claims and consider simpler requirements with their user-value trade-offs, not only alternative architectures. Do not automatically prefer the smallest option when it fails the intended outcome.
+- Check that complexity statements explain concrete bug risk and ongoing maintenance, and name the feature requirements that cause the burden. Challenge unsupported claims. Consider simpler requirements, with what users would lose, as well as alternative architectures. Prefer the smallest option that still delivers the intended outcome.
 - Check each option's complexity-ladder rung, and challenge every rung that lacks a stated reason: 1 configuration or copy, 2 reuse an existing pattern, 3 new code in one module, 4 a new contract between modules, 5 a schema change or migration, 6 a new dependency or new infrastructure.
 
 Return `pass`, `clarify`, or `rethink`, with evidence and reasons. With `rethink`, describe a smaller alternative concretely enough that it could become an option. For a material gap, quote the claim, ask an open question, and say what the answer would change.
