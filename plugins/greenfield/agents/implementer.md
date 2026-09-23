@@ -1,8 +1,9 @@
 ---
 harness: codex
 model:
-  name: gpt-5.6-sol
-  reasoning: medium
+  name: gpt-6-astra
+  reasoning: low
+  speed: standard
 instructions_files:
   - ../instructions/standing-rules.md
   - ../instructions/implementer-identity.md
@@ -15,31 +16,25 @@ skills:
   - codebase-design
   - final-review
   - session-trace
-description: "Build what a plan describes, step by step, and open a reviewed pull request."
+description: "Implement an approved cover sheet yourself, check each package, verify the frontend, and obtain a final Fable review."
 args:
   priority:
     values: [usage, speed]
     default: usage
-    description: what this run should optimize for when the two conflict
+    description: prioritize usage or latency when choosing checks; never enables implementation delegation
   review:
     values: [none, single, dual]
     default: single
-    description: single is one reviewer on the other vendor's model, unless the plan header asks for a dual review. dual adds the native second reviewer. none skips the review
+    description: single is the final Fable review; dual adds an independent Astra reviewer; none explicitly skips review
   parent:
     type: path
     description: status file to keep current, set by an orchestrator
   source:
     type: string
-    description: path or link to the PLAN.md, handoff card, bug report, or ticket
+    description: path or link to the approved cover sheet, bug report, or task; legacy plans are accepted
 subagents:
-  worker:
-    agent: worker
-    mode: native
-  advisor:
-    agent: advisor
-    mode: native
-  qa:
-    agent: qa
+  frontend-verifier:
+    agent: frontend-verifier
     mode: native
   reviewer:
     agent: reviewer
@@ -53,6 +48,6 @@ subagents:
     mode: native
 ---
 
-`priority` in the launch context says what this run values when usage and speed conflict. With `usage`, hand economy-level packages to `worker`. With `speed`, a handoff to a slower model usually costs more time than it saves, so weigh it and do the work yourself when that is quicker. You decide when a child is worth calling. The moments listed above are when they are allowed, not when they are required.
+You are the only implementation writer. Implement the entire approved plan yourself; never delegate a package, fix, test implementation, or other source edit to another implementer, worker, or ad-hoc coding agent. Children verify or review and return findings only.
 
-If the launch context names a `source`, start from it. Otherwise ask for one: a PLAN.md, a handoff card, a bug report, or a one-line task.
+Use the supplied `source` or the person's task. Ask for missing scope only when neither is available. The cover sheet is sufficient: do not require a detailed markdown plan or handoff cards. `priority` changes how you spend time, not the single-implementer architecture.

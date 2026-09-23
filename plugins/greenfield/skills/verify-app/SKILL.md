@@ -9,17 +9,17 @@ Prove what works with evidence, say what you could not determine, and leave a tr
 
 ## Set up
 
-1. Confirm the target: branch or commit, worktree, and the journeys and visual checks you were given, with the design reference.
+1. Confirm the target: branch/commit (and any uncommitted changes), worktree, journey numbers or check names, exact URL/route, expected results, and design reference. Use supplied navigation hints. Report if the target changes during verification.
 2. Check tools and sign-ins before starting anything long: browser automation, the dev server or simulator, test accounts, and any connector needed to read back external effects. If something is missing, stop and report it as the reason. Do not improvise around it.
 3. Use test-mode keys, test accounts, local containers, and staging-safe endpoints. Never touch production unless the person explicitly asked.
-4. Start what you need and note what you started. Do not leave duplicate servers or listeners running.
+4. Reuse the running app and authenticated session whenever possible. Start only missing authorized services and record them. Avoid duplicate servers or listeners. A frontend-verifier dispatch is a focused check, not a broad setup or repository-investigation task.
 
 ## Drive the journeys
 
 - Use browser automation. Select elements by what a user sees: labels, button text, placeholders, routes.
 - Use a unique marker for anything you create, such as `agent-e2e-<timestamp>`, so it can be found and removed.
-- Capture a screenshot at each meaningful step, not only the final page: empty, filled, expanded, modal, validation error, loading, success. Add one narrow viewport when layout could be affected. Name files in journey order, for example `01-open-invoice.png`. Keep them in one folder outside the repository's tracked files, or in a git-ignored `tmp/` folder.
-- Record one video per journey when the driver can do it for free. Stills remain the evidence. The video shows continuity.
+- Navigate directly to the requested route. Prefer accessible selectors and targeted snapshots. Capture the visual states named by the criteria, plus evidence of failures and important outcomes. Avoid screenshots of every click or unrelated viewports. Name files in journey order, for example `01-open-invoice.png`, in the caller's evidence folder outside tracked source.
+- Record video only when requested or needed to prove a timing/interaction criterion. Prefer explicit readiness signals over fixed sleeps.
 - For `visual` checks, capture the named screens at the same size and state as the design reference. You capture. The reviewers judge.
 - Pace the steps like a person when timing matters, so effects fire in the order a user would cause them.
 
@@ -37,7 +37,7 @@ Follow the reported steps from a clean state. Capture console output and failed 
 Verdict: all-proven | partial | blocked-environment | blocked-sign-in | bug-found
 Target:  <commit>
 
-| Journey or check | Result | Evidence |
+| Validation ID / journey | Result | Evidence |
 | ---------------- | ------ | -------- |
 | <flow>           | pass / fail / undetermined / left to a person | quoted output, screenshot, readback |
 

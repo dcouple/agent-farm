@@ -1,3 +1,5 @@
+> Legacy format, retained only to interpret existing plans. New Greenfield plans use `cover-sheet.md`; do not generate this document or follow its worker routing/file restrictions. The single implementer chooses coding details.
+
 # Handoff card
 
 The whole of one implementer session's context. Cut one per package from PLAN.md and save it at `docs/agent/plans/{slug}/handoff/WP-nn.md`. An orchestrator passes this file by path.

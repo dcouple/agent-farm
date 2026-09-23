@@ -15,11 +15,11 @@ Every piece of work has one bundle: a folder holding all the pages written for a
   bundle.json
 ```
 
-- `<slug>` is a short kebab-case name for the work, the same one used for the branch and for `docs/agent/plans/<slug>/` when a plan follows.
+- `<slug>` is a short kebab-case name for the work, the same one used for the branch.
 - Link between documents with relative links only (`options.html#decision-1`, `explainers/queue.html`). A bundle must work unchanged when it is opened from disk, zipped, copied, or published somewhere else.
-- The brief lists every other document under "Related", and each of them links back to `index.html`. An explainer written before any brief exists gets its own bundle, and is moved in and linked when the brief appears.
+- Every brief and plan cover sheet has a visible **Contents & related files** navigation near the top: section anchor links and a table listing every other existing bundle file by linked filename/title and purpose, including supporting evidence and `bundle.json`. For large evidence collections, link an evidence index that lists each file. Keep this navigation and `bundle.json`'s document list current as files are added; verify local targets and anchors before publishing. Never invent links to files not yet created. If no related files exist, say so explicitly. Each related document links back to `index.html`. An explainer written before any brief exists gets its own bundle, and is moved in and linked when the brief appears.
 - Create a document only when it is needed. A small piece of work may be `index.html` and `cover-sheet.html` and nothing else.
-- Files for agents (PLAN.md, handoff cards, spikes) are not part of the bundle. They live in the worktree. The cover sheet names the branch and the path to PLAN.md, and PLAN.md's header names where the cover sheet is.
+- `cover-sheet.html` is the implementation handoff for both the person and agents. It includes package outcomes and validation criteria, and links the approved design. Do not generate a duplicate PLAN.md or handoff cards. Existing legacy plans can be linked without copying them; status and evidence retain paths/revisions for verification.
 
 `bundle.json` is how a later session, or an orchestrator, finds and updates the same bundle instead of making a second one:
 

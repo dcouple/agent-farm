@@ -1,8 +1,7 @@
 # Verify, correct, and revalidate
 
-1. If the plan lists journeys or `visual` checks, send them to `qa` with the design reference. Skip qa for copy, config, docs, and other low-risk changes. When a person is present, ask before starting qa. When headless, run it.
-2. When qa reports a product bug, fix it in the owning package, rerun affected command checks, and send qa the new commit and affected journeys to revalidate. Repeat for actionable failures; do not treat partial or undetermined qa as passing. Missing capabilities go back to the implementer for safe in-scope diagnosis or a concrete blocker, not speculative product edits or weaker checks.
-3. Open the pull request with `open-pr`, as a draft. Never merge.
-4. Run the `final-review` skill: initial review, targeted fixes and follow-ups, then clean-up. Revalidate qa whenever a review fix affects a journey or visual check.
-
-An attempt count alone does not end the run. Follow the standing rules for explicit user limits, genuine blockers, or failure when diagnosis and advisor input leave no viable repair inside the plan. Preserve the current work and evidence when stopping.
+1. Reconcile the cover sheet's “How we will know it works” section. Each required criterion needs an observed result and evidence for the applicable current code. The implementer owns backend/command checks; `frontend-verifier` drives the specified frontend journeys/visual states. Reuse stage evidence for unchanged behavior and run the remaining integration checks.
+2. Use the verifier during implementation and at the end when frontend criteria require it. No extra permission question is needed for already-authorized local checks; ask only for an external effect that standing rules require approval for. Skip unrelated UI verification for changes with no affected frontend behavior.
+3. Fix product defects yourself, run affected command checks, and ask the verifier to recheck only changed journeys. Missing login/tool/service means undetermined; diagnose safely or report the exact blocker. Never weaken a criterion to turn it green.
+4. Open/update the draft PR with `open-pr`. Run `final-review` for the final Fable review, make all fixes yourself, and revalidate affected criteria. Review follow-ups concern findings and the fix diff, not another full pass over the feature.
+5. Mark done only when all required cover-sheet criteria pass and required review is accepted. Preserve work on a concrete blocked/failed outcome, respecting explicit user limits. Never merge.

@@ -1,6 +1,6 @@
 # Planner documents
 
-You write for two readers. Pages for the person are HTML, rendered with the `page` house standard and saved in the work's bundle. Files for agents are plain text in the worktree.
+The person and the implementer share one HTML plan cover sheet, rendered with the `page` house standard and saved in the work's bundle. It carries high-level context and validation criteria; do not duplicate it in an agent-only implementation plan.
 
 | Document | Skill | Reader |
 | --- | --- | --- |
@@ -8,7 +8,7 @@ You write for two readers. Pages for the person are HTML, rendered with the `pag
 | Brief | `brief` | person, then you |
 | Options | `options` | person, who decides |
 | Spike | `spike` | you and one child |
-| Plan cover sheet, PLAN.md, handoff cards | `plan` | person approves the cover sheet. Implementers read the rest |
+| Plan cover sheet | `plan` | person approves it; implementer and reviewers read the same page |
 
 ## One piece of work, one bundle
 
@@ -22,7 +22,7 @@ What the person learns is not pasted into the brief or the cover sheet as a bloc
 - Facts that define the problem: the brief, under Today, Evidence, and Sources. Questions still unanswered: the brief's Unknowns.
 - Learning that changed which approaches are viable: the options page, under "What we learned".
 - The outcome: the cover sheet's "Decisions locked" and "Deferred", with a link to the options page. Not the journey.
-- PLAN.md and work packages carry none of it, only what to read and which pattern to copy.
+- The cover sheet links the relevant context and approved design. Its package outcomes and validation criteria carry the implementation handoff; no separate markdown plan or cards.
 
 The test: would it still be true under a different approach? Brief. Is it about choosing between approaches? Options.
 

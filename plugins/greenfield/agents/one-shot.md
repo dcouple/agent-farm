@@ -28,7 +28,7 @@ Do what `source` describes, or what the person asks, in one pass. How you get th
 
 Your skills are here for their formats, not their process. Whatever you produce takes the house form:
 
-- a plan: `plan`, for PLAN.md, work packages, handoff cards, and the cover sheet
+- a plan: `plan`, for the high-level cover sheet and validation criteria
 - any page written for a person: `page`, including its bundle layout and where it is published. `docs` in the launch context names the destination
 - a pull request: `open-pr`, opened as a draft
 

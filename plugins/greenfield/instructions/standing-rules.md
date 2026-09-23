@@ -4,7 +4,7 @@ These apply to every profile that includes this file. Skills add detail. They do
 
 ## Documents are the interface
 
-Chat is scratch. Decisions, plans, and reports live in documents, and work is handed to another agent by document path, never by paraphrase. Pages for people are HTML, kept together in one bundle per piece of work. A bundle is a local folder by default and is published elsewhere only when the person or their workspace names a destination. No skill depends on a particular platform. Files for agents are plain text in the worktree. Revise a document in place with a change-log line. Moving to the next stage is the person's decision: an explanation never becomes a plan, and a plan never becomes an implementation, unless they ask.
+Chat is scratch. Decisions, plans, and reports live in documents, and work is handed to another agent by document path, never by paraphrase. Pages for people are HTML, kept together in one bundle per piece of work. A bundle is a local folder by default and is published elsewhere only when the person or their workspace names a destination. No skill depends on a particular platform. The plan cover sheet is shared by people and agents; do not require a second markdown implementation plan. Status and evidence can use structured files. Revise a document in place with a change-log line. Moving to the next stage is the person's decision: an explanation never becomes a plan, and a plan never becomes an implementation, unless they ask.
 
 ## Complexity ladder
 
@@ -21,12 +21,12 @@ Ask first: migrations, anything that touches production, deleting data or other 
 - Explain: the person could teach it back.
 - Bug report: filed, with no fix proposed.
 - Options: waiting on the person's pick.
-- Plan: every package has observable checks and leaves no decision open.
-- Implement: required checks and qa pass and the review is accepted. Continue scoped corrections and revalidation while there is an evidence-backed next step; attempt count alone is not a stop condition. Respect explicit user time, spend, or attempt limits. Stop `blocked` when a decision, permission, or prerequisite cannot be obtained safely within scope, even after work has started. Stop `failed` when diagnosis and advisor input leave no viable in-scope repair. Preserve evidence and report what would allow resumption; an undetermined check is never a pass.
+- Plan: the cover sheet settles scope and product decisions, gives high-level package outcomes, and names observable validation criteria for every required behavior. Routine implementation choices remain with the implementer.
+- Implement: required checks and qa pass and the review is accepted. Continue scoped corrections and revalidation while there is an evidence-backed next step; attempt count alone is not a stop condition. Respect explicit user time, spend, or attempt limits. Stop `blocked` when a decision, permission, or prerequisite cannot be obtained safely within scope, even after work has started. Stop `failed` when diagnosis and available review evidence leave no viable in-scope repair. Preserve evidence and report what would allow resumption; an undetermined check is never a pass.
 
 Aim for extremely well, not perfect. When the condition is met, stop. Trivial work needs no plan: say so, and offer the one-sentence task to the implementer. A pull request made without a plan is labelled `no-plan`. A one-line request that is really a design problem goes to the planner.
 
-The implementer owns the stop decision. Before declaring an in-scope repair exhausted, record the persistent failure, attempted approaches, advisor guidance, and why no next approach remains within the approved plan. Reaching an explicit user limit means `blocked`, with a question about whether to extend it; do not silently exceed it.
+The implementer owns the stop decision. Before declaring an in-scope repair exhausted, record the persistent failure, attempted approaches, relevant verification/review findings, and why no next approach remains within the approved plan. Reaching an explicit user limit means `blocked`, with a question about whether to extend it; do not silently exceed it.
 
 ## Launch context
 

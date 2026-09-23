@@ -1,3 +1,5 @@
+> Legacy format, retained only to interpret existing plans. New Greenfield plans use `cover-sheet.md`; do not generate this document or follow its worker routing/file restrictions. The single implementer chooses coding details.
+
 # Choosing a package's level
 
 You read the code and wrote the steps, so you know how mechanical each package is. Say so. Give a level, never a model name: each plugin maps levels to its own models.

@@ -5,7 +5,7 @@ variants:
     agent: implementer
     model:
       name: gpt-6-astra
-      reasoning: medium
+      reasoning: low
       speed: fast
     args:
       priority: speed

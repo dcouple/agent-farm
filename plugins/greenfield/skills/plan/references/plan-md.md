@@ -1,3 +1,5 @@
+> Legacy format, retained only to interpret existing plans. New Greenfield plans use `cover-sheet.md`; do not generate this document or follow its worker routing/file restrictions. The single implementer chooses coding details.
+
 # PLAN.md
 
 Plain text in the worktree at `docs/agent/plans/{slug}/PLAN.md`. The reader is the implementer lead. Keep the human story in the cover sheet. This file has a short header and then the packages.
@@ -31,4 +33,4 @@ WP-03 can run any time after WP-01
 ...
 ```
 
-`Review` is `single` unless a mistake would be hard to undo: schema or data migrations, auth, payments, production side effects. Those get `dual`, which adds a second independent reviewer on a different model. Do not ask for `dual` because the feature is large.
+`Review` defaults to `single`, regardless of risk. Legacy `dual` settings do not authorize a second reviewer: explain the proposal and ask the user first unless their explicit approval is already recorded. Show mode, reason, and approval in the cover-sheet top metadata.

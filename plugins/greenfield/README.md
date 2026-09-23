@@ -1,202 +1,117 @@
 # greenfield
 
-Role-named profiles that hand work to each other through documents, not conversation. The strongest model thinks and plans alone. Cheaper models execute work packages written for them. Verification starts after implementation, with targeted revalidation after fixes.
+Plan with a high-level cover sheet, then let one Astra Low implementer build the feature and check its work at every package stage. A focused frontend verifier exercises the running UI during implementation. A Fable reviewer reviews the finished change; the same implementer makes all corrections.
 
-`greenfield` is self-contained: it shares no files with the `dcouple` plugin, so the two can be installed side by side and compared on the same work. It is at an early version. The planner and implementer paths are the ones to try first. The `orchestrator` profile is experimental and will change.
-
-## What is in this folder
-
-- `profiles/`: `planner` (`claude` · `codex`), `bug-reporter`, `implementer` (`standard` · `fast`), `one-shot`, `free-range` (`codex` · `claude`), `orchestrator`. A profile with variants lists them in parentheses, default first. Pick one with `NAME:VARIANT`, or let `agent-farm run` ask
-- `agents/`: one per profile variant except `implementer:fast`, which reuses `implementer`, plus the children `socrates`, `investigator`, `researcher`, `plan-reviewer`, `mockup-artist`, `worker`, `advisor`, `qa`, `reviewer`
-- `instructions/`: `standing-rules.md`, `implementer-identity.md`, `planner-documents.md`, `planner-identity.md`
-- `skills/`: nineteen, each bound to an agent that calls it
-
-| Skill | Used by | For |
-| --- | --- | --- |
-| `explain` | planner | Help a person understand. Explainer page when the concept is worth keeping |
-| `brief` | planner | Capture the problem and the outcome wanted. File the issue |
-| `options` | planner | Argue alternatives and wait for a pick |
-| `spike` | planner | Answer one fact that blocks a decision |
-| `plan` | planner, one-shot (format only) | Cover sheet, PLAN.md, work packages, handoff cards |
-| `mockup` | planner | Three interface options per round. The approved one becomes the design reference |
-| `page` | planner, orchestrator, one-shot | House standard for every HTML page written for a person |
-| `bug-intake` | bug-reporter | Reproduce, rank hypotheses, write the report, choose a route |
-| `work-packages` | implementer | The cycle up to the pull request: intake, preflight, who builds each package, verification |
-| `final-review` | implementer | One initial independent review (two reviewers for a dual review), targeted corrections and follow-ups until accepted, then clean-up |
-| `build-package` | implementer, worker | Implement one package from its handoff card |
-| `open-pr` | implementer, one-shot | Commit, push, and open a draft pull request that teaches the change |
-| `tdd` | implementer, worker, one-shot | Red-green test-driven development through public interfaces. From [mattpocock/skills](https://github.com/mattpocock/skills/tree/c55ee46073ed/skills/engineering/tdd) at `c55ee46`, unchanged (MIT; see `THIRD_PARTY_NOTICES.md`) |
-| `codebase-design` | implementer, worker, one-shot | Deep-module and seam vocabulary that `tdd` consults. From [mattpocock/skills](https://github.com/mattpocock/skills/tree/c55ee46073ed/skills/engineering/codebase-design) at `c55ee46`, unchanged (MIT; see `THIRD_PARTY_NOTICES.md`) |
-| `babysit-pr` | implementer, one-shot | Watch the open pull request's CI and review bots until green: fix real findings, answer false positives, rebase. Merges only when asked |
-| `session-trace` | implementer | Publish the session as a trace page in Grain: story, key moments, timeline, subagents, and PRs. Runs on request, or when the task already has a Grain page |
-| `verify-app` | qa | Drive the running application and return a verdict with evidence |
-| `gather-evidence` | investigator | Answer one factual question about the code or a running system |
-| `web-research` | researcher | Answer one question from outside sources, with citations |
-| `orchestrate-sessions` | orchestrator | Launch profiles across worktrees, poll, relay questions, keep the status board |
-
-`socrates`, `plan-reviewer`, `reviewer`, and `advisor` carry no skill. Each does one judgment task, and its instructions are its agent file. `free-range` has none by design.
-
-`mockup` has two methods. The planner runs on Claude, which has no image generation tool, so for images it calls `mockup-artist`, a Codex child that does. For exact text, real data, or a later pixel comparison it builds the options in HTML and CSS itself.
+`greenfield` is self-contained and can be installed alongside `dcouple` and `orchestra`. This version changes the default implementer from Sol with economy workers to Astra Low without implementation delegation. Existing detailed plans remain accepted, but new plans do not require markdown implementation plans or handoff cards.
 
 ## Profiles
 
-| Profile | Harness and model | Job | Stops when |
-| --- | --- | --- | --- |
-| `planner` | Claude, Fable 5.1 high | Discuss and explain by default. Brief, options, spike, and plan only when asked. Never writes code. May hand a trivial task straight to the implementer, with your yes | Every work package has observable checks and leaves no decision open |
-| `planner:codex` | Codex, Astra high | The same planner on Codex: same skills and the same `planner-identity.md`, so the two can be compared on the same problem. Its children run on their own Codex defaults, `socrates` runs on Astra, and it draws mock-up images itself, so it has no `mockup-artist` | Same |
-| `bug-reporter` | Codex, Sol high | Reproduce, write the report, choose a route | The report is filed. No fix is proposed |
-| `implementer` | Codex, Sol medium | Intake check, preflight, route packages, execute one at a time, qa, independent review (two when the plan says `Review: dual`), targeted corrections and revalidation, clean-up, draft PR | Required checks and qa pass and review is accepted. Stops for a genuine blocker, exhausted in-scope repair, or explicit user limit, not a fixed retry count |
-| `implementer:fast` | Codex, Astra medium, fast tier | A variant, not a second agent: `implementer` with a saved model override and `priority: speed` | Same |
-| `one-shot` | Codex, Astra medium, fast tier (`--model gpt-5.6-sol` for Sol) | One model does whatever the work needs, its own way: no packages, no workers, no preflight, no reviewers. A plan's decisions, scope, and checks bind it. Its steps and levels are advice. Its skills (`plan`, `page`, `open-pr`) are there for their formats only, so plans, pages, and pull requests come out in the house form and publish to the `docs` destination | The work is done and a draft pull request is open. Or `blocked`, or `failed` |
-| `free-range` | Codex, Astra medium | The raw model. No skills, no pipeline. Also the control when measuring whether skills help | You say so |
-| `free-range:claude` | Claude, Fable 5.1 high | Same, on Claude | You say so |
-| `orchestrator` | Claude, Fable 5.1 medium | Launch the profiles above across worktrees, poll status files, relay questions, keep one status board. Writes no code | The run summary is written |
-
-Install it next to `dcouple`, then use qualified names. Bare `planner` and `implementer` are ambiguous once both plugins are installed, unless you set `default_plugin` in `settings.json`.
+| Profile | Entry model | Role |
+| --- | --- | --- |
+| `planner` (`planner:claude`) | Fable 5.1 high | Discussion, brief/options when needed, then the approved cover sheet |
+| `planner:codex` | Astra high | The same planner workflow on Codex |
+| `implementer` (`implementer:standard`) | Astra low | All implementation and corrections, package self-checks, frontend verification, final review, draft PR |
+| `implementer:fast` | Astra low, fast service tier | Compatibility variant of the same implementer; sets `priority: speed`, never adds workers |
+| `bug-reporter` | Sol high | Reproduce and write a report without fixing code |
+| `one-shot` | Astra medium, fast service tier | Independent comparison profile; follows its own execution approach and uses house formats |
+| `free-range` / `free-range:claude` | Astra medium / Fable 5.1 high | Raw-model comparison profiles without the Greenfield workflow |
+| `orchestrator` | Fable 5.1 medium | Experimental coordination of separate work items/worktrees |
 
 ```sh
 agent-farm plugin install greenfield
-agent-farm profiles list
-
 agent-farm run greenfield/planner --directory /path/to/project
-agent-farm run greenfield/bug-reporter --directory /path/to/project
 agent-farm run greenfield/implementer --directory /path/to/project/worktrees/feature \
-  --arg source=docs/agent/plans/feature/PLAN.md
-agent-farm run greenfield/implementer:fast --directory /path/to/project/worktrees/hotfix
+  --arg source=/absolute/path/to/bundle/cover-sheet.html
 ```
 
-To work on the plugin without installing it, point `--config-root` at this folder and use bare names:
+The implementer explicitly selects the standard service tier by default, overriding any inherited fast setting. Opt in to fast mode with `--speed fast` (reasoning remains Low):
+
+```sh
+agent-farm run greenfield/implementer --speed fast --directory /path/to/project \
+  --arg source=/absolute/path/to/bundle/cover-sheet.html
+```
+
+The source can also be a published artifact link, legacy plan, direct bug report, or contained task. The implementer reads the actual cover sheet and its linked approved design. It does not require a second planning document.
+
+For local development without installing:
 
 ```sh
 agent-farm plugin validate plugins/greenfield
-agent-farm run planner --config-root /path/to/agent-farm/plugins/greenfield --directory /path/to/project
+agent-farm run implementer --config-root /path/to/agent-farm/plugins/greenfield \
+  --directory /path/to/project --arg source=/absolute/path/to/bundle/cover-sheet.html
 ```
 
-## Launch arguments
-
-`planner`, `orchestrator`, and `one-shot` declare `docs`, where documents are published. `implementer` declares `priority` (`usage`, `speed`), `review` (`none`, `single`, `dual`), `parent` (a status file path), and `source`. `bug-reporter` declares `parent` and `source`. Agent Farm rejects anything else and lists what is accepted. The values reach the agent as a `LAUNCH CONTEXT` block at the end of its instructions, which `instructions/standing-rules.md` explains how to read. They are requests to the model, not switches: `review=none` asks the implementer not to call the reviewers, it does not unbind them. `single` is the default, and a plan whose header says `Review: dual` still gets two reviewers.
-
-`--model`, `--reasoning`, and `--speed` override the entry agent's model for one launch, which is how to A/B a different lead on the same plan:
+Use a CLI that supports profile variants. If an older installed CLI reports `Unsupported prototype fields: variants, default`, keep its existing plugin installation and use this repository's built CLI until the CLI is updated:
 
 ```sh
-agent-farm run greenfield/implementer --model gpt-5.6-luna --reasoning max --arg source=...
+pnpm build
+node dist/cli.js run implementer --config-root plugins/greenfield \
+  --directory /path/to/project --arg source=/absolute/path/to/bundle/cover-sheet.html
 ```
 
-## Child agents
+## Planning and the finish line
 
-Children are not profiles. Each fires at a defined stage; corrections can require targeted follow-ups.
+The planner retains the HTML `cover-sheet.html` in the existing work bundle. It contains the outcome, scope and exclusions, locked decisions, high-level architecture context, approved design, meaningful risks, and short package outcomes/dependencies. The implementer chooses concrete files, algorithms, and steps using repository patterns.
 
-| Child | Bound to | Fires when | Model |
-| --- | --- | --- | --- |
-| `socrates` | planner, planner:codex | Once, when the person is ready to pick an option. Argues for less | Fable 5.1 high. Astra high under planner:codex |
-| `investigator` | planner, planner:codex, bug-reporter | One evidence question, with a fresh context | Sonnet 5 under planner. Luna max elsewhere |
-| `researcher` | planner, planner:codex | A question the codebase cannot answer | Sonnet 5 under planner. Luna max under planner:codex |
-| `plan-reviewer` | planner | Once, on the finished PLAN.md: what would an implementer still have to decide? | Sonnet 5 under planner. Luna max under planner:codex |
-| `mockup-artist` | planner (not `planner:codex`) | A separate headless Codex run, when `mockup` wants generated images. Given the scope, screenshot paths, and a folder. Returns image files | Sol medium |
-| `implementer` | planner | A separate headless run, only for a trivial task you approved | its own |
-| `worker` | implementer | A package the plan marks `economy` | Luna max |
-| `advisor` | implementer, orchestrator | The caller is stuck, about to deviate, or about to declare risky work done | Astra high |
-| `qa` | implementer, bug-reporter | After the last package when the plan has journey or visual checks, and for affected journeys after fixes. Also to reproduce bugs that need the running app | Sol medium |
-| `reviewer` | implementer | Once, when the feature is supposed to be finished. On the other vendor's model, bound as a process child on Claude | Fable 5.1 high. Astra high is the agent file's own default |
-| `second-reviewer` | implementer | Same moment, independently, only for a dual review: the plan says `Review: dual` or the launch says `review=dual`. The same `reviewer` agent file as a native child. Also stands in when `reviewer` cannot launch | Astra high |
+Every brief and plan cover sheet includes a linked table of contents and references to its other bundle files. Constraints and Non-goals occupy separate full-width sections stacked vertically, including on wide screens.
 
-The planner's evidence and review children reuse the shared agent files with a model override on the binding, so they run natively on Claude. Four bindings cross harnesses and run as separate headless processes: the planner's `mockup-artist` and `implementer`, the `reviewer` of `implementer`, and the orchestrator's `advisor`.
+Keep the existing **How we will know it works** presentation: numbered journeys and whole-feature commands/suites, with observable outcomes and relevant prerequisites. No separate validation matrix or mandatory criterion IDs are needed. All requested behavior and approved visual states must be covered, including alternate entry paths when relevant. The planner records verification prerequisites and known blockers; it does not build a new harness as part of routine planning. One bounded plan review checks scope and testability.
 
-## Where instructions live
+Do not generate a detailed `PLAN.md`, per-package markdown handoff cards, economy/standard tiers, or file allowlists. Legacy templates remain marked as such only to interpret older sources. Planning is ready when the product decisions are settled and the finish line is testable, not when every coding choice is prescribed.
 
-| Layer | Answers | Lives in |
+## Implementation and checks
+
+There is one implementation writer. Astra Low builds every package and every correction itself, including tests. It cannot delegate implementation to a worker, another implementer, or a shell-launched coding agent. The implementer binding exposes no worker or advisor child.
+
+At each package boundary it inspects the diff, follows the full caller/data path, runs focused checks, and records validation results. Routine in-scope adapter/file changes do not bounce to the planner. Behavior changes use the `tdd` skill; existing repository checks still apply.
+
+The frontend verifier can run as soon as a UI stage is usable. Dispatch only the relevant criteria, exact routes/navigation hints, fixture/session, expected results, design reference, current revision, and evidence directory. It reuses the app and authenticated session, navigates directly, and captures the requested states instead of exhaustively touring the application. It reports findings and never changes code. Recheck affected journeys after fixes.
+
+After all stages, reconcile the whole-feature “How we will know it works” section, open/update the draft PR, and obtain a Fable review. Fix confirmed must-fix findings in the same implementer; review follow-ups cover those findings and the fix diff rather than repeating the entire audit. Revalidate any criteria affected by corrections. Never merge.
+
+Done requires all required criteria to pass with applicable current-code evidence and the required review to be accepted. Missing QA capability is `undetermined`, not success. Continue independent authorized work where useful, but report a concrete blocker when completion cannot proceed. Respect explicit time/spend/attempt limits and change the hypothesis when a failure repeats without progress.
+
+## Children
+
+| Child | Bound to | Model and task |
 | --- | --- | --- |
-| Identity | Who am I, what do I produce, which skill for which request, when do I stop, what do I never do | Body of `agents/<name>.md` |
-| Standing rules | Documents as the interface, complexity ladder, approvals, stop conditions, launch context, status file | `instructions/standing-rules.md`, included by each profile through `instructions_files` |
-| Implementer identity | Kept as an include so the agent file stays short | `instructions/implementer-identity.md` |
-| Skill | How to do one repeatable thing: template, format, bans | `skills/<name>/SKILL.md` and its `references/` |
-| Repo knowledge | How this codebase builds, tests, and deploys | The target repository's own AGENTS.md or CLAUDE.md |
+| `frontend-verifier` | implementer | Sol low, native; focused UI navigation, journeys, visual evidence during stages and after fixes; read-only |
+| `reviewer` | implementer | Fable 5.1 high, process; one final review and targeted follow-ups; read-only |
+| `second-reviewer` | implementer | Astra high, native; only explicit dual review or documented fallback when Fable cannot launch |
+| `socrates` | planner | Fable high (Astra high under Codex planner); challenge unnecessary scope |
+| `investigator`, `researcher` | planner | Sonnet 5 high (Luna max under Codex planner); bounded evidence questions |
+| `plan-reviewer` | planner | Sonnet 5 high (Luna max under Codex planner); cover-sheet completeness and validation quality |
+| `mockup-artist` | Claude planner | Sol medium, process; generated design assets when needed |
+| `implementer` | planner | Separate process only for an explicitly approved trivial-task handoff |
+| `qa` | bug-reporter | Sol medium; reproduce a bug in the app |
+| `advisor` | orchestrator | Astra high, process; advice about session coordination |
 
-## Documents
+The old `worker` agent file is retained for legacy configurations but is not bound to the implementer. Neither verification nor review is an implementation delegation.
 
-Pages for people are HTML. Files for agents are plain text in the worktree.
+## Arguments and compatibility
 
-**Bundles.** Every page for one piece of work lives in one folder with fixed file names and relative links: the brief as `index.html` (the hub), then `options.html`, `cover-sheet.html`, `explainers/`, `mockups/`, `evidence/`, and a small `bundle.json`. Because links are relative, a bundle works unchanged from disk, zipped, or published anywhere. The standard is `skills/page/references/bundle.md`.
+`implementer` accepts `source`, `parent`, `review` (`single`, `dual`, `none`), and `priority` (`usage`, `speed`). `single` is always the default, using Fable. Except for small, low-risk changes, any dual or skipped review must be disclosed up front and explicitly approved by the user before proceeding; prior explicit user requests/flags suffice, but agent-generated settings do not. Show the review mode in the cover sheet’s top metadata, with the reason and approval reference for exceptions. Small, low-risk changes may automatically skip review without asking; disclose the skip and reason up front and in the top metadata. There is no automatic risk-based dual escalation. `priority` influences latency/usage tradeoffs without enabling worker routing. `--model` and `--reasoning` remain explicit per-launch overrides.
 
-**Destinations.** No skill depends on a platform. A bundle is local by default, in `tmp/greenfield/<slug>/` in the project. It is published elsewhere only when a destination is named, in this order: what you say in the conversation, the `docs` launch argument, a standing preference in the Agent Farm workspace instructions or the target repository's own AGENTS.md, then the local default. Publishing uses whatever tools the session has for that destination, updates the same container every time (`bundle.json` remembers its id), stays private unless you ask, and falls back to the local bundle with a plain statement if it fails.
+The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent; `fast` additionally selects the fast service tier. `planner`, `orchestrator`, and `one-shot` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
 
-```sh
-agent-farm run greenfield/planner --arg docs=grain          # a named destination
-agent-farm run greenfield/planner --arg docs=~/work/specs   # a path
-```
+## Documents and destinations
 
-To make it standing for a project, put it in the `instructions` of that project's `.agent-farm/workspace.yaml` (which also carries the connection that publishing needs) or in its AGENTS.md, for example "Publish planning documents to the Grain workspace for this repository."
+One work item has one bundle: `index.html` (brief/hub), `options.html`, `cover-sheet.html`, `mockups/`, `explainers/`, `evidence/`, and `bundle.json`, as needed. The cover sheet is read by people, implementers, and reviewers. Use relative links and preserve the published identity on updates.
 
+Destinations follow the conversation, then the `docs` argument, then standing workspace/repository preferences, then local `tmp/greenfield/<slug>/`. A standing Grain preference therefore publishes the same private artifact; a local working copy alone is not delivery. See `skills/page/references/bundle.md`.
 
-| Document | Written by | Template |
-| --- | --- | --- |
-| Explainer (HTML) | planner, `explain` | `skills/explain/SKILL.md` |
-| Brief (HTML) | planner, `brief` | `skills/brief/references/brief-layout.md` |
-| Options (HTML) | planner, `options` | `skills/options/references/options-template.md` |
-| Spike | planner, `spike` | `skills/spike/SKILL.md` |
-| Plan cover sheet (HTML) | planner, `plan` | `skills/plan/references/cover-sheet.md` |
-| PLAN.md | planner, `plan` | `skills/plan/references/plan-md.md` |
-| Work package | planner, `plan` | `skills/plan/references/work-package.md` |
-| Handoff card | planner, `plan` | `skills/plan/references/handoff-card.md` |
-| Bug report | bug-reporter, `bug-intake` | `skills/bug-intake/references/bug-report.md` |
-| Review report | `reviewer`, `second-reviewer` | section order in `agents/reviewer.md` |
-| qa report | `qa` | `skills/verify-app/SKILL.md` |
-| Pull request description | implementer, `open-pr` | `skills/open-pr/SKILL.md` |
-| Mock-ups | planner, `mockup` | `skills/mockup/SKILL.md` |
-| Status file | any headless profile | `instructions/standing-rules.md` |
-| Ledger and status board | orchestrator | `skills/orchestrate-sessions/references/` |
+A headless orchestrator passes the cover-sheet path/link as `source` and a status JSON path as `parent`. The implementer records stage, criteria, evidence, assumptions and blockers there. Legacy plans are inputs, not a requirement to generate new planning files. Trivial unplanned work retains the `no-plan` PR label.
 
-Flow: explainer, brief, options (with spikes as needed), the person picks, plan, handoff card, pull request, review report. Or: bug report, then either straight to the implementer or to the planner for options.
+## Skills and source layout
 
-## Preflight, review, and the failed state
+- `agents/` and `profiles/` define models, bindings, and launch arguments.
+- `instructions/` defines shared roles, permissions, and completion rules.
+- `plan` and its cover-sheet reference define the high-level handoff and “How we will know it works” section.
+- `work-packages`, `build-package`, and `verify-app` define stage checks and focused verification.
+- `final-review`, `open-pr`, and `babysit-pr` cover review, draft PRs, and CI follow-up.
+- `explain`, `brief`, `options`, `spike`, `mockup`, and `page` support planning.
+- `bug-intake`, `gather-evidence`, `web-research`, and `orchestrate-sessions` support the other profiles.
+- `tdd` and `codebase-design` remain vendored unchanged from [mattpocock/skills](https://github.com/mattpocock/skills/tree/c55ee46073ed/skills/engineering/tdd), MIT; see `THIRD_PARTY_NOTICES.md`.
+- `session-trace` supports requested trace artifacts; follow the session's explicit permission requirements for conversation capture/export.
 
-**Preflight.** Before changing code the implementer confirms the result can be verified: check commands run, the app starts and browser automation is available when there are journeys, test accounts and test-mode keys exist, the design reference opens, it can push and open a pull request, and the reviewer can launch. The planner lists what is needed under "Verification needs" in PLAN.md. Anything missing means `blocked`, and nothing is attempted.
-
-**Review.** One reviewer on the other vendor's model reviews the finished commit once. The planner writes `Review: dual` in the PLAN.md header when a mistake would be hard to undo (schema, auth, payments, production side effects), and then a second reviewer on the lead's vendor reviews the same commit independently and the must-fix list is the union of both. A finding that contradicts a locked decision is marked disputed and goes to the person. Fix confirmed must-fix items and repeat targeted follow-ups until resolved. Reviewers check their own items and regressions introduced by the fix diff; they do not restart whole-feature review. Re-run affected checks and qa journeys on the changed head. Nonblocking notes do not become work.
-
-**Clean up.** Once the review is accepted, the implementer removes what should not outlive the merge, in one deletion-only commit: scratch scripts, throwaway tests, debug output, spike code, committed qa artifacts (saved elsewhere first), and working documents under `docs/agent/`. It touches only files this run added, keeps tests that prove the feature, re-runs the checks, and ends its report with what was removed and what was left. It is skipped in a failed state, where the leftovers are evidence.
-
-**Corrections and stops.** A standard package no longer fails merely because its first advisor-guided retry failed, and review or qa has no fixed correction-round cap. The implementer records attempts and evidence, diagnoses repeated failures, and uses the advisor to change approach when progress stalls. It stops `blocked` for a missing decision, permission, or prerequisite it cannot safely resolve, and `failed` when diagnosis and advisor input leave no viable in-scope repair. Explicit user time, spend, and attempt limits still apply. Keep the PR as a draft with the stop reason, remaining findings, and what is needed to resume. An undetermined check is never a pass; more retries never authorize weaker checks or more scope. The orchestrator still does not relaunch a failed session on its own.
-
-## Levels, children, and work without a plan
-
-**The plan gives the level.** The planner read the code and wrote the steps, so it marks each package `economy` or `standard`, with one line of why, using `skills/plan/references/levels.md`. It never names a model: each plugin maps levels to its own models. Here `economy` goes to `worker` and `standard` stays with the lead. The level is a starting point. A failed check promotes the package, and the implementer may start higher when a package is plainly harder than marked.
-
-**The implementer decides when a child is worth calling.** Its instructions say when each child is allowed, not when it is required. `priority` (`usage` or `speed`) tells it what the run values when the two conflict, and it weighs a handoff's cost itself. `implementer:fast` is the same agent on a faster model with `priority: speed`.
-
-**No plan.** For a trivial task (contained, reversible, no product or design choice) the planner may hand one sentence straight to the implementer, after you say yes. The implementer runs headless and opens a draft pull request labelled `no-plan`, with "No plan was written for this change." as its first line. The same label applies to any task you give `implementer` or `one-shot` without a plan. Under `implementer`, review still runs unless the change is low-risk.
-
-## Headless runs and the orchestrator
-
-The orchestrator launches a profile headless with its qualified name and passes context as launch arguments:
-
-```sh
-agent-farm run greenfield/implementer --exec --directory ../worktrees/<slug> \
-  --arg parent=../worktrees/<slug>/.agent/status.json \
-  --arg source=docs/agent/plans/<slug>/handoff/WP-01.md
-```
-
-A headless profile logs small choices as assumptions, and stops with `state: blocked` and a question when a real decision appears. The orchestrator polls status files, not transcripts. Add `.agent/` to the target repository's `.gitignore`.
-
-## Comparing with the earlier design
-
-Run the same plan through each and compare cost, wall-clock time, must-fix findings from the same reviewer, and human minutes to merge:
-
-- `free-range`: the raw model, as the control
-- `one-shot`: one frontier model on the fast tier builds it all, with the house formats and no review, to measure what packages, workers, and review add
-- `implementer`: standard lead with economy workers
-- `implementer:fast`: frontier lead on the fast tier
-- `astra-implementer-high`: the earlier design, a frontier orchestrator with economy workers and economy reviewers
-
-Every launch reports a trace identity, `greenfield/<profile>[:<variant>]@<version>`, plus the resolved model and arguments, in `--explain`, `--print-launch`, and the bundle's `agent.json`. Use it to tag runs.
-
-Export telemetry from your shell before launching (`CLAUDE_CODE_ENABLE_TELEMETRY=1` for Claude Code, an `[otel]` block in Codex's `config.toml`). Agent Farm passes the shell environment through to the harness.
-
-## Still missing in Agent Farm
-
-| Gap | Workaround here |
-| --- | --- |
-| No configuration for harness environment variables, and no tracing integration | Export telemetry variables in the shell |
-| No run registry or status envelope, and a finished process child cannot be resumed | The status file and ledger formats defined here. The second reviewer's follow-up is a fresh instance given its own findings and the fix diff |
-| No tier map: model names are written in each agent file | Find and replace. Use `--model` for one-off comparisons |
-| One agent file cannot launch on either harness | Each harness has its own agent file; one profile groups them as variants, such as `free-range` (`codex` · `claude`) |
+Compare runs using the same approved feature, current-code validation, reviewer rubric, model/effort, costs, active elapsed time, and human intervention time. Record the resolved trace identity `greenfield/<profile>[:<variant>]@<version>`; the earlier multi-worker benchmark is not the new workflow.
