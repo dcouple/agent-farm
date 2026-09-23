@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
 import {build,resolveProfile} from '../dist/compiler.js';
 import {command,verify} from '../dist/runtime.js';
 import {validatePlugin} from '../dist/plugins.js';
@@ -73,4 +74,29 @@ test('small-work routes have implementation skills and one-shot accepts standard
  assert.ok(launch.argv.includes('service_tier="default"'));
  assert.equal(launch.launch.arguments.source,'Fix the contained regression');
  assert.deepEqual(Object.keys(resolveProfile(root,'one-shot').nodes.main.children),[]);
+});
+
+
+test('Greenfield CLI arguments reach both harnesses and reject invalid profile inputs',t=>{
+ const target=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'greenfield-cli-args-')));
+ t.after(()=>fs.rmSync(target,{recursive:true,force:true}));
+ const home=path.join(target,'home');fs.mkdirSync(home);
+ const cli=fileURLToPath(new URL('../dist/cli.js',import.meta.url));
+ const source='https://example.test/plan?revision=3&mode=review';
+ const parent=path.join(target,'status files','task.json'),policy=path.join(target,'host guidance.md');
+ const invoke=(profile,args)=>spawnSync(process.execPath,[cli,'run',profile,'--config-root',root,'--directory',target,'--no-workspace','--explain',...args.flatMap(a=>['--arg',a])],{encoding:'utf8',env:{...process.env,HOME:home,AGENT_FARM_TELEMETRY:'off'}});
+ for(const [profile,args] of [['planner',[`source=${source}`,`parent=${parent}`]],['planner:codex',[`source=${source}`,`parent=${parent}`]],['orchestrator',[`host_policy=${policy}`]],['implementer',[`source=${source}`,`parent=${parent}`]],['implementer:fast',[`source=${source}`]],['one-shot',[`source=${source}`,`parent=${parent}`]]]){
+  const result=invoke(profile,args);assert.equal(result.status,0,result.stderr);
+  const launch=JSON.parse(result.stdout);
+  const codex=launch.argv.find(v=>v.startsWith('developer_instructions='));
+  const instructions=codex ? JSON.parse(codex.slice('developer_instructions='.length)) : launch.argv[launch.argv.indexOf('--append-system-prompt')+1];
+  for(const pair of args){const i=pair.indexOf('='),key=pair.slice(0,i),value=pair.slice(i+1);assert.equal(launch.launch.arguments[key],value);assert.ok(instructions.includes(`${key}: ${value}`));}
+  if(profile.startsWith('implementer')){
+   assert.equal(launch.launch.arguments.review,'single');
+   assert.equal(launch.launch.arguments.priority,profile==='implementer:fast'?'speed':'usage');
+  }
+ }
+ for(const [profile,args,pattern] of [['planner',['review=single'],/does not declare argument review/],['orchestrator',['host_policy'],/malformed/],['implementer',['review=triple'],/invalid/]]){
+  const result=invoke(profile,args);assert.equal(result.status,1);assert.match(result.stderr,pattern);
+ }
 });

@@ -131,3 +131,27 @@ The orchestrator follows host-injected workspace/session mechanics while Greenfi
 ## Straightforward fixes
 
 The orchestrator may route a clearly bounded, authorized fix directly to `one-shot` in a host-managed feature worktree, using `--speed standard` unless fast was explicitly requested. When scope is uncertain, start with a planner; it may implement a straightforward fix itself in the same workspace once implementation is authorized. Both planner variants have coding/check/PR skills for this route. Larger or risky work uses the normal cover-sheet and dedicated-implementer route. Only one writer is active per workspace, and the orchestrator never takes over project implementation.
+
+## Profile arguments
+
+Pass repeatable `--arg key=value` flags before the native-CLI `--` separator. Quote each complete argument when it contains spaces or shell metacharacters. Values may contain `=`. Only declared keys are accepted; enums reject unsupported values. Profile presets override agent defaults, and launch flags override presets. Arguments apply to the selected entry agent, not automatically to its children.
+
+| Profile | Accepted arguments |
+| --- | --- |
+| `planner`, `planner:codex` | `docs`, `source`, `parent` |
+| `implementer`, `implementer:fast` | `source`, `parent`, `priority=usage\|speed`, `review=single\|dual\|none` |
+| `orchestrator` | `docs`, `host_policy` |
+| `one-shot` | `docs`, `source`, `parent` |
+| `bug-reporter` | `source`, `parent` |
+
+`parent` is the status JSON file path, not a host session ID. `host_policy` is a guidance-file path, not automatic tool configuration. Path arguments are passed through as written, so supply absolute paths for cross-workspace handoffs. `source` may be a document path, artifact URL, or contained task. Use `--message` for supplemental assignment text; unsupported profile arguments are not a substitute for host-injected context.
+
+```sh
+agent-farm run greenfield/planner:codex --directory /absolute/project/worktree \
+  --arg 'source=https://example.test/plan?revision=3&mode=review' \
+  --arg 'parent=/absolute/bundle/status files/planner.json'
+agent-farm run greenfield/orchestrator --directory /absolute/coordination \
+  --arg 'host_policy=/absolute/config/host guidance.md'
+```
+
+Use `agent-farm inspect greenfield/planner:codex` to inspect argument declarations, or add `--explain` to a run command to check resolved arguments without launching a model. Keep `--speed fast` separate from `--arg priority=speed`: priority alone does not select a service tier.
