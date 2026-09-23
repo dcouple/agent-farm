@@ -5,7 +5,7 @@ description: Use when the direction is chosen and the person wants a plan. Write
 
 # Plan
 
-Write the context a capable Astra implementer needs to build the feature. The approved cover sheet is the whole implementation handoff: it explains what to build and why, and leaves the step-by-step coding to the implementer.
+Write the context a capable implementer needs to build the feature. The approved cover sheet is the whole implementation handoff: it explains what to build and why, and leaves the step-by-step coding to the implementer.
 
 ## Establish the outcome
 
@@ -24,7 +24,7 @@ Include:
 - The **How we will know it works** section: numbered journeys and whole-feature commands or suites, each with an observable outcome and its prerequisites. Cover the backend, frontend, integration, and design behavior the feature needs, including identity, duplicate-name, and notification edge cases when they apply. Keep the checks specific to this task.
 - Known environment and fixture needs, required whole-feature checks, and anything that cannot be exercised yet. Mark planned tests as planned; only an observed result counts as a pass. A missing capability leaves its criterion open.
 - Review metadata at the top of the page, following `final-review`:
-  - The default is `Review: single lane — Fable`.
+  - The default is `Review: single lane`.
   - Small, low-risk changes may skip review without asking. Say so up front and record the reason in the metadata.
   - For dual review or no review, explain the mode and reason and ask the person first. Show it as pending until they approve, then record the mode, reason, and approval. Their earlier explicit authorization counts; a setting you chose yourself does not.
   - Choose dual review only when the person asks for it, whatever the risk.
@@ -40,6 +40,6 @@ Before presenting the cover sheet, check it yourself against the brief and appro
 - The page itself contains everything the person must review, including exact proposed copy or contract semantics when they matter. Important decisions and risks are visible above the package disclosures.
 - The top metadata names the review mode and any approval or small-change skip reason. Contents and related-file links resolve, and Constraints and Non-goals are stacked vertically. Explicitly named entry points are confirmed with a quick look when needed.
 
-Fix substantive gaps, mark the cover sheet **ready for approval**, and return its link. This is your own check, separate from user approval, so keep it quick: settled decisions stay settled and coding detail stays with the implementer. Socrates reviews the direction once, during `options`. Start implementation only when your role instructions separately authorize it.
+Fix substantive gaps, mark the cover sheet **ready for approval**, and return its link. This is your own check, separate from user approval, so keep it quick: settled decisions stay settled and coding detail stays with the implementer. Socrates reviews the direction once, during `options`. Start implementation only when your role instructions separately authorize it; otherwise hand off as your role instructions describe.
 
 When scope or a locked decision changes, revise the same cover sheet and its affected criteria. The implementer handles routine technical discoveries and extra in-scope caller files without a replan.

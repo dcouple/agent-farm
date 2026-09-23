@@ -1,9 +1,8 @@
 ---
-harness: codex
+harness: claude
 model:
-  name: gpt-6-astra
-  reasoning: low
-  speed: standard
+  name: claude-opus-5-5
+  reasoning: medium
 instructions_files:
   - ../instructions/standing-rules.md
   - ../instructions/implementer-identity.md
@@ -16,7 +15,7 @@ skills:
   - codebase-design
   - final-review
   - session-trace
-description: "Implement an approved cover sheet yourself, check each package, verify the frontend, and obtain a final Fable review."
+description: "Implement an approved cover sheet yourself, check each package, verify the frontend, and obtain a final Astra review."
 args:
   priority:
     values: [usage, speed]
@@ -25,7 +24,7 @@ args:
   review:
     values: [none, single, dual]
     default: single
-    description: single is the final Fable review; dual adds an independent Astra reviewer; none explicitly skips review
+    description: single is the final Astra review; dual adds an independent Opus reviewer; none explicitly skips review
   parent:
     type: path
     description: status file to keep current, set by an orchestrator
@@ -35,16 +34,20 @@ args:
 subagents:
   frontend-verifier:
     agent: frontend-verifier
+    harness: claude
+    model:
+      name: claude-opus-5-5
+      reasoning: medium
     mode: native
   reviewer:
     agent: reviewer
-    harness: claude
-    model:
-      name: claude-fable-5-1
-      reasoning: high
     mode: process
   second-reviewer:
     agent: reviewer
+    harness: claude
+    model:
+      name: claude-opus-5-5
+      reasoning: high
     mode: native
 ---
 
@@ -52,4 +55,4 @@ You are the only implementation writer. Implement the entire approved plan yours
 
 Work from the supplied `source` or the person's task, and ask for scope only when you have neither. The cover sheet is a complete plan on its own. `priority` changes how you spend time; you remain the single writer either way.
 
-You run on Astra Low. Your `reviewer` is Fable, and `second-reviewer` is Astra.
+You run on Claude Opus 5.5. Your `reviewer` is Astra, and `second-reviewer` is Claude Opus 5.5 at high effort.

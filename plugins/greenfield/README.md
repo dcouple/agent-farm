@@ -1,6 +1,6 @@
 # greenfield
 
-Plan with a high-level cover sheet, then let one Astra Low implementer build the feature and check its work at every package stage. A focused frontend verifier exercises the running UI during implementation. A Fable reviewer reviews the finished change; the same implementer makes all corrections.
+Plan with a high-level cover sheet, then let one implementer build the feature and check its work at every package stage. You pick the implementer's model when you launch it: Astra Low by default, or Claude Opus 5.5. A focused frontend verifier exercises the running UI during implementation. A reviewer on the other model family reviews the finished change; the same implementer makes all corrections.
 
 `greenfield` is self-contained and can be installed alongside `dcouple` and `orchestra`. This version changes the default implementer from Sol with economy workers to Astra Low without implementation delegation. Existing detailed plans remain accepted, but new plans do not require markdown implementation plans or handoff cards.
 
@@ -12,6 +12,7 @@ Plan with a high-level cover sheet, then let one Astra Low implementer build the
 | `planner:codex` | Astra high | The same planner workflow on Codex |
 | `implementer` (`implementer:standard`) | Astra low | All implementation and corrections, package self-checks, frontend verification, final review, draft PR |
 | `implementer:fast` | Astra low, fast service tier | Compatibility variant of the same implementer; sets `priority: speed`, never adds workers |
+| `implementer:claude` | Claude Opus 5.5 medium | The same implementer workflow on Claude, reviewed by Astra |
 | `bug-reporter` | Sol high | Reproduce and write a report without fixing code |
 | `free-range` / `free-range:claude` | Astra medium / Fable 5.1 high | Raw-model comparison profiles without the Greenfield workflow |
 | `orchestrator` | Fable 5.1 medium | Experimental coordination of separate work items/worktrees |
@@ -64,13 +65,13 @@ The cover sheet is the only plan document; older plans are still accepted as inp
 
 ## Implementation and checks
 
-There is one implementation writer. Astra Low builds every package and every correction itself, including tests. It cannot delegate implementation to a worker, another implementer, or a shell-launched coding agent. The implementer binding exposes no worker or advisor child.
+There is one implementation writer. The implementer, Astra Low or Claude Opus 5.5 depending on the variant, builds every package and every correction itself, including tests. It cannot delegate implementation to a worker, another implementer, or a shell-launched coding agent. The implementer binding exposes no worker or advisor child.
 
 At each package boundary it inspects the diff, follows the full caller/data path, runs focused checks, and records validation results. Routine in-scope adapter/file changes do not bounce to the planner. Behavior changes use the `tdd` skill; existing repository checks still apply.
 
 The frontend verifier can run as soon as a UI stage is usable. Dispatch only the relevant criteria, exact routes/navigation hints, fixture/session, expected results, design reference, current revision, and evidence directory. It reuses the app and authenticated session, navigates directly, and captures the requested states instead of exhaustively touring the application. It reports findings and never changes code. Recheck affected journeys after fixes.
 
-After all stages, reconcile the whole-feature “How we will know it works” section, open/update the draft PR, and obtain a Fable review. Fix confirmed must-fix findings in the same implementer; review follow-ups cover those findings and the fix diff rather than repeating the entire audit. Revalidate any criteria affected by corrections. Never merge.
+After all stages, reconcile the whole-feature “How we will know it works” section, open/update the draft PR, and obtain the final review (Fable for the Astra variants, Astra for the Claude variant). Fix confirmed must-fix findings in the same implementer; review follow-ups cover those findings and the fix diff rather than repeating the entire audit. Revalidate any criteria affected by corrections. Never merge.
 
 Done requires all required criteria to pass with applicable current-code evidence and the required review to be accepted. Missing QA capability is `undetermined`, not success. Continue independent authorized work where useful, but report a concrete blocker when completion cannot proceed. Respect explicit time/spend/attempt limits and change the hypothesis when a failure repeats without progress.
 
@@ -78,23 +79,22 @@ Done requires all required criteria to pass with applicable current-code evidenc
 
 | Child | Bound to | Model and task |
 | --- | --- | --- |
-| `frontend-verifier` | implementer | Sol low, native; focused UI navigation, journeys, visual evidence during stages and after fixes; read-only |
-| `reviewer` | implementer | Fable 5.1 high, process; one final review and targeted follow-ups; read-only |
-| `second-reviewer` | implementer | Astra high, native; only explicit dual review or documented fallback when Fable cannot launch |
+| `frontend-verifier` | implementer | Sol low, native (Opus 5.5 medium under Claude implementer); focused UI navigation, journeys, visual evidence during stages and after fixes; read-only |
+| `reviewer` | implementer | Fable 5.1 high, process (Astra high under Claude implementer); one final review and targeted follow-ups; read-only |
+| `second-reviewer` | implementer | Astra high, native (Opus 5.5 high under Claude implementer); only explicit dual review or documented fallback when `reviewer` cannot launch |
 | `socrates` | planner | Fable high (Astra high under Codex planner); challenge unnecessary scope |
 | `investigator`, `researcher` | planner | Sonnet 5 high (Luna max under Codex planner); bounded evidence questions |
 | `mockup-artist` | Claude planner | Sol medium, process; generated design assets when needed |
-| `implementer` | planner | Separate process for authorized implementation; coordinated launches go through the host/orchestrator |
 | `qa` | bug-reporter | Sol medium; reproduce a bug in the app |
 | `advisor` | orchestrator | Astra high, process; advice about session coordination |
 
-The old `worker` agent file is retained for legacy configurations but is not bound to the implementer. Neither verification nor review is an implementation delegation.
+Planners do not launch the implementer. When a cover sheet is approved, the planner gives the person the `agent-farm run greenfield/implementer` command, and Agent Farm asks which variant to run. Neither verification nor review is an implementation delegation.
 
 ## Arguments and compatibility
 
-`implementer` accepts `source`, `parent`, `review` (`single`, `dual`, `none`), and `priority` (`usage`, `speed`). `single` is always the default, using Fable. Except for small, low-risk changes, any dual or skipped review must be disclosed up front and explicitly approved by the user before proceeding; prior explicit user requests/flags suffice, but agent-generated settings do not. Show the review mode in the cover sheet’s top metadata, with the reason and approval reference for exceptions. Small, low-risk changes may automatically skip review without asking; disclose the skip and reason up front and in the top metadata. There is no automatic risk-based dual escalation. `priority` influences latency/usage tradeoffs without enabling worker routing. `--model` and `--reasoning` remain explicit per-launch overrides.
+`implementer` accepts `source`, `parent`, `review` (`single`, `dual`, `none`), and `priority` (`usage`, `speed`). `single` is always the default, using the variant's primary reviewer. Except for small, low-risk changes, any dual or skipped review must be disclosed up front and explicitly approved by the user before proceeding; prior explicit user requests/flags suffice, but agent-generated settings do not. Show the review mode in the cover sheet’s top metadata, with the reason and approval reference for exceptions. Small, low-risk changes may automatically skip review without asking; disclose the skip and reason up front and in the top metadata. There is no automatic risk-based dual escalation. `priority` influences latency/usage tradeoffs without enabling worker routing. `--model` and `--reasoning` remain explicit per-launch overrides.
 
-The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent; `fast` additionally selects the fast service tier. `planner` and `orchestrator` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
+The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent; `fast` additionally selects the fast service tier. `claude` runs the same workflow on Claude Opus 5.5 medium. `planner` and `orchestrator` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
 
 ## Post-mortem and conversation viewer
 
@@ -128,7 +128,7 @@ The orchestrator follows host-injected workspace/session mechanics while Greenfi
 
 ## Straightforward fixes
 
-The orchestrator may route a clearly bounded, authorized fix directly to `implementer` in a host-managed feature worktree. Standard speed remains the default; fast requires explicit opt-in. When scope is uncertain, start with a planner; it may implement a straightforward fix itself in the same workspace once implementation is authorized. Both planner variants have coding/check/PR skills for this route. Larger or risky work uses the normal cover-sheet and dedicated-implementer route. Only one writer is active per workspace, and the orchestrator never takes over project implementation.
+The orchestrator may route a clearly bounded, authorized fix directly to `implementer` in a host-managed feature worktree, using the variant the user picked. Standard speed remains the default; fast requires explicit opt-in. When scope is uncertain, start with a planner; it may implement a straightforward fix itself in the same workspace once implementation is authorized. Both planner variants have coding/check/PR skills for this route. Larger or risky work uses the normal cover-sheet and dedicated-implementer route. Only one writer is active per workspace, and the orchestrator never takes over project implementation.
 
 ## Profile arguments
 

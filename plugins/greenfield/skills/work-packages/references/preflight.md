@@ -6,7 +6,7 @@ Before substantial implementation, make a bounded check of the cover sheet's val
 - For frontend criteria, check the provided URL or route, the app server or simulator, browser tools, and the test identity and fixture. Prove a basic authenticated path when one is required. Use `frontend-verifier` for a focused check if it helps.
 - Open the approved design reference when visual criteria require it.
 - Check required test-mode external services and permissions. Trigger external effects only when authorized.
-- Confirm branch and PR access and the Fable reviewer launcher before relying on them. Check that the cover-sheet header records the review mode and any approval:
+- Confirm branch and PR access and the `reviewer` launcher before relying on them. Check that the cover-sheet header records the review mode and any approval:
   - Single lane is the default.
   - Dual or no review needs the person's explicit authorization. A small, low-risk change may skip review automatically, with the reason explained up front and recorded. Disclose any exception up front, and ask when approval is missing.
   - Dual review needs both reviewers. `final-review` describes the single-lane fallback.

@@ -13,7 +13,7 @@ This format follows the user-provided “Plan: Agent-started Grain setup” v3 s
 
 ## Package cards
 
-Each card shows its ID and title, a one-line outcome, and a few informative labels: **reuse**, **extend**, **new**, the affected surface (such as backend or web), dependencies, and status. Use **look at this** only for a real decision or risk, with the reason visible before expanding. One Astra implementer builds every package, so cards carry no worker tier.
+Each card shows its ID and title, a one-line outcome, and a few informative labels: **reuse**, **extend**, **new**, the affected surface (such as backend or web), dependencies, and status. Use **look at this** only for a real decision or risk, with the reason visible before expanding. One implementer builds every package, so cards carry no worker tier.
 
 A native `<details>` disclosure titled **Approach, reuse, and affected areas** holds the supporting technical detail, in short labelled paragraphs: approach; reused or extended systems; new systems (or none); schema, data, and contracts; and relevant checks. A short annotated tree or list can orient the reader to known modules. Name a few useful boundaries rather than every path.
 
