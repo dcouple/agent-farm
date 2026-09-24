@@ -40,14 +40,14 @@ subagents:
     agent: investigator
     harness: claude
     model:
-      name: claude-sonnet-5
+      name: claude-opus-5-5
       reasoning: high
     mode: native
   researcher:
     agent: researcher
     harness: claude
     model:
-      name: claude-sonnet-5
+      name: claude-opus-5-5
       reasoning: high
     mode: native
   mockup-artist:
