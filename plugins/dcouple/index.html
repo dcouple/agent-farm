@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dcouple guide</title>
+<style>
+:root {
+  --bg: #f7f4ec; --panel: #fffdf7; --ink: #1f2421; --muted: #5b635c; --line: #d9d4c5;
+  --moss: #3f7a4a; --moss-soft: #e3efdf; --mint: #2c8a6e;
+  --gold: #9a6a12; --gold-soft: #f6ead0; --lilac: #6f55a0; --lilac-soft: #ece6f6;
+  --code: #efeadd;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181d; --panel: #1e2128; --ink: #efe8d6; --muted: #a4a89c; --line: #343842;
+    --moss: #8cc47e; --moss-soft: #22301f; --mint: #6fd1b0;
+    --gold: #e0b85c; --gold-soft: #332a17; --lilac: #b9a3e6; --lilac-soft: #2a2437;
+    --code: #262a31;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 32px 16px 64px; }
+.prose { max-width: 70ch; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 6px; }
+h2 { font-size: 1.3rem; margin: 40px 0 10px; }
+h3 { font-size: 1.05rem; margin: 22px 0 6px; }
+p { margin: 8px 0; }
+.lede { color: var(--muted); font-size: 1.1rem; margin: 0 0 20px; }
+code, pre { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); border-radius: 5px; }
+code { padding: 1px 5px; }
+pre { padding: 12px 14px; overflow-x: auto; line-height: 1.5; }
+pre code { padding: 0; background: none; }
+a { color: var(--mint); }
+table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.95rem; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: .03em; }
+.table-wrap { overflow-x: auto; }
+.table-wrap table { min-width: 560px; }
+figure { margin: 24px 0; padding: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+figure { overflow-x: auto; }
+figure svg { width: 100%; min-width: 620px; height: auto; display: block; }
+figcaption { color: var(--muted); font-size: 0.9rem; padding: 8px 6px 2px; }
+.callout { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--moss); border-radius: 8px; padding: 12px 16px; margin: 14px 0; }
+.callout.gold { border-left-color: var(--gold); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+.chip { font-size: 0.8rem; padding: 2px 10px; border-radius: 999px; background: var(--moss-soft); color: var(--moss); border: 1px solid var(--line); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 12px 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.card h3 { margin-top: 0; }
+.card p { font-size: 0.95rem; }
+footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 16px; }
+
+/* diagram */
+.d-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; }
+.d-planner { fill: var(--moss-soft); stroke: var(--moss); stroke-width: 1.5; }
+.d-bug { fill: var(--lilac-soft); stroke: var(--lilac); stroke-width: 1.5; }
+.d-gate { fill: var(--gold-soft); stroke: var(--gold); stroke-width: 1.5; }
+.d-lane { fill: none; stroke: var(--moss); stroke-width: 2; }
+.d-dash { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 5; }
+.d-line { fill: none; stroke: var(--muted); stroke-width: 1.6; }
+.d-t { fill: var(--ink); font: 13px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.d-b { fill: var(--ink); font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.d-s { fill: var(--muted); font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.d-m { fill: var(--muted); font: 12px ui-monospace, Menlo, monospace; }
+.d-arrow { fill: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<header class="prose">
+<h1>dcouple</h1>
+<p class="lede">A set of focused profiles for the whole path from an idea to a reviewed, tested pull request, plus research, business writing, SEO and repository audits. Every profile has a Claude and a Codex variant.</p>
+<div class="chips"><span class="chip">ideate</span><span class="chip">implementer</span><span class="chip">reviewer</span><span class="chip">qa-and-fix</span><span class="chip">product-researcher</span><span class="chip">business</span><span class="chip">seo</span><span class="chip">audits</span><span class="chip">raw</span></div>
+</header>
+
+<figure>
+<svg viewBox="0 0 760 700" role="img" aria-labelledby="map-title map-desc">
+<title id="map-title">How the dcouple profiles fit together</title>
+<desc id="map-desc">Ideate turns an idea into a ticket. Optionally the Greenfield planner writes a cover sheet. The implementer takes the ticket to a reviewed draft pull request through planning, workers, a draft PR, parallel review lanes, a fix queue and a final review. The reviewer and qa-and-fix profiles check a finished PR, and you merge. Five more profiles cover research, business documents, SEO, audits and raw model use.</desc>
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker>
+</defs>
+
+<text x="20" y="24" class="d-b">From an idea to a merged pull request</text>
+<g>
+<rect x="20" y="38" width="140" height="96" rx="8" class="d-planner"/>
+<text x="90" y="60" text-anchor="middle" class="d-b">ideate</text>
+<text x="90" y="80" text-anchor="middle" class="d-s">Astra high</text>
+<text x="90" y="97" text-anchor="middle" class="d-s">or Opus 5.5 high</text>
+<text x="90" y="122" text-anchor="middle" class="d-m">→ ticket</text>
+<rect x="166" y="38" width="140" height="96" rx="8" class="d-dash"/>
+<text x="236" y="60" text-anchor="middle" class="d-b">greenfield/planner</text>
+<text x="236" y="80" text-anchor="middle" class="d-s">optional, for</text>
+<text x="236" y="97" text-anchor="middle" class="d-s">bigger features</text>
+<text x="236" y="122" text-anchor="middle" class="d-m">→ cover sheet</text>
+<rect x="312" y="38" width="140" height="96" rx="8" class="d-planner"/>
+<text x="382" y="60" text-anchor="middle" class="d-b">implementer</text>
+<text x="382" y="80" text-anchor="middle" class="d-s">Astra medium, fast</text>
+<text x="382" y="97" text-anchor="middle" class="d-s">or Astra high</text>
+<text x="382" y="122" text-anchor="middle" class="d-m">→ draft PR</text>
+<rect x="458" y="38" width="140" height="96" rx="8" class="d-bug"/>
+<text x="528" y="60" text-anchor="middle" class="d-b">reviewer</text>
+<text x="528" y="80" text-anchor="middle" class="d-s">Opus 5.5 high</text>
+<text x="528" y="97" text-anchor="middle" class="d-s">or Sol medium</text>
+<text x="528" y="122" text-anchor="middle" class="d-m">→ findings</text>
+<rect x="604" y="38" width="140" height="96" rx="8" class="d-bug"/>
+<text x="674" y="60" text-anchor="middle" class="d-b">qa-and-fix</text>
+<text x="674" y="80" text-anchor="middle" class="d-s">Opus 5.5 medium</text>
+<text x="674" y="97" text-anchor="middle" class="d-s">or Sol medium</text>
+<text x="674" y="122" text-anchor="middle" class="d-m">→ tested, ready</text>
+</g>
+<path d="M160,86 H164" class="d-line" marker-end="url(#ah)"/>
+<path d="M306,86 H310" class="d-line" marker-end="url(#ah)"/>
+<path d="M452,86 H456" class="d-line" marker-end="url(#ah)"/>
+<path d="M598,86 H602" class="d-line" marker-end="url(#ah)"/>
+<path d="M674,134 V154" class="d-line" marker-end="url(#ah)"/>
+<rect x="604" y="156" width="140" height="30" rx="15" class="d-gate"/>
+<text x="674" y="176" text-anchor="middle" class="d-b">you merge</text>
+<text x="20" y="176" class="d-s">Each profile also works alone: the reviewer and qa-and-fix take any open pull request.</text>
+
+<!-- implementer lane -->
+<rect x="20" y="206" width="720" height="324" rx="14" class="d-lane"/>
+<text x="36" y="230" class="d-b">Inside implementer: from ticket to reviewed pull request</text>
+<g>
+<rect x="35" y="246" width="160" height="54" rx="8" class="d-box"/>
+<text x="115" y="268" text-anchor="middle" class="d-b">check the model</text>
+<text x="115" y="287" text-anchor="middle" class="d-s">stops unless it's Astra</text>
+<rect x="215" y="246" width="160" height="54" rx="8" class="d-box"/>
+<text x="295" y="268" text-anchor="middle" class="d-b">plan</text>
+<text x="295" y="287" text-anchor="middle" class="d-s">Socrates on the premise</text>
+<rect x="395" y="246" width="160" height="54" rx="8" class="d-planner"/>
+<text x="475" y="268" text-anchor="middle" class="d-b">workers write code</text>
+<text x="475" y="287" text-anchor="middle" class="d-s">Luna workers</text>
+<rect x="575" y="246" width="155" height="54" rx="8" class="d-box"/>
+<text x="652" y="268" text-anchor="middle" class="d-b">draft PR</text>
+<text x="652" y="287" text-anchor="middle" class="d-s">head commit frozen</text>
+</g>
+<path d="M195,273 H213" class="d-line" marker-end="url(#ah)"/>
+<path d="M375,273 H393" class="d-line" marker-end="url(#ah)"/>
+<path d="M555,273 H573" class="d-line" marker-end="url(#ah)"/>
+<path d="M652,300 V316" class="d-line" marker-end="url(#ah)"/>
+<polygon points="652,318 712,340 652,362 592,340" class="d-gate"/>
+<text x="652" y="345" text-anchor="middle" class="d-b">low-risk?</text>
+<text x="582" y="334" text-anchor="end" class="d-s">yes (copy, docs, simple config):</text>
+<text x="582" y="351" text-anchor="end" class="d-s">skip focused reviews and QA</text>
+<path d="M652,362 V378" class="d-line" marker-end="url(#ah)"/>
+<rect x="575" y="380" width="155" height="54" rx="8" class="d-gate"/>
+<text x="652" y="402" text-anchor="middle" class="d-b">asks you about QA</text>
+<text x="652" y="421" text-anchor="middle" class="d-s">starts after 60s</text>
+<path d="M575,407 H557" class="d-line" marker-end="url(#ah)"/>
+<rect x="35" y="376" width="520" height="62" rx="8" class="d-bug"/>
+<text x="295" y="398" text-anchor="middle" class="d-b">review lanes, in parallel</text>
+<text x="295" y="417" text-anchor="middle" class="d-s">checks and CI · QA on Sol · PR prose · correctness</text>
+<text x="295" y="432" text-anchor="middle" class="d-s">integration and security · intent and tests · bot and human feedback</text>
+<path d="M150,438 V454" class="d-line" marker-end="url(#ah)"/>
+<rect x="35" y="456" width="230" height="54" rx="8" class="d-box"/>
+<text x="150" y="478" text-anchor="middle" class="d-b">one fix queue</text>
+<text x="150" y="497" text-anchor="middle" class="d-s">at most 3 fix passes</text>
+<path d="M265,483 H283" class="d-line" marker-end="url(#ah)"/>
+<rect x="285" y="456" width="230" height="54" rx="8" class="d-bug"/>
+<text x="400" y="478" text-anchor="middle" class="d-b">final PR review</text>
+<text x="400" y="497" text-anchor="middle" class="d-s">whole PR at the current head</text>
+<path d="M515,483 H533" class="d-line" marker-end="url(#ah)"/>
+<rect x="535" y="466" width="195" height="34" rx="17" class="d-gate"/>
+<text x="632" y="488" text-anchor="middle" class="d-b">draft PR · never merged</text>
+
+<!-- other jobs -->
+<text x="20" y="562" class="d-b">Other jobs</text>
+<g>
+<rect x="20" y="576" width="140" height="96" rx="8" class="d-box"/>
+<text x="90" y="598" text-anchor="middle" class="d-b">product-researcher</text>
+<text x="90" y="618" text-anchor="middle" class="d-s">Astra high, fast</text>
+<text x="90" y="635" text-anchor="middle" class="d-s">or Opus 5.5 high</text>
+<text x="90" y="660" text-anchor="middle" class="d-m">→ sourced write-up</text>
+<rect x="166" y="576" width="140" height="96" rx="8" class="d-box"/>
+<text x="236" y="598" text-anchor="middle" class="d-b">business</text>
+<text x="236" y="618" text-anchor="middle" class="d-s">Opus 5.5 high</text>
+<text x="236" y="635" text-anchor="middle" class="d-s">or Astra high</text>
+<text x="236" y="660" text-anchor="middle" class="d-m">→ reviewed doc</text>
+<rect x="312" y="576" width="140" height="96" rx="8" class="d-box"/>
+<text x="382" y="598" text-anchor="middle" class="d-b">seo</text>
+<text x="382" y="618" text-anchor="middle" class="d-s">Opus 5.5 high</text>
+<text x="382" y="635" text-anchor="middle" class="d-s">or Astra high</text>
+<text x="382" y="660" text-anchor="middle" class="d-m">→ strategy, pages</text>
+<rect x="458" y="576" width="140" height="96" rx="8" class="d-box"/>
+<text x="528" y="598" text-anchor="middle" class="d-b">audits</text>
+<text x="528" y="618" text-anchor="middle" class="d-s">Opus 5.5 high</text>
+<text x="528" y="635" text-anchor="middle" class="d-s">or Astra low</text>
+<text x="528" y="660" text-anchor="middle" class="d-m">→ what to close</text>
+<rect x="604" y="576" width="140" height="96" rx="8" class="d-box"/>
+<text x="674" y="598" text-anchor="middle" class="d-b">raw</text>
+<text x="674" y="618" text-anchor="middle" class="d-s">Opus 5.5 medium</text>
+<text x="674" y="635" text-anchor="middle" class="d-s">or Astra, Sol</text>
+<text x="674" y="660" text-anchor="middle" class="d-m">→ small tasks</text>
+</g>
+</svg>
+<figcaption>Green profiles build things, purple ones review or test them, and gold marks your decisions. The first model listed is the default variant. Greenfield's planner is a separate plugin; ideate points to it for bigger features.</figcaption>
+</figure>
+
+<section class="prose">
+<h2>Which profile do I run?</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>You want to</th><th>Run</th><th>Variants (default first)</th></tr></thead>
+<tbody>
+<tr><td>Talk an idea through and turn it into a ticket or brief</td><td><code>dcouple/ideate</code></td><td><code>astra</code> Astra high · <code>opus</code> Opus 5.5 high</td></tr>
+<tr><td>Take a ticket to a reviewed pull request</td><td><code>dcouple/implementer</code></td><td><code>fast</code> Astra medium, fast tier · <code>high</code> Astra high</td></tr>
+<tr><td>Review a pull request from many angles</td><td><code>dcouple/reviewer</code></td><td><code>claude</code> Opus 5.5 high · <code>codex</code> Sol medium</td></tr>
+<tr><td>Test a finished pull request and fix small, safe problems</td><td><code>dcouple/qa-and-fix</code></td><td><code>claude</code> Opus 5.5 medium · <code>codex</code> Sol medium</td></tr>
+<tr><td>Research a technology, product or approach</td><td><code>dcouple/product-researcher</code></td><td><code>astra</code> Astra high, fast · <code>opus</code> Opus 5.5 high</td></tr>
+<tr><td>Write a proposal, plan or memo</td><td><code>dcouple/business</code></td><td><code>claude</code> Opus 5.5 high · <code>codex</code> Astra high</td></tr>
+<tr><td>Improve how a site shows up in search</td><td><code>dcouple/seo</code></td><td><code>claude</code> Opus 5.5 high · <code>codex</code> Astra high</td></tr>
+<tr><td>Find stale issues, pull requests and docs</td><td><code>dcouple/audits</code></td><td><code>claude</code> Opus 5.5 high · <code>codex</code> Astra low</td></tr>
+<tr><td>Do a small, clear task with just the model and good habits</td><td><code>dcouple/raw</code></td><td><code>opus</code> Opus 5.5 medium · <code>astra</code> Astra medium · <code>sol</code> Sol medium</td></tr>
+</tbody>
+</table>
+</div>
+
+<pre><code>agent-farm plugin install dcouple
+agent-farm run dcouple/implementer --directory /path/to/project</code></pre>
+<p>Agent Farm asks which variant to run. Add <code>:variant</code>, for example <code>dcouple/reviewer:codex</code>, to skip the question.</p>
+
+<h2>Building: ideate, implementer, review, QA</h2>
+<div class="cards">
+<div class="card"><h3>ideate</h3><p>Talks the idea through and pushes back, offers mockups for anything with a screen, and researches when it matters. When you call it ready, Socrates reviews the premise. It creates the GitHub issue or Grain brief only with your go-ahead, then stops.</p></div>
+<div class="card"><h3>implementer</h3><p>Plans the ticket, has Luna workers write the code, opens a draft PR, then runs the review lanes in parallel and works through one fix queue. It ends with a final review of the whole PR and never merges.</p></div>
+<div class="card"><h3>reviewer</h3><p>Runs 15 review angles in parallel and ranks findings as Must-Fix, Should-Fix or Suggestion. By default you approve fixes first; “fix everything” runs the whole loop.</p></div>
+<div class="card"><h3>qa-and-fix</h3><p>Tests the PR, finds each failure's root cause, and fixes only small, safe bugs within the PR's scope, as separate commits. It reports either “tested and ready” or what still needs you.</p></div>
+</div>
+
+<h3>Implementer review lanes</h3>
+<p>After the draft PR, these run at the same time: checks and CI, end-to-end QA on Sol, the PR description, correctness, integration and security, intent and test coverage, and bot and human feedback. Low-risk changes like copy, translations, docs or simple config skip the focused reviews, and QA stays off unless you ask. For everything else, the implementer asks whether to run end-to-end QA and starts it after 60 seconds if you don't answer.</p>
+
+<h2>Other jobs</h2>
+<ul>
+<li><strong>product-researcher</strong> picks a research method (deep dive, tech deep dive, product comparison and others), has a cold reader check the write-up, and saves it to Grain. It writes no code.</li>
+<li><strong>business</strong> goes through context, adversarial research, discussion, a reviewed spec, a reviewed draft and release. Each stage runs in a fresh context and files go under <code>.business/</code>. Preparing a document never means sending it.</li>
+<li><strong>seo</strong> starts new sites with foundations, otherwise briefing and content strategy. You approve the strategy before any writing starts, and data stays in <code>.seo/</code>.</li>
+<li><strong>audits</strong> reports what to close or update, with evidence from the default branch. It closes issues or PRs only for the rows you approve and opens one PR for doc, generated-file and CI fixes.</li>
+<li><strong>raw</strong> is the model on its own, with a few good habits: investigate bugs, test first, prepare the PR, watch CI, and get a review from the other vendor's model before calling a PR done.</li>
+</ul>
+
+<div class="callout"><strong>Rules that always hold.</strong> Nothing is merged for you. Irreversible, production or outward-facing actions wait for your approval. Evidence like QA screenshots stays out of the repository.</div>
+</section>
+
+<footer class="prose">
+Source: <a href="https://github.com/dcouple/skills">dcouple/skills</a>, published into agent-farm's <code>plugins/dcouple</code>. Each profile's details are in its <code>agents/</code> file and the skills it lists.<br>Also on Grain: <a href="https://rungrain.com/share/6uxd73wjm97a2n2shyg5m6xz">view this guide on Grain</a>.
+</footer>
+</main>
+</body>
+</html>

@@ -1,9 +1,9 @@
 name: dcouple
-version: 0.1.21
+version: 0.1.22
 cli_major: 0
 source:
   repository: https://github.com/dcouple/skills.git
-  commit: 4af83138d6bf24a57ae9292b9b2ada27fa4e351b
+  commit: c860f99b047ec7708911bf41c5ee066b058c0a82
 checksums:
   profiles/audits.yaml: b2be432724574ff46929c836f1aeb90487a87a131fde62d93c49708417e97cbd
   profiles/business.yaml: e4bf2f9c0e2bec0254cfb70848c39e4a5d8a98d727e5ec3a879539456e92852a
