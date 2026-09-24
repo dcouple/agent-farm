@@ -3,6 +3,13 @@
 dcouple/orchestra at [`cd3d468`](https://github.com/dcouple/orchestra/tree/cd3d468682fdb727d109a762ebb131daa4e7ece8), packaged for Agent Farm.
 Regenerate with `node scripts/vendor-orchestra.mjs <orchestra checkout> <skills checkout> [orchestra commit] [skills commit]`; do not edit these files by hand.
 
+For a one-page visual map of the workflow, open [index.html](index.html) (edit `scripts/orchestra-guide.html`, not the copy). It's also on Grain: [view the guide](https://rungrain.com/share/dmnwnvk2hbvsxcart76f29jk).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/assets/guides/orchestra-guide-dark.png">
+  <img alt="How work moves through Orchestra: /discussion for questions, /create-brief for new work, and /do from preflight to a reviewed pull request" src="../../docs/assets/guides/orchestra-guide-light.png">
+</picture>
+
 `/do` still calls `arena` and `hillclimb`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [`a79b9fd`](https://github.com/greenfield-inc/skills/tree/a79b9fde21a94e1f21e9ce03ab0e9e5b9f61739e): `parsa/.claude/skills/arena` as `arena`, `parsa/.claude/skills/hillclimb` as `hillclimb`, `parsa/.codex/skills/hillclimb` as `codex-hillclimb`. No Codex `arena` exists, so the Codex `/do` arena step stays unavailable, as it was before.
 
 Both variants also get Agent Farm's `babysit-pr`, `tdd`, `codebase-design`, `session-trace`, copied from `plugins/greenfield/skills/`, `babysit-pr` watches a pull request's CI and review bots after `/do` or `/prepare-pull-request` opens it; `tdd` (with `codebase-design`) is how every implementer writes code and tests, passed to each implementer dispatch; `session-trace` publishes the run as a trace page in Grain when the task has one.
