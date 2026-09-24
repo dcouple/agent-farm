@@ -252,7 +252,12 @@ ${CODEX_OVERSEER}`);
 dcouple/orchestra at [\`${commit.slice(0,7)}\`](https://github.com/dcouple/orchestra/tree/${commit}), packaged for Agent Farm.
 Regenerate with \`node scripts/vendor-orchestra.mjs <orchestra checkout> <skills checkout> [orchestra commit] [skills commit]\`; do not edit these files by hand.
 
-For a one-page visual map of the workflow, open [index.html](index.html) (edit \`scripts/orchestra-guide.html\`, not the copy). The DCouple org's copy is in Grain: \`grain://workspace/open?workspaceId=QCEhppHlyzNE-jCQF_HbI&source=cli\`.
+For a one-page visual map of the workflow, open [index.html](index.html) (edit \`scripts/orchestra-guide.html\`, not the copy). It's also on Grain: [view the guide](https://rungrain.com/share/dmnwnvk2hbvsxcart76f29jk).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/assets/guides/orchestra-guide-dark.png">
+  <img alt="How work moves through Orchestra: /discussion for questions, /create-brief for new work, and /do from preflight to a reviewed pull request" src="../../docs/assets/guides/orchestra-guide-light.png">
+</picture>
 
 \`/do\` still calls \`arena\` and \`hillclimb\`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [\`${skillsCommit.slice(0,7)}\`](https://github.com/greenfield-inc/skills/tree/${skillsCommit}): ${EXTRA_SKILLS.map(e=>`\`${e.from}\` as \`${e.to}\``).join(', ')}. No Codex \`arena\` exists, so the Codex \`/do\` arena step stays unavailable, as it was before.
 
