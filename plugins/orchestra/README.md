@@ -5,10 +5,7 @@ Regenerate with `node scripts/vendor-orchestra.mjs <orchestra checkout> <skills 
 
 For a one-page visual map of the workflow, open [index.html](index.html) (edit `scripts/orchestra-guide.html`, not the copy). It's also on Grain: [view the guide](https://rungrain.com/share/dmnwnvk2hbvsxcart76f29jk).
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../../docs/assets/guides/orchestra-guide-dark.png">
-  <img alt="How work moves through Orchestra: /discussion for questions, /create-brief for new work, and /do from preflight to a reviewed pull request" src="../../docs/assets/guides/orchestra-guide-light.png">
-</picture>
+<img alt="Orchestra map: /discussion, /create-brief and /do, with your steps in green" src="../../docs/assets/guides/orchestra-map.png">
 
 `/do` still calls `arena` and `hillclimb`, which orchestra had moved to dcouple/skills before this commit. They are bundled from dcouple/skills at [`a79b9fd`](https://github.com/greenfield-inc/skills/tree/a79b9fde21a94e1f21e9ce03ab0e9e5b9f61739e): `parsa/.claude/skills/arena` as `arena`, `parsa/.claude/skills/hillclimb` as `hillclimb`, `parsa/.codex/skills/hillclimb` as `codex-hillclimb`. No Codex `arena` exists, so the Codex `/do` arena step stays unavailable, as it was before.
 
