@@ -6,77 +6,170 @@
 <title>Greenfield guide</title>
 <style>
 :root {
-  --bg: #f7f4ec; --panel: #fffdf7; --ink: #1f2421; --muted: #5b635c; --line: #d9d4c5;
-  --moss: #3f7a4a; --moss-soft: #e3efdf; --mint: #2c8a6e;
-  --gold: #9a6a12; --gold-soft: #f6ead0; --lilac: #6f55a0; --lilac-soft: #ece6f6;
-  --code: #efeadd;
+  --bg: #fbfbfd; --bg-alt: #f5f5f7; --surface: #ffffff; --ink: #1d1d1f; --muted: #6e6e73; --faint: #86868b;
+  --line: #e3e3e8; --line-strong: #d2d2d7;
+  --you: #1f9d4c; --you-soft: #e8f7ed; --you-ink: #146b33;
+  --link: #0066cc; --code: #ececf0; --shadow: 0 2px 4px rgba(0,0,0,.03), 0 12px 40px rgba(0,0,0,.07);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16181d; --panel: #1e2128; --ink: #efe8d6; --muted: #a4a89c; --line: #343842;
-    --moss: #8cc47e; --moss-soft: #22301f; --mint: #6fd1b0;
-    --gold: #e0b85c; --gold-soft: #332a17; --lilac: #b9a3e6; --lilac-soft: #2a2437;
-    --code: #262a31;
+    --bg: #000000; --bg-alt: #0b0b0c; --surface: #1c1c1e; --ink: #f5f5f7; --muted: #a1a1a6; --faint: #8e8e93;
+    --line: #2c2c2e; --line-strong: #3a3a3c;
+    --you: #30d158; --you-soft: #0f2918; --you-ink: #8ff0aa;
+    --link: #2997ff; --code: #2c2c2e; --shadow: none;
   }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { max-width: 820px; margin: 0 auto; padding: 32px 16px 64px; }
-.prose { max-width: 70ch; }
-h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 6px; }
-h2 { font-size: 1.3rem; margin: 40px 0 10px; }
-h3 { font-size: 1.05rem; margin: 22px 0 6px; }
-p { margin: 8px 0; }
-.lede { color: var(--muted); font-size: 1.1rem; margin: 0 0 20px; }
-code, pre { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); border-radius: 5px; }
-code { padding: 1px 5px; }
-pre { padding: 12px 14px; overflow-x: auto; line-height: 1.5; }
-pre code { padding: 0; background: none; }
-a { color: var(--mint); }
-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.95rem; }
-th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
-th { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: .03em; }
-.table-wrap { overflow-x: auto; }
-.table-wrap table { min-width: 560px; }
-figure { margin: 24px 0; padding: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
-figure { overflow-x: auto; }
-figure svg { width: 100%; min-width: 620px; height: auto; display: block; }
-figcaption { color: var(--muted); font-size: 0.9rem; padding: 8px 6px 2px; }
-.callout { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--moss); border-radius: 8px; padding: 12px 16px; margin: 14px 0; }
-.callout.gold { border-left-color: var(--gold); }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
-.chip { font-size: 0.8rem; padding: 2px 10px; border-radius: 999px; background: var(--moss-soft); color: var(--moss); border: 1px solid var(--line); }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 12px 0; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-.card h3 { margin-top: 0; }
-.card p { font-size: 0.95rem; }
-footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 16px; }
+html { scroll-snap-type: y proximity; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", system-ui, sans-serif; letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
+.slide { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 12vh 24px; scroll-snap-align: start; }
+.slide:nth-of-type(even) { background: var(--bg-alt); }
+.inner { width: 100%; max-width: 1040px; }
+.kicker { color: var(--you); font-weight: 600; font-size: 17px; margin: 0 0 12px; }
+h1 { font: 700 clamp(56px, 11vw, 120px)/1 -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", system-ui, sans-serif; letter-spacing: -0.045em; margin: 0; }
+h2 { font: 700 clamp(36px, 6vw, 64px)/1.05 -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", system-ui, sans-serif; letter-spacing: -0.035em; margin: 0; }
+.sub { color: var(--muted); font-size: clamp(19px, 2.4vw, 26px); line-height: 1.3; letter-spacing: -0.02em; margin: 18px auto 0; max-width: 30em; }
+.stage { margin-top: 56px; }
+.ic { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.scroll-hint { margin-top: 64px; color: var(--faint); font-size: 14px; }
+code { font: 0.86em "SF Mono", ui-monospace, Menlo, monospace; background: var(--code); border-radius: 6px; padding: 2px 7px; letter-spacing: 0; }
 
-/* diagram */
-.d-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; }
-.d-planner { fill: var(--moss-soft); stroke: var(--moss); stroke-width: 1.5; }
-.d-bug { fill: var(--lilac-soft); stroke: var(--lilac); stroke-width: 1.5; }
-.d-gate { fill: var(--gold-soft); stroke: var(--gold); stroke-width: 1.5; }
-.d-lane { fill: none; stroke: var(--moss); stroke-width: 2; }
-.d-dash { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 5; }
-.d-line { fill: none; stroke: var(--muted); stroke-width: 1.6; }
-.d-t { fill: var(--ink); font: 13px system-ui, -apple-system, "Segoe UI", sans-serif; }
-.d-b { fill: var(--ink); font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
-.d-s { fill: var(--muted); font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
-.d-m { fill: var(--muted); font: 12px ui-monospace, Menlo, monospace; }
-.d-arrow { fill: var(--muted); }
+/* your part */
+.steps { display: flex; justify-content: center; align-items: flex-start; gap: 8px; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; }
+.steps li { width: 168px; display: flex; flex-direction: column; align-items: center; }
+.steps .bubble { width: 84px; height: 84px; border-radius: 26px; display: grid; place-items: center; background: var(--you); color: #fff; box-shadow: 0 10px 30px rgba(31,157,76,.28); }
+.steps .bubble .ic { width: 38px; height: 38px; stroke-width: 1.9; }
+.steps b { font-size: 24px; letter-spacing: -0.02em; margin-top: 16px; }
+.steps span { color: var(--muted); font-size: 15px; margin-top: 2px; }
+.steps .n { color: var(--you); font-size: 13px; font-weight: 700; margin-top: 12px; letter-spacing: .04em; }
+@media (prefers-color-scheme: dark) { .steps .bubble { color: #002b0f; box-shadow: none; } }
+
+/* tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; text-align: left; }
+.tile { background: var(--surface); border-radius: 24px; padding: 26px 24px 24px; box-shadow: var(--shadow); border: 1px solid var(--line); }
+.tile .badge { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--bg-alt); color: var(--ink); margin-bottom: 18px; }
+.slide:nth-of-type(even) .tile .badge { background: var(--bg); }
+.tile.you .badge { background: var(--you); color: #fff; }
+.tile b { display: block; font-size: 22px; letter-spacing: -0.02em; line-height: 1.2; }
+.tile span { display: block; color: var(--muted); font-size: 15px; margin-top: 6px; line-height: 1.4; }
+.tile .to { display: inline-block; margin-top: 16px; font-size: 13px; color: var(--muted); }
+
+/* flow */
+.flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px 6px; }
+.node { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 104px; padding: 18px 16px 16px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); color: var(--faint); }
+.node .ic { width: 30px; height: 30px; }
+.node b { font-size: 16px; font-weight: 600; color: var(--muted); letter-spacing: -0.01em; }
+.node small { font-size: 12.5px; color: var(--faint); margin-top: -6px; }
+.node.you { background: var(--you-soft); border: 2px solid var(--you); color: var(--you); transform: scale(1.06); }
+.node.you b { color: var(--you-ink); font-size: 18px; font-weight: 700; }
+.node.you small { color: var(--you-ink); }
+.node.dash { border-style: dashed; }
+.arrow { width: 28px; height: 2px; background: var(--line-strong); position: relative; flex: none; }
+.arrow::after { content: ""; position: absolute; right: -1px; top: -4px; border: 5px solid transparent; border-left: 7px solid var(--line-strong); border-right: 0; }
+.flow.dense { flex-wrap: nowrap; gap: 6px 4px; }
+.flow.dense .node { min-width: 0; padding: 16px 12px 14px; flex: 0 1 auto; }
+.flow.dense .node b { font-size: 14.5px; white-space: nowrap; }
+.flow.dense .node.you b { font-size: 16px; }
+.flow.dense .arrow { width: 18px; }
+.note { color: var(--faint); font-size: 15px; margin-top: 28px; }
+.loopnote { display: inline-flex; align-items: center; gap: 8px; color: var(--faint); font-size: 15px; margin-top: 28px; }
+.loopnote .ic { width: 18px; height: 18px; }
+
+/* choices */
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.choice { background: var(--surface); border-radius: 28px; padding: 30px 26px; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.choice .label { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+.choice .big { font: 700 34px/1.1 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.03em; margin: 14px 0 6px; }
+.choice .small { color: var(--muted); font-size: 15px; }
+.choice.pick { border: 2px solid var(--you); }
+.choice.pick .label { color: var(--you); }
+
+/* bars */
+.bars { display: grid; gap: 14px; max-width: 760px; margin: 0 auto; text-align: left; }
+.bar { display: grid; grid-template-columns: 170px 1fr; align-items: center; gap: 18px; }
+.bar .name b { display: block; font-size: 19px; letter-spacing: -0.02em; }
+.bar .name span { color: var(--muted); font-size: 14px; }
+.bar .track { background: var(--line); border-radius: 999px; height: 44px; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 999px; background: var(--ink); color: var(--bg); display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+
+/* statements */
+.statements { display: grid; gap: 28px; max-width: 760px; margin: 0 auto; text-align: left; }
+.statement { display: flex; align-items: center; gap: 22px; }
+.statement .badge { flex: none; width: 60px; height: 60px; border-radius: 18px; display: grid; place-items: center; background: var(--you-soft); color: var(--you); }
+.statement b { font: 700 clamp(22px, 3vw, 32px)/1.15 -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -0.025em; }
+
+/* chips */
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 820px; margin: 0 auto; }
+.chip { display: inline-flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.chip .ic { width: 20px; height: 20px; color: var(--faint); }
+
+/* docs */
+.docs { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; }
+.doc { width: 132px; }
+.doc .sheet { height: 160px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 18px 16px; display: flex; flex-direction: column; gap: 8px; }
+.doc .sheet i { display: block; height: 7px; border-radius: 4px; background: var(--line); }
+.doc .sheet i:first-child { width: 60%; background: var(--you); opacity: .8; height: 9px; }
+.doc .sheet i:nth-child(3) { width: 80%; }
+.doc .sheet i:nth-child(4) { width: 70%; }
+.doc b { display: block; margin-top: 14px; font-size: 16px; letter-spacing: -0.01em; }
+.doc span { color: var(--muted); font-size: 13px; }
+
+/* map + end */
+.map { width: 100%; max-width: 900px; margin: 0 auto; background: var(--surface); border-radius: 28px; padding: 28px 22px 18px; border: 1px solid var(--line); box-shadow: var(--shadow); overflow-x: auto; }
+.map svg { width: 100%; min-width: 620px; height: auto; display: block; }
+.legend { color: var(--muted); font-size: 14px; margin-top: 14px; }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin: 0 6px 0 14px; }
+.legend i.y { background: var(--you-soft); border: 2px solid var(--you); }
+.legend i.a { background: var(--surface); border: 1.5px solid var(--line-strong); }
+pre code { background: none; padding: 0; font-size: inherit; }
+pre { text-align: left; font: 15px/1.7 "SF Mono", ui-monospace, Menlo, monospace; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px 26px; overflow-x: auto; max-width: 760px; margin: 0 auto; box-shadow: var(--shadow); }
+.links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-top: 36px; font-size: 17px; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.fine { color: var(--faint); font-size: 13px; margin-top: 48px; }
+
+/* dots */
+.dots { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 5; }
+.dots a { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+.dots a:hover { background: var(--you); }
+@media (max-width: 720px) {
+  .dots { display: none; }
+  .slide { padding: 72px 18px; }
+  .arrow { width: 2px; height: 18px; }
+  .arrow::after { right: -4px; top: auto; bottom: -1px; border: 5px solid transparent; border-top: 7px solid var(--line-strong); border-bottom: 0; }
+  .flow, .flow.dense { flex-direction: column; flex-wrap: nowrap; }
+  .flow.dense .arrow { width: 2px; }
+  .node { width: 100%; max-width: 320px; flex-direction: row; justify-content: flex-start; }
+  .node small { margin: 0 0 0 auto; }
+  .node.you { transform: none; }
+  .steps li { width: 44%; margin-bottom: 18px; }
+  .bar { grid-template-columns: 1fr; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.d-box, .d-planner, .d-bug { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
+.d-lane { fill: none; stroke: var(--line-strong); stroke-width: 1.2; }
+.d-dash { fill: none; stroke: var(--line-strong); stroke-width: 1.2; stroke-dasharray: 5 5; }
+.d-line { fill: none; stroke: var(--faint); stroke-opacity: .5; stroke-width: 1.3; }
+.d-arrow { fill: var(--faint); fill-opacity: .6; }
+.d-gate { fill: var(--you-soft); stroke: var(--you); stroke-width: 2.2; }
+.d-t, .d-b, .d-s, .d-m { fill: var(--faint); }
+.d-t { font: 13px -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; }
+.d-b { font: 600 13.5px -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; fill: var(--muted); }
+.d-s { font: 12px -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; }
+.d-m { font: 11.5px "SF Mono", ui-monospace, Menlo, monospace; }
+.d-hb { fill: var(--you-ink); font: 700 15px -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; }
+.d-hs { fill: var(--you-ink); font: 12.5px -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; }
 </style>
 </head>
 <body>
+<nav class="dots" aria-label="Slides"><a href="#intro" aria-label="intro"></a><a href="#you" aria-label="you"></a><a href="#start-with" aria-label="start-with"></a><a href="#builder" aria-label="builder"></a><a href="#map" aria-label="map"></a><a href="#start" aria-label="start"></a></nav>
 <main>
-<header class="prose">
-<h1>Greenfield</h1>
-<p class="lede">A planner and an implementer for building features with Claude and Codex. You decide what to build, one agent writes the code, and a reviewer on the other model family checks it.</p>
-<div class="chips"><span class="chip">planner</span><span class="chip">implementer</span><span class="chip">bug-reporter</span><span class="chip">orchestrator</span><span class="chip">free-range</span></div>
-</header>
-
-<figure>
-<svg viewBox="0 0 760 990" role="img" aria-labelledby="map-title map-desc">
+<section class="slide" id="intro"><div class="inner"><p class="kicker">Agent Farm plugin</p><h1>Greenfield</h1><p class="sub">You decide. One agent builds. Another model checks.</p><div class="stage"><p class="scroll-hint">Scroll to begin ↓</p></div></div></section>
+<section class="slide" id="you"><div class="inner"><p class="kicker">Your part</p><h2>Five moments. That’s it.</h2><p class="sub">Everything else runs on its own.</p><div class="stage"><ol class="steps"><li><div class="bubble"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="n">STEP 1</div><b>Describe</b><span>the work</span></li><li><div class="bubble"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div><div class="n">STEP 2</div><b>Pick</b><span>an option</span></li><li><div class="bubble"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="n">STEP 3</div><b>Approve</b><span>the plan</span></li><li><div class="bubble"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div><div class="n">STEP 4</div><b>Launch</b><span>the builder</span></li><li><div class="bubble"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg></div><div class="n">STEP 5</div><b>Merge</b><span>the PR</span></li></ol></div></div></section>
+<section class="slide" id="start-with"><div class="inner"><p class="kicker">Where to start</p><h2>Bring what you have.</h2><div class="stage"><div class="tiles"><div class="tile "><div class="badge"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><b>A question</b><span>The planner explains it.</span><div class="to">planner</div></div><div class="tile "><div class="badge"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></div><b>An idea</b><span>The planner shapes it into a plan.</span><div class="to">planner</div></div><div class="tile "><div class="badge"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><b>A small fix</b><span>The planner just fixes it.</span><div class="to">planner</div></div><div class="tile "><div class="badge"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9h8v5a4 4 0 0 1-8 0z"/><path d="M12 5v4M9 6l1.5 2M15 6l-1.5 2M4 12h4M16 12h4M5 18l3-2M19 18l-3-2"/></svg></div><b>A bug</b><span>Reproduced and written up.</span><div class="to">bug-reporter</div></div></div></div></div></section>
+<section class="slide" id="builder"><div class="inner"><p class="kicker">Launch</p><h2>Choose who builds.</h2><p class="sub">Agent Farm asks when you launch the implementer.</p><div class="stage"><div class="choices"><div class="choice pick"><div class="label">standard · default</div><div class="big">Astra Low</div><div class="small">Reviewed by Fable 5.1</div></div><div class="choice "><div class="label">fast</div><div class="big">Astra Low</div><div class="small">Fast tier · reviewed by Fable 5.1</div></div><div class="choice "><div class="label">claude</div><div class="big">Opus 5.5</div><div class="small">Reviewed by Astra</div></div></div></div></div></section>
+<section class="slide" id="map"><div class="inner"><p class="kicker">Reference</p><h2>The whole map.</h2><p class="sub">Every route, every step, in one picture.</p><div class="stage"><div class="map"><svg viewBox="0 0 760 990" role="img" aria-labelledby="map-title map-desc">
 <title id="map-title">How work moves through Greenfield</title>
 <desc id="map-desc">New work branches by type. Questions, ideas and small fixes go to the planner; bugs go to the bug-reporter. Ideas become a brief, options and a cover sheet that you approve. You then launch the implementer and pick its model. The implementer builds in stages, verifies the frontend, opens a draft pull request, gets a final review, and you merge.</desc>
 <defs>
@@ -91,7 +184,7 @@ footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1
 
 <!-- new work -->
 <rect x="300" y="88" width="160" height="36" rx="18" class="d-gate"/>
-<text x="380" y="111" text-anchor="middle" class="d-b">New work</text>
+<text x="380" y="111" text-anchor="middle" class="d-hb">You bring work</text>
 <path d="M380,124 V142 M110,142 H665 M110,142 V163 M295,142 V163 M480,142 V163 M665,142 V163" class="d-line"/>
 
 <!-- types -->
@@ -149,20 +242,20 @@ footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1
 <!-- idea path -->
 <path d="M295,400 V424" class="d-line" marker-end="url(#ah)"/>
 <polygon points="295,426 355,451 295,476 235,451" class="d-gate"/>
-<text x="295" y="456" text-anchor="middle" class="d-b">you pick</text>
+<text x="295" y="456" text-anchor="middle" class="d-hb">you pick</text>
 <path d="M295,476 V498" class="d-line" marker-end="url(#ah)"/>
 <rect x="215" y="500" width="160" height="62" rx="8" class="d-box"/>
 <text x="295" y="522" text-anchor="middle" class="d-b">plan</text>
 <text x="295" y="541" text-anchor="middle" class="d-m">cover-sheet.html</text>
 <text x="295" y="556" text-anchor="middle" class="d-s">planner self-checks it</text>
 <path d="M295,562 V584" class="d-line" marker-end="url(#ah)"/>
-<polygon points="295,586 360,611 295,636 230,611" class="d-gate"/>
-<text x="295" y="616" text-anchor="middle" class="d-b">you approve</text>
+<polygon points="295,586 372,611 295,636 218,611" class="d-gate"/>
+<text x="295" y="616" text-anchor="middle" class="d-hb">you approve</text>
 <path d="M295,636 V668" class="d-line" marker-end="url(#ah)"/>
 
 <!-- small fix end -->
 <path d="M480,400 V438" class="d-line" marker-end="url(#ah)"/>
-<rect x="405" y="440" width="150" height="34" rx="17" class="d-gate"/>
+<rect x="405" y="440" width="150" height="34" rx="17" class="d-box"/>
 <text x="480" y="462" text-anchor="middle" class="d-b">draft PR</text>
 
 <!-- bug routes -->
@@ -176,8 +269,8 @@ footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1
 
 <!-- launch -->
 <rect x="180" y="670" width="400" height="50" rx="10" class="d-gate"/>
-<text x="380" y="691" text-anchor="middle" class="d-b">You run greenfield/implementer</text>
-<text x="380" y="710" text-anchor="middle" class="d-s">Agent Farm asks which variant: standard · fast · claude</text>
+<text x="380" y="691" text-anchor="middle" class="d-hb">You run greenfield/implementer</text>
+<text x="380" y="710" text-anchor="middle" class="d-hs">Agent Farm asks which variant: standard · fast · claude</text>
 <path d="M380,720 V743" class="d-line" marker-end="url(#ah)"/>
 
 <!-- implementer lane -->
@@ -202,7 +295,7 @@ footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1
 <path d="M375,817 H393" class="d-line" marker-end="url(#ah)"/>
 <path d="M555,817 H573" class="d-line" marker-end="url(#ah)"/>
 <path d="M475,790 C475,776 295,776 295,788" class="d-dash" marker-end="url(#ah)"/>
-<rect x="349" y="771" width="72" height="15" rx="4" style="fill:var(--panel)"/>
+<rect x="349" y="771" width="72" height="15" rx="4" style="fill:var(--surface)"/>
 <text x="385" y="783" text-anchor="middle" class="d-s">next stage</text>
 <path d="M652,844 V856 H115 V866" class="d-line" marker-end="url(#ah)"/>
 <g>
@@ -227,108 +320,10 @@ footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; border-top: 1
 <rect x="20" y="950" width="470" height="34" rx="17" class="d-box"/>
 <text x="255" y="972" text-anchor="middle" class="d-s">One bundle per work item: brief · options · cover sheet · trace · post-mortem</text>
 <rect x="505" y="950" width="235" height="34" rx="17" class="d-gate"/>
-<text x="622" y="972" text-anchor="middle" class="d-b">you merge the PR</text>
-</svg>
-<figcaption>Solid arrows are the normal path; dashed arrows are optional detours: an explanation can become a brief, and a small fix whose scope grows goes back to planning. Gold marks the points where you decide.</figcaption>
-</figure>
-
-<section class="prose">
-<h2>Which profile do I run?</h2>
-<div class="table-wrap">
-<table>
-<thead><tr><th>You have</th><th>Run</th><th>What happens</th></tr></thead>
-<tbody>
-<tr><td>A question about how something works</td><td><code>greenfield/planner</code></td><td>It explains, inline or as an explainer page. It never turns an explanation into a plan unless you ask.</td></tr>
-<tr><td>An idea, a feature, or a decision to make</td><td><code>greenfield/planner</code></td><td>Brief, options, then a plan cover sheet for you to approve.</td></tr>
-<tr><td>A small, clear fix you want done</td><td><code>greenfield/planner</code></td><td>It fixes it directly and opens a draft PR labelled <code>no-plan</code>.</td></tr>
-<tr><td>Something broken</td><td><code>greenfield/bug-reporter</code></td><td>It reproduces the bug and writes a report someone else can fix from. It never fixes it.</td></tr>
-<tr><td>An approved cover sheet or bug report</td><td><code>greenfield/implementer</code></td><td>It builds the whole thing, verifies it, gets a review, and leaves a draft PR.</td></tr>
-<tr><td>Several work items at once</td><td><code>greenfield/orchestrator</code></td><td>It routes each item to the right profile in its own workspace and reports back.</td></tr>
-<tr><td>A quick one-off with no workflow</td><td><code>greenfield/free-range</code></td><td>The raw model with no Greenfield instructions.</td></tr>
-</tbody>
-</table>
-</div>
-
-<pre><code>agent-farm plugin install greenfield
-agent-farm run greenfield/planner --directory /path/to/project
-agent-farm run greenfield/implementer --directory /path/to/feature-worktree \
-  --arg source=/absolute/path/to/bundle/cover-sheet.html</code></pre>
-<p>A profile with variants asks which one to run. Add <code>:variant</code> to skip the question, for example <code>greenfield/implementer:claude</code>.</p>
-
-<h2>Planning</h2>
-<p>The planner stays in discussion until you ask it to move on. Each step is a document in the work's bundle, revised in place as you learn.</p>
-<div class="cards">
-<div class="card"><h3>explain</h3><p>“How does this work?” Answers inline, or writes an explainer page for bigger topics. Ends with questions, never with a build.</p></div>
-<div class="card"><h3>brief</h3><p>What is wrong or wanted, for whom, and how you would know it is solved. It contains no solution.</p></div>
-<div class="card"><h3>options</h3><p>Two or three real options, plus the smallest version and doing nothing, each with its complexity and trade-offs. <strong>Socrates</strong> challenges them once before you pick.</p></div>
-<div class="card"><h3>spike</h3><p>One time-boxed question, when a decision is blocked on a fact nobody has.</p></div>
-<div class="card"><h3>mockup</h3><p>Three interface options per round until you approve one. It becomes the design reference.</p></div>
-<div class="card"><h3>plan</h3><p>One HTML cover sheet: scope, locked decisions, package cards, and <em>How we will know it works</em>. You approve it.</p></div>
-</div>
-<p>Helpers the planner can call, each with one question and a fresh context: <code>investigator</code> (code and logs), <code>researcher</code> (outside sources), <code>socrates</code> (challenges the options), and <code>mockup-artist</code> (images, Claude planner only).</p>
-
-<div class="callout gold"><strong>Handing off.</strong> When you approve a cover sheet, the planner gives you the <code>agent-farm run greenfield/implementer</code> command. You launch it yourself and pick the model. Under an orchestrator, the orchestrator launches it for you.</div>
-
-<h2>Implementation</h2>
-<p>One agent writes all the code, tests and fixes. Its helpers only read, verify and review.</p>
-<div class="table-wrap">
-<table>
-<thead><tr><th>Variant</th><th>Implementer</th><th>Frontend verifier</th><th>Reviewer</th><th>Second reviewer (dual)</th></tr></thead>
-<tbody>
-<tr><td><code>standard</code> (default)</td><td>Astra Low</td><td>Sol low</td><td>Fable 5.1 high</td><td>Astra high</td></tr>
-<tr><td><code>fast</code></td><td>Astra Low, fast tier</td><td>Sol low</td><td>Fable 5.1 high</td><td>Astra high</td></tr>
-<tr><td><code>claude</code></td><td>Claude Opus 5.5 medium</td><td>Opus 5.5 medium</td><td>Astra high</td><td>Opus 5.5 high</td></tr>
-</tbody>
-</table>
-</div>
-<ol>
-<li><strong>Preflight.</strong> Checks commands, the app, test accounts, and the reviewer launcher before relying on them.</li>
-<li><strong>Stages.</strong> Builds each package from the cover sheet, then checks the diff, the full caller and data path, and focused tests.</li>
-<li><strong>Frontend verification.</strong> As UI becomes runnable, the verifier drives the named journeys and reports evidence. The implementer makes every fix.</li>
-<li><strong>Whole-feature checks.</strong> Every journey and check in <em>How we will know it works</em> needs evidence on the current code.</li>
-<li><strong>Draft PR and review.</strong> One final review by a model from the other family, then focused follow-ups on its must-fix findings.</li>
-<li><strong>Wrap-up.</strong> Clean-up, a post-mortem page, and a session trace in the bundle. The PR stays a draft until you merge it.</li>
-</ol>
-
-<h3>Review modes</h3>
-<ul>
-<li><strong>single</strong> is the default: one reviewer.</li>
-<li><strong>dual</strong> adds the second reviewer. It needs your explicit approval.</li>
-<li><strong>none</strong> skips review. It needs your approval, except for small, low-risk changes such as copy or docs, which may skip with the reason stated up front.</li>
-</ul>
-
-<h2>Bugs</h2>
-<p>The bug-reporter restates the symptom, reproduces it with <code>qa</code> and <code>investigator</code>, ranks a few hypotheses, and writes a report with a clear “gone when” check. Then it picks a route:</p>
-<ul>
-<li><strong>direct-to-implementer</strong>: obvious cause, contained change. Launch the implementer with the report as its source.</li>
-<li><strong>options-first</strong>: fixing it needs a design choice. Take the report to the planner.</li>
-<li><strong>cannot-reproduce</strong>: it says what was tried and what evidence would help.</li>
-</ul>
-
-<h2>Coordinating many items</h2>
-<p>The orchestrator follows the host's workspace and session mechanics. It triages each item, launches the planner, bug-reporter or implementer (with the variant you picked) in its own workspace, relays your decisions, and keeps a status board. It waits for events instead of polling. It never implements and never merges.</p>
-
-<h2>What you get</h2>
-<p>Every work item gets one bundle folder, local by default (<code>tmp/greenfield/&lt;slug&gt;/</code>) or published where you choose:</p>
-<div class="table-wrap">
-<table>
-<tbody>
-<tr><td><code>index.html</code></td><td>the brief, and the hub linking everything else</td></tr>
-<tr><td><code>options.html</code></td><td>the options you picked from</td></tr>
-<tr><td><code>cover-sheet.html</code></td><td>the approved plan, read by you, the implementer and the reviewers</td></tr>
-<tr><td><code>trace.html</code></td><td>the conversation, with tool calls collapsed</td></tr>
-<tr><td><code>post-mortem.html</code></td><td>how implementation went, where it got stuck, what was verified</td></tr>
-<tr><td><code>explainers/</code>, <code>mockups/</code>, <code>evidence/</code></td><td>supporting pages, designs, screenshots</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="callout"><strong>Rules that always hold.</strong> Moving from explanation to plan to implementation is your decision. One writer per workspace. A check that could not run counts as unproven. Nothing is merged for you.</div>
-</section>
-
-<footer class="prose">
-Source: <a href="https://github.com/greenfield-inc/agent-farm/tree/main/plugins/greenfield">plugins/greenfield</a> in agent-farm. Details live in the plugin's <a href="https://github.com/greenfield-inc/agent-farm/blob/main/plugins/greenfield/README.md">README</a>, its <code>agents/</code>, <code>profiles/</code> and <code>skills/</code>.<br>Also on Grain: <a href="https://rungrain.com/share/49gtyr7fi7hm75n71itmmlgl">view this guide on Grain</a>.
-</footer>
+<text x="622" y="972" text-anchor="middle" class="d-hb">you merge the PR</text>
+</svg></div><p class="legend"><i class="y"></i>Your steps<i class="a"></i>Runs on its own</p></div></div></section>
+<section class="slide" id="start"><div class="inner"><h2>Get started.</h2><div class="stage"><pre><code>agent-farm plugin install greenfield
+agent-farm run greenfield/planner</code></pre><div class="links"><a href="https://github.com/greenfield-inc/agent-farm/blob/main/plugins/greenfield/README.md">Read the README ›</a><a href="https://rungrain.com/share/49gtyr7fi7hm75n71itmmlgl">View on Grain ›</a><a href="https://github.com/greenfield-inc/agent-farm/tree/main/plugins/greenfield">Source ›</a></div><p class="fine">Greenfield · an Agent Farm plugin</p></div></div></section>
 </main>
 </body>
 </html>

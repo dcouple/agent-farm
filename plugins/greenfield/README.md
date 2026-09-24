@@ -6,10 +6,7 @@ Plan with a high-level cover sheet, then let one implementer build the feature a
 
 For a one-page visual map of how work is routed, open [index.html](index.html). It's also on Grain: [view the guide](https://rungrain.com/share/49gtyr7fi7hm75n71itmmlgl).
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../../docs/assets/guides/greenfield-guide-dark.png">
-  <img alt="How work moves through Greenfield: questions, ideas and small fixes go to the planner, bugs to the bug-reporter, and approved plans to the implementer you launch" src="../../docs/assets/guides/greenfield-guide-light.png">
-</picture>
+<img alt="Greenfield map: how work moves through the planner, bug-reporter and implementer, with your steps in green" src="../../docs/assets/guides/greenfield-map.png">
 
 ## Profiles
 
