@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: claude-fable-5-1
+  name: claude-opus-5-5
   reasoning: high
 instructions_files:
   - ../instructions/standing-rules.md

@@ -12,7 +12,7 @@ For a one-page visual map of how work is routed, open [index.html](index.html). 
 
 | Profile | Entry model | Role |
 | --- | --- | --- |
-| `planner` (`planner:claude`) | Fable 5.1 high | Discussion, brief/options when needed, then the approved cover sheet |
+| `planner` (`planner:claude`) | Opus 5.5 high | Discussion, brief/options when needed, then the approved cover sheet |
 | `planner:codex` | Astra high | The same planner workflow on Codex |
 | `implementer` (`implementer:standard`) | Astra low | All implementation and corrections, package self-checks, frontend verification, final review, draft PR |
 | `implementer:fast` | Astra low, fast service tier | Compatibility variant of the same implementer; sets `priority: speed`, never adds workers |
