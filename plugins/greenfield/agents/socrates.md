@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: claude-fable-5-1
+  name: claude-opus-5-5
   reasoning: high
 description: Challenge a brief and its options before the person picks. Argues for doing less. Review only.
 ---

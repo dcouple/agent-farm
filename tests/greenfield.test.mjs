@@ -15,7 +15,7 @@ test('Greenfield compiles a single Astra Low writer with verification and cross-
  const target=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'greenfield-profile-')));
  t.after(()=>fs.rmSync(target,{recursive:true,force:true}));
  validatePlugin(root);
- for(const profile of ['implementer','implementer:fast']){
+ for(const profile of ['implementer:standard','implementer:fast']){
   const resolved=resolveProfile(root,profile),main=resolved.nodes.main;
   assert.deepEqual(Object.keys(main.children).sort(),['frontend-verifier','reviewer','second-reviewer']);
   for(const route of Object.values(main.children))assert.deepEqual(Object.keys(resolved.nodes[route].children),[]);
@@ -38,7 +38,8 @@ test('Greenfield compiles a single Astra Low writer with verification and cross-
  }
 });
 
-test('the Claude implementer variant runs Opus 5.5 with an Astra reviewer and Claude-native helpers',t=>{
+test('the default Claude implementer variant runs Opus 5.5 with an Astra reviewer and Claude-native helpers',t=>{
+ assert.equal(resolveProfile(root,'implementer').nodes.main.model,'claude-opus-5-5');
  const target=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'greenfield-claude-')));
  t.after(()=>fs.rmSync(target,{recursive:true,force:true}));
  const resolved=resolveProfile(root,'implementer:claude'),main=resolved.nodes.main;
@@ -51,6 +52,21 @@ test('the Claude implementer variant runs Opus 5.5 with an Astra reviewer and Cl
  const bundle=build(root,'implementer:claude',target);verify(bundle);
  const launch=command(bundle,'main',{prepare:false});
  assert.equal(launch.argv[launch.argv.indexOf('--model')+1],'claude-opus-5-5');
+});
+
+test('free-range defaults to Opus 5.5 and keeps an Astra variant',()=>{
+ for(const [profile,harness,model] of [['free-range','claude','claude-opus-5-5'],['free-range:claude','claude','claude-opus-5-5'],['free-range:codex','codex','gpt-6-astra']]){
+  const main=resolveProfile(root,profile).nodes.main;assert.deepEqual([main.harness,main.model],[harness,model]);
+ }
+});
+
+test('bug-reporter, orchestrator and the Claude planner\'s Socrates run Opus 5.5',()=>{
+ const bug=resolveProfile(root,'bug-reporter'),main=bug.nodes.main;
+ assert.deepEqual([main.harness,main.model,main.reasoning_effort],['claude','claude-opus-5-5','high']);
+ for(const [name,effort] of [['investigator','high'],['qa','medium']]){const node=bug.nodes[main.children[name]];assert.deepEqual([node.mode,node.harness,node.model,node.reasoning_effort],['native','claude','claude-opus-5-5',effort]);}
+ const orchestrator=resolveProfile(root,'orchestrator').nodes.main;assert.deepEqual([orchestrator.harness,orchestrator.model],['claude','claude-opus-5-5']);
+ const planner=resolveProfile(root,'planner');assert.equal(planner.nodes[planner.nodes.main.children.socrates].model,'claude-opus-5-5');
+ const codexPlanner=resolveProfile(root,'planner:codex');assert.equal(codexPlanner.nodes[codexPlanner.nodes.main.children.socrates].model,'gpt-6-astra');
 });
 
 test('planners leave implementation launches to the person',()=>{

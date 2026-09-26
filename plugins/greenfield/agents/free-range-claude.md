@@ -1,7 +1,7 @@
 ---
 harness: claude
 model:
-  name: claude-fable-5-1
+  name: claude-opus-5-5
   reasoning: high
 description: "The AI model with no extra instructions, for quick questions and one-off tasks."
 ---

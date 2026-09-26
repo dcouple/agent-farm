@@ -51,7 +51,7 @@ Implementation beyond the small-work route runs as its own Agent Farm session, w
 agent-farm run greenfield/implementer --directory <feature workspace> --arg source=<cover sheet>
 ```
 
-Agent Farm asks which variant to run: `standard` (Astra Low), `fast` (Astra Low, fast tier), or `claude` (Claude Opus 5.5). Adding `:variant` to the profile skips that question. Under an orchestrator, report that the cover sheet is approved and leave the launch to the orchestrator.
+Agent Farm asks which variant to run: `claude` (Claude Opus 5.5, the default), `standard` (Astra Low), or `fast` (Astra Low, fast tier). Adding `:variant` to the profile skips that question. Under an orchestrator, report that the cover sheet is approved and leave the launch to the orchestrator.
 
 If no starter message is supplied, wait for the person's request.
 
