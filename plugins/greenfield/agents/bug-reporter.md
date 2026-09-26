@@ -1,7 +1,7 @@
 ---
-harness: codex
+harness: claude
 model:
-  name: gpt-5.6-sol
+  name: claude-opus-5-5
   reasoning: high
 instructions_files:
   - ../instructions/standing-rules.md
@@ -18,9 +18,17 @@ args:
 subagents:
   investigator:
     agent: investigator
+    harness: claude
+    model:
+      name: claude-opus-5-5
+      reasoning: high
     mode: native
   qa:
     agent: qa
+    harness: claude
+    model:
+      name: claude-opus-5-5
+      reasoning: medium
     mode: native
 ---
 

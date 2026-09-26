@@ -17,9 +17,9 @@ For a one-page visual map of how work is routed, open [index.html](index.html). 
 | `implementer` (`implementer:claude`) | Claude Opus 5.5 medium | All implementation and corrections, package self-checks, frontend verification, final review (by Astra), draft PR |
 | `implementer:standard` | Astra low | The same implementer workflow on Codex, reviewed by Fable |
 | `implementer:fast` | Astra low, fast service tier | Compatibility variant of the Codex implementer; sets `priority: speed`, never adds workers |
-| `bug-reporter` | Sol high | Reproduce and write a report without fixing code |
+| `bug-reporter` | Opus 5.5 high | Reproduce and write a report without fixing code |
 | `free-range` (`free-range:claude`) / `free-range:codex` | Opus 5.5 high / Astra medium | Raw-model comparison profiles without the Greenfield workflow |
-| `orchestrator` | Fable 5.1 medium | Experimental coordination of separate work items/worktrees |
+| `orchestrator` | Opus 5.5 medium | Experimental coordination of separate work items/worktrees |
 
 ```sh
 agent-farm plugin install greenfield
@@ -86,10 +86,10 @@ Done requires all required criteria to pass with applicable current-code evidenc
 | `frontend-verifier` | implementer | Sol low, native (Opus 5.5 medium under Claude implementer); focused UI navigation, journeys, visual evidence during stages and after fixes; read-only |
 | `reviewer` | implementer | Fable 5.1 high, process (Astra high under Claude implementer); one final review and targeted follow-ups; read-only |
 | `second-reviewer` | implementer | Astra high, native (Opus 5.5 high under Claude implementer); only explicit dual review or documented fallback when `reviewer` cannot launch |
-| `socrates` | planner | Fable high (Astra high under Codex planner); challenge unnecessary scope |
-| `investigator`, `researcher` | planner | Opus 5.5 high (Luna max under Codex planner); bounded evidence questions |
+| `socrates` | planner | Opus 5.5 high (Astra high under Codex planner); challenge unnecessary scope |
+| `investigator`, `researcher` | planner; `investigator` also under bug-reporter | Opus 5.5 high (Luna max under Codex planner); bounded evidence questions |
 | `mockup-artist` | Claude planner | Sol medium, process; generated design assets when needed |
-| `qa` | bug-reporter | Sol medium; reproduce a bug in the app |
+| `qa` | bug-reporter | Opus 5.5 medium; reproduce a bug in the app |
 | `advisor` | orchestrator | Astra high, process; advice about session coordination |
 
 Planners do not launch the implementer. When a cover sheet is approved, the planner gives the person the `agent-farm run greenfield/implementer` command, and Agent Farm asks which variant to run. Neither verification nor review is an implementation delegation.
