@@ -1,6 +1,6 @@
 # greenfield
 
-Plan with a high-level cover sheet, then let one implementer build the feature and check its work at every package stage. You pick the implementer's model when you launch it: Astra Low by default, or Claude Opus 5.5. A focused frontend verifier exercises the running UI during implementation. A reviewer on the other model family reviews the finished change; the same implementer makes all corrections.
+Plan with a high-level cover sheet, then let one implementer build the feature and check its work at every package stage. You pick the implementer's model when you launch it: Claude Opus 5.5 by default, or Astra Low. A focused frontend verifier exercises the running UI during implementation. A reviewer on the other model family reviews the finished change; the same implementer makes all corrections.
 
 `greenfield` is self-contained and can be installed alongside `dcouple` and `orchestra`. This version changes the default implementer from Sol with economy workers to Astra Low without implementation delegation. Existing detailed plans remain accepted, but new plans do not require markdown implementation plans or handoff cards.
 
@@ -14,11 +14,11 @@ For a one-page visual map of how work is routed, open [index.html](index.html). 
 | --- | --- | --- |
 | `planner` (`planner:claude`) | Opus 5.5 high | Discussion, brief/options when needed, then the approved cover sheet |
 | `planner:codex` | Astra high | The same planner workflow on Codex |
-| `implementer` (`implementer:standard`) | Astra low | All implementation and corrections, package self-checks, frontend verification, final review, draft PR |
-| `implementer:fast` | Astra low, fast service tier | Compatibility variant of the same implementer; sets `priority: speed`, never adds workers |
-| `implementer:claude` | Claude Opus 5.5 medium | The same implementer workflow on Claude, reviewed by Astra |
+| `implementer` (`implementer:claude`) | Claude Opus 5.5 medium | All implementation and corrections, package self-checks, frontend verification, final review (by Astra), draft PR |
+| `implementer:standard` | Astra low | The same implementer workflow on Codex, reviewed by Fable |
+| `implementer:fast` | Astra low, fast service tier | Compatibility variant of the Codex implementer; sets `priority: speed`, never adds workers |
 | `bug-reporter` | Sol high | Reproduce and write a report without fixing code |
-| `free-range` / `free-range:claude` | Astra medium / Fable 5.1 high | Raw-model comparison profiles without the Greenfield workflow |
+| `free-range` (`free-range:claude`) / `free-range:codex` | Opus 5.5 high / Astra medium | Raw-model comparison profiles without the Greenfield workflow |
 | `orchestrator` | Fable 5.1 medium | Experimental coordination of separate work items/worktrees |
 
 ```sh
@@ -28,10 +28,10 @@ agent-farm run greenfield/implementer --directory /path/to/project/worktrees/fea
   --arg source=/absolute/path/to/bundle/cover-sheet.html
 ```
 
-The implementer explicitly selects the standard service tier by default, overriding any inherited fast setting. Opt in to fast mode with `--speed fast` (reasoning remains Low):
+The Codex implementer variants explicitly select the standard service tier by default, overriding any inherited fast setting. Opt in to fast mode on Codex with `implementer:standard --speed fast` or `implementer:fast` (reasoning remains Low):
 
 ```sh
-agent-farm run greenfield/implementer --speed fast --directory /path/to/project \
+agent-farm run greenfield/implementer:standard --speed fast --directory /path/to/project \
   --arg source=/absolute/path/to/bundle/cover-sheet.html
 ```
 
@@ -69,7 +69,7 @@ The cover sheet is the only plan document; older plans are still accepted as inp
 
 ## Implementation and checks
 
-There is one implementation writer. The implementer, Astra Low or Claude Opus 5.5 depending on the variant, builds every package and every correction itself, including tests. It cannot delegate implementation to a worker, another implementer, or a shell-launched coding agent. The implementer binding exposes no worker or advisor child.
+There is one implementation writer. The implementer, Claude Opus 5.5 or Astra Low depending on the variant, builds every package and every correction itself, including tests. It cannot delegate implementation to a worker, another implementer, or a shell-launched coding agent. The implementer binding exposes no worker or advisor child.
 
 At each package boundary it inspects the diff, follows the full caller/data path, runs focused checks, and records validation results. Routine in-scope adapter/file changes do not bounce to the planner. Behavior changes use the `tdd` skill; existing repository checks still apply.
 
@@ -98,7 +98,7 @@ Planners do not launch the implementer. When a cover sheet is approved, the plan
 
 `implementer` accepts `source`, `parent`, `review` (`single`, `dual`, `none`), and `priority` (`usage`, `speed`). `single` is always the default, using the variant's primary reviewer. Except for small, low-risk changes, any dual or skipped review must be disclosed up front and explicitly approved by the user before proceeding; prior explicit user requests/flags suffice, but agent-generated settings do not. Show the review mode in the cover sheet’s top metadata, with the reason and approval reference for exceptions. Small, low-risk changes may automatically skip review without asking; disclose the skip and reason up front and in the top metadata. There is no automatic risk-based dual escalation. `priority` influences latency/usage tradeoffs without enabling worker routing. `--model` and `--reasoning` remain explicit per-launch overrides.
 
-The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent; `fast` additionally selects the fast service tier. `claude` runs the same workflow on Claude Opus 5.5 medium. `planner` and `orchestrator` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
+`claude` (Claude Opus 5.5 medium) is the default implementer variant. The `standard` and `fast` variant names remain compatible. Both run the same Astra Low implementation agent on Codex; `fast` additionally selects the fast service tier. `planner` and `orchestrator` also accept `docs`; `bug-reporter` accepts `source` and `parent`.
 
 ## Post-mortem and conversation viewer
 

@@ -11,4 +11,4 @@ variants:
       priority: speed
   claude:
     agent: implementer-claude
-default: standard
+default: claude
